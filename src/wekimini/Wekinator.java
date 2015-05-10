@@ -16,8 +16,8 @@ import wekimini.osc.OSCReceiver;
  * @author rebecca
  */
 public class Wekinator {
-    private final Settings settings;
-    private File projectLocation;
+   // private final Settings settings;
+  //  private File projectLocation;
     private final OSCReceiver oscReceiver;
     private final OSCSender oscSender;
     private final InputManager inputManager;
@@ -90,16 +90,16 @@ public class Wekinator {
     }
     
     //Use only for testing
-    public static Wekinator TestingWekinator() throws IOException {
+    /*public static Wekinator TestingWekinator() throws IOException {
         return new Wekinator(Wekinator.getDefaultNextProjectName(), new File(Wekinator.getDefaultDirectory()));
-    }
+    }*/
     
-    public Wekinator(String projectName, File projectDir) throws IOException, SecurityException {
+    public Wekinator() throws IOException, SecurityException {
         registerForMacOSXEvents();
-        projectLocation = projectDir;
+       // projectLocation = projectDir;
        // createProjectFiles(projectLocation);
-        settings = new Settings(projectName);
-        settings.writeToFile(projectLocation);
+        //settings = new Settings(projectName);
+       // settings.writeToFile(projectLocation);
         oscReceiver = new OSCReceiver();
         oscSender = new OSCSender();
         oscSender.setDefaultHostAndPort();
@@ -111,7 +111,7 @@ public class Wekinator {
       //  communicationManager = new CommunicationManager();
     }
     
-    private void createProjectFiles(File f) throws SecurityException {
+  /*  private void createProjectFiles(File f) throws SecurityException {
         projectLocation.mkdirs();
         String inputsName = f.getAbsolutePath() + File.separator + "inputs";
         new File(inputsName).mkdirs();
@@ -127,7 +127,7 @@ public class Wekinator {
         new File(stash).mkdirs();
         String logs = f.getAbsolutePath() + File.separator + "logs";
         new File(logs).mkdirs();
-    }
+    } */
     
     public void registerForMacOSXEvents() {
        System.setProperty("apple.laf.useScreenMenuBar", "true");
