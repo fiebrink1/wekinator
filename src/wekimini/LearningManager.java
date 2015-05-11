@@ -153,6 +153,7 @@ public class LearningManager {
     public void initializeInputsAndOutputs() {
         String[] inputNames = w.getInputManager().getInputNames();
         int numOutputs = w.getOutputManager().getOutputGroup().getNumOutputs();
+        w.getDataManager().initialize(inputNames, w.getOutputManager().getOutputGroup());
         pathRecordingMask = new boolean[numOutputs];
         pathRunningMask = new boolean[numOutputs];
         myComputedOutputs = new double[numOutputs];
@@ -202,7 +203,7 @@ public class LearningManager {
                 
             }
         } */
-        DataManager.addToTraining(inputs, outputs, recordingMask, trainingRound);
+        w.getDataManager().addToTraining(inputs, outputs, recordingMask, trainingRound);
     } 
     
     //TODO: Need to do this in background and change training state
