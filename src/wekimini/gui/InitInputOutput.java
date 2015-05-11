@@ -61,19 +61,19 @@ public class InitInputOutput extends javax.swing.JPanel {
         if (cs == OSCReceiver.ConnectionState.CONNECTED) {
             labelOscStatus.setText("Connected on port " + w.getOSCReceiver().getReceivePort());
             buttonOscListen.setText("Disconnect");
-          //  buttonNext.setEnabled(true);
+            //  buttonNext.setEnabled(true);
         } else if (cs == OSCReceiver.ConnectionState.FAIL) {
             labelOscStatus.setText("Failed to connect");
             buttonOscListen.setText("Connect");
-          //  buttonNext.setEnabled(false);
+            //  buttonNext.setEnabled(false);
         } else if (cs == OSCReceiver.ConnectionState.NOT_CONNECTED) {
             labelOscStatus.setText("Not connected");
             buttonOscListen.setText("Connect");
-          //  buttonNext.setEnabled(false);
+            //  buttonNext.setEnabled(false);
         } else if (cs == OSCReceiver.ConnectionState.CONNECTING) {
             labelOscStatus.setText("Connecting...");
             buttonOscListen.setText("Disconnect");
-          //  buttonNext.setEnabled(false);
+            //  buttonNext.setEnabled(false);
         }
     }
 
@@ -526,22 +526,22 @@ public class InitInputOutput extends javax.swing.JPanel {
     }//GEN-LAST:event_fieldOscPortActionPerformed
 
     private void buttonOscListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOscListenActionPerformed
-        int port = 0;
-        try {
-            port = Integer.parseInt(fieldOscPort.getText());
-        } catch (NumberFormatException ex) {
-            Util.showPrettyErrorPane(this, "Port must be a valid integer greater than 0");
-            return;
-        }
-        if (port <= 0) {
-            Util.showPrettyErrorPane(this, "Port must be a valid integer greater than 0");
-            return;
-        }
-
         if (w.getOSCReceiver().getConnectionState()
                 == OSCReceiver.ConnectionState.CONNECTED) {
             w.getOSCReceiver().stopListening();
         } else {
+            int port = 0;
+            try {
+                port = Integer.parseInt(fieldOscPort.getText());
+            } catch (NumberFormatException ex) {
+                Util.showPrettyErrorPane(this, "Port must be a valid integer greater than 0");
+                return;
+            }
+            if (port <= 0) {
+                Util.showPrettyErrorPane(this, "Port must be a valid integer greater than 0");
+                return;
+            }
+
             w.getOSCReceiver().startListening(port);
         }
     }//GEN-LAST:event_buttonOscListenActionPerformed
@@ -564,7 +564,7 @@ public class InitInputOutput extends javax.swing.JPanel {
     private boolean checkInputNumberValid() {
         return Util.checkIsPositiveNumber(fieldNumInputs, "Number of inputs", this);
     }
-    
+
     private void buttonCustomiseInputNamesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCustomiseInputNamesActionPerformed
         //String = fieldNumInputs.ge
         if (!checkInputNumberValid()) {
@@ -638,15 +638,15 @@ public class InitInputOutput extends javax.swing.JPanel {
     private boolean checkOSCReady() {
         boolean ready = (w != null && w.getOSCReceiver().getConnectionState() == OSCReceiver.ConnectionState.CONNECTED);
         if (!ready) {
-            Util.showPrettyErrorPane(this, "Please start OSC listener above in order to proceed");              
+            Util.showPrettyErrorPane(this, "Please start OSC listener above in order to proceed");
         }
         return ready;
     }
-    
+
     private boolean checkInputReady() {
         return checkInputNumberValid() && checkOscInputValid();
     }
-    
+
     private boolean checkOscInputValid() {
         boolean notBlank = Util.checkNotBlank(fieldInputOSCMessage, "Input OSC message", this);
         if (notBlank) {
@@ -655,9 +655,9 @@ public class InitInputOutput extends javax.swing.JPanel {
             return false;
         }
     }
-    
+
     private boolean checkOutputReady() {
-        boolean ok =  checkOutputNumberValid() && checkOutputHostValid() && checkOutputPortValid() && checkOutputOSCValid();
+        boolean ok = checkOutputNumberValid() && checkOutputHostValid() && checkOutputPortValid() && checkOutputOSCValid();
         if (!ok) {
             return false;
         }
@@ -667,10 +667,10 @@ public class InitInputOutput extends javax.swing.JPanel {
         } else if (index == COMBO_FILE_INDEX) {
             Util.showPrettyErrorPane(this, "Loading from a file is not yet supported");
             return false;
-        } 
+        }
         return true;
     }
-        
+
     private void buttonCustomiseOutputNamesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCustomiseOutputNamesActionPerformed
         if (!Util.checkIsPositiveNumber(fieldNumOutputs, "Number of outputs", this)) {
             return;
@@ -767,6 +767,7 @@ public class InitInputOutput extends javax.swing.JPanel {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 JFrame f = new JFrame();
+                f.setSize(500, 500);
                 Wekinator w;
                 try {
                     w = new Wekinator();
@@ -827,23 +828,23 @@ public class InitInputOutput extends javax.swing.JPanel {
     }
 
     private boolean checkOutputHostValid() {
-            boolean isNotBlank = Util.checkNotBlank(fieldHostName, "host name", this);
-            if (!isNotBlank) {
-                return false;
-            }
-            
-            String hostname = fieldHostName.getText().trim();
-            try {
-                InetAddress address = InetAddress.getByName(hostname);
-            } catch (UnknownHostException ex) {
-                Util.showPrettyErrorPane(this, "Invalid OSC output hostname");
-                return false;
-            }
-            return true;
+        boolean isNotBlank = Util.checkNotBlank(fieldHostName, "host name", this);
+        if (!isNotBlank) {
+            return false;
+        }
+
+        String hostname = fieldHostName.getText().trim();
+        try {
+            InetAddress address = InetAddress.getByName(hostname);
+        } catch (UnknownHostException ex) {
+            Util.showPrettyErrorPane(this, "Invalid OSC output hostname");
+            return false;
+        }
+        return true;
     }
 
     private boolean checkOutputPortValid() {
-        return Util.checkIsPositiveNumber(fieldOscPort, "OSC output port", this);
+        return Util.checkIsPositiveNumber(fieldSendPort, "OSC output port", this);
     }
 
     private boolean checkOutputOSCValid() {

@@ -67,6 +67,10 @@ public class OSCOutputGroup {
         this.outputs = new LinkedList<>(outputs);
         values = new float[outputs.size()];
     }
+    
+    public OSCOutput getOutput(int which) {
+        return outputs.get(which);
+    }
 
     @Override
     public String toString() {

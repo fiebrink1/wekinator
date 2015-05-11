@@ -115,7 +115,7 @@ public class OutputManager {
         }
     }
 
-    //Modifies a group with a given name
+    //For now, no possibility to modify an output group: it's a totally new group.
     public void setOSCOutputGroup(OSCOutputGroup newG) throws IllegalArgumentException {
         OSCOutputGroup oldGroup = outputGroup;
         outputGroup = newG;
@@ -125,6 +125,17 @@ public class OutputManager {
 
     public OSCOutputGroup getOutputGroup() {
         return outputGroup;
+    }
+    
+    public double[] getCurrentValues() {
+        return currentValues;
+    }
+    
+    public void setCurrentValue(int which, double value) {
+        if (which >= currentValues.length) {
+            throw new IllegalArgumentException("Illegal current value index " + which);
+        }
+        currentValues[which] = value;
     }
 
     private void addOSCOutputValueListener() {
