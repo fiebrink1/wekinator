@@ -50,6 +50,15 @@ public class OSCOutputGroup {
         return values;
     }
     
+    public String[] getOutputNames() {
+        String s[] = new String[outputs.size()];
+        for (int i = 0; i < outputs.size(); i++) {
+            s[i] = outputs.get(i).getName();
+        }
+        return s;
+    }
+    
+    
     /**
      * Remove PropertyChangeListener.
      *
