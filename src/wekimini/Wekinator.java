@@ -100,11 +100,11 @@ public class Wekinator {
     }
     
     //Use only for testing
-    /*public static Wekinator TestingWekinator() throws IOException {
-        return new Wekinator(Wekinator.getDefaultNextProjectName(), new File(Wekinator.getDefaultDirectory()));
-    }*/
+    public static Wekinator TestingWekinator() throws IOException {
+        return new Wekinator();
+    }
     
-    public Wekinator() throws IOException, SecurityException {
+    public Wekinator() throws IOException {
         registerForMacOSXEvents();
        // projectLocation = projectDir;
        // createProjectFiles(projectLocation);

@@ -67,6 +67,14 @@ public class LearningManager {
         propertyChangeSupport.firePropertyChange(PROP_RECORDINGSTATE, oldRecordingState, recordingState);
     }
 
+    public void startRecording() {
+        setRecordingState(RecordingState.RECORDING);
+    }
+    
+    public void stopRecording() {
+        setRecordingState(RecordingState.NOT_RECORDING);
+    }
+    
     /**
      * Get the value of runningState
      *
@@ -216,6 +224,14 @@ public class LearningManager {
             paths.add(p);
         }  
         setLearningState(LearningState.NOT_TRAINING);
+        
+        w.getInputManager().addInputValueListener(new InputManager.InputListener() {
+
+            @Override
+            public void update(double[] vals) {
+                updateInputs(vals);
+            }
+        });
     }
     
     private void pathInputsChanged(Path p) {

@@ -6,9 +6,9 @@
 
 package wekimini.gui;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.JScrollBar;
 import wekimini.OutputManager;
 import wekimini.Path;
 import wekimini.Wekinator;
@@ -29,14 +29,11 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         initComponents();
     }
     
-    public SimpleLearningSet(Wekinator w, Path[] ps, String[] modelNames) {
-        initComponents();
+    public final void setup(Wekinator w, Path[] ps, String[] modelNames) {
         this.w = w;
         paths = new LinkedList<>();
         pathPanels = new LinkedList<>();
-        for (int i = 0; i < ps.length; i++) {
-            paths.add(ps[i]);
-        }
+        paths.addAll(Arrays.asList(ps));
         addPathsToGUI();
         w.getOutputManager().addOutputGroupComputedListener(new OutputManager.OutputValueListener() {
 
@@ -54,6 +51,11 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         });
     }
     
+    public SimpleLearningSet(Wekinator w, Path[] ps, String[] modelNames) {
+        initComponents();
+        setup(w, ps, modelNames);
+    }
+    
     //Assumes that ordering of outputs is never going to change; don't have to look up anything or refer to LearningManager.
     private void outputValuesComputed(double[] vals) {
         for (int i = 0; i < vals.length; i++) {
@@ -69,8 +71,10 @@ public class SimpleLearningSet extends javax.swing.JPanel {
 
     private void addPathsToGUI() {
         pathsPanel.removeAll();
+        double[] currentValues = w.getOutputManager().getCurrentValues();
         for (int i = 0; i < paths.size(); i++) {
             SimpleLearningRow r = new SimpleLearningRow(w, paths.get(i));
+            r.setValue(currentValues[i]);
             pathPanels.add(r);
             pathsPanel.add(r);
         }

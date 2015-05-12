@@ -10,12 +10,20 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import wekimini.Wekinator;
+import wekimini.osc.OSCClassificationOutput;
+import wekimini.osc.OSCInputGroup;
+import wekimini.osc.OSCNumericOutput;
+import wekimini.osc.OSCOutput;
+import wekimini.osc.OSCOutputGroup;
 import wekimini.osc.OSCReceiver;
 import wekimini.util.Util;
 import wekimini.util.WeakListenerSupport;
@@ -24,7 +32,7 @@ import wekimini.util.WeakListenerSupport;
  *
  * @author rebecca
  */
-public class InitInputOutput extends javax.swing.JPanel {
+public class InitInputOutputFrame extends javax.swing.JFrame {
 
     private Wekinator w = null;
     private PropertyChangeListener oscReceiverListener = null;
@@ -36,21 +44,21 @@ public class InitInputOutput extends javax.swing.JPanel {
     private final static int COMBO_CLASSIFICATION_INDEX = 1;
     private final static int COMBO_CUSTOM_INDEX = 2;
     private final static int COMBO_FILE_INDEX = 3;
-
+    
     /**
-     * Creates new form GUIOscInputConfigure
+     * Creates new form initInputOutputFrame
      */
-    public InitInputOutput() {
+    public InitInputOutputFrame() {
         initComponents();
     }
-
-    public InitInputOutput(Wekinator w) {
+    
+    public InitInputOutputFrame(Wekinator w) {
         initComponents();
         setWekinator(w);
         updateOutputCard();
     }
 
-    public void setWekinator(Wekinator w) {
+        public void setWekinator(Wekinator w) {
         this.w = w;
         updateGUIForConnectionState(w.getOSCReceiver().getConnectionState());
         oscReceiverListener = this::oscReceiverPropertyChanged;
@@ -93,12 +101,13 @@ public class InitInputOutput extends javax.swing.JPanel {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         fieldOscPort = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         buttonOscListen = new javax.swing.JButton();
         labelOscStatus = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         fieldNumInputs = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -106,7 +115,7 @@ public class InitInputOutput extends javax.swing.JPanel {
         buttonLoadInputsFromFile = new javax.swing.JButton();
         buttonCustomiseInputNames = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         fieldNumOutputs = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
@@ -130,10 +139,12 @@ public class InitInputOutput extends javax.swing.JPanel {
         fieldSendPort = new javax.swing.JTextField();
         buttonNext = new javax.swing.JButton();
 
-        setBackground(new java.awt.Color(255, 255, 255));
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Receiving OSC"));
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Receiving OSC"));
 
         jLabel1.setText("Wekinator listening for inputs and control on port:");
 
@@ -160,36 +171,36 @@ public class InitInputOutput extends javax.swing.JPanel {
 
         labelOscStatus.setText("Not connected");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(buttonOscListen)
                         .addGap(250, 250, 250))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(labelOscStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(fieldOscPort, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(labelOscStatus))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(fieldOscPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -197,8 +208,8 @@ public class InitInputOutput extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Inputs"));
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Inputs"));
 
         jLabel3.setText("# inputs:");
 
@@ -244,18 +255,18 @@ public class InitInputOutput extends javax.swing.JPanel {
 
         jLabel11.setText("Optional:");
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(fieldInputOSCMessage))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(fieldNumInputs, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -267,15 +278,15 @@ public class InitInputOutput extends javax.swing.JPanel {
                         .addComponent(buttonLoadInputsFromFile)
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(fieldInputOSCMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(fieldNumInputs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel11)
@@ -284,8 +295,8 @@ public class InitInputOutput extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Outputs"));
+        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Outputs"));
 
         jLabel5.setText("# outputs:");
 
@@ -322,7 +333,7 @@ public class InitInputOutput extends javax.swing.JPanel {
         cardBlank.setLayout(cardBlankLayout);
         cardBlankLayout.setHorizontalGroup(
             cardBlankLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 497, Short.MAX_VALUE)
+            .addGap(0, 509, Short.MAX_VALUE)
         );
         cardBlankLayout.setVerticalGroup(
             cardBlankLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -342,7 +353,7 @@ public class InitInputOutput extends javax.swing.JPanel {
         cardChooseFileLayout.setHorizontalGroup(
             cardChooseFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cardChooseFileLayout.createSequentialGroup()
-                .addContainerGap(128, Short.MAX_VALUE)
+                .addContainerGap(140, Short.MAX_VALUE)
                 .addComponent(buttonChooseOutputFile)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -381,7 +392,7 @@ public class InitInputOutput extends javax.swing.JPanel {
                 .addComponent(fieldNumClasses, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
-                .addContainerGap(318, Short.MAX_VALUE))
+                .addContainerGap(330, Short.MAX_VALUE))
         );
         cardNumClassesLayout.setVerticalGroup(
             cardNumClassesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -417,21 +428,21 @@ public class InitInputOutput extends javax.swing.JPanel {
             }
         });
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(panelOutputTypes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addComponent(jLabel6)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(fieldOutputOSCMessage))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addComponent(jLabel13)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(fieldHostName)
@@ -440,9 +451,9 @@ public class InitInputOutput extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(fieldSendPort, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap())
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(fieldNumOutputs, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -450,33 +461,33 @@ public class InitInputOutput extends javax.swing.JPanel {
                                 .addComponent(jLabel12)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(buttonCustomiseOutputNames))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addComponent(jLabel7)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(comboOutputType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(fieldOutputOSCMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(fieldHostName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(fieldSendPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(fieldNumOutputs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12)
                     .addComponent(buttonCustomiseOutputNames))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(comboOutputType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -491,43 +502,69 @@ public class InitInputOutput extends javax.swing.JPanel {
             }
         });
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(buttonNext)))
                 .addContainerGap())
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(buttonNext)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 545, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 469, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 469, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+
+        pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void fieldOscPortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldOscPortActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_fieldOscPortActionPerformed
 
+    private void fieldOscPortKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldOscPortKeyTyped
+        char enter = evt.getKeyChar();
+        if (!(Character.isDigit(enter))) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_fieldOscPortKeyTyped
+
     private void buttonOscListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOscListenActionPerformed
         if (w.getOSCReceiver().getConnectionState()
-                == OSCReceiver.ConnectionState.CONNECTED) {
+            == OSCReceiver.ConnectionState.CONNECTED) {
             w.getOSCReceiver().stopListening();
         } else {
             int port = 0;
@@ -546,24 +583,40 @@ public class InitInputOutput extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_buttonOscListenActionPerformed
 
-    private void fieldOscPortKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldOscPortKeyTyped
+    private void fieldNumInputsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumInputsKeyTyped
         char enter = evt.getKeyChar();
         if (!(Character.isDigit(enter))) {
             evt.consume();
         }
-    }//GEN-LAST:event_fieldOscPortKeyTyped
+    }//GEN-LAST:event_fieldNumInputsKeyTyped
+
+    private void fieldInputOSCMessageFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldInputOSCMessageFocusLost
+        updateOSCListener();
+    }//GEN-LAST:event_fieldInputOSCMessageFocusLost
 
     private void fieldInputOSCMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldInputOSCMessageActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_fieldInputOSCMessageActionPerformed
 
+    private void fieldInputOSCMessageKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldInputOSCMessageKeyTyped
+        /* char enter = evt.getKeyChar();
+
+        if (enter == '\n') {
+            System.out.println("One");
+        } else if (enter == '\r') {
+            System.out.println("two");
+        } else {
+            System.out.println("Other: " + enter + ".");
+        }
+        */
+        /* if (keyIsEnter) {
+            updateOSCListener();
+        }*/
+    }//GEN-LAST:event_fieldInputOSCMessageKeyTyped
+
     private void buttonLoadInputsFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoadInputsFromFileActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_buttonLoadInputsFromFileActionPerformed
-
-    private boolean checkInputNumberValid() {
-        return Util.checkIsPositiveNumber(fieldNumInputs, "Number of inputs", this);
-    }
 
     private void buttonCustomiseInputNamesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCustomiseInputNamesActionPerformed
         //String = fieldNumInputs.ge
@@ -581,15 +634,255 @@ public class InitInputOutput extends javax.swing.JPanel {
 
         String baseName = setBaseNameFromOscField(fieldInputOSCMessage, "Input");
         GuiIONameCustomise customiser = new GuiIONameCustomise(
-                numNames,
-                baseName,
-                currentInputNames,
-                r,
-                GuiIONameCustomise.IOType.INPUT);
+            numNames,
+            baseName,
+            currentInputNames,
+            r,
+            GuiIONameCustomise.IOType.INPUT);
         customiser.setAlwaysOnTop(true);
         customiser.setVisible(true);
     }//GEN-LAST:event_buttonCustomiseInputNamesActionPerformed
 
+    private void fieldNumOutputsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumOutputsKeyTyped
+        char enter = evt.getKeyChar();
+        if (!(Character.isDigit(enter))) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_fieldNumOutputsKeyTyped
+
+    private void fieldOutputOSCMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldOutputOSCMessageActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fieldOutputOSCMessageActionPerformed
+
+    private void comboOutputTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboOutputTypeActionPerformed
+        updateOutputCard();
+    }//GEN-LAST:event_comboOutputTypeActionPerformed
+
+    private void fieldNumClassesKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumClassesKeyTyped
+        char enter = evt.getKeyChar();
+        if (!(Character.isDigit(enter))) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_fieldNumClassesKeyTyped
+
+    private void buttonCustomiseOutputNamesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCustomiseOutputNamesActionPerformed
+        if (!Util.checkIsPositiveNumber(fieldNumOutputs, "Number of outputs", this)) {
+            return;
+        }
+        int numNames = Integer.parseInt(fieldNumOutputs.getText());
+
+        GuiIONameCustomise.NamesListReceiver r = new GuiIONameCustomise.NamesListReceiver() {
+            @Override
+            public void setNames(String[] names) {
+                receivedNewOutputNames(names);
+            }
+        };
+
+        String baseName = setBaseNameFromOscField(fieldOutputOSCMessage, "Output");
+        GuiIONameCustomise customiser = new GuiIONameCustomise(
+            numNames,
+            baseName,
+            currentOutputNames,
+            r,
+            GuiIONameCustomise.IOType.OUTPUT);
+        customiser.setAlwaysOnTop(true);
+        customiser.setVisible(true);
+    }//GEN-LAST:event_buttonCustomiseOutputNamesActionPerformed
+
+    private void fieldSendPortKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldSendPortKeyTyped
+        char enter = evt.getKeyChar();
+        if (!(Character.isDigit(enter))) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_fieldSendPortKeyTyped
+
+    private OSCOutputGroup getOutputGroupFromForm() {
+        String name = "Outputs";
+        String oscMessage = fieldOutputOSCMessage.getText().trim();
+        int numOutputs = Integer.parseInt(fieldNumOutputs.getText());
+        
+        if (currentOutputNames.length != numOutputs) {      
+            if (currentOutputNames.length > numOutputs) {
+                String[] newNames = new String[numOutputs];
+                System.arraycopy(currentOutputNames, 0, newNames, 0, numOutputs);
+                currentOutputNames = newNames;
+            } else { //We need to add some new names
+                String[] newNames = new String[numOutputs];
+                System.arraycopy(currentOutputNames, 0, newNames, 0, currentOutputNames.length);
+                String baseName = setBaseNameFromOscField(fieldOutputOSCMessage, "Output");
+                for (int i = currentOutputNames.length; i < numOutputs; i++) {
+                    newNames[i] = baseName + "-" + (i+1);
+                }
+                currentOutputNames = newNames;
+            }
+        } 
+        
+        if (comboOutputType.getSelectedIndex() == COMBO_CLASSIFICATION_INDEX) {
+            List<OSCOutput> outputs = new LinkedList<>();
+            int numClasses = Integer.parseInt(fieldNumClasses.getText());
+            for (int i = 0; i < numOutputs; i++) {
+                OSCClassificationOutput o = new OSCClassificationOutput(currentOutputNames[i], numClasses);
+                outputs.add(o);
+            }
+            OSCOutputGroup og = new OSCOutputGroup(outputs);
+            return og;
+        } else if (comboOutputType.getSelectedIndex() == COMBO_REGRESSION_INDEX) {
+            List<OSCOutput> outputs = new LinkedList<>();
+            for (int i = 0; i < numOutputs; i++) {
+                OSCNumericOutput o = new OSCNumericOutput(
+                        currentOutputNames[i], 
+                        0, 
+                        1, 
+                        OSCNumericOutput.NumericOutputType.REAL, 
+                        OSCNumericOutput.LimitType.SOFT);
+                outputs.add(o);
+            }
+            OSCOutputGroup og = new OSCOutputGroup(outputs);
+            return og;
+        } else {
+            //TODO do something about this
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+    }
+    
+    private OSCInputGroup getInputGroupFromForm() {
+        String name = "Inputs";
+        String oscMessage = fieldInputOSCMessage.getText().trim();
+        int numInputs = Integer.parseInt(fieldNumInputs.getText());
+        
+        if (currentInputNames.length != numInputs) {
+            if (currentInputNames.length > numInputs) {
+                String[] newNames = new String[numInputs];
+                System.arraycopy(currentInputNames, 0, newNames, 0, numInputs);
+                currentInputNames = newNames;
+            } else { //We need to add some new names
+                String[] newNames = new String[numInputs];
+                System.arraycopy(currentInputNames, 0, newNames, 0, currentInputNames.length);
+                String baseName = setBaseNameFromOscField(fieldInputOSCMessage, "Input");
+                for (int i = currentInputNames.length; i < numInputs; i++) {
+                    newNames[i] = baseName + "-" + (i+1);
+                }
+                currentInputNames = newNames;
+            }
+        } 
+        OSCInputGroup ig = new OSCInputGroup(name, oscMessage, numInputs, currentInputNames); 
+        return ig;
+    }
+    
+    private void configureOSCSenderFromForm() throws UnknownHostException, SocketException {
+        String hostName = fieldHostName.getText().trim();
+        int port = Integer.parseInt(fieldSendPort.getText());
+        w.getOSCSender().setHostnameAndPort(InetAddress.getByName(hostName), port);
+    }
+    
+    private void buttonNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonNextActionPerformed
+        //TODO: have to do more if configuringOSC on next screen...
+        if (checkOSCReady() && checkInputReady() && checkOutputReady()) {
+            //System.out.println("READY TO GO");
+            try {
+                configureOSCSenderFromForm();
+            
+            OSCInputGroup inputGroup = getInputGroupFromForm();
+            OSCOutputGroup outputGroup = getOutputGroupFromForm();
+            w.getInputManager().setOSCInputGroup(inputGroup);
+            w.getOutputManager().setOSCOutputGroup(outputGroup);
+            w.getLearningManager().initializeInputsAndOutputs();
+            w.getMainGUI().initializeInputsAndOutputs();
+            w.getMainGUI().setVisible(true);
+            this.dispose();
+            } catch (UnknownHostException ex) {
+                Util.showPrettyErrorPane(this, "Host name " + fieldHostName.getText() + " is invalid; please try a different host.");
+            } catch (SocketException ex) {
+                Util.showPrettyErrorPane(this, "Error setting up OSC sender: " + ex.getMessage());
+            }
+
+        } else {
+            System.out.println("ERROR SOMEWHERE");
+        }
+    }//GEN-LAST:event_buttonNextActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(InitInputOutputFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(InitInputOutputFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(InitInputOutputFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(InitInputOutputFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                Wekinator w;
+                try {
+                    w = new Wekinator();
+                    InitInputOutputFrame p = new InitInputOutputFrame(w);
+                    p.setVisible(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(InitInputOutputFrame.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SecurityException ex) {
+                    Logger.getLogger(InitInputOutputFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+                
+            
+        });
+    }
+
+        private boolean checkOutputNumberValid() {
+        return Util.checkIsPositiveNumber(fieldNumOutputs, "Number of outputs", this);
+    }
+
+    private boolean checkOutputHostValid() {
+        boolean isNotBlank = Util.checkNotBlank(fieldHostName, "host name", this);
+        if (!isNotBlank) {
+            return false;
+        }
+
+        String hostname = fieldHostName.getText().trim();
+        try {
+            InetAddress address = InetAddress.getByName(hostname);
+        } catch (UnknownHostException ex) {
+            Util.showPrettyErrorPane(this, "Invalid OSC output hostname");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkOutputPortValid() {
+        return Util.checkIsPositiveNumber(fieldSendPort, "OSC output port", this);
+    }
+
+    private boolean checkOutputOSCValid() {
+        if (!Util.checkNotBlank(fieldOutputOSCMessage, "OSC output message", this)) {
+            return false;
+        }
+        return Util.checkNoSpace(fieldOutputOSCMessage, "OSC output message", this);
+    }
+    
+       private boolean checkInputNumberValid() {
+        return Util.checkIsPositiveNumber(fieldNumInputs, "Number of inputs", this);
+    }
+       
     private String setBaseNameFromOscField(JTextField f, String defaultName) {
         String currentInputOSC = f.getText().trim();
         String baseName = defaultName;
@@ -618,26 +911,7 @@ public class InitInputOutput extends javax.swing.JPanel {
         System.arraycopy(names, 0, currentOutputNames, 0, names.length);
     }
 
-    private void fieldOutputOSCMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldOutputOSCMessageActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_fieldOutputOSCMessageActionPerformed
-
-    private void comboOutputTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboOutputTypeActionPerformed
-        updateOutputCard();
-    }//GEN-LAST:event_comboOutputTypeActionPerformed
-
-    private void buttonNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonNextActionPerformed
-        //TODO: have to do more if configuringOSC on next screen...
-        if (checkOSCReady() && checkInputReady() && checkOutputReady()) {
-            //System.out.println("READY TO GO");
-            w.getMainGUI().setVisible(true);
-            
-        } else {
-            System.out.println("ERROR SOMEWHERE");
-        }
-    }//GEN-LAST:event_buttonNextActionPerformed
-
-    private boolean checkOSCReady() {
+        private boolean checkOSCReady() {
         boolean ready = (w != null && w.getOSCReceiver().getConnectionState() == OSCReceiver.ConnectionState.CONNECTED);
         if (!ready) {
             Util.showPrettyErrorPane(this, "Please start OSC listener above in order to proceed");
@@ -673,85 +947,11 @@ public class InitInputOutput extends javax.swing.JPanel {
         return true;
     }
 
-    private void buttonCustomiseOutputNamesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCustomiseOutputNamesActionPerformed
-        if (!Util.checkIsPositiveNumber(fieldNumOutputs, "Number of outputs", this)) {
-            return;
-        }
-        int numNames = Integer.parseInt(fieldNumOutputs.getText());
-
-        GuiIONameCustomise.NamesListReceiver r = new GuiIONameCustomise.NamesListReceiver() {
-            @Override
-            public void setNames(String[] names) {
-                receivedNewOutputNames(names);
-            }
-        };
-
-        String baseName = setBaseNameFromOscField(fieldOutputOSCMessage, "Output");
-        GuiIONameCustomise customiser = new GuiIONameCustomise(
-                numNames,
-                baseName,
-                currentOutputNames,
-                r,
-                GuiIONameCustomise.IOType.OUTPUT);
-        customiser.setAlwaysOnTop(true);
-        customiser.setVisible(true);
-
-    }//GEN-LAST:event_buttonCustomiseOutputNamesActionPerformed
-
-    private void fieldNumInputsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumInputsKeyTyped
-        char enter = evt.getKeyChar();
-        if (!(Character.isDigit(enter))) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_fieldNumInputsKeyTyped
-
-    private void fieldSendPortKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldSendPortKeyTyped
-        char enter = evt.getKeyChar();
-        if (!(Character.isDigit(enter))) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_fieldSendPortKeyTyped
-
-    private void fieldNumOutputsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumOutputsKeyTyped
-        char enter = evt.getKeyChar();
-        if (!(Character.isDigit(enter))) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_fieldNumOutputsKeyTyped
-
-    private void fieldNumClassesKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumClassesKeyTyped
-        char enter = evt.getKeyChar();
-        if (!(Character.isDigit(enter))) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_fieldNumClassesKeyTyped
-
-    private void fieldInputOSCMessageFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldInputOSCMessageFocusLost
-        updateOSCListener();
-    }//GEN-LAST:event_fieldInputOSCMessageFocusLost
-
     private void updateOSCListener() {
-        //TODO
+        System.out.println("ERROR: updateOSCListener is not implemented");
     }
-
-    private void fieldInputOSCMessageKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldInputOSCMessageKeyTyped
-        /* char enter = evt.getKeyChar();
-        
-         if (enter == '\n') {
-         System.out.println("One");
-         } else if (enter == '\r') {
-         System.out.println("two");
-         } else {
-         System.out.println("Other: " + enter + ".");
-         }
-         */
-        /* if (keyIsEnter) {
-         updateOSCListener();
-         }*/
-
-    }//GEN-LAST:event_fieldInputOSCMessageKeyTyped
-
-    private void updateOutputCard() {
+    
+      private void updateOutputCard() {
         int index = comboOutputType.getSelectedIndex();
         CardLayout layout = (CardLayout) panelOutputTypes.getLayout();
         if (index == COMBO_REGRESSION_INDEX) {
@@ -763,39 +963,6 @@ public class InitInputOutput extends javax.swing.JPanel {
         } else {
             layout.show(panelOutputTypes, "cardBlank");
         }
-    }
-
-    public static void runInFrame(Wekinator w) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                JFrame f = new JFrame();
-                //f.setSize(500, 500);
-                InitInputOutput p = new InitInputOutput(w);
-                f.setSize(533, 495); //Wish this were easier
-                f.add(p);
-                f.setVisible(true);   
-            }
-        }); 
-    }
-    
-    public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                JFrame f = new JFrame();
-                f.setSize(500, 500);
-                Wekinator w;
-                try {
-                    w = new Wekinator();
-                    InitInputOutput p = new InitInputOutput(w);
-                    f.add(p);
-                    f.setVisible(true);
-                } catch (IOException ex) {
-                    Logger.getLogger(InitInputOutput.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (SecurityException ex) {
-                    Logger.getLogger(InitInputOutput.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -834,38 +1001,9 @@ public class InitInputOutput extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JLabel labelOscStatus;
     private javax.swing.JPanel panelOutputTypes;
     // End of variables declaration//GEN-END:variables
 
-    private boolean checkOutputNumberValid() {
-        return Util.checkIsPositiveNumber(fieldNumOutputs, "Number of outputs", this);
-    }
-
-    private boolean checkOutputHostValid() {
-        boolean isNotBlank = Util.checkNotBlank(fieldHostName, "host name", this);
-        if (!isNotBlank) {
-            return false;
-        }
-
-        String hostname = fieldHostName.getText().trim();
-        try {
-            InetAddress address = InetAddress.getByName(hostname);
-        } catch (UnknownHostException ex) {
-            Util.showPrettyErrorPane(this, "Invalid OSC output hostname");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean checkOutputPortValid() {
-        return Util.checkIsPositiveNumber(fieldSendPort, "OSC output port", this);
-    }
-
-    private boolean checkOutputOSCValid() {
-        if (!Util.checkNotBlank(fieldOutputOSCMessage, "OSC output message", this)) {
-            return false;
-        }
-        return Util.checkNoSpace(fieldOutputOSCMessage, "OSC output message", this);
-    }
 }

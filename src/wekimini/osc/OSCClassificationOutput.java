@@ -52,4 +52,9 @@ public class OSCClassificationOutput implements OSCOutput {
         return i + 1;
     }
 
+    @Override
+    public double getDefaultValue() {
+        return 1;
+    }
+
 }

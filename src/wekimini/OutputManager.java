@@ -120,6 +120,10 @@ public class OutputManager {
         OSCOutputGroup oldGroup = outputGroup;
         outputGroup = newG;
         currentValues = new double[newG.getNumOutputs()];
+        for (int i = 0; i < currentValues.length; i++) {
+            currentValues[i] = outputGroup.getOutput(i).getDefaultValue();
+        }
+        
         propertyChangeSupport.firePropertyChange(PROP_OUTPUTGROUP, oldGroup, outputGroup);
     }
 

@@ -5,13 +5,20 @@
  */
 package wekimini;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import wekimini.gui.InitInputOutput;
+import wekimini.gui.InitInputOutputFrame;
+import wekimini.util.Util;
 
 /**
  *
  * @author rebecca
  */
-public class WekinatorRunner {
+public class WekiMiniRunner {
     
     public static void main(String[] args) {
         //WelcomeScreen
@@ -41,10 +48,40 @@ public class WekinatorRunner {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                //new WelcomeScreen().setVisible(true);
+                runNewProject();
             }
         });  
         
         
+    }
+    
+    /*public static void runNewProject() {
+        try {
+            
+            
+            
+            Wekinator w = new Wekinator();
+            InitInputOutputFrame f = new InitInputOutputFrame(w);
+            f.setVisible(true);
+        } catch (IOException ex) {
+            Util.showPrettyErrorPane(null, "Error encountered in starting Wekinator: " + ex.getMessage());
+            Logger.getLogger(WekiMiniRunner.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    } */
+    
+    public static void runNewProject() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                
+                try {
+                    Wekinator w = new Wekinator();
+                    InitInputOutputFrame f = new InitInputOutputFrame(w);
+                    f.setVisible(true);
+                    
+                } catch (IOException | SecurityException ex) {
+                    Logger.getLogger(InitInputOutput.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
     }
 }

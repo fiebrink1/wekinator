@@ -206,11 +206,12 @@ public class DataManager {
         allInstances.add(in);
         setHasInstances(true);
         fireStateChanged();
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     public void initialize(String[] inputNames, OSCOutputGroup outputGroup) {
         numOutputs = outputGroup.getNumOutputs();
+        numExamplesPerOutput = new int[numOutputs];
         numInputs = inputNames.length;
         this.inputNames = new String[inputNames.length];
         System.arraycopy(inputNames, 0, this.inputNames, 0, inputNames.length);
@@ -566,6 +567,9 @@ public class DataManager {
         saver.writeBatch();
     }
     
+    public String toString() {
+        return allInstances.toString();
+    }
     
     
 }

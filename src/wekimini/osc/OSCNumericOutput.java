@@ -94,4 +94,9 @@ public class OSCNumericOutput implements OSCOutput {
             return Math.random() * (max - min) + min;
         }
     }
+    
+    @Override
+    public double getDefaultValue() {
+        return min;
+    }
 }

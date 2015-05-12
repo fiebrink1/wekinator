@@ -19,4 +19,6 @@ public interface OSCOutput {
 
     public double generateRandomValue();
 
+    public double getDefaultValue();
+
 }

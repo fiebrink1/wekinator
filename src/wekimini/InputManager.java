@@ -110,7 +110,7 @@ public class InputManager {
         OSCInputGroup oldGroup = inputGroup;
         inputGroup = newG;
         
-            if (!oldGroup.getOscMessage().equals(newG.getOscMessage())) {
+            if (oldGroup == null || !oldGroup.getOscMessage().equals(newG.getOscMessage())) {
                 //Update OSC istener for new(?) message
                 addOSCInputListener();
             }
