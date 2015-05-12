@@ -5,7 +5,7 @@
  */
 package wekimini;
 
-import weka.core.Instances;
+import wekimini.osc.OSCOutput;
 
 /**
  *
@@ -23,5 +23,7 @@ public interface ModelBuilder {
     }  */
     
     public Model build(String name);
+    
+    public boolean isCompatible(OSCOutput o);
 
 }

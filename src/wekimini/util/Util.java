@@ -151,4 +151,14 @@ public class Util {
         System.out.println(checkAllUnique(s));
     }
 
+    //Requires a < b
+    //String array starts with a and goes up to (including) b
+    public static String[] numbersFromAtoBAsStrings(int a, int b) {
+        String[] s = new String[b-a + 1];
+        for (int i = 0; i <= (b-a); i++) {
+            s[i] = Integer.toString(a + i);
+        }
+        return s;
+    }
+    
 }

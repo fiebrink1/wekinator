@@ -6,6 +6,7 @@
 package wekimini;
 
 import weka.core.Instances;
+import wekimini.osc.OSCOutput;
 
 /**
  *
@@ -22,6 +23,11 @@ public class SimpleModelBuilder implements LearningModelBuilder {
     @Override
     public Model build(String name) {
         return new SimpleModel(name);
+    }
+
+    @Override
+    public boolean isCompatible(OSCOutput o) {
+        return true;
     }
     
 }

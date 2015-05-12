@@ -5,11 +5,15 @@
  */
 package wekimini;
 
+import java.beans.IndexedPropertyChangeEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import wekimini.osc.OSCOutput;
 import wekimini.util.WeakListenerSupport;
 
@@ -30,6 +34,9 @@ public class LearningManager {
     private double[] myComputedOutputs;
     private int trainingRound = 1;
     private int recordingRound = 1;
+    private final HashMap<String, Integer> inputNamesToIndices;
+    private final HashMap<Path, Integer> pathsToOutputIndices;
+    //private final HashMap<String, Integer> outputNamesToIndices;
     
     public static final String PROP_LEARNINGSTATE = "learningState";
     private LearningState learningState = LearningState.NOT_READY_TO_TRAIN;
@@ -123,7 +130,8 @@ public class LearningManager {
     
     public LearningManager(Wekinator w) {
         this.w = w;
-        
+        inputNamesToIndices = new HashMap<>();
+        pathsToOutputIndices = new HashMap<>();
         //TODO listen for changes in input names, # outputs or inputs, etc.
         w.getInputManager().addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -140,19 +148,44 @@ public class LearningManager {
                     outputGroupChanged(evt);
                 }
             }
-        });    
+        }); 
+        
+        w.getDataManager().addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                dataManagerPropertyChange(evt);
+            }  
+        });          
+    }
+    
+    
+    private void dataManagerPropertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName() == DataManager.PROP_NUMEXAMPLESPEROUTPUT) {
+            IndexedPropertyChangeEvent evt1 = (IndexedPropertyChangeEvent)evt;
+            int newVal = (Integer)evt1.getNewValue();
+            paths.get(evt1.getIndex()).notifyExamplesChanged(newVal);
+        }
     }
     
     //For now, assume only 1 path per output is allowed in system
-    
     public List<Path> getPaths() {
         return paths;
+    }
+    
+    private void initializeInputIndices(String[] inputNames) {
+        inputNamesToIndices.clear();
+        for (int i = 0; i < inputNames.length; i++) {
+            inputNamesToIndices.put(inputNames[i], i);
+        }
     }
     
     //Call when both Input and Output Managers are ready
     public void initializeInputsAndOutputs() {
         String[] inputNames = w.getInputManager().getInputNames();
+        initializeInputIndices(inputNames);
         int numOutputs = w.getOutputManager().getOutputGroup().getNumOutputs();
+      //  initializeOutputIndices(outputNames);
         w.getDataManager().initialize(inputNames, w.getOutputManager().getOutputGroup());
         pathRecordingMask = new boolean[numOutputs];
         pathRunningMask = new boolean[numOutputs];
@@ -172,16 +205,73 @@ public class LearningManager {
                 }
             };
             p.addPropertyChangeListener(wls.propertyChange(pChange));
+            p.addInputSelectionChangeListener(new ChangeListener() {
+
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    pathInputsChanged((Path)e.getSource());
+                }
+            });
+            pathsToOutputIndices.put(p, i);
             paths.add(p);
         }  
         setLearningState(LearningState.NOT_TRAINING);
     }
     
+    private void pathInputsChanged(Path p) {
+        Integer outputIndex = pathsToOutputIndices.get(p);
+        if (outputIndex == null) {
+            System.out.println("ERROR: path not found in pathInputsChanged");
+            return;
+        }
+        String[] inputs = p.getSelectedInputs();
+        int[] indices = convertInputNamesToIndices(inputs);
+        w.getDataManager().setInputIndicesForOutput(indices, outputIndex);
+    }
+    
+    private int[] convertInputNamesToIndices(String[] names) {
+        int[] indices = new int[names.length];
+        for (int i = 0; i < names.length; i++) {
+            Integer index = inputNamesToIndices.get(names[i]);
+            if (index == null) {
+                indices[i] = 0;
+                System.out.println("ERROR name " + names[i] + " not found");
+            } else {
+                indices[i] = index;
+            }
+        } 
+        return indices;
+    }
+    
+    private void pathRecordChanged(Path p) {
+        Integer index = pathsToOutputIndices.get(p);
+        if (index != null) {
+            pathRecordingMask[index] = p.isRecordEnabled();
+        } else {
+            System.out.println("ERROR : Null path in pathRecordChanged");
+        }
+    }
+    
+    private void pathRunChanged(Path p) {
+        Integer index = pathsToOutputIndices.get(p);
+        if (index != null) {
+            pathRunningMask[index] = p.isRunEnabled();
+        } else {
+            System.out.println("ERROR : Null path in pathRunChanged");
+        }
+    }
+    
+    //Called when modelState changed
     private void pathChanged(Path p, PropertyChangeEvent evt) {
+        if (evt.getPropertyName() == Path.PROP_RECORDENABLED) {
+            pathRecordChanged(p);
+        } else if (evt.getPropertyName() == Path.PROP_RUNENABLED) {
+            pathRunChanged(p);         
+        }
+
         //if (evt.getPropertyName() == Path.)
-        //TODO: Listen for path input selection change in order to change our Filter
         //TODO: listen for record/run enable change and update our Mask
-        System.out.println("Path changed for output: " + p.getOSCOutput().getName());
+        System.out.println("What do we do? Path changed for output: " + p.getOSCOutput().getName());
         
     }
     
@@ -210,11 +300,15 @@ public class LearningManager {
     public void buildModels(boolean trainMask[]) {
         for (int i = 0; i < trainMask.length; i++) {
             if (trainMask[i]) {
-                paths.get(i).buildModel(paths.get(i).getOSCOutput().getName() + "-" + trainingRound);
+                paths.get(i).buildModel(
+                        paths.get(i).getOSCOutput().getName() + "-" + trainingRound,
+                        w.getDataManager().getTrainingDataForOutput(i));
             }
         }
         trainingRound++;
     }
+    
+    //
     
     public void updateInputs(double[] inputs) {
         if (recordingState == RecordingState.RECORDING) {
@@ -226,11 +320,20 @@ public class LearningManager {
     }
     
     private void outputGroupChanged(PropertyChangeEvent evt) {
-        System.out.println("ERROR: LearningManager doesn't know how to handle this");
+        System.out.println("ERROR: LearningManager doesn't know how to handle this output group change");
     }
     
     private void inputGroupChanged(PropertyChangeEvent evt) {
-        System.out.println("ERROR: LearningManager doesn't know how to handle this");
+        System.out.println("ERROR: LearningManager doesn't know how to handle this input group change");
+    }
+    
+    public void deleteDataForPath(Path myPath) {
+        Integer whichPath = pathsToOutputIndices.get(myPath);
+        if (whichPath == null) {
+            System.out.println("ERROR: My Path not found in deleteDataForPath");
+            return;
+        }
+        w.getDataManager().setOutputMissingForAll(trainingRound);
     }
     
 }

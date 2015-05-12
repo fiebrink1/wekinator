@@ -9,6 +9,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.EventListenerList;
 import weka.core.Instances;
 import wekimini.osc.OSCOutput;
 
@@ -37,22 +40,73 @@ public class Path {
     //Then do computation for all
     //Then tell output manager to trigger for list of outputs all at once
     
+    protected EventListenerList listenerList = new EventListenerList();
+    private ChangeEvent changeEvent = null;
+
+    
     private Model model = null;
     private ModelBuilder modelBuilder = null;
     private final OSCOutput output;
     private String outputName;
     private final Wekinator w;
     private double outputValue;
-    private boolean readyToCompute = false;
-
     //
     private final List<String> inputNames;
-    private Instances myData;
+    private final LearningManager learningManager;
     
+    public static enum ModelState {NOT_READY, READY_FOR_BUILDING, BUILDING, BUILT, NEEDS_REBUILDING};
+    //private boolean hasData = false;
+    
+    private ModelState modelState = ModelState.NOT_READY;
+
+    public static final String PROP_MODELSTATE = "modelState";
+
+    private boolean recordEnabled = true;
+
+    public static final String PROP_RECORDENABLED = "recordEnabled";
+
+    private boolean runEnabled = true;
+
+    public static final String PROP_RUNENABLED = "runEnabled";
+
+    private int numExamples = 0;
+
+    public static final String PROP_NUMEXAMPLES = "numExamples";
 
 
+
+    
+    public String[] getSelectedInputs() {
+        return inputNames.toArray(new String[0]);
+    }
+    
+    public void setSelectedInputs(String[] s) {
+        String[] oldInputNames = inputNames.toArray(new String[0]);
+        boolean hasChanged = (s.length != inputNames.size());
+        
+        inputNames.clear();
+        for (int i= 0; i < s.length; i++) {
+            inputNames.add(s[i]);
+            
+            if (!hasChanged && !s[i].equals(oldInputNames[i])) {
+                hasChanged = true;
+            }
+        }
+        
+        if (hasChanged) {
+            fireInputSelectionChanged();
+        }
+        
+        if (hasChanged && modelState == ModelState.BUILT) {
+            setModelState(ModelState.NEEDS_REBUILDING);
+        }
+        
+    }
+    
+    
     public Path(OSCOutput output, String[] inputs, Wekinator w) {
         this.w = w;
+        this.learningManager = w.getLearningManager();
         //TODO want a better model name, unique-ish identifier (e.g. output name + version number)
         //this.model = new SimpleModel("model1");
         //this.modelBuilder = new ModelBuilder();
@@ -86,55 +140,36 @@ public class Path {
         //Best approach is to make in/out edit GUI make people be explicit about re-ordering / renaming, and then pass those on as specific event types.
     }
     
-    public void buildModel(String name) {
-        model = modelBuilder.build(name);
-    }
-    
-   /* public void setComputeTriggerAny() {
-        triggerType = ComputeTriggerType.ANY;
-        updateSchedulerRegistration();
-    }
-    
-    public void setComputeTriggerSelected(InputIdentifier selectedInput) {
-        triggerType = ComputeTriggerType.SELECTED;
-        selectedIdentifier = selectedInput;
-        updateSchedulerRegistration();
-    } */
-    
-    /*private void updateSchedulerRegistration() {
-        if (triggerType == ComputeTriggerType.ANY) {
-            for (InputIdentifier in : inputIdentifiers) {
-                w.getScheduler().registerPathForInputGroup(this, in.groupName);
+    //Learning manager must call this
+    //TODO: Have to be very careful here if model is in process of training... disallow certain operations!
+    public void notifyExamplesChanged(int numExamples) {
+        setNumExamples(numExamples);
+       // this.numExamples = numExamples;
+       // hasData = (numExamples > 0);
+        
+        if (modelState == ModelState.NOT_READY) {
+            if (numExamples > 0) {
+                setModelState(ModelState.READY_FOR_BUILDING);
             }
-        } else {
-            for (InputIdentifier in : inputIdentifiers) {
-                boolean found = false;
-                if (in.equals(selectedIdentifier)) {
-                    found = true;
-                    w.getScheduler().registerPathForInputGroup(this, in.groupName);
-                } else {
-                    w.getScheduler().unregisterPathForInputGroup(this, in.groupName);
-                }
-                if (! found) {
-                    System.out.println("ERROR in Path: selected identifier " + selectedIdentifier + " not a valid group!");
-                }
+        } else if (modelState == ModelState.READY_FOR_BUILDING) {
+            if (numExamples == 0) {
+                setModelState(ModelState.NOT_READY);
             }
+        } else if (modelState == ModelState.BUILT) {
+            setModelState(ModelState.NEEDS_REBUILDING);
         }
-    } */
-        /**
-     * Get the value of outputValue
-     * If we keep this pull and not push direct to OutputManager, 
-     * makes it possible to have multiple Paths active in parallel 
-     * (e.g. alternative candidate models)
-     * Alternatively, trigger event when new value is computed, and output
-     * manager can organise listeners to the appropriate events.
-     * (Probably want to advertise to listeners anyway)
-     *
-     * @return the value of outputValue
-     */
-   /* public double getOutputValue() {
-        return outputValue;
-    } */
+    }
+    
+    //TODO: do this in separate thread, get callback when done
+    public void buildModel(String name, Instances i) {
+        setModelState(ModelState.BUILDING);
+        if (modelBuilder instanceof LearningModelBuilder) {
+            ((LearningModelBuilder)modelBuilder).setTrainingExamples(i);
+        }
+        model = modelBuilder.build(name);
+        setModelState(ModelState.BUILT);
+
+    }
 
     /**
      * Set the value of outputValue
@@ -189,4 +224,107 @@ public class Path {
         //TODO: Remove all of my listeners
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    /**
+     * Get the value of modelState
+     *
+     * @return the value of modelState
+     */
+    public ModelState getModelState() {
+        return modelState;
+    }
+
+    /**
+     * Set the value of modelState
+     *
+     * @param modelState new value of modelState
+     */
+    public void setModelState(ModelState modelState) {
+        ModelState oldModelState = this.modelState;
+        this.modelState = modelState;
+        propertyChangeSupport.firePropertyChange(PROP_MODELSTATE, oldModelState, modelState);
+    }
+    
+    public void addInputSelectionChangeListener(ChangeListener l) {
+        listenerList.add(ChangeListener.class, l);
+    }
+
+    public void removeInputSelectionChangeListener(ChangeListener l) {
+        listenerList.remove(ChangeListener.class, l);
+    }
+    
+    private void fireInputSelectionChanged() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -=2 ) {
+            if (listeners[i] == ChangeListener.class) {
+                if (changeEvent == null) {
+                    changeEvent = new ChangeEvent(this);
+                }
+                ((ChangeListener)listeners[i+1]).stateChanged(changeEvent);
+            }
+        }
+    }
+    
+
+        /**
+     * Get the value of recordEnabled
+     *
+     * @return the value of recordEnabled
+     */
+    public boolean isRecordEnabled() {
+        return recordEnabled;
+    }
+
+    /**
+     * Set the value of recordEnabled
+     *
+     * @param recordEnabled new value of recordEnabled
+     */
+    public void setRecordEnabled(boolean recordEnabled) {
+        boolean oldRecordEnabled = this.recordEnabled;
+        this.recordEnabled = recordEnabled;
+        propertyChangeSupport.firePropertyChange(PROP_RECORDENABLED, oldRecordEnabled, recordEnabled);
+    }
+    
+        /**
+     * Get the value of runEnabled
+     *
+     * @return the value of runEnabled
+     */
+    public boolean isRunEnabled() {
+        return runEnabled;
+    }
+
+    /**
+     * Set the value of runEnabled
+     *
+     * @param runEnabled new value of runEnabled
+     */
+    public void setRunEnabled(boolean runEnabled) {
+        boolean oldRunEnabled = this.runEnabled;
+        this.runEnabled = runEnabled;
+        propertyChangeSupport.firePropertyChange(PROP_RUNENABLED, oldRunEnabled, runEnabled);
+    }
+    
+        /**
+     * Get the value of numExamples
+     *
+     * @return the value of numExamples
+     */
+    public int getNumExamples() {
+        return numExamples;
+    }
+
+    /**
+     * Set the value of numExamples
+     *
+     * @param numExamples new value of numExamples
+     */
+    private void setNumExamples(int numExamples) {
+        int oldNumExamples = this.numExamples;
+        this.numExamples = numExamples;
+        propertyChangeSupport.firePropertyChange(PROP_NUMEXAMPLES, oldNumExamples, numExamples);
+    }
+
+
 }

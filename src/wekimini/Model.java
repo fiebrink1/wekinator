@@ -5,6 +5,8 @@
  */
 package wekimini;
 
+import wekimini.osc.OSCOutput;
+
 /**
  *
  * @author rebecca
@@ -16,6 +18,8 @@ public interface Model {
     public double computeOutput(double[] inputs);
     
     public String getUniqueIdentifier();
+    
+    public boolean isCompatible(OSCOutput o);
     
     
 }

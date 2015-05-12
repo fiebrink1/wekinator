@@ -37,7 +37,7 @@ public class DataManager {
     private ChangeEvent changeEvent = null;
 
     private final Wekinator w;
-    private int[] outputInstanceCounts;
+  //  private int[] outputInstanceCounts;
     private Filter[] outputFilters;
     private boolean isInitialized = false;
     private OSCOutputGroup outputGroup;
@@ -63,6 +63,52 @@ public class DataManager {
 
     public static final String PROP_HASINSTANCES = "hasInstances";
 
+    private int[] numExamplesPerOutput;
+
+    public static final String PROP_NUMEXAMPLESPEROUTPUT = "numExamplesPerOutput";
+
+    /**
+     * Get the value of numExamplesPerOutput
+     *
+     * @return the value of numExamplesPerOutput
+     */
+    public int[] getNumExamplesPerOutput() {
+        return numExamplesPerOutput;
+    }
+
+    /**
+     * Set the value of numEamplesPerOutput
+     *
+     * @param numExamplesPerOutput new value of numExamplesPerOutput
+     */
+    public void setNumExamplesPerOutput(int[] numExamplesPerOutput) {
+        int[] oldNumExamplesPerOutput = this.numExamplesPerOutput;
+        this.numExamplesPerOutput = numExamplesPerOutput;
+        propertyChangeSupport.firePropertyChange(PROP_NUMEXAMPLESPEROUTPUT, oldNumExamplesPerOutput, numExamplesPerOutput);
+    }
+
+    /**
+     * Get the value of numEamplesPerOutput at specified index
+     *
+     * @param index the index of numEamplesPerOutput
+     * @return the value of numEamplesPerOutput at specified index
+     */
+    public int getNumExamplesPerOutput(int index) {
+        return this.numExamplesPerOutput[index];
+    }
+
+    /**
+     * Set the value of numEamplesPerOutput at specified index.
+     *
+     * @param index the index of numEamplesPerOutput
+     * @param numEamplesPerOutput new value of numEamplesPerOutput at specified
+     * index
+     */
+    public void setNumExamplesPerOutput(int index, int numEamplesPerOutput) {
+        int oldNumEamplesPerOutput = this.numExamplesPerOutput[index];
+        this.numExamplesPerOutput[index] = numEamplesPerOutput;
+        propertyChangeSupport.fireIndexedPropertyChange(PROP_NUMEXAMPLESPEROUTPUT, index, oldNumEamplesPerOutput, numEamplesPerOutput);
+    }
 
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -152,7 +198,8 @@ public class DataManager {
             if (!recordingMask[i]) {
                 in.setMissing(numMetaData + numInputs + i);
             } else {
-                outputInstanceCounts[i]++;
+                setNumExamplesPerOutput(i, getNumExamplesPerOutput(i)+1);
+               // outputInstanceCounts[i]++;
             }
         }
         in.setDataset(allInstances);
@@ -203,7 +250,7 @@ public class DataManager {
                 //Create fastVector w/ possible
                 FastVector classes = new FastVector(numOutputs);
                 for (int val = 0; val < numClasses[i]; val++) {
-                    classes.addElement((new Integer(val)).toString());
+                    classes.addElement((new Integer(val+1)).toString()); //Values 1 to numClasses
                 }
                 ff.addElement(new Attribute(outputNames[i], classes));
 
@@ -329,9 +376,9 @@ public class DataManager {
         return allInstances.numInstances();
     }
     
-    public int getNumInstancesForOutput(int which) {
+    /*public int getNumInstancesForOutput(int which) {
         return outputInstanceCounts[which];
-    }
+    } */
     
     public boolean deleteTrainingRound(int which) {
         if (allInstances.numInstances() > 0) {
@@ -340,7 +387,8 @@ public class DataManager {
                 if (allInstances.instance(i).value(trainingIndex) == r) {
                     for (int j = 0; j < numOutputs; j++) {
                         if (! allInstances.instance(i).isMissing(numMetaData + numInputs + j)) {
-                            outputInstanceCounts[j]--; //TODO: Test this
+                            setNumExamplesPerOutput(j, getNumExamplesPerOutput(j)-1);
+                            //soutputInstanceCounts[j]--; //TODO: Test this
                         }
                     }
                     allInstances.delete(i);    
@@ -359,11 +407,12 @@ public class DataManager {
     public void deleteAll() {
         setHasInstances(false);
         for (int i = 0; i < numOutputs; i++) {
-            outputInstanceCounts[i] = 0;
+            setNumExamplesPerOutput(i, 0);
+           // outputInstanceCounts[i] = 0;
         }
         fireStateChanged();
     }
-    
+   
     public void exportAsArffFile(String filename) throws IOException {
         writeInstancesToArff(new File(filename));
     }
@@ -376,6 +425,8 @@ public class DataManager {
         if (i == null) {
             return;
         }
+        
+        boolean changesNumberOfInstances = i.isMissing(numMetaData + numInputs + whichOutput);
 
         if (isDiscrete[whichOutput]) {
             int v = (int) val;
@@ -390,13 +441,29 @@ public class DataManager {
             //TODO insert error checking / range limiting for this version!
             i.setValue(numMetaData + numInputs + whichOutput, val);
         }
+        if (changesNumberOfInstances) {
+            setNumExamplesPerOutput(index, getNumExamplesPerOutput(index)+1);
+        }
     }
     
     public void setOutputMissing(int index, int outputNum) {
         //if (paramNum >= 0 && paramNum < numParams) {
             Instance i = allInstances.instance(index);
-            i.setMissing(numMetaData + numInputs + outputNum);
+            if (! i.isMissing(numMetaData + numInputs + outputNum)) {
+                i.setMissing(numMetaData + numInputs + outputNum);
+                setNumExamplesPerOutput(index, getNumExamplesPerOutput(index)-1);
+            }
+            
+            //Need to recompute numOutputs!
         //}
+    }
+    
+    public void setOutputMissingForAll(int outputNum) {
+        for (int i = 0; i < allInstances.numInstances(); i++) {
+            Instance in = allInstances.instance(i);
+            in.setMissing(numMetaData + numInputs + outputNum);
+        }
+        setNumExamplesPerOutput(outputNum, 0);
     }
     
     public boolean isOutputMissing(int index, int outputNum) {

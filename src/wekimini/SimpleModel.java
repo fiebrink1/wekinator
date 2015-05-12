@@ -6,6 +6,7 @@
 package wekimini;
 
 import java.util.Date;
+import wekimini.osc.OSCOutput;
 
 /**
  *
@@ -43,6 +44,11 @@ public class SimpleModel implements Model {
     @Override
     public String getPrettyName() {
         return prettyName;
+    }
+
+    @Override
+    public boolean isCompatible(OSCOutput o) {
+        return true;
     }
 
    
