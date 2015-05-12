@@ -85,12 +85,12 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         initComponents();
     }
 
-    public SimpleLearningRow(String name, Wekinator w, Path p) {
+    public SimpleLearningRow(Wekinator w, Path p) {
         initComponents();
         this.w = w;
         myPath = p;
-        modelName = name;
-        labelModelName.setText(modelName);
+        modelName = p.getCurrentModelName();
+        labelModelName.setText(p.getCurrentModelName());
         initForPath();
     }
 
@@ -159,11 +159,16 @@ public class SimpleLearningRow extends javax.swing.JPanel {
                     updateRunEnabled(myPath.isRunEnabled());
                 } else if (evt.getPropertyName() == Path.PROP_MODELSTATE) {
                     updateModelState(myPath.getModelState());
+                } else if (evt.getPropertyName() == Path.PROP_CURRENTMODELNAME) {
+                    updateModelName(myPath.getCurrentModelName());
                 }
             }
         });
     }
-
+    private void updateModelName(String name) {
+        labelModelName.setText(name);
+    }
+    
     private void updateModelState(Path.ModelState modelState) {
         Color c;
         if (modelState == ModelState.NOT_READY || modelState == ModelState.READY_FOR_BUILDING) {
@@ -240,6 +245,24 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         sliderModelValue.setValue((int) (value * sliderScale));
     }
 
+    public void setSelected(boolean s) {
+        checkbox1.setSelected(s);
+    }
+    
+    public void setRecordEnabled(boolean e) {
+        toggleLearnerRecord.setSelected(e);
+        myPath.setRecordEnabled(e);
+    }
+    
+    public void setRunEnabled(boolean e) {
+        toggleLearnerPlay.setSelected(e);
+        myPath.setRunEnabled(e);
+    }
+    
+    public boolean isSelected() {
+        return checkbox1.isSelected();
+    }
+    
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -252,7 +275,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
                     OSCNumericOutput no = new OSCNumericOutput("model1", 5, 10, OSCNumericOutput.NumericOutputType.REAL, OSCNumericOutput.LimitType.HARD);
                     String[] names = new String[]{"abc", "def"};
                     Path p = new Path(no, names, w);
-                    SimpleLearningRow r = new SimpleLearningRow("test", w, p);
+                    SimpleLearningRow r = new SimpleLearningRow(w, p);
                     f.add(r);
                     f.setVisible(true);
                 } catch (IOException ex) {
@@ -294,11 +317,12 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         textModelValue = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(255, 255, 255));
-        setMaximumSize(new java.awt.Dimension(540, 74));
-        setMinimumSize(new java.awt.Dimension(540, 74));
+        setMaximumSize(new java.awt.Dimension(568, 74));
+        setMinimumSize(new java.awt.Dimension(568, 74));
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setMaximumSize(new java.awt.Dimension(28, 74));
 
         checkbox1.setBackground(new java.awt.Color(255, 255, 255));
         checkbox1.setAlignmentY(0.0F);
@@ -313,14 +337,14 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(checkbox1, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
+            .addComponent(checkbox1, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
         );
 
         add(jPanel1);
 
         panelMain.setBackground(new java.awt.Color(0, 204, 255));
         panelMain.setMaximumSize(new java.awt.Dimension(540, 70));
-        panelMain.setPreferredSize(new java.awt.Dimension(540, 74));
+        panelMain.setPreferredSize(new java.awt.Dimension(540, 70));
         panelMain.setSize(new java.awt.Dimension(540, 70));
 
         labelModelName.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
@@ -341,6 +365,10 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         buttonDeleteLearnerExamples.setBackground(new java.awt.Color(255, 255, 255));
         buttonDeleteLearnerExamples.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         buttonDeleteLearnerExamples.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/x2.png"))); // NOI18N
+        buttonDeleteLearnerExamples.setMaximumSize(new java.awt.Dimension(31, 32));
+        buttonDeleteLearnerExamples.setMinimumSize(new java.awt.Dimension(31, 32));
+        buttonDeleteLearnerExamples.setPreferredSize(new java.awt.Dimension(31, 32));
+        buttonDeleteLearnerExamples.setSize(new java.awt.Dimension(30, 30));
         buttonDeleteLearnerExamples.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonDeleteLearnerExamplesActionPerformed(evt);
@@ -362,6 +390,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
 
         toggleLearnerRecord.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/record1.png"))); // NOI18N
         toggleLearnerRecord.setSelected(true);
+        toggleLearnerRecord.setSize(new java.awt.Dimension(30, 30));
         toggleLearnerRecord.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 toggleLearnerRecordActionPerformed(evt);
@@ -581,7 +610,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     }//GEN-LAST:event_toggleLearnerPlayActionPerformed
 
     private void buttonDeleteLearnerExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLearnerExamplesActionPerformed
-        w.getLearningManager().deleteDataForPath(myPath);
+        w.getLearningManager().deleteExamplesForPath(myPath);
     }//GEN-LAST:event_buttonDeleteLearnerExamplesActionPerformed
 
     private void buttonEditLearnerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditLearnerActionPerformed

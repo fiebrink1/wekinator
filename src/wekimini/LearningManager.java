@@ -327,13 +327,17 @@ public class LearningManager {
         System.out.println("ERROR: LearningManager doesn't know how to handle this input group change");
     }
     
-    public void deleteDataForPath(Path myPath) {
+    public void deleteExamplesForPath(Path myPath) {
         Integer whichPath = pathsToOutputIndices.get(myPath);
         if (whichPath == null) {
             System.out.println("ERROR: My Path not found in deleteDataForPath");
             return;
         }
         w.getDataManager().setOutputMissingForAll(trainingRound);
+    }
+    
+    public void deleteAllExamples() {
+        w.getDataManager().deleteAll();
     }
     
 }

@@ -176,6 +176,16 @@ public class OutputManager {
         }
     }
 
+    public void randomizeAllOutputs() {
+        double randoms[] = new double[outputGroup.getNumOutputs()];
+        //Assumes we'll never need to make a distinction between outputs that are computed vs those that are randomly generated
+        for (int i= 0; i < outputGroup.getNumOutputs(); i++) {
+            double r= outputGroup.getOutput(i).generateRandomValue();
+            randoms[i] = r;
+        }
+        setNewComputedValues(randoms);
+    }
+    
     //Notifies listeners that we've got a new OSC-received output vector
     private void notifyValueReceivedListeners(double[] data) {
         for (OutputValueListener l : valueReceivedListeners) {

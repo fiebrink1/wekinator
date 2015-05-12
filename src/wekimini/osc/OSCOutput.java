@@ -17,4 +17,6 @@ public interface OSCOutput {
     
     public String getName();
 
+    public double generateRandomValue();
+
 }

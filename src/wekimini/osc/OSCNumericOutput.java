@@ -3,6 +3,7 @@
  */
 package wekimini.osc;
 
+import java.util.Random;
 import wekimini.util.Util;
 
 /**
@@ -19,6 +20,7 @@ public class OSCNumericOutput implements OSCOutput {
     private final LimitType limitType;
     //Issue: need to figure out how to handle outputGroup in XML; most likely don't want to store it explicitly
     private OSCOutputGroup outputGroup = null;
+    
     
     //ID must be unique
     public OSCNumericOutput(String name, 
@@ -81,4 +83,15 @@ public class OSCNumericOutput implements OSCOutput {
         return Util.toXMLString(this, "OSCNumericOutput", OSCNumericOutput.class);
     }
 
+    //TODO: test this!
+    @Override
+    public double generateRandomValue() {
+        if (outputType == NumericOutputType.INTEGER) {
+           Random r = new Random();
+           int i = r.nextInt((int)(max - min) + 1);
+           return min + i;
+        } else {
+            return Math.random() * (max - min) + min;
+        }
+    }
 }

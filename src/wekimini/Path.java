@@ -73,9 +73,12 @@ public class Path {
 
     public static final String PROP_NUMEXAMPLES = "numExamples";
 
+        private String currentModelName = "model";
+
+    public static final String PROP_CURRENTMODELNAME = "currentModelName";
 
 
-    
+
     public String[] getSelectedInputs() {
         return inputNames.toArray(new String[0]);
     }
@@ -324,6 +327,26 @@ public class Path {
         int oldNumExamples = this.numExamples;
         this.numExamples = numExamples;
         propertyChangeSupport.firePropertyChange(PROP_NUMEXAMPLES, oldNumExamples, numExamples);
+    }
+    
+    /**
+     * Get the value of currentModelName
+     *
+     * @return the value of currentModelName
+     */
+    public String getCurrentModelName() {
+        return currentModelName;
+    }
+
+    /**
+     * Set the value of currentModelName
+     *
+     * @param currentModelName new value of currentModelName
+     */
+    public void setCurrentModelName(String currentModelName) {
+        String oldCurrentModelName = this.currentModelName;
+        this.currentModelName = currentModelName;
+        propertyChangeSupport.firePropertyChange(PROP_CURRENTMODELNAME, oldCurrentModelName, currentModelName);
     }
 
 

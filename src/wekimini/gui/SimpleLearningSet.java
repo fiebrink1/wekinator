@@ -6,19 +6,79 @@
 
 package wekimini.gui;
 
+import java.util.LinkedList;
+import java.util.List;
+import javax.swing.JScrollBar;
+import wekimini.OutputManager;
+import wekimini.Path;
+import wekimini.Wekinator;
+
 /**
  *
  * @author fiebrink
  */
 public class SimpleLearningSet extends javax.swing.JPanel {
-
+    private Wekinator w;
+    private List<Path> paths;
+    private List<SimpleLearningRow> pathPanels;
+    
     /**
      * Creates new form LearningSet1
      */
     public SimpleLearningSet() {
         initComponents();
     }
+    
+    public SimpleLearningSet(Wekinator w, Path[] ps, String[] modelNames) {
+        initComponents();
+        this.w = w;
+        paths = new LinkedList<>();
+        pathPanels = new LinkedList<>();
+        for (int i = 0; i < ps.length; i++) {
+            paths.add(ps[i]);
+        }
+        addPathsToGUI();
+        w.getOutputManager().addOutputGroupComputedListener(new OutputManager.OutputValueListener() {
 
+            @Override
+            public void update(double[] vals) {
+                outputValuesComputed(vals);
+            }
+        });
+        w.getOutputManager().addOutputValueReceivedListener(new OutputManager.OutputValueListener() {
+
+            @Override
+            public void update(double[] vals) {
+                outputValuesReceived(vals);
+            }
+        });
+    }
+    
+    //Assumes that ordering of outputs is never going to change; don't have to look up anything or refer to LearningManager.
+    private void outputValuesComputed(double[] vals) {
+        for (int i = 0; i < vals.length; i++) {
+            pathPanels.get(i).setValue(vals[i]);
+        }
+    }
+    
+    private void outputValuesReceived(double[] vals) {
+        for (int i = 0; i < vals.length; i++) {
+            pathPanels.get(i).setValue(vals[i]);
+        }
+    }
+
+    private void addPathsToGUI() {
+        pathsPanel.removeAll();
+        for (int i = 0; i < paths.size(); i++) {
+            SimpleLearningRow r = new SimpleLearningRow(w, paths.get(i));
+            pathPanels.add(r);
+            pathsPanel.add(r);
+        }
+        
+        pathsPanel.revalidate();
+        scrollPathsPanel.validate();
+        repaint();  
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -30,41 +90,43 @@ public class SimpleLearningSet extends javax.swing.JPanel {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        selectAllCheckbox = new javax.swing.JCheckBox();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        buttonRandomize = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        buttonDeleteAllExamples = new javax.swing.JButton();
+        buttonViewExamples = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jToggleButton2 = new javax.swing.JToggleButton();
+        toggleRecordAll = new javax.swing.JToggleButton();
+        toggleRunAll = new javax.swing.JToggleButton();
         jButton3 = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
-        simpleLearningRow5 = new wekimini.gui.SimpleLearningRow();
-        simpleLearningRow4 = new wekimini.gui.SimpleLearningRow();
+        scrollPathsPanel = new javax.swing.JScrollPane();
+        pathsPanel = new javax.swing.JPanel();
         simpleLearningRow3 = new wekimini.gui.SimpleLearningRow();
-        simpleLearningRow2 = new wekimini.gui.SimpleLearningRow();
-        simpleLearningRow1 = new wekimini.gui.SimpleLearningRow();
+        simpleLearningRow4 = new wekimini.gui.SimpleLearningRow();
+        simpleLearningRow9 = new wekimini.gui.SimpleLearningRow();
+        simpleLearningRow10 = new wekimini.gui.SimpleLearningRow();
+        simpleLearningRow11 = new wekimini.gui.SimpleLearningRow();
 
-        setPreferredSize(new java.awt.Dimension(540, 348));
-        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
+        setMinimumSize(new java.awt.Dimension(580, 0));
+        setPreferredSize(new java.awt.Dimension(580, 348));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
-        jCheckBox1.setAlignmentX(0.5F);
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+        selectAllCheckbox.setAlignmentX(0.5F);
+        selectAllCheckbox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
+                selectAllCheckboxActionPerformed(evt);
             }
         });
 
@@ -81,7 +143,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jCheckBox1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(selectAllCheckbox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
@@ -95,7 +157,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
                 .addGap(0, 0, 0)
                 .addComponent(jLabel6)
                 .addGap(0, 0, 0)
-                .addComponent(jCheckBox1))
+                .addComponent(selectAllCheckbox))
         );
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
@@ -108,14 +170,15 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 12, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jLabel1))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addGap(16, 16, 16))
         );
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
@@ -123,12 +186,12 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         jLabel2.setText("Values");
         jLabel2.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
-        jButton2.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        jButton2.setText("randomize");
-        jButton2.setSize(new java.awt.Dimension(97, 30));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        buttonRandomize.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+        buttonRandomize.setText("randomize");
+        buttonRandomize.setSize(new java.awt.Dimension(97, 30));
+        buttonRandomize.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                buttonRandomizeActionPerformed(evt);
             }
         });
 
@@ -139,7 +202,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(buttonRandomize, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(0, 10, Short.MAX_VALUE)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -150,7 +213,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(buttonRandomize, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -159,13 +222,23 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         jLabel3.setText("Examples");
         jLabel3.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
-        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/x2.png"))); // NOI18N
-        jButton4.setPreferredSize(new java.awt.Dimension(34, 34));
+        buttonDeleteAllExamples.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/x2.png"))); // NOI18N
+        buttonDeleteAllExamples.setPreferredSize(new java.awt.Dimension(34, 34));
+        buttonDeleteAllExamples.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonDeleteAllExamplesActionPerformed(evt);
+            }
+        });
 
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/mag2.png"))); // NOI18N
-        jButton5.setMaximumSize(new java.awt.Dimension(30, 34));
-        jButton5.setName(""); // NOI18N
-        jButton5.setPreferredSize(new java.awt.Dimension(34, 34));
+        buttonViewExamples.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/mag2.png"))); // NOI18N
+        buttonViewExamples.setMaximumSize(new java.awt.Dimension(30, 34));
+        buttonViewExamples.setName(""); // NOI18N
+        buttonViewExamples.setPreferredSize(new java.awt.Dimension(34, 34));
+        buttonViewExamples.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonViewExamplesActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -175,9 +248,9 @@ public class SimpleLearningSet extends javax.swing.JPanel {
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 14, Short.MAX_VALUE))
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(buttonViewExamples, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(buttonDeleteAllExamples, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
@@ -186,8 +259,8 @@ public class SimpleLearningSet extends javax.swing.JPanel {
                 .addComponent(jLabel3)
                 .addGap(0, 0, 0)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(buttonDeleteAllExamples, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buttonViewExamples, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0))
         );
 
@@ -196,16 +269,21 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         jLabel4.setText("Configure");
         jLabel4.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
-        jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/record1.png"))); // NOI18N
-        jToggleButton1.setSelected(true);
-        jToggleButton1.setPreferredSize(new java.awt.Dimension(30, 34));
-
-        jToggleButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/play.png"))); // NOI18N
-        jToggleButton2.setSelected(true);
-        jToggleButton2.setPreferredSize(new java.awt.Dimension(30, 34));
-        jToggleButton2.addActionListener(new java.awt.event.ActionListener() {
+        toggleRecordAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/record1.png"))); // NOI18N
+        toggleRecordAll.setSelected(true);
+        toggleRecordAll.setPreferredSize(new java.awt.Dimension(30, 34));
+        toggleRecordAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButton2ActionPerformed(evt);
+                toggleRecordAllActionPerformed(evt);
+            }
+        });
+
+        toggleRunAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/play.png"))); // NOI18N
+        toggleRunAll.setSelected(true);
+        toggleRunAll.setPreferredSize(new java.awt.Dimension(30, 34));
+        toggleRunAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toggleRunAllActionPerformed(evt);
             }
         });
 
@@ -213,6 +291,11 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         jButton3.setMaximumSize(new java.awt.Dimension(30, 34));
         jButton3.setName(""); // NOI18N
         jButton3.setPreferredSize(new java.awt.Dimension(34, 34));
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -222,12 +305,12 @@ public class SimpleLearningSet extends javax.swing.JPanel {
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(toggleRecordAll, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
-                        .addComponent(jToggleButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(toggleRunAll, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(62, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -236,8 +319,8 @@ public class SimpleLearningSet extends javax.swing.JPanel {
                 .addGap(0, 0, 0)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jToggleButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(toggleRecordAll, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(toggleRunAll, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
@@ -266,37 +349,109 @@ public class SimpleLearningSet extends javax.swing.JPanel {
                 .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        add(jPanel1);
-
         jSeparator1.setBackground(new java.awt.Color(255, 255, 255));
         jSeparator1.setForeground(new java.awt.Color(0, 0, 0));
-        add(jSeparator1);
-        add(simpleLearningRow5);
-        add(simpleLearningRow4);
-        add(simpleLearningRow3);
-        add(simpleLearningRow2);
-        add(simpleLearningRow1);
+
+        scrollPathsPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPathsPanel.setMaximumSize(new java.awt.Dimension(578, 32767));
+        scrollPathsPanel.setMinimumSize(new java.awt.Dimension(578, 23));
+        scrollPathsPanel.setPreferredSize(new java.awt.Dimension(588, 374));
+
+        pathsPanel.setBackground(new java.awt.Color(255, 255, 255));
+        pathsPanel.setLayout(new javax.swing.BoxLayout(pathsPanel, javax.swing.BoxLayout.Y_AXIS));
+
+        simpleLearningRow3.setAlignmentY(0.5F);
+        simpleLearningRow3.setMaximumSize(new java.awt.Dimension(568, 74));
+        simpleLearningRow3.setMinimumSize(new java.awt.Dimension(568, 74));
+        simpleLearningRow3.setPreferredSize(new java.awt.Dimension(568, 74));
+        pathsPanel.add(simpleLearningRow3);
+
+        simpleLearningRow4.setAlignmentY(0.5F);
+        simpleLearningRow4.setMaximumSize(new java.awt.Dimension(568, 74));
+        simpleLearningRow4.setMinimumSize(new java.awt.Dimension(568, 74));
+        simpleLearningRow4.setPreferredSize(new java.awt.Dimension(568, 74));
+        pathsPanel.add(simpleLearningRow4);
+
+        simpleLearningRow9.setAlignmentY(0.5F);
+        simpleLearningRow9.setMaximumSize(new java.awt.Dimension(568, 74));
+        simpleLearningRow9.setMinimumSize(new java.awt.Dimension(568, 74));
+        simpleLearningRow9.setPreferredSize(new java.awt.Dimension(568, 74));
+        pathsPanel.add(simpleLearningRow9);
+
+        simpleLearningRow10.setAlignmentY(0.5F);
+        simpleLearningRow10.setMaximumSize(new java.awt.Dimension(568, 74));
+        simpleLearningRow10.setMinimumSize(new java.awt.Dimension(568, 74));
+        simpleLearningRow10.setPreferredSize(new java.awt.Dimension(568, 74));
+        pathsPanel.add(simpleLearningRow10);
+
+        simpleLearningRow11.setAlignmentY(0.5F);
+        simpleLearningRow11.setMaximumSize(new java.awt.Dimension(568, 74));
+        simpleLearningRow11.setMinimumSize(new java.awt.Dimension(568, 74));
+        simpleLearningRow11.setPreferredSize(new java.awt.Dimension(568, 74));
+        pathsPanel.add(simpleLearningRow11);
+
+        scrollPathsPanel.setViewportView(pathsPanel);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(scrollPathsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(scrollPathsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE))
+        );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void buttonRandomizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRandomizeActionPerformed
+        w.getOutputManager().randomizeAllOutputs();
+    }//GEN-LAST:event_buttonRandomizeActionPerformed
 
-    private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jToggleButton2ActionPerformed
+    private void toggleRunAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleRunAllActionPerformed
+        boolean selected = toggleRunAll.isSelected();
+        for (SimpleLearningRow r : pathPanels) {
+           r.setRunEnabled(selected);
+       } 
+    }//GEN-LAST:event_toggleRunAllActionPerformed
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
+    private void selectAllCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllCheckboxActionPerformed
+       boolean selected = selectAllCheckbox.isSelected();
+        for (SimpleLearningRow r : pathPanels) {
+           r.setSelected(selected);
+       }
+        
+    }//GEN-LAST:event_selectAllCheckboxActionPerformed
+
+    private void buttonViewExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonViewExamplesActionPerformed
+        w.getMainGUI().showExamplesViewer();
+    }//GEN-LAST:event_buttonViewExamplesActionPerformed
+
+    private void buttonDeleteAllExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteAllExamplesActionPerformed
+        w.getLearningManager().deleteAllExamples();
+    }//GEN-LAST:event_buttonDeleteAllExamplesActionPerformed
+
+    private void toggleRecordAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleRecordAllActionPerformed
+        boolean selected = toggleRecordAll.isSelected();
+        for (SimpleLearningRow r : pathPanels) {
+           r.setRecordEnabled(selected);
+       }
+    }//GEN-LAST:event_toggleRecordAllActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        System.out.println("ERROR: Save not implemented yet!");
+    }//GEN-LAST:event_jButton3ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton buttonDeleteAllExamples;
+    private javax.swing.JButton buttonRandomize;
+    private javax.swing.JButton buttonViewExamples;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -310,12 +465,15 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JToggleButton jToggleButton1;
-    private javax.swing.JToggleButton jToggleButton2;
-    private wekimini.gui.SimpleLearningRow simpleLearningRow1;
-    private wekimini.gui.SimpleLearningRow simpleLearningRow2;
+    private javax.swing.JPanel pathsPanel;
+    private javax.swing.JScrollPane scrollPathsPanel;
+    private javax.swing.JCheckBox selectAllCheckbox;
+    private wekimini.gui.SimpleLearningRow simpleLearningRow10;
+    private wekimini.gui.SimpleLearningRow simpleLearningRow11;
     private wekimini.gui.SimpleLearningRow simpleLearningRow3;
     private wekimini.gui.SimpleLearningRow simpleLearningRow4;
-    private wekimini.gui.SimpleLearningRow simpleLearningRow5;
+    private wekimini.gui.SimpleLearningRow simpleLearningRow9;
+    private javax.swing.JToggleButton toggleRecordAll;
+    private javax.swing.JToggleButton toggleRunAll;
     // End of variables declaration//GEN-END:variables
 }
