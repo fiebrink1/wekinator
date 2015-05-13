@@ -68,9 +68,9 @@
               <Component id="jSeparator1" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="85" max="32767" attributes="0"/>
               </Group>
-              <Component id="simpleLearningSet1" alignment="0" pref="400" max="32767" attributes="0"/>
+              <Component id="simpleLearningSet1" alignment="0" pref="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>

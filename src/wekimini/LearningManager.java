@@ -33,7 +33,7 @@ public class LearningManager {
     private boolean[] pathRunningMask;
     private double[] myComputedOutputs;
     private int trainingRound = 1;
-    private int recordingRound = 1;
+    private int recordingRound = 0;
     private final HashMap<String, Integer> inputNamesToIndices;
     private final HashMap<Path, Integer> pathsToOutputIndices;
     //private final HashMap<String, Integer> outputNamesToIndices;
@@ -68,6 +68,7 @@ public class LearningManager {
     }
 
     public void startRecording() {
+        recordingRound++;
         setRecordingState(RecordingState.RECORDING);
     }
     
@@ -350,6 +351,11 @@ public class LearningManager {
             return;
         }
         w.getDataManager().setOutputMissingForAll(trainingRound);
+    }
+    
+    //Currently coming from Path GUI (row)
+    public void setOutputValueForPath(double value, Path p) {
+        w.getOutputManager().setNewValueFromGUI(pathsToOutputIndices.get(p), value);
     }
     
     public void deleteAllExamples() {

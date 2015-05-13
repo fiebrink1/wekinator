@@ -47,13 +47,13 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     //Colors for text entry
     private static final Color doneColor = Color.WHITE;
     private static final Color notDoneColor = new Color(255, 200, 200);
+    private boolean hasChanged = false;
 
     //Colors for Path status
     private static final Color notTrainedColor = new Color(235, 235, 235);
     private static final Color trainedColor = new Color(153, 255, 0);
     private static final Color needsRetrainingColor = new Color(255, 153, 0);
     private static final Color trainingColor = new Color(0, 204, 255);
-
     private double value = 1.0;
 
     public static final String PROP_VALUE = "value";
@@ -126,6 +126,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
             setSliderValueScaled(value);
             textModelValue.setText(dFormat.format(value)); //TODO pretty format?
         }
+        w.getLearningManager().setOutputValueForPath(value, myPath);
     }
 
     public void setModelName(String name) {
@@ -355,6 +356,21 @@ public class SimpleLearningRow extends javax.swing.JPanel {
                 sliderModelValueStateChanged(evt);
             }
         });
+        sliderModelValue.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                sliderModelValueMouseDragged(evt);
+            }
+        });
+        sliderModelValue.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                sliderModelValueMouseReleased(evt);
+            }
+        });
+        sliderModelValue.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                sliderModelValuePropertyChange(evt);
+            }
+        });
 
         labelNumExamples.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
         labelNumExamples.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -448,6 +464,11 @@ public class SimpleLearningRow extends javax.swing.JPanel {
 
         textModelValue.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
         textModelValue.setText("13.83");
+        textModelValue.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                textModelValueFocusLost(evt);
+            }
+        });
         textModelValue.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 textModelValueActionPerformed(evt);
@@ -461,6 +482,9 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         textModelValue.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 textModelValueKeyTyped(evt);
+            }
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                textModelValueKeyPressed(evt);
             }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 textModelValueKeyReleased(evt);
@@ -512,33 +536,26 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         panelMainLayout.setVerticalGroup(
             panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelMainLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(toggleLearnerPlay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jSeparator1)
+                    .addComponent(jSeparator2)
+                    .addComponent(toggleLearnerRecord, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                    .addComponent(buttonEditLearner, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelMainLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelMainLayout.createSequentialGroup()
                         .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelMainLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(buttonDeleteLearnerExamples, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(labelNumExamples, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(panelMainLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(toggleLearnerPlay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jSeparator1)
-                                    .addComponent(jSeparator2)
-                                    .addComponent(toggleLearnerRecord, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                                    .addComponent(buttonEditLearner, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelMainLayout.createSequentialGroup()
-                                        .addGap(0, 0, Short.MAX_VALUE)
-                                        .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                    .addGroup(panelMainLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(panelModelOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelModelName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(buttonDeleteLearnerExamples, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(labelNumExamples, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(panelModelOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(labelModelName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sliderModelValue, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -551,21 +568,16 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     }//GEN-LAST:event_textModelValueActionPerformed
 
     private void sliderModelValueStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderModelValueStateChanged
-        // System.out.println(getSliderValueScaled());
-        setValue(getSliderValueScaled());
-
-       // textModelValue.setText(dFormat.format(getSliderValueScaled()));
-
+       //Problem is that this gets triggered whether slider change is
+        //from user GUI or from code!
     }//GEN-LAST:event_sliderModelValueStateChanged
 
     private void textModelValuePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_textModelValuePropertyChange
     }//GEN-LAST:event_textModelValuePropertyChange
 
-    private void textModelValueKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textModelValueKeyReleased
-        //TODO: what to do if hard limits in place???
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER || evt.getKeyCode() == KeyEvent.VK_TAB) {
-            try {
-                double d = Double.parseDouble(textModelValue.getText());
+    private void setValueFromText() {
+        try {
+            double d = Double.parseDouble(textModelValue.getText());
                 if (isHardLimits) {
                     if (d < minValue) {
                         d = minValue;
@@ -575,22 +587,37 @@ public class SimpleLearningRow extends javax.swing.JPanel {
                         textModelValue.setText(dFormat.format(d));
                     }
                 }
-                setValue(d);
                 colorDone();
+                setValue(d);
+                
+        } catch (NumberFormatException ex) {
+            textModelValue.setText(dFormat.format(value));
+        }
+    }
+    
+    private void textModelValueKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textModelValueKeyReleased
+        //TODO: what to do if hard limits in place???
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER || evt.getKeyCode() == KeyEvent.VK_TAB) {
+            try {
+                setValueFromText();
             } catch (NumberFormatException ex) {
                 //Could be blank: Do nothing
             }
         } else {
-            colorNotDone();
+            if (!hasChanged) {
+                colorNotDone();
+            }
         }
 
     }//GEN-LAST:event_textModelValueKeyReleased
 
     private void colorDone() {
+        hasChanged = false;
         textModelValue.setBackground(doneColor);
     }
 
     private void colorNotDone() {
+        hasChanged = true;
         textModelValue.setBackground(notDoneColor);
     }
 
@@ -616,6 +643,35 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     private void buttonEditLearnerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditLearnerActionPerformed
         //w.getLearningManager().
     }//GEN-LAST:event_buttonEditLearnerActionPerformed
+
+    private void textModelValueKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textModelValueKeyPressed
+        //System.out.println("DOWN" + evt.getKeyCode());
+    }//GEN-LAST:event_textModelValueKeyPressed
+
+    private void textModelValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_textModelValueFocusLost
+        if (hasChanged) {
+            setValueFromText();
+        }
+    }//GEN-LAST:event_textModelValueFocusLost
+
+    private void sliderModelValuePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_sliderModelValuePropertyChange
+        System.out.println("Slider prop change");
+    }//GEN-LAST:event_sliderModelValuePropertyChange
+
+    private void userUpdatedSlider() {
+        double d = getSliderValueScaled();
+        if (value != d) {        
+            setValue(getSliderValueScaled());
+        }
+    }
+    
+    private void sliderModelValueMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sliderModelValueMouseDragged
+       userUpdatedSlider();
+    }//GEN-LAST:event_sliderModelValueMouseDragged
+
+    private void sliderModelValueMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sliderModelValueMouseReleased
+       // userUpdatedSlider();
+    }//GEN-LAST:event_sliderModelValueMouseReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

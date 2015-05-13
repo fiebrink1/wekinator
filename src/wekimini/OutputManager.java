@@ -241,6 +241,21 @@ public class OutputManager {
             Logger.getLogger(OutputManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    //For right now, send message whenever any output is changed in GUI
+    //In future, could change this so that only one output acts as trigger, or user has to press button to trigger send.
+    public void setNewValueFromGUI(int which, double value) {
+        if (which >= currentValues.length) {
+            throw new IllegalArgumentException("Attempted to set index of values out of bounds");
+        }
+        currentValues[which] = value;
+        try {
+            w.getOSCSender().sendOutputValuesMessage(currentValues);
+        } catch (IOException ex) {
+            System.out.println("Error: couldn't send message");
+            Logger.getLogger(OutputManager.class.getName()).log(Level.SEVERE, null, ex);
+        }  
+    }
 
 
     public String outputsToString() {

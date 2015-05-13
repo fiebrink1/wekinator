@@ -96,7 +96,7 @@ public class OSCSender {
             Object[] o = new Object[data.length];
             try {
                 for (int i = 0; i < data.length; i++) {
-                    o[i] = data[i];
+                    o[i] = (float)data[i];
                 }
 
                 OSCMessage msg = new OSCMessage(sendMessage, o);
