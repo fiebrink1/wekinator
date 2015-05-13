@@ -4,6 +4,8 @@
 package wekimini.osc;
 
 import java.util.Random;
+import wekimini.ModelBuilder;
+import wekimini.SimpleModelBuilder;
 import wekimini.util.Util;
 
 /**
@@ -98,5 +100,10 @@ public class OSCNumericOutput implements OSCOutput {
     @Override
     public double getDefaultValue() {
         return min;
+    }
+    
+    @Override
+    public ModelBuilder getDefaultModelBuilder() {
+        return new SimpleModelBuilder();
     }
 }

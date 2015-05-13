@@ -43,7 +43,10 @@ public class LearningPanel extends javax.swing.JPanel {
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == LearningManager.PROP_RECORDINGSTATE) {
             updateRecordingButton();
-        }
+            updateButtonStates();
+        } else if (evt.getPropertyName() == LearningManager.PROP_LEARNINGSTATE) {
+            System.out.println("Learning state updated: " + w.getLearningManager().getLearningState());
+        } //Could do training state for GUI too... Want to have singleton Training Worker so all GUI elements can access update info
     }
     
     private void updateRecordingButton() {
@@ -70,8 +73,8 @@ public class LearningPanel extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         buttonRecord = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        buttonTrain = new javax.swing.JButton();
+        buttonRun = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JSeparator();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
@@ -96,16 +99,21 @@ public class LearningPanel extends javax.swing.JPanel {
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
-        jButton2.setText("<html>Train</html>");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        buttonTrain.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
+        buttonTrain.setText("<html>Train</html>");
+        buttonTrain.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                buttonTrainActionPerformed(evt);
             }
         });
 
-        jButton3.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
-        jButton3.setText("Run");
+        buttonRun.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
+        buttonRun.setText("Run");
+        buttonRun.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonRunActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Undo last recording round");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -129,9 +137,9 @@ public class LearningPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator2)
-                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(buttonTrain, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(buttonRecord, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(buttonRun, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
             .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -142,9 +150,9 @@ public class LearningPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(buttonRecord, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(buttonTrain, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(buttonRun, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -226,6 +234,18 @@ public class LearningPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void updateButtonStates() {
+        /*if (w.getLearningManager().getRecordingState() == LearningManager.RecordingState.RECORDING) {
+            buttonRecord.setEnabled(true);
+            buttonTrain.setEnabled(false);
+            buttonRun.setEnabled(false);
+        } else if (w.getLearningManager().getRunningState() == LearningManager.RunningState.RUNNING) {
+            buttonRecord.setEnabled(true);
+            buttonTrain.setEnabled(false);
+            buttonRun.setEnabled(false);
+        } */
+    }
+    
     private void buttonRecordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRecordActionPerformed
        if (w.getLearningManager().getRecordingState() != LearningManager.RecordingState.RECORDING) {
         w.getLearningManager().startRecording();
@@ -236,9 +256,9 @@ public class LearningPanel extends javax.swing.JPanel {
        }
     }//GEN-LAST:event_buttonRecordActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void buttonTrainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTrainActionPerformed
+        w.getLearningManager().buildAll();
+    }//GEN-LAST:event_buttonTrainActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
@@ -248,11 +268,15 @@ public class LearningPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton5ActionPerformed
 
+    private void buttonRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRunActionPerformed
+        w.getLearningManager().setRunningState(LearningManager.RunningState.RUNNING);
+    }//GEN-LAST:event_buttonRunActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonRecord;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton buttonRun;
+    private javax.swing.JButton buttonTrain;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel2;

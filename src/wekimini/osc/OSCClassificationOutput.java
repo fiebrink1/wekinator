@@ -4,6 +4,8 @@
 package wekimini.osc;
 
 import java.util.Random;
+import wekimini.ModelBuilder;
+import wekimini.SimpleModelBuilder;
 import wekimini.util.Util;
 
 /**
@@ -55,6 +57,11 @@ public class OSCClassificationOutput implements OSCOutput {
     @Override
     public double getDefaultValue() {
         return 1;
+    }
+    
+    @Override
+    public ModelBuilder getDefaultModelBuilder() {
+        return new SimpleModelBuilder();
     }
 
 }

@@ -12,9 +12,15 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import org.jdesktop.swingworker.SwingWorker;
+import weka.core.Instances;
 import wekimini.osc.OSCOutput;
+import wekimini.util.Util;
 import wekimini.util.WeakListenerSupport;
 
 /**
@@ -22,7 +28,7 @@ import wekimini.util.WeakListenerSupport;
  * @author rebecca
  */
 public class LearningManager {
-    public static enum LearningState {TRAINING, NOT_TRAINING, NOT_READY_TO_TRAIN};
+    public static enum LearningState {DONE_TRAINING, TRAINING, READY_TO_TRAIN, NOT_READY_TO_TRAIN};
     public static enum RunningState {RUNNING, NOT_RUNNING};
     public static enum RecordingState {RECORDING, NOT_RECORDING};
     //private RunningState runningState = RunningState.NOT_RUNNING;
@@ -36,6 +42,7 @@ public class LearningManager {
     private int recordingRound = 0;
     private final HashMap<String, Integer> inputNamesToIndices;
     private final HashMap<Path, Integer> pathsToOutputIndices;
+   
     //private final HashMap<String, Integer> outputNamesToIndices;
     
     public static final String PROP_LEARNINGSTATE = "learningState";
@@ -46,6 +53,49 @@ public class LearningManager {
     
     private RecordingState recordingState = RecordingState.NOT_RECORDING;
     public static final String PROP_RECORDINGSTATE = "recordingState";
+    
+    //TODO: put in other class.
+    protected transient SwingWorker trainingWorker = null;
+    protected TrainingStatus trainingProgress = new TrainingStatus();
+    public static final String PROP_TRAININGPROGRESS = "trainingProgress";
+
+    protected PropertyChangeListener trainingWorkerListener = new PropertyChangeListener() {
+
+        public void propertyChange(PropertyChangeEvent evt) {
+            trainingWorkerChanged(evt);
+        }
+    };
+    
+    private void trainingWorkerChanged(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals("state")) {
+            if (trainingWorker.getState() == SwingWorker.StateValue.DONE) {
+                //SwingWorker.StateValue.
+                System.out.println("should be setting training to false here");
+                setLearningState(LearningState.DONE_TRAINING);
+            }
+        } // else if = progress: TODO do anything with tthis?
+    }
+    
+    /**
+     * Get the value of trainingProgress
+     *
+     * @return the value of trainingProgress
+     */
+    public TrainingStatus getTrainingProgress() {
+        return trainingProgress;
+    }
+
+    /**
+     * Set the value of trainingProgress
+     *
+     * @param trainingProgress new value of trainingProgress
+     */
+    public void setTrainingProgress(TrainingStatus trainingProgress) {
+        TrainingStatus oldTrainingProgress = this.trainingProgress;
+        System.out.println("updating training progress: " + trainingProgress);
+        this.trainingProgress = trainingProgress;
+        propertyChangeSupport.firePropertyChange(PROP_TRAININGPROGRESS, oldTrainingProgress, trainingProgress);
+    }
 
     /**
      * Get the value of recordingState
@@ -174,6 +224,8 @@ public class LearningManager {
             IndexedPropertyChangeEvent evt1 = (IndexedPropertyChangeEvent)evt;
             int newVal = (Integer)evt1.getNewValue();
             paths.get(evt1.getIndex()).notifyExamplesChanged(newVal);
+            pathNumExamplesChanged(evt1.getIndex());
+            
         }
     }
     
@@ -224,7 +276,7 @@ public class LearningManager {
             pathsToOutputIndices.put(p, i);
             paths.add(p);
         }  
-        setLearningState(LearningState.NOT_TRAINING);
+        setLearningState(LearningState.NOT_READY_TO_TRAIN);
         
         w.getInputManager().addInputValueListener(new InputManager.InputListener() {
 
@@ -278,17 +330,39 @@ public class LearningManager {
         }
     }
     
+    private boolean noExamplesAnywhere() {
+        for (Path p : paths) {
+            if (p.getNumExamples() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private void pathNumExamplesChanged(int pathIndex) {
+        
+        if (learningState == LearningState.NOT_READY_TO_TRAIN && paths.get(pathIndex).getNumExamples() >0){
+            setLearningState(LearningState.READY_TO_TRAIN);
+        } else if (learningState == LearningState.READY_TO_TRAIN && paths.get(pathIndex).getNumExamples() == 0) {
+            if (noExamplesAnywhere()) {
+                setLearningState(LearningState.NOT_READY_TO_TRAIN);
+            }
+        }
+    }
+    
     //Called when modelState changed
     private void pathChanged(Path p, PropertyChangeEvent evt) {
         if (evt.getPropertyName() == Path.PROP_RECORDENABLED) {
             pathRecordChanged(p);
         } else if (evt.getPropertyName() == Path.PROP_RUNENABLED) {
             pathRunChanged(p);         
-        }
+        } /*else if (evt.getPropertyName() == Path.PROP_NUMEXAMPLES) {
+            pathNumExamplesChanged(p);
+        } */ //this is called explicitly when we hear back from Datamanager
 
         //if (evt.getPropertyName() == Path.)
         //TODO: listen for record/run enable change and update our Mask
-        System.out.println("What do we do? Path changed for output: " + p.getOSCOutput().getName());
+       // System.out.println("What do we do? Path changed for output: " + p.getOSCOutput().getName());
         
     }
     
@@ -314,7 +388,7 @@ public class LearningManager {
     } 
     
     //TODO: Need to do this in background and change training state
-    public void buildModels(boolean trainMask[]) {
+   /* public void buildModels(boolean trainMask[]) {
         for (int i = 0; i < trainMask.length; i++) {
             if (trainMask[i]) {
                 paths.get(i).buildModel(
@@ -323,7 +397,7 @@ public class LearningManager {
             }
         }
         trainingRound++;
-    }
+    } */
     
     //
     
@@ -360,6 +434,106 @@ public class LearningManager {
     
     public void deleteAllExamples() {
         w.getDataManager().deleteAll();
+        setLearningState(LearningState.NOT_READY_TO_TRAIN);
+    }
+    
+    //TODO: Put in separate class!
+    public void buildAll() {
+        //Launch training threads & get notified ...        
+        synchronized (this) {
+            //See http://www.j2ee.me/javase/6/docs/api/javax/swing/SwingWorker.html
+            if (trainingWorker != null && trainingWorker.getState() != SwingWorker.StateValue.DONE) {
+                //TODO: Cancel?
+                //trainingWorker.cancel(true);
+                return;
+            }
+            trainingWorker = new SwingWorker<Integer, Void>() {
+
+                //trainingWorker.
+                @Override
+                public Integer doInBackground() {
+                    // train(); //TODO: Add status updates
+                    int progress = 0;
+                    //setProgress(progress);
+                    int numToTrain = paths.size();
+                    /*for (int i = 0; i < whichLearners.length; i++) {
+                        if (whichLearners[i]) {
+                            numToTrain++;
+                        }
+                    } */
+                    
+                    int numTrained = 0;
+                    int numErr = 0;
+                    setTrainingProgress(new TrainingStatus(numToTrain, numTrained, numErr, false));
+
+                    for (Path p : paths) {
+                        //TODO: Check if trainable!
+                        try {
+                            p.buildModel(
+                                p.getOSCOutput().getName() + "-" + trainingRound,
+                                w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p)));
+                            numTrained++;
+                        /*} catch (InterruptedException ex) {
+                                System.out.println("Training was cancelled");
+                                return new Integer(0); */ //Not sure this will be called...
+                        } catch (Exception ex) {
+                                numErr++;
+                                Util.showPrettyErrorPane(null, "Error encountered during training " + p.getCurrentModelName() + ": " + ex.getMessage());
+                                Logger.getLogger(LearningManager.class.getName()).log(Level.SEVERE, null, ex);
+                                //TODO: test this works when error actually occurs in learner
+                        }
+                    }
+                    
+
+                    setTrainingProgress(new TrainingStatus(numToTrain, numTrained, numErr, false));
+                        // System.out.println("progress is " + progress);
+               
+
+                    return new Integer(0);
+                }
+
+                @Override
+                public void done() {
+                    //setProgress(numParams+1);
+                    System.out.println("thread is done");
+                    if (isCancelled()) {
+                        TrainingStatus t = new TrainingStatus(trainingProgress.numToTrain, trainingProgress.numTrained, trainingProgress.numErrorsEncountered, true);
+                        // trainingProgress.wasCancelled = true;
+                        setTrainingProgress(t);
+                        System.out.println("I was cancelled");
+                    }
+                }
+            };
+            setLearningState(LearningState.TRAINING);
+
+            trainingWorker.addPropertyChangeListener(trainingWorkerListener);
+            trainingWorker.execute();
+        }
+        
+        
+    }
+    
+    public static class TrainingStatus {
+
+        protected int numToTrain = 0;
+        protected int numTrained = 0;
+        protected int numErrorsEncountered = 0;
+        boolean wasCancelled = false;
+
+        public TrainingStatus(int numToTrain, int numTrained, int numErr, boolean wasCancelled) {
+            this.numToTrain = numToTrain;
+            this.numTrained = numTrained;
+            this.numErrorsEncountered = numErr;
+            this.wasCancelled = wasCancelled;
+        }
+
+        public TrainingStatus() {
+        }
+        
+        @Override
+        public String toString() {
+            return numTrained + "/" + numToTrain + " trained, " + numErrorsEncountered + " errors, cancelled=" + wasCancelled;
+        }
     }
     
 }

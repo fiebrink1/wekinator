@@ -5,6 +5,7 @@
  */
 package wekimini.osc;
 
+import wekimini.ModelBuilder;
 import wekimini.util.Util;
 
 /**
@@ -20,5 +21,7 @@ public interface OSCOutput {
     public double generateRandomValue();
 
     public double getDefaultValue();
+    
+    public ModelBuilder getDefaultModelBuilder();
 
 }

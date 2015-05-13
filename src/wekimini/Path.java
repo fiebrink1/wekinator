@@ -119,6 +119,7 @@ public class Path {
         }
         this.output = output;
         this.outputName = output.getName();
+        this.modelBuilder = output.getDefaultModelBuilder();
         //updateSchedulerRegistration();
         
        /* w.getInputManager().addInputGroupChangeListener(new InputManager.InputGroupChangeListener() {
