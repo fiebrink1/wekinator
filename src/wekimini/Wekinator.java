@@ -25,6 +25,7 @@ public class Wekinator {
     private final MainGUI mainGUI;
     private final LearningManager learningManager;
     private final DataManager dataManager;
+    private final TrainingRunner trainingRunner;
    // private final Scheduler scheduler;
    // private final CommunicationManager communicationManager;
   /*  private final LearningManager learningManager;
@@ -40,6 +41,10 @@ public class Wekinator {
     /*public Scheduler getScheduler() {
         return scheduler;
     } */
+    
+    public TrainingRunner getTrainingRunner() {
+        return trainingRunner;
+    }
     
      public LearningManager getLearningManager() {
         return learningManager;
@@ -118,7 +123,7 @@ public class Wekinator {
         inputManager = new InputManager(this);
         outputManager = new OutputManager(this);
         dataManager = new DataManager(this);
-
+        trainingRunner = new TrainingRunner(this);
         learningManager = new LearningManager(this);
         //scheduler = new Scheduler(this);
       //  communicationManager = new CommunicationManager();

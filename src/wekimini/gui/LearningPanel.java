@@ -2,8 +2,11 @@ package wekimini.gui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import wekimini.LearningManager;
 import wekimini.Path;
+import wekimini.TrainingRunner;
 import wekimini.Wekinator;
 
 /*
@@ -37,10 +40,44 @@ public class LearningPanel extends javax.swing.JPanel {
                 learningManagerPropertyChanged(evt);
             }
         });
+        
+        w.getTrainingRunner().addCancelledListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                learningCancelled();
+            }
+        });
+        
+        w.getTrainingRunner().addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName() == TrainingRunner.PROP_TRAININGPROGRESS) {
+                    trainerUpdated((TrainingRunner.TrainingStatus) evt.getNewValue());
+                }
+                
+            }
+        });
+        
         setStatus("Ready to go! Press \"Start Recording\" above to record some examples.");
         setButtonsForLearningState();
     }
 
+    private void learningCancelled() {
+        setStatus("Training was cancelled.");
+    }
+    
+    private void trainerUpdated(TrainingRunner.TrainingStatus newStatus) {
+        String s = newStatus.getNumTrained() + " of " + newStatus.getNumToTrain() 
+                + " models trained, " + newStatus.getNumErrorsEncountered() + 
+                " errors encountered.";
+        if (newStatus.isWasCancelled()) {
+            s += " Training cancelled.";
+        }
+        setStatus(s);
+    }
+    
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == LearningManager.PROP_RECORDINGSTATE) {
             updateRecordingButton();
@@ -67,6 +104,10 @@ public class LearningPanel extends javax.swing.JPanel {
         }
     }
     
+    private void updateStatusForTrainingWorker() {
+        
+    }
+    
     private void updateStatusForLearningState() {
         LearningManager.LearningState ls = w.getLearningManager().getLearningState();
         if (ls == LearningManager.LearningState.NOT_READY_TO_TRAIN) {
@@ -74,7 +115,7 @@ public class LearningPanel extends javax.swing.JPanel {
         } else if (ls == LearningManager.LearningState.TRAINING) {
             setStatus("Training...");
         } else if (ls == LearningManager.LearningState.DONE_TRAINING) {
-            if (w.getLearningManager().wasCancelled()) {
+            if (w.getTrainingRunner().wasCancelled()) {
                 setStatus("Training was cancelled.");
             } else {
                 int n = w.getLearningManager().numRunnableModels();
@@ -83,7 +124,7 @@ public class LearningPanel extends javax.swing.JPanel {
                 } else {
                     setStatus("No models are ready to run. Record data and/or train.");
                 }
-            }
+           }
         } else if (ls == LearningManager.LearningState.READY_TO_TRAIN) {
             setStatus("Examples recorded. Press \"Train\" to build models from data.");
         }

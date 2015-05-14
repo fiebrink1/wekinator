@@ -12,15 +12,11 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.jdesktop.swingworker.SwingWorker;
 import weka.core.Instances;
 import wekimini.osc.OSCOutput;
-import wekimini.util.Util;
 import wekimini.util.WeakListenerSupport;
 
 /**
@@ -38,11 +34,11 @@ public class LearningManager {
     private boolean[] pathRecordingMask;
     private boolean[] pathRunningMask;
     private double[] myComputedOutputs;
-    private int trainingRound = 0;
+    //private int trainingRound = 0;
     private int recordingRound = 0;
     private final HashMap<String, Integer> inputNamesToIndices;
     private final HashMap<Path, Integer> pathsToOutputIndices;
-    private boolean wasCancelled = false;
+    //private boolean wasCancelled = false;
     //private final HashMap<String, Integer> outputNamesToIndices;
     
     public static final String PROP_LEARNINGSTATE = "learningState";
@@ -53,55 +49,26 @@ public class LearningManager {
     
     private RecordingState recordingState = RecordingState.NOT_RECORDING;
     public static final String PROP_RECORDINGSTATE = "recordingState";
-    
-    //TODO: put in other class.
-    protected transient SwingWorker trainingWorker = null;
-    protected TrainingStatus trainingProgress = new TrainingStatus();
-    public static final String PROP_TRAININGPROGRESS = "trainingProgress";
-
-        private int numExamplesThisRound;
+   
+    private int numExamplesThisRound;
 
     public static final String PROP_NUMEXAMPLESTHISROUND = "numExamplesThisRound";
 
 
     
-    protected PropertyChangeListener trainingWorkerListener = new PropertyChangeListener() {
-
-        public void propertyChange(PropertyChangeEvent evt) {
-            trainingWorkerChanged(evt);
-        }
-    };
+    protected PropertyChangeListener trainingWorkerListener = this::trainingWorkerChanged;
     
     private void trainingWorkerChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("state")) {
-            if (trainingWorker.getState() == SwingWorker.StateValue.DONE) {
+            if (evt.getNewValue() == SwingWorker.StateValue.DONE) {
                 //SwingWorker.StateValue.
-                System.out.println("should be setting training to false here");
+                //System.out.println("!!!TODOTODOTODOshould be setting training to false here");
                 setLearningState(LearningState.DONE_TRAINING);
             }
         } // else if = progress: TODO do anything with tthis?
     }
     
-    /**
-     * Get the value of trainingProgress
-     *
-     * @return the value of trainingProgress
-     */
-    public TrainingStatus getTrainingProgress() {
-        return trainingProgress;
-    }
-
-    /**
-     * Set the value of trainingProgress
-     *
-     * @param trainingProgress new value of trainingProgress
-     */
-    public void setTrainingProgress(TrainingStatus trainingProgress) {
-        TrainingStatus oldTrainingProgress = this.trainingProgress;
-        System.out.println("updating training progress: " + trainingProgress);
-        this.trainingProgress = trainingProgress;
-        propertyChangeSupport.firePropertyChange(PROP_TRAININGPROGRESS, oldTrainingProgress, trainingProgress);
-    }
+    
 
     /**
      * Get the value of recordingState
@@ -155,7 +122,8 @@ public class LearningManager {
 
     public void cancelTraining() {
         if (learningState == LearningState.TRAINING) {
-            trainingWorker.cancel(true);
+            w.getTrainingRunner().cancel();
+            //trainingWorker.cancel(true);
         }
     }
     
@@ -205,13 +173,7 @@ public class LearningManager {
         inputNamesToIndices = new HashMap<>();
         pathsToOutputIndices = new HashMap<>();
         //TODO listen for changes in input names, # outputs or inputs, etc.
-        w.getInputManager().addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                inputGroupChanged(evt);
-            }
-        });
+        w.getInputManager().addPropertyChangeListener(this::inputGroupChanged);
         w.getOutputManager().addPropertyChangeListener(new PropertyChangeListener() {
 
             @Override
@@ -222,13 +184,7 @@ public class LearningManager {
             }
         }); 
         
-        w.getDataManager().addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                dataManagerPropertyChange(evt);
-            }  
-        });          
+        w.getDataManager().addPropertyChangeListener(this::dataManagerPropertyChange);          
     }
     
     
@@ -291,13 +247,7 @@ public class LearningManager {
         }  
         setLearningState(LearningState.NOT_READY_TO_TRAIN);
         
-        w.getInputManager().addInputValueListener(new InputManager.InputListener() {
-
-            @Override
-            public void update(double[] vals) {
-                updateInputs(vals);
-            }
-        });
+        w.getInputManager().addInputValueListener(this::updateInputs);
     }
     
     private void pathInputsChanged(Path p) {
@@ -403,9 +353,9 @@ public class LearningManager {
         w.getDataManager().addToTraining(inputs, outputs, recordingMask, recordingRound);
     } 
     
-    public boolean wasCancelled() {
+   /* public boolean wasCancelled() {
         return wasCancelled;
-    }
+    } */
     
     public int numRunnableModels() {
         int i = 0; 
@@ -467,120 +417,19 @@ public class LearningManager {
         setLearningState(LearningState.NOT_READY_TO_TRAIN);
     }
     
-    //TODO: Put in separate class!
     public void buildAll() {
         //Launch training threads & get notified ...        
         synchronized (this) {
-            trainingRound++;
-            //See http://www.j2ee.me/javase/6/docs/api/javax/swing/SwingWorker.html
-            if (trainingWorker != null && trainingWorker.getState() != SwingWorker.StateValue.DONE) {
-                //TODO: Cancel?
-                //trainingWorker.cancel(true);
-                return;
+            List<Instances> data = new ArrayList<>(paths.size());
+            for (Path p : paths) {
+                data.add(w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p)));
             }
-            trainingWorker = new SwingWorker<Integer, Void>() {
-
-                //trainingWorker.
-                @Override
-                public Integer doInBackground() {
-                    // train(); //TODO: Add status updates
-                    int progress = 0;
-                    //setProgress(progress);
-                    int numToTrain = 0;
-                    for (Path p : paths) {
-                        if (p.canBuild()) {
-                            numToTrain++;
-                        }
-                    }
-                    
-                   // int numToTrain = paths.size();
-                    /*for (int i = 0; i < whichLearners.length; i++) {
-                        if (whichLearners[i]) {
-                            numToTrain++;
-                        }
-                    } */
-                    
-                    int numTrained = 0;
-                    int numErr = 0;
-                    setTrainingProgress(new TrainingStatus(numToTrain, numTrained, numErr, false));
-
-                    for (Path p : paths) {
-                        if (p.canBuild()) {
-                        //TODO: Check if trainable!
-                        try {
-                            p.buildModel(
-                                p.getOSCOutput().getName() + "-" + trainingRound,
-                                w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p)));
-                            numTrained++;
-
-                        } catch (InterruptedException ex) {
-                                wasCancelled = true;
-                                System.out.println("Training was cancelled");
-                                p.trainingWasInterrupted();
-                                return new Integer(0); //Not sure this will be called...
-                        } catch (Exception ex) {
-                                numErr++;
-                                Util.showPrettyErrorPane(null, "Error encountered during training " + p.getCurrentModelName() + ": " + ex.getMessage());
-                                Logger.getLogger(LearningManager.class.getName()).log(Level.SEVERE, null, ex);
-                                //TODO: test this works when error actually occurs in learner
-                        } 
-                        setTrainingProgress(new TrainingStatus(numToTrain, numTrained, numErr, false));
-                        }
-
-                    }
-                    
-
-                        // System.out.println("progress is " + progress);
-               
-                    wasCancelled= false;
-                    return new Integer(0);
-                }
-
-                @Override
-                public void done() {
-                    //setProgress(numParams+1);
-                    System.out.println("thread is done");
-                    if (isCancelled()) {
-                        TrainingStatus t = new TrainingStatus(trainingProgress.numToTrain, trainingProgress.numTrained, trainingProgress.numErrorsEncountered, true);
-                        // trainingProgress.wasCancelled = true;
-                        setTrainingProgress(t);
-                        System.out.println("I was cancelled");
-                    }
-                }
-            };
-            setLearningState(LearningState.TRAINING);
-
-            trainingWorker.addPropertyChangeListener(trainingWorkerListener);
-            trainingWorker.execute();
-        }
-        
-        
+            w.getTrainingRunner().buildAll(paths, data, trainingWorkerListener);
+            setLearningState(LearningState.TRAINING);      
+        }      
     }
     
-    public static class TrainingStatus {
-
-        protected int numToTrain = 0;
-        protected int numTrained = 0;
-        protected int numErrorsEncountered = 0;
-        boolean wasCancelled = false;
-
-        public TrainingStatus(int numToTrain, int numTrained, int numErr, boolean wasCancelled) {
-            this.numToTrain = numToTrain;
-            this.numTrained = numTrained;
-            this.numErrorsEncountered = numErr;
-            this.wasCancelled = wasCancelled;
-        }
-
-        public TrainingStatus() {
-        }
-        
-        @Override
-        public String toString() {
-            return numTrained + "/" + numToTrain + " trained, " + numErrorsEncountered + " errors, cancelled=" + wasCancelled;
-        }
-        
-        
-    }
+   
     /**
      * Get the value of numExamplesThisRound
      *
