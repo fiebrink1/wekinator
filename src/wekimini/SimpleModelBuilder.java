@@ -21,8 +21,15 @@ public class SimpleModelBuilder implements LearningModelBuilder {
     }
 
     @Override
-    public Model build(String name) {
-        return new SimpleModel(name);
+    public Model build(String name) throws Exception {
+        //For testing
+       // double d = Math.random();
+        Thread.sleep(2000); //Not a great example of how other code will function, since sleep() does throw Interrupted exception.
+       // if (d < 0.5) {
+            return new SimpleModel(name);
+       // } else {
+       //     throw new Exception("Testing");
+       // }
     }
 
     @Override

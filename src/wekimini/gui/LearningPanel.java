@@ -38,6 +38,7 @@ public class LearningPanel extends javax.swing.JPanel {
             }
         });
         setStatus("Ready to go! Press \"Start Recording\" above to record some examples.");
+        setButtonsForLearningState();
     }
 
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
@@ -45,12 +46,74 @@ public class LearningPanel extends javax.swing.JPanel {
             updateRecordingButton();
             updateButtonStates();
         } else if (evt.getPropertyName() == LearningManager.PROP_LEARNINGSTATE) {
+            setButtonsForLearningState();
+            updateStatusForLearningState();
             System.out.println("Learning state updated: " + w.getLearningManager().getLearningState());
-        } //Could do training state for GUI too... Want to have singleton Training Worker so all GUI elements can access update info
+        } else if (evt.getPropertyName() == LearningManager.PROP_RUNNINGSTATE) {
+            updateRunButtonAndText();
+        } else if (evt.getPropertyName() == LearningManager.PROP_NUMEXAMPLESTHISROUND) {
+            setStatus(w.getLearningManager().getNumExamplesThisRound() + " new examples recorded");
+        }
+//Could do training state for GUI too... Want to have singleton Training Worker so all GUI elements can access update info
+    }
+
+    private void updateRunButtonAndText() {
+        if (w.getLearningManager().getRunningState() == LearningManager.RunningState.RUNNING) {
+            buttonRun.setText("Stop running");
+            setStatus("Running.");
+        } else {
+            buttonRun.setText("Run");
+            setStatus("Stopped running.");
+        }
     }
     
+    private void updateStatusForLearningState() {
+        LearningManager.LearningState ls = w.getLearningManager().getLearningState();
+        if (ls == LearningManager.LearningState.NOT_READY_TO_TRAIN) {
+            setStatus("Ready to go! Press \"Start Recording\" above to record some examples.");
+        } else if (ls == LearningManager.LearningState.TRAINING) {
+            setStatus("Training...");
+        } else if (ls == LearningManager.LearningState.DONE_TRAINING) {
+            if (w.getLearningManager().wasCancelled()) {
+                setStatus("Training was cancelled.");
+            } else {
+                int n = w.getLearningManager().getNumRunnableModels();
+                if (n > 0) {
+                    setStatus("Training completed. Press \"Run\" to run trained models.");
+                } else {
+                    setStatus("No models are ready to run. Record data and/or train.");
+                }
+            }
+        } else if (ls == LearningManager.LearningState.READY_TO_TRAIN) {
+            setStatus("Examples recorded. Press \"Train\" to build models from data.");
+        }
+    }
+
+    private void setButtonsForLearningState() {
+        LearningManager.LearningState ls = w.getLearningManager().getLearningState();
+        if (ls == LearningManager.LearningState.NOT_READY_TO_TRAIN) {
+            buttonTrain.setText("Train");
+            buttonTrain.setEnabled(false);
+        } else if (ls == LearningManager.LearningState.TRAINING) {
+            buttonTrain.setEnabled(true);
+            buttonTrain.setText("Cancel training");
+            buttonRecord.setEnabled(false);
+            buttonRun.setEnabled(false);
+        } else if (ls == LearningManager.LearningState.DONE_TRAINING) {
+            buttonTrain.setEnabled(true); //Don't prevent immediate retraining; some model builders may give different models on same data.
+            buttonTrain.setText("Train");
+            buttonRecord.setEnabled(true);
+            buttonRun.setEnabled(true);
+        } else if (ls == LearningManager.LearningState.READY_TO_TRAIN) {
+            buttonTrain.setEnabled(true);
+            buttonTrain.setText("Train");
+            buttonRecord.setEnabled(true);
+            buttonRun.setEnabled(false);
+        }
+    }
+
     private void updateRecordingButton() {
-        if (w.getLearningManager().getRecordingState()== LearningManager.RecordingState.RECORDING) {
+        if (w.getLearningManager().getRecordingState() == LearningManager.RecordingState.RECORDING) {
             buttonRecord.setText("Stop Recording");
         } else {
             buttonRecord.setText("Start Recording");
@@ -101,6 +164,9 @@ public class LearningPanel extends javax.swing.JPanel {
 
         buttonTrain.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
         buttonTrain.setText("<html>Train</html>");
+        buttonTrain.setEnabled(false);
+        buttonTrain.setMaximumSize(new java.awt.Dimension(75, 29));
+        buttonTrain.setPreferredSize(new java.awt.Dimension(132, 29));
         buttonTrain.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonTrainActionPerformed(evt);
@@ -109,6 +175,8 @@ public class LearningPanel extends javax.swing.JPanel {
 
         buttonRun.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
         buttonRun.setText("Run");
+        buttonRun.setEnabled(false);
+        buttonRun.setPreferredSize(new java.awt.Dimension(132, 29));
         buttonRun.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonRunActionPerformed(evt);
@@ -137,9 +205,9 @@ public class LearningPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator2)
-                    .addComponent(buttonTrain, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(buttonRecord, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(buttonRun, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(buttonRun, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(buttonTrain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
             .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -236,28 +304,37 @@ public class LearningPanel extends javax.swing.JPanel {
 
     private void updateButtonStates() {
         /*if (w.getLearningManager().getRecordingState() == LearningManager.RecordingState.RECORDING) {
-            buttonRecord.setEnabled(true);
-            buttonTrain.setEnabled(false);
-            buttonRun.setEnabled(false);
-        } else if (w.getLearningManager().getRunningState() == LearningManager.RunningState.RUNNING) {
-            buttonRecord.setEnabled(true);
-            buttonTrain.setEnabled(false);
-            buttonRun.setEnabled(false);
-        } */
+         buttonRecord.setEnabled(true);
+         buttonTrain.setEnabled(false);
+         buttonRun.setEnabled(false);
+         } else if (w.getLearningManager().getRunningState() == LearningManager.RunningState.RUNNING) {
+         buttonRecord.setEnabled(true);
+         buttonTrain.setEnabled(false);
+         buttonRun.setEnabled(false);
+         } */
     }
-    
+
     private void buttonRecordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRecordActionPerformed
-       if (w.getLearningManager().getRecordingState() != LearningManager.RecordingState.RECORDING) {
-        w.getLearningManager().startRecording();
-        setStatus("Recording - waiting for inputs to arrive");
-    } else {
-           w.getLearningManager().stopRecording();
-           
-       }
+        
+        if (w.getLearningManager().getRunningState() == LearningManager.RunningState.RUNNING) {
+            w.getLearningManager().setRunningState(LearningManager.RunningState.NOT_RUNNING);
+        }
+        
+        if (w.getLearningManager().getRecordingState() != LearningManager.RecordingState.RECORDING) {
+            w.getLearningManager().startRecording();
+            setStatus("Recording - waiting for inputs to arrive");
+        } else {
+            w.getLearningManager().stopRecording();
+            setStatus("Examples recorded. Press \"Train\" to build models from data.");
+        }
     }//GEN-LAST:event_buttonRecordActionPerformed
 
     private void buttonTrainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTrainActionPerformed
-        w.getLearningManager().buildAll();
+        if (w.getLearningManager().getLearningState() == LearningManager.LearningState.TRAINING) {
+            w.getLearningManager().cancelTraining();
+        } else {
+            w.getLearningManager().buildAll();
+        }
     }//GEN-LAST:event_buttonTrainActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -269,7 +346,15 @@ public class LearningPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void buttonRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRunActionPerformed
-        w.getLearningManager().setRunningState(LearningManager.RunningState.RUNNING);
+        if (w.getLearningManager().getRecordingState() == LearningManager.RecordingState.RECORDING) {
+            w.getLearningManager().stopRecording();
+        }
+        
+        if (w.getLearningManager().getRunningState() == LearningManager.RunningState.NOT_RUNNING) {
+            w.getLearningManager().setRunningState(LearningManager.RunningState.RUNNING);
+        } else {
+            w.getLearningManager().setRunningState(LearningManager.RunningState.NOT_RUNNING);
+        }
     }//GEN-LAST:event_buttonRunActionPerformed
 
 

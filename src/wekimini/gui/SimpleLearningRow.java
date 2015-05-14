@@ -655,7 +655,6 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     }//GEN-LAST:event_textModelValueFocusLost
 
     private void sliderModelValuePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_sliderModelValuePropertyChange
-        System.out.println("Slider prop change");
     }//GEN-LAST:event_sliderModelValuePropertyChange
 
     private void userUpdatedSlider() {

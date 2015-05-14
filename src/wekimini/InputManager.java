@@ -20,6 +20,7 @@ import javax.swing.event.EventListenerList;
 import wekimini.osc.OSCInputGroup;
 import wekimini.util.WeakListenerSupport;
 import wekimini.osc.OSCReceiver;
+import wekimini.util.Util;
 
 /**
  *
@@ -36,6 +37,7 @@ public class InputManager {
     public static final String PROP_INPUTGROUP = "inputGroup";
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private double[] currentValues = new double[0];
+    private static final Logger logger = Logger.getLogger(InputManager.class.getName());
     
     
     public double[] getInputValues() {
@@ -169,10 +171,8 @@ public class InputManager {
                     System.arraycopy(d, 0, currentValues, 0, d.length);
                 } else {
                     String msg = "Error: mismatch in input length: "
-                            + "Expected " + d.length + ", received " + o.length;
-                    System.out.println(msg);
-                    Logger.getLogger(InputManager.class.getName()).log(Level.WARNING, "msg");
-
+                            + "Expected " + currentValues.length + ", received " + o.length;
+                    logger.log(Level.WARNING, msg);
                 }
         }
         //Not sure if we need to store this array within this class, too

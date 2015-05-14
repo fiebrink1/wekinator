@@ -22,7 +22,7 @@ public interface ModelBuilder {
         return new SimpleModel("name1");
     }  */
     
-    public Model build(String name);
+    public Model build(String name) throws Exception;
     
     public boolean isCompatible(OSCOutput o);
 

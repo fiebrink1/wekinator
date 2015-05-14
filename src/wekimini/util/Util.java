@@ -161,4 +161,9 @@ public class Util {
         return s;
     }
     
+    public static void logWarning(Object o, String msg) {
+         Logger.getLogger(o.getClass().getName()).log(Level.WARNING, msg);
+    }
+
+    
 }

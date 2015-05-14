@@ -38,11 +38,11 @@ public class LearningManager {
     private boolean[] pathRecordingMask;
     private boolean[] pathRunningMask;
     private double[] myComputedOutputs;
-    private int trainingRound = 1;
+    private int trainingRound = 0;
     private int recordingRound = 0;
     private final HashMap<String, Integer> inputNamesToIndices;
     private final HashMap<Path, Integer> pathsToOutputIndices;
-   
+    private boolean wasCancelled = false;
     //private final HashMap<String, Integer> outputNamesToIndices;
     
     public static final String PROP_LEARNINGSTATE = "learningState";
@@ -59,6 +59,12 @@ public class LearningManager {
     protected TrainingStatus trainingProgress = new TrainingStatus();
     public static final String PROP_TRAININGPROGRESS = "trainingProgress";
 
+        private int numExamplesThisRound;
+
+    public static final String PROP_NUMEXAMPLESTHISROUND = "numExamplesThisRound";
+
+
+    
     protected PropertyChangeListener trainingWorkerListener = new PropertyChangeListener() {
 
         public void propertyChange(PropertyChangeEvent evt) {
@@ -118,6 +124,7 @@ public class LearningManager {
     }
 
     public void startRecording() {
+        numExamplesThisRound = 0;
         recordingRound++;
         setRecordingState(RecordingState.RECORDING);
     }
@@ -146,6 +153,12 @@ public class LearningManager {
         propertyChangeSupport.firePropertyChange(PROP_RUNNINGSTATE, oldRunningState, runningState);
     }
 
+    public void cancelTraining() {
+        if (learningState == LearningState.TRAINING) {
+            trainingWorker.cancel(true);
+        }
+    }
+    
     /**
      * Get the value of learningState
      *
@@ -369,8 +382,10 @@ public class LearningManager {
     //Right now, this simply won't change indices where mask is false
     public double[] computeValues(double[] inputs, boolean[] computeMask) {
         for (int i = 0; i < computeMask.length; i++) {
-            if (computeMask[i]) {
+            if (computeMask[i] && paths.get(i).canCompute()) {
                 myComputedOutputs[i] = paths.get(i).compute(inputs);
+            } else {
+                myComputedOutputs[i] = w.getOutputManager().getCurrentValues()[i];
             }
         }
         return myComputedOutputs;
@@ -384,8 +399,23 @@ public class LearningManager {
                 
             }
         } */
-        w.getDataManager().addToTraining(inputs, outputs, recordingMask, trainingRound);
+        setNumExamplesThisRound(numExamplesThisRound+1);
+        w.getDataManager().addToTraining(inputs, outputs, recordingMask, recordingRound);
     } 
+    
+    public boolean wasCancelled() {
+        return wasCancelled;
+    }
+    
+    public int numRunnableModels() {
+        int i = 0; 
+        for (Path p : paths) {
+            if (p.canCompute()) {
+                i++;
+            }
+        }
+        return i;
+    }
     
     //TODO: Need to do this in background and change training state
    /* public void buildModels(boolean trainMask[]) {
@@ -424,7 +454,7 @@ public class LearningManager {
             System.out.println("ERROR: My Path not found in deleteDataForPath");
             return;
         }
-        w.getDataManager().setOutputMissingForAll(trainingRound);
+        w.getDataManager().setOutputMissingForAll(whichPath);
     }
     
     //Currently coming from Path GUI (row)
@@ -441,6 +471,7 @@ public class LearningManager {
     public void buildAll() {
         //Launch training threads & get notified ...        
         synchronized (this) {
+            trainingRound++;
             //See http://www.j2ee.me/javase/6/docs/api/javax/swing/SwingWorker.html
             if (trainingWorker != null && trainingWorker.getState() != SwingWorker.StateValue.DONE) {
                 //TODO: Cancel?
@@ -455,7 +486,14 @@ public class LearningManager {
                     // train(); //TODO: Add status updates
                     int progress = 0;
                     //setProgress(progress);
-                    int numToTrain = paths.size();
+                    int numToTrain = 0;
+                    for (Path p : paths) {
+                        if (p.canBuild()) {
+                            numToTrain++;
+                        }
+                    }
+                    
+                   // int numToTrain = paths.size();
                     /*for (int i = 0; i < whichLearners.length; i++) {
                         if (whichLearners[i]) {
                             numToTrain++;
@@ -467,28 +505,34 @@ public class LearningManager {
                     setTrainingProgress(new TrainingStatus(numToTrain, numTrained, numErr, false));
 
                     for (Path p : paths) {
+                        if (p.canBuild()) {
                         //TODO: Check if trainable!
                         try {
                             p.buildModel(
                                 p.getOSCOutput().getName() + "-" + trainingRound,
                                 w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p)));
                             numTrained++;
-                        /*} catch (InterruptedException ex) {
+
+                        } catch (InterruptedException ex) {
+                                wasCancelled = true;
                                 System.out.println("Training was cancelled");
-                                return new Integer(0); */ //Not sure this will be called...
+                                p.trainingWasInterrupted();
+                                return new Integer(0); //Not sure this will be called...
                         } catch (Exception ex) {
                                 numErr++;
                                 Util.showPrettyErrorPane(null, "Error encountered during training " + p.getCurrentModelName() + ": " + ex.getMessage());
                                 Logger.getLogger(LearningManager.class.getName()).log(Level.SEVERE, null, ex);
                                 //TODO: test this works when error actually occurs in learner
+                        } 
+                        setTrainingProgress(new TrainingStatus(numToTrain, numTrained, numErr, false));
                         }
+
                     }
                     
 
-                    setTrainingProgress(new TrainingStatus(numToTrain, numTrained, numErr, false));
                         // System.out.println("progress is " + progress);
                
-
+                    wasCancelled= false;
                     return new Integer(0);
                 }
 
@@ -534,6 +578,29 @@ public class LearningManager {
         public String toString() {
             return numTrained + "/" + numToTrain + " trained, " + numErrorsEncountered + " errors, cancelled=" + wasCancelled;
         }
+        
+        
     }
+    /**
+     * Get the value of numExamplesThisRound
+     *
+     * @return the value of numExamplesThisRound
+     */
+    public int getNumExamplesThisRound() {
+        return numExamplesThisRound;
+    }
+
+    /**
+     * Set the value of numExamplesThisRound
+     *
+     * @param numExamplesThisRound new value of numExamplesThisRound
+     */
+    public void setNumExamplesThisRound(int numExamplesThisRound) {
+        int oldNumExamplesThisRound = this.numExamplesThisRound;
+        this.numExamplesThisRound = numExamplesThisRound;
+        propertyChangeSupport.firePropertyChange(PROP_NUMEXAMPLESTHISROUND, oldNumExamplesThisRound, numExamplesThisRound);
+    }
+
     
 }
+

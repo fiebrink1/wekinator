@@ -51,6 +51,8 @@ public class Path {
     private final Wekinator w;
     private double outputValue;
     //
+   
+    
     private final List<String> inputNames;
     private final LearningManager learningManager;
     
@@ -77,7 +79,9 @@ public class Path {
 
     public static final String PROP_CURRENTMODELNAME = "currentModelName";
 
-
+    private Model lastModel = null;
+    private ModelState lastModelState = ModelState.NOT_READY;
+    private boolean trainingCompleted = false;
 
     public String[] getSelectedInputs() {
         return inputNames.toArray(new String[0]);
@@ -120,6 +124,7 @@ public class Path {
         this.output = output;
         this.outputName = output.getName();
         this.modelBuilder = output.getDefaultModelBuilder();
+        setCurrentModelName(output.getName());
         //updateSchedulerRegistration();
         
        /* w.getInputManager().addInputGroupChangeListener(new InputManager.InputGroupChangeListener() {
@@ -164,14 +169,20 @@ public class Path {
         }
     }
     
-    //TODO: do this in separate thread, get callback when done
-    public void buildModel(String name, Instances i) {
+    public void buildModel(String name, Instances i) throws Exception {
+        lastModel = model;
+        lastModelState = modelState;
+        trainingCompleted = false;
+        
         setModelState(ModelState.BUILDING);
         if (modelBuilder instanceof LearningModelBuilder) {
             ((LearningModelBuilder)modelBuilder).setTrainingExamples(i);
         }
         model = modelBuilder.build(name);
+        setCurrentModelName(name);
         setModelState(ModelState.BUILT);
+        
+        trainingCompleted = true;
 
     }
 
@@ -209,9 +220,13 @@ public class Path {
         //Do something
        // float[] inputs = {1.0f, 1.0f};
         //setOutputValue(model.computeOutput(inputs));
-       return model.computeOutput(inputs);
+            return model.computeOutput(inputs);
     }
 
+    public boolean canCompute() {
+        return (modelState != ModelState.NOT_READY && modelState != ModelState.READY_FOR_BUILDING);
+    }
+    
     public Model getModel() {
         return model;
     }
@@ -349,6 +364,21 @@ public class Path {
         this.currentModelName = currentModelName;
         propertyChangeSupport.firePropertyChange(PROP_CURRENTMODELNAME, oldCurrentModelName, currentModelName);
     }
-
-
+    
+    public void trainingWasInterrupted() {
+        if (! trainingCompleted) {
+            setModel(lastModel); //Make sure this isn't a problem when null
+            setModelState(lastModelState);
+        }
+    }
+    
+    public boolean canBuild() {
+        if (modelState == ModelState.NOT_READY) {
+            return false;
+        }
+        if (numExamples == 0) {
+            return false;
+        }
+        return true;
+    }
 }
