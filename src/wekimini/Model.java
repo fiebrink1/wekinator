@@ -5,6 +5,7 @@
  */
 package wekimini;
 
+import weka.core.Instance;
 import wekimini.osc.OSCOutput;
 
 /**
@@ -15,7 +16,7 @@ public interface Model {
     
     public String getPrettyName();
     
-    public double computeOutput(double[] inputs);
+    public double computeOutput(Instance inputs) throws Exception;
     
     public String getUniqueIdentifier();
     

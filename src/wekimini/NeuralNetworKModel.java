@@ -6,6 +6,7 @@
 package wekimini;
 
 import java.util.Date;
+import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Instance;
 import wekimini.osc.OSCOutput;
 
@@ -13,22 +14,25 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class SimpleModel implements Model {
+public class NeuralNetworKModel implements Model {
     
     private final String prettyName;
     private final String timestamp;
     private final String myId;
+    private final MultilayerPerceptron wmodel;
     
-    public SimpleModel(String name) { 
+    public NeuralNetworKModel(String name, MultilayerPerceptron wmodel) { 
         this.prettyName = name;
         Date d= new Date();
         timestamp = Long.toString(d.getTime());
+        this.wmodel = wmodel;
         myId = this.prettyName + "_" + timestamp;
     }
     
     @Override
-    public double computeOutput(Instance instance) {
-        return 1.0f;
+    public double computeOutput(Instance instance) throws Exception {
+        //TODO: Where does instances come from?
+        return wmodel.classifyInstance(instance);
     }
     
     @Override
@@ -36,12 +40,6 @@ public class SimpleModel implements Model {
         return myId;
     }
     
-   /*
-    public static void main(String[] args) {
-        SimpleModel m = new SimpleModel("hi");
-        System.out.println(m.getUniqueIdentifier());
-    } */
-
     @Override
     public String getPrettyName() {
         return prettyName;
@@ -49,9 +47,8 @@ public class SimpleModel implements Model {
 
     @Override
     public boolean isCompatible(OSCOutput o) {
+        //Might tweak this for hard/soft limits... Not sure how to handle this ; in path?
         return true;
     }
-
-   
     
 }

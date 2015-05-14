@@ -137,7 +137,7 @@ public class InitInputOutput extends javax.swing.JPanel {
 
         jLabel1.setText("Wekinator listening for inputs and control on port:");
 
-        fieldOscPort.setText("6458");
+        fieldOscPort.setText("6448");
         fieldOscPort.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 fieldOscPortActionPerformed(evt);

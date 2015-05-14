@@ -5,6 +5,7 @@ package wekimini.osc;
 
 import java.util.Random;
 import wekimini.ModelBuilder;
+import wekimini.NeuralNetModelBuilder;
 import wekimini.SimpleModelBuilder;
 import wekimini.util.Util;
 
@@ -104,6 +105,6 @@ public class OSCNumericOutput implements OSCOutput {
     
     @Override
     public ModelBuilder getDefaultModelBuilder() {
-        return new SimpleModelBuilder();
+        return new NeuralNetModelBuilder();
     }
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import weka.core.Instance;
 import weka.core.Instances;
 import wekimini.osc.OSCOutput;
 
@@ -216,11 +217,11 @@ public class Path {
     }
 
     
-    public double compute(double[] inputs) {
+    public double compute(Instance instance) throws Exception {
         //Do something
        // float[] inputs = {1.0f, 1.0f};
         //setOutputValue(model.computeOutput(inputs));
-            return model.computeOutput(inputs);
+        return model.computeOutput(instance);
     }
 
     public boolean canCompute() {

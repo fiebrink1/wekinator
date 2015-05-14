@@ -12,10 +12,13 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.jdesktop.swingworker.SwingWorker;
 import weka.core.Instances;
+import weka.core.Instance;
 import wekimini.osc.OSCOutput;
 import wekimini.util.WeakListenerSupport;
 
@@ -53,7 +56,7 @@ public class LearningManager {
     private int numExamplesThisRound;
 
     public static final String PROP_NUMEXAMPLESTHISROUND = "numExamplesThisRound";
-
+    private static final Logger logger = Logger.getLogger(LearningManager.class.getName());
 
     
     protected PropertyChangeListener trainingWorkerListener = this::trainingWorkerChanged;
@@ -331,9 +334,15 @@ public class LearningManager {
     
     //Right now, this simply won't change indices where mask is false
     public double[] computeValues(double[] inputs, boolean[] computeMask) {
+        logger.log(Level.INFO, "HI"); //TODO remove
         for (int i = 0; i < computeMask.length; i++) {
             if (computeMask[i] && paths.get(i).canCompute()) {
-                myComputedOutputs[i] = paths.get(i).compute(inputs);
+                Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, i);
+                try {
+                    myComputedOutputs[i] = paths.get(i).compute(instance);
+                } catch (Exception ex) {
+                    logger.log(Level.SEVERE, "Error encountered in computing: {0}", ex.getMessage());
+                }
             } else {
                 myComputedOutputs[i] = w.getOutputManager().getCurrentValues()[i];
             }
