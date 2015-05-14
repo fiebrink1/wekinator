@@ -77,7 +77,7 @@ public class LearningPanel extends javax.swing.JPanel {
             if (w.getLearningManager().wasCancelled()) {
                 setStatus("Training was cancelled.");
             } else {
-                int n = w.getLearningManager().getNumRunnableModels();
+                int n = w.getLearningManager().numRunnableModels();
                 if (n > 0) {
                     setStatus("Training completed. Press \"Run\" to run trained models.");
                 } else {
