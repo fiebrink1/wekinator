@@ -170,7 +170,8 @@ public class OutputManager {
             }
             System.arraycopy(d, 0, currentValues, 0, d.length);
             notifyValueReceivedListeners(d);
-        } else {
+        } else if (currentValues.length != 0) { //Don't warn if we're not set up yet
+            
             String msg = "Error: Output values received but message is wrong length: "
                     + "Expected " + currentValues.length + " values, received "
                     + d.length;

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -67,6 +68,8 @@ public class DataManager {
 
     public static final String PROP_NUMEXAMPLESPEROUTPUT = "numExamplesPerOutput";
 
+    private Instance[] deletedTrainingRound = null;
+    
     /**
      * Get the value of numExamplesPerOutput
      *
@@ -346,6 +349,18 @@ public class DataManager {
         return instance;   
     }
     
+    //Could probably make this more efficient...
+    public int getNumExamplesInRound(int round) {
+        int num = 0;
+        for (int i = 0; i < allInstances.numInstances(); i++) {
+            Instance in = allInstances.instance(i);
+            if (in.value(trainingIndex) == round) {
+                num++;
+            }
+        }
+        return num;
+    }
+    
     public Instance[] getClassifiableInstancesForAllOutputs(double[] vals) {
 
         double data[] = new double[numMetaData + numInputs + numOutputs];
@@ -382,6 +397,8 @@ public class DataManager {
     } */
     
     public boolean deleteTrainingRound(int which) {
+        List<Instance> deleted = new LinkedList<Instance>();
+                
         if (allInstances.numInstances() > 0) {
             int r = which;
             for (int i = allInstances.numInstances()-1; i >=0 ; i--) {
@@ -392,12 +409,14 @@ public class DataManager {
                             //soutputInstanceCounts[j]--; //TODO: Test this
                         }
                     }
-                    allInstances.delete(i);    
+                    deleted.add(allInstances.instance(i));
+                    allInstances.delete(i);
                 }
             }
             if (allInstances.numInstances() == 0) {
                 setHasInstances(false);
             }
+            deletedTrainingRound = deleted.toArray(new Instance[0]);
             fireStateChanged();
             return true;
         } else {
@@ -405,8 +424,39 @@ public class DataManager {
         }
     }
     
-    public void deleteAll() {
+    public void reAddDeletedTrainingRound() {
+        if (deletedTrainingRound != null) {
+            for (int i = 0; i < deletedTrainingRound.length; i++) {
+                Instance in = deletedTrainingRound[i];
+                for (int j = 0; j < numOutputs; j++) {
+                    if (!in.isMissing(numMetaData + numInputs + j)) {
+                        setNumExamplesPerOutput(j, getNumExamplesPerOutput(j)+1);
+                    }
+                }
+                
+                in.setDataset(allInstances);
+                allInstances.add(in);
+                setHasInstances(true);
+                fireStateChanged();  
+            }
+            
+            //Could get interesting behavior if we allow multiple re-adds; don't do this now.
+            deletedTrainingRound = null;
+        }
+    }
+    
+    public int getNumDeletedTrainingRound() {
+        if (deletedTrainingRound == null) {
+            return 0;
+        } else {
+            return deletedTrainingRound.length;
+        }
+            
+    }
+    
+    public void deleteAll() {        
         setHasInstances(false);
+        allInstances.delete();
         for (int i = 0; i < numOutputs; i++) {
             setNumExamplesPerOutput(i, 0);
            // outputInstanceCounts[i] = 0;

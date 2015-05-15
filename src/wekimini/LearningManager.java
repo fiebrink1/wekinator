@@ -81,6 +81,10 @@ public class LearningManager {
     public RecordingState getRecordingState() {
         return recordingState;
     }
+    
+    public int getRecordingRound() {
+        return recordingRound;
+    }
 
     /**
      * Set the value of recordingState
