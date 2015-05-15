@@ -334,7 +334,6 @@ public class LearningManager {
     
     //Right now, this simply won't change indices where mask is false
     public double[] computeValues(double[] inputs, boolean[] computeMask) {
-        logger.log(Level.INFO, "HI"); //TODO remove
         for (int i = 0; i < computeMask.length; i++) {
             if (computeMask[i] && paths.get(i).canCompute()) {
                 Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, i);

@@ -35,12 +35,6 @@ public class SimpleModel implements Model {
     public String getUniqueIdentifier() {
         return myId;
     }
-    
-   /*
-    public static void main(String[] args) {
-        SimpleModel m = new SimpleModel("hi");
-        System.out.println(m.getUniqueIdentifier());
-    } */
 
     @Override
     public String getPrettyName() {
