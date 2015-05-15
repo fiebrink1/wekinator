@@ -50,7 +50,7 @@ public class Path {
     private final OSCOutput output;
     private String outputName;
     private final Wekinator w;
-    private double outputValue;
+    //private double outputValue;
     //
    
     
@@ -192,9 +192,9 @@ public class Path {
      *
      * @param outputValue new value of outputValue
      */
-    public void setOutputValue(double outputValue) {
+   /* public void setOutputValue(double outputValue) {
         this.outputValue = outputValue;
-    }
+    } */
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 

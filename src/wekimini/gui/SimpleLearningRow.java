@@ -111,6 +111,8 @@ public class SimpleLearningRow extends javax.swing.JPanel {
      * Set the value of value
      *
      * @param value new value of value
+     * TODO: This should probably NOT result in call to learning manager output value change!
+     *      Put that in a separate function that's called only when GUI is modified.
      */
     public void setValue(double value) {
         double oldValue = this.value;
@@ -118,7 +120,13 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         propertyChangeSupport.firePropertyChange(PROP_VALUE, oldValue, value);
     }
 
+    //This should only be 
     public void setValueQuietly(double value) {
+        setValueOnlyForDisplay(value);
+        w.getLearningManager().setOutputValueForPath(value, myPath);
+    }
+    
+    public void setValueOnlyForDisplay(double value) {
         this.value = value;
         if (isClassifier) {
             comboClassifier.setSelectedIndex((int) value - 1);
@@ -126,7 +134,6 @@ public class SimpleLearningRow extends javax.swing.JPanel {
             setSliderValueScaled(value);
             textModelValue.setText(dFormat.format(value)); //TODO pretty format?
         }
-        w.getLearningManager().setOutputValueForPath(value, myPath);
     }
 
     public void setModelName(String name) {

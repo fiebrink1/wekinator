@@ -56,6 +56,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         setup(w, ps, modelNames);
     }
     
+    //TODO: check if this setValue here is resulting in duplicate call to learning manager value change
     //Assumes that ordering of outputs is never going to change; don't have to look up anything or refer to LearningManager.
     private void outputValuesComputed(double[] vals) {
         for (int i = 0; i < vals.length; i++) {
@@ -63,9 +64,10 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         }
     }
     
+    //Called when new output values received via OSC (not via GUI, not computed)
     private void outputValuesReceived(double[] vals) {
         for (int i = 0; i < vals.length; i++) {
-            pathPanels.get(i).setValue(vals[i]);
+            pathPanels.get(i).setValueOnlyForDisplay(vals[i]);
         }
     }
 

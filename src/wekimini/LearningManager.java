@@ -420,7 +420,7 @@ public class LearningManager {
     public void setOutputValueForPath(double value, Path p) {
         w.getOutputManager().setNewValueFromGUI(pathsToOutputIndices.get(p), value);
     }
-    
+
     public void deleteAllExamples() {
         w.getDataManager().deleteAll();
         setLearningState(LearningState.NOT_READY_TO_TRAIN);
