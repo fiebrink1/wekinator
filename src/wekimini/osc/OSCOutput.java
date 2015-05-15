@@ -23,5 +23,7 @@ public interface OSCOutput {
     public double getDefaultValue();
     
     public ModelBuilder getDefaultModelBuilder();
+    
+    public boolean isLegalOutputValue(double value);
 
 }

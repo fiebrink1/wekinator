@@ -5,6 +5,10 @@
  */
 package wekimini.gui;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  *
  * @author rebecca
@@ -140,6 +144,19 @@ public class Temp extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Temp().setVisible(true);
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+                    SimpleDateFormat prettyDateFormat = new SimpleDateFormat("MM/dd HH:mm:ss:SSS");
+                    Date d = new Date();
+                    String s = dateFormat.format(d);
+                    System.out.println(s);
+                    Long db = Long.parseLong(s);
+                    System.out.println("long is " + db);
+                    //System.out.println("Read string is" + readString);
+                    DecimalFormat df = new DecimalFormat("#################");
+                    String readString2 = df.format(db);
+                    System.out.println("Readstring 2 is " + readString2);
+    
+                
             }
         });
     }

@@ -64,4 +64,13 @@ public class OSCClassificationOutput implements OSCOutput {
         return new SimpleModelBuilder();
     }
 
+    @Override
+    public boolean isLegalOutputValue(double value) {
+        if (value < 1 || value > numClasses) { //out of range
+            return false;
+        }
+        
+        return value == Math.floor(value); //is it really an int?
+    }
+
 }

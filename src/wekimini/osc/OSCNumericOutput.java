@@ -15,6 +15,7 @@ import wekimini.util.Util;
  */
 public class OSCNumericOutput implements OSCOutput {
     private final String name;
+
     public static enum NumericOutputType {INTEGER, REAL};
     public static enum LimitType {HARD, SOFT};
     private final float min;
@@ -106,5 +107,14 @@ public class OSCNumericOutput implements OSCOutput {
     @Override
     public ModelBuilder getDefaultModelBuilder() {
         return new NeuralNetModelBuilder();
+    }
+    
+    
+    @Override
+    public boolean isLegalOutputValue(double value) {
+        //NOTE: Decision to not return false if value outside hard limits, because
+        //this could be used in interesting ways during training.
+        
+        return true;
     }
 }

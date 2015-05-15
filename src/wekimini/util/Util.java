@@ -165,5 +165,25 @@ public class Util {
          Logger.getLogger(o.getClass().getName()).log(Level.WARNING, msg);
     }
 
+    public static File findSaveFile(String ext, String defaultName, String description, Component c) {
+        String homeDir = System.getProperty("user.home");
+        File defaultFile = new File(homeDir + File.separator + defaultName + "." + ext);
+
+        FileChooserWithExtension fc = new FileChooserWithExtension(
+                ext,
+                description,
+                defaultFile,
+                null,
+                true);
+
+        File file = null;
+        int returnVal = fc.showSaveDialog(c);
+        if (returnVal == FileChooserWithExtension.APPROVE_OPTION) {
+            file = fc.getSelectedFile();
+           // fc.getCu
+        }
+        return file;
+
+     }
     
 }

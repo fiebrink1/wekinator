@@ -16,6 +16,7 @@ import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import wekimini.Path;
 import wekimini.Path.ModelState;
@@ -50,16 +51,24 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     private boolean hasChanged = false;
 
     //Colors for Path status
-    private static final Color notTrainedColor = new Color(235, 235, 235);
+   /* private static final Color notTrainedColor = new Color(235, 235, 235);
     private static final Color trainedColor = new Color(153, 255, 0);
     private static final Color needsRetrainingColor = new Color(255, 153, 0);
-    private static final Color trainingColor = new Color(0, 204, 255);
+    private static final Color trainingColor = new Color(0, 204, 255); */
     private double value = 1.0;
 
     public static final String PROP_VALUE = "value";
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
+    private String statusText = "No model built";
+    private final ImageIcon noModelIcon = new ImageIcon(getClass().getResource("/wekimini/icons/whitelight.png")); // NOI18N
+    private final ImageIcon trainedIcon = new ImageIcon(getClass().getResource("/wekimini/icons/greenlight.png")); // NOI18N
+    private final ImageIcon needsRetrainingIcon = new ImageIcon(getClass().getResource("/wekimini/icons/yellowlight.png")); // NOI18N
+    private final ImageIcon trainingIcon = new ImageIcon(getClass().getResource("/wekimini/icons/pinklight.png")); // NOI18N
+
+    
+    
     /**
      * Add PropertyChangeListener.
      *
@@ -180,16 +189,22 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     private void updateModelState(Path.ModelState modelState) {
         Color c;
         if (modelState == ModelState.NOT_READY || modelState == ModelState.READY_FOR_BUILDING) {
-            c = notTrainedColor;
+            labelModelStatus.setIcon(noModelIcon);
+            labelModelStatus.setToolTipText("No model built");
         } else if (modelState == ModelState.BUILDING) {
-            c = trainingColor;
+            labelModelStatus.setIcon(trainingIcon);
+            labelModelStatus.setToolTipText("Model is being trained...");
+
         } else if (modelState == ModelState.BUILT) {
-            c = trainedColor;
+            labelModelStatus.setIcon(trainedIcon);
+            labelModelStatus.setToolTipText("Model is trained and up to date");
+
         } else { // if (modelState == ModelState.NEEDS_REBUILDING) {
-            c = needsRetrainingColor;
+            labelModelStatus.setIcon(needsRetrainingIcon);
+            labelModelStatus.setToolTipText("Model is out of date; needs re-training");
         }
 
-        panelMain.setBackground(c);
+        //panelMain.setBackground(c);
     }
 
     private void updateNumExamples(int num) {
@@ -318,6 +333,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         toggleLearnerRecord = new javax.swing.JToggleButton();
         buttonEditLearner = new javax.swing.JButton();
         warningPanel = new javax.swing.JPanel();
+        labelModelStatus = new javax.swing.JLabel();
         panelModelOutput = new javax.swing.JPanel();
         cardClassifier = new javax.swing.JPanel();
         comboClassifier = new javax.swing.JComboBox();
@@ -350,13 +366,14 @@ public class SimpleLearningRow extends javax.swing.JPanel {
 
         add(jPanel1);
 
-        panelMain.setBackground(new java.awt.Color(0, 204, 255));
+        panelMain.setBackground(new java.awt.Color(255, 255, 255));
         panelMain.setMaximumSize(new java.awt.Dimension(540, 70));
         panelMain.setPreferredSize(new java.awt.Dimension(540, 70));
         panelMain.setSize(new java.awt.Dimension(540, 70));
 
         labelModelName.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
         labelModelName.setText("MaxVolume1_1");
+        labelModelName.setToolTipText("Model name");
 
         sliderModelValue.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -388,6 +405,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         buttonDeleteLearnerExamples.setBackground(new java.awt.Color(255, 255, 255));
         buttonDeleteLearnerExamples.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         buttonDeleteLearnerExamples.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/x2.png"))); // NOI18N
+        buttonDeleteLearnerExamples.setToolTipText("Delete training examples for this model (will not affect other models)");
         buttonDeleteLearnerExamples.setMaximumSize(new java.awt.Dimension(31, 32));
         buttonDeleteLearnerExamples.setMinimumSize(new java.awt.Dimension(31, 32));
         buttonDeleteLearnerExamples.setPreferredSize(new java.awt.Dimension(31, 32));
@@ -403,6 +421,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         toggleLearnerPlay.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         toggleLearnerPlay.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/play.png"))); // NOI18N
         toggleLearnerPlay.setSelected(true);
+        toggleLearnerPlay.setToolTipText("Change run status (whether this model computes outputs when Wekinator is running)");
         toggleLearnerPlay.setPreferredSize(new java.awt.Dimension(30, 30));
         toggleLearnerPlay.setSize(new java.awt.Dimension(30, 30));
         toggleLearnerPlay.addActionListener(new java.awt.event.ActionListener() {
@@ -413,6 +432,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
 
         toggleLearnerRecord.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/record1.png"))); // NOI18N
         toggleLearnerRecord.setSelected(true);
+        toggleLearnerRecord.setToolTipText("Change recording status (whether new examples are recorded into this model's training set)");
         toggleLearnerRecord.setSize(new java.awt.Dimension(30, 30));
         toggleLearnerRecord.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -422,7 +442,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
 
         buttonEditLearner.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         buttonEditLearner.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/pencil1.png"))); // NOI18N
-        buttonEditLearner.setToolTipText("");
+        buttonEditLearner.setToolTipText("Edit this model");
         buttonEditLearner.setMaximumSize(new java.awt.Dimension(30, 30));
         buttonEditLearner.setMinimumSize(new java.awt.Dimension(30, 30));
         buttonEditLearner.setPreferredSize(new java.awt.Dimension(30, 30));
@@ -436,15 +456,24 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         warningPanel.setOpaque(false);
         warningPanel.setPreferredSize(new java.awt.Dimension(30, 30));
 
+        labelModelStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/yellowlight.png"))); // NOI18N
+        labelModelStatus.setToolTipText(statusText);
+        labelModelStatus.setAlignmentX(0.5F);
+
         javax.swing.GroupLayout warningPanelLayout = new javax.swing.GroupLayout(warningPanel);
         warningPanel.setLayout(warningPanelLayout);
         warningPanelLayout.setHorizontalGroup(
             warningPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 30, Short.MAX_VALUE)
+            .addGroup(warningPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(labelModelStatus)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         warningPanelLayout.setVerticalGroup(
             warningPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 30, Short.MAX_VALUE)
+            .addGroup(warningPanelLayout.createSequentialGroup()
+                .addComponent(labelModelStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         panelModelOutput.setLayout(new java.awt.CardLayout());
@@ -691,6 +720,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JLabel labelModelName;
+    private javax.swing.JLabel labelModelStatus;
     private javax.swing.JLabel labelNumExamples;
     private javax.swing.JPanel panelMain;
     private javax.swing.JPanel panelModelOutput;
