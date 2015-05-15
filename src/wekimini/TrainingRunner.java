@@ -22,6 +22,7 @@ import wekimini.util.Util;
  * @author rebecca
  */
 public class TrainingRunner {
+
     private Wekinator w;
     private transient SwingWorker trainingWorker = null;
     protected TrainingStatus trainingProgress = new TrainingStatus();
@@ -32,15 +33,15 @@ public class TrainingRunner {
     private ChangeEvent cancelEvent = null;
     private boolean wasCancelled = false;
     private static final Logger logger = Logger.getLogger(TrainingRunner.class.getName());
-    
+
     public TrainingRunner(Wekinator w) {
         this.w = w;
     }
-    
+
     public boolean wasCancelled() {
         return wasCancelled;
     }
-    
+
     /**
      * Get the value of trainingProgress
      *
@@ -49,7 +50,7 @@ public class TrainingRunner {
     public TrainingStatus getTrainingProgress() {
         return trainingProgress;
     }
-    
+
     public void addCancelledListener(ChangeListener l) {
         cancelListenerList.add(ChangeListener.class, l);
     }
@@ -57,20 +58,20 @@ public class TrainingRunner {
     public void removeCancelledListener(ChangeListener l) {
         cancelListenerList.remove(ChangeListener.class, l);
     }
-    
+
     private void fireCancelled() {
         Object[] listeners = cancelListenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -=2 ) {
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == ChangeListener.class) {
                 if (cancelEvent == null) {
                     cancelEvent = new ChangeEvent(this);
                 }
-                ((ChangeListener)listeners[i+1]).stateChanged(cancelEvent);
+                ((ChangeListener) listeners[i + 1]).stateChanged(cancelEvent);
             }
         }
     }
-    
-        /**
+
+    /**
      * Add PropertyChangeListener.
      *
      * @param listener
@@ -88,7 +89,6 @@ public class TrainingRunner {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
-    
     public void cancel() {
         trainingWorker.cancel(true);
         //No need to call "fireCancelled": worker itself will do this.
@@ -105,83 +105,91 @@ public class TrainingRunner {
         this.trainingProgress = trainingProgress;
         propertyChangeSupport.firePropertyChange(PROP_TRAININGPROGRESS, oldTrainingProgress, trainingProgress);
     }
-    
+
+    private void cancelMe(Path p) {
+        logger.log(Level.WARNING, "TRAINING CANCELLED");
+        wasCancelled = true;
+        fireCancelled();
+        System.out.println("Training was cancelled");
+        p.trainingWasInterrupted();
+    }
+
     public void buildAll(List<Path> paths, List<Instances> data, PropertyChangeListener listener) {
-            if (trainingWorker != null && trainingWorker.getState() != SwingWorker.StateValue.DONE) {
-                return;
-            }
-            trainingRound++;
-            trainingWorker = new SwingWorker<Integer, Void>() {
+        if (trainingWorker != null && trainingWorker.getState() != SwingWorker.StateValue.DONE) {
+            return;
+        }
+        trainingRound++;
+        trainingWorker = new SwingWorker<Integer, Void>() {
 
-                //trainingWorker.
-                @Override
-                public Integer doInBackground() {
-                    // train(); //TODO: Add status updates
-                    int progress = 0;
-                    //setProgress(progress);
-                    int numToTrain = 0;
-                    for (Path p : paths) {
-                        if (p.canBuild()) {
-                            numToTrain++;
-                        }
+            //trainingWorker.
+            @Override
+            public Integer doInBackground() {
+                // train(); //TODO: Add status updates
+                int progress = 0;
+                //setProgress(progress);
+                int numToTrain = 0;
+                for (Path p : paths) {
+                    if (p.canBuild()) {
+                        numToTrain++;
                     }
+                }
 
-                    int numTrained = 0;
-                    int numErr = 0;
-                    setTrainingProgress(new TrainingStatus(numToTrain, numTrained, numErr, false));
+                int numTrained = 0;
+                int numErr = 0;
+                setTrainingProgress(new TrainingStatus(numToTrain, numTrained, numErr, false));
 
-                    for (int i = 0; i < paths.size(); i++) {
-                        Path p = paths.get(i);
-                        if (p.canBuild()) {
+                for (int i = 0; i < paths.size(); i++) {
+                    Path p = paths.get(i);
+                    if (p.canBuild()) {
                         //TODO: Check if trainable!
                         try {
                             p.buildModel(
-                                p.getOSCOutput().getName() + "-" + trainingRound,
-                                data.get(i));
+                                    p.getOSCOutput().getName() + "-" + trainingRound,
+                                    data.get(i));
                             numTrained++;
 
-                        } catch (InterruptedException ex) {
-                                wasCancelled = true;
-                                fireCancelled();
-                                System.out.println("Training was cancelled");
-                                p.trainingWasInterrupted();
-                                return 0; //Not sure this will be called...
-                        } catch (Exception ex) {
-                                numErr++;
-                                Util.showPrettyErrorPane(null, "Error encountered during training " + p.getCurrentModelName() + ": " + ex.getMessage());
-                                logger.log(Level.SEVERE, ex.getMessage());
-                                //Logger.getLogger(LearningManager.class.getName()).log(Level.SEVERE, null, ex);
-                                //TODO: test this works when error actually occurs in learner
-                        } 
-                        setTrainingProgress(new TrainingStatus(numToTrain, numTrained, numErr, false));
-                        }
+                            if (isCancelled()) {
+                                cancelMe(p);
+                                return 0;
+                            }
 
+                        } catch (InterruptedException ex) {
+                            cancelMe(p);
+                            return 0; //Not sure this will be called...
+                        } catch (Exception ex) {
+                            numErr++;
+                            Util.showPrettyErrorPane(null, "Error encountered during training " + p.getCurrentModelName() + ": " + ex.getMessage());
+                            logger.log(Level.SEVERE, ex.getMessage());
+                                //Logger.getLogger(LearningManager.class.getName()).log(Level.SEVERE, null, ex);
+                            //TODO: test this works when error actually occurs in learner
+                        }
+                        setTrainingProgress(new TrainingStatus(numToTrain, numTrained, numErr, false));
                     }
-                    
+
+                }
 
                         // System.out.println("progress is " + progress);
-               
-                    wasCancelled= false;
-                    return 0;
-                }
+                wasCancelled = false;
+                return 0;
+            }
 
-                @Override
-                public void done() {
-                    //setProgress(numParams+1);
-                    System.out.println("thread is done");
-                    if (isCancelled()) {
-                        TrainingStatus t = new TrainingStatus(trainingProgress.numToTrain, trainingProgress.numTrained, trainingProgress.numErrorsEncountered, true);
-                        // trainingProgress.wasCancelled = true;
-                        setTrainingProgress(t);
-                        System.out.println("I was cancelled");
-                    }
+            @Override
+            public void done() {
+                //setProgress(numParams+1);
+                System.out.println("thread is done");
+                if (isCancelled()) {
+                    TrainingStatus t = new TrainingStatus(trainingProgress.numToTrain, trainingProgress.numTrained, trainingProgress.numErrorsEncountered, true);
+                    // trainingProgress.wasCancelled = true;
+                    setTrainingProgress(t);
+                    System.out.println("I was cancelled");
                 }
-            };
-            trainingWorker.addPropertyChangeListener(listener);
-            trainingWorker.execute();
+            }
+        };
+        trainingWorker.addPropertyChangeListener(listener);
+        trainingWorker.execute();
     }
-    
-     public static class TrainingStatus {
+
+    public static class TrainingStatus {
 
         private int numToTrain = 0;
         private int numTrained = 0;
@@ -213,12 +221,10 @@ public class TrainingRunner {
         public boolean isWasCancelled() {
             return wasCancelled;
         }
-        
-        
-        
+
         @Override
         public String toString() {
             return numTrained + "/" + numToTrain + " trained, " + numErrorsEncountered + " errors, cancelled=" + wasCancelled;
         }
-    }   
+    }
 }
