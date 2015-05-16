@@ -5,6 +5,7 @@ package wekimini.osc;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import wekimini.util.Util;
@@ -14,7 +15,7 @@ import wekimini.util.Util;
  * @author rebecca
  */
 public class OSCOutputGroup {
-   //private final String oscMessage;
+    private final String oscMessage; //Does make sense to save this with OSC output group
    // private final String hostName;
    // private final int outputPort;
     private final List<OSCOutput> outputs;
@@ -57,6 +58,11 @@ public class OSCOutputGroup {
         }
         return s;
     }
+
+    public String getOscMessage() {
+        return oscMessage;
+    }
+    
     
     
     /**
@@ -68,13 +74,14 @@ public class OSCOutputGroup {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
-    public OSCOutputGroup(List<OSCOutput> outputs) 
+    public OSCOutputGroup(List<OSCOutput> outputs, String oscMessage) 
     {
-        if (outputs == null || outputs.size() == 0) {
+        if (outputs == null || outputs.isEmpty()) {
             throw new IllegalArgumentException("outputs must be a non-null list with at least one element");
         }
         this.outputs = new LinkedList<>(outputs);
         values = new float[outputs.size()];
+        this.oscMessage = oscMessage; //will copy value
     }
     
     public OSCOutput getOutput(int which) {
@@ -84,6 +91,15 @@ public class OSCOutputGroup {
     @Override
     public String toString() {
         return Util.toXMLString(this, "OSCOutputGroup", OSCOutputGroup.class);
+    }
+
+    public void writeToFile(String filename) throws IOException {
+       Util.writeToXMLFile(this, "OSCOutputGroup", OSCOutputGroup.class, filename);
+    }
+    
+    public static OSCOutputGroup readFromFile(String filename) throws Exception {
+        OSCOutputGroup g = (OSCOutputGroup) Util.readFromXMLFile("OSCOutputGroup", OSCOutputGroup.class, filename);
+        return g;
     }
 
     

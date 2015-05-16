@@ -113,6 +113,10 @@ public class Temp extends javax.swing.JFrame {
         jPopupMenu1.show(this, this.getMousePosition().x, this.getMousePosition().y);
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private static void changeString(String s) {
+        s = "123";
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -156,7 +160,9 @@ public class Temp extends javax.swing.JFrame {
                     String readString2 = df.format(db);
                     System.out.println("Readstring 2 is " + readString2);
     
-                
+                    String test1 = "ABC";
+                    changeString(test1);
+                    System.out.println("After, test1 is" + test1);
             }
         });
     }

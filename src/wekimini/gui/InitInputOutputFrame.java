@@ -724,7 +724,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 OSCClassificationOutput o = new OSCClassificationOutput(currentOutputNames[i], numClasses);
                 outputs.add(o);
             }
-            OSCOutputGroup og = new OSCOutputGroup(outputs);
+            OSCOutputGroup og = new OSCOutputGroup(outputs, oscMessage);
             return og;
         } else if (comboOutputType.getSelectedIndex() == COMBO_REGRESSION_INDEX) {
             List<OSCOutput> outputs = new LinkedList<>();
@@ -737,7 +737,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                         OSCNumericOutput.LimitType.SOFT);
                 outputs.add(o);
             }
-            OSCOutputGroup og = new OSCOutputGroup(outputs);
+            OSCOutputGroup og = new OSCOutputGroup(outputs, oscMessage);
             return og;
         } else {
             //TODO do something about this
@@ -780,7 +780,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         if (checkOSCReady() && checkInputReady() && checkOutputReady()) {
             //System.out.println("READY TO GO");
             try {
-                configureOSCSenderFromForm();
+            configureOSCSenderFromForm();
             
             OSCInputGroup inputGroup = getInputGroupFromForm();
             OSCOutputGroup outputGroup = getOutputGroupFromForm();

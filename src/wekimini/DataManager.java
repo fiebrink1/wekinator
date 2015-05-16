@@ -703,6 +703,7 @@ public class DataManager {
         viewer.setVisible(true);
         viewer.toFront();
                 */
+        if (!isShowingViewer) {
         isShowingViewer = true;
         DatasetViewer viewer = new DatasetViewer(this);
         viewer.setVisible(true);
@@ -738,5 +739,6 @@ public class DataManager {
                 public void windowDeactivated(WindowEvent e) {
                 }
             });
+        }
     }
 }

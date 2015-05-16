@@ -66,7 +66,15 @@ public class Util {
         return response;
     }
     
-    public static void writeToXMLFile(Object o, String id, Class c, String filename) {
+    public static void writeBlankFile(String filename) throws IOException {
+        File f = new File(filename);
+        if (f.exists()) {
+            f.delete();
+        } 
+        f.createNewFile();
+    }
+    
+    public static void writeToXMLFile(Object o, String id, Class c, String filename) throws FileNotFoundException, IOException {
        FileOutputStream fos = null;
         try {
             XStream xstream = new XStream();
@@ -75,18 +83,27 @@ public class Util {
             //System.out.println(xml);
             fos = new FileOutputStream(filename);
             fos.write("<?xml version=\"1.0\"?>\n".getBytes("UTF-8")); //write XML header, as XStream doesn't do that for us
-            xstream.toXML(o, fos);
+            if (o != null) {
+                xstream.toXML(o, fos);
+            } 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
             try {
                 if (fos != null)
                     fos.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex2) {
+                //Don't care
             }
+            throw ex;
+        } catch (IOException ex) {
+            Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                if (fos != null)
+                    fos.close();
+            } catch (IOException ex2) {
+                //Don't care
+            }
+            throw ex;
         }
     }
 

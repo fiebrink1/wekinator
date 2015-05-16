@@ -56,9 +56,7 @@ public class OSCInputGroup {
         this.groupName = groupName;
         
         this.inputNames = new String[numInputs];
-        for (int i = 0; i < numInputs; i++) {
-            this.inputNames[i] = inputNames[i];
-        } 
+        System.arraycopy(inputNames, 0, this.inputNames, 0, numInputs); 
     }
 
     public String getOscMessage() {
@@ -77,8 +75,10 @@ public class OSCInputGroup {
         return inputNames;
     }
 
-   public void writeToFile(String filename) {
-       FileOutputStream fos = null;
+   public void writeToFile(String filename) throws IOException {
+      Util.writeToXMLFile(this, "OSCInputGroup", OSCInputGroup.class, filename);
+
+      /* FileOutputStream fos = null;
         try {
             XStream xstream = new XStream();
             xstream.alias("OSCInputGroup", OSCInputGroup.class);
@@ -93,22 +93,27 @@ public class OSCInputGroup {
             Logger.getLogger(OSCInputGroup.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
-                fos.close();
+                if (fos != null) {
+                    fos.close();
+                }
             } catch (IOException ex) {
                 Logger.getLogger(OSCInputGroup.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        } */
     }
 
     public static OSCInputGroup readFromFile(String filename) throws Exception {
-        XStream xstream = new XStream();
+      OSCInputGroup g = (OSCInputGroup) Util.readFromXMLFile("OSCInputGroup", OSCInputGroup.class, filename);
+      return g;
+        
+        /*  XStream xstream = new XStream();
         xstream.alias("OSCInputGroup", OSCInputGroup.class);
         try {
             return (OSCInputGroup)xstream.fromXML(new File(filename));
         } catch (Exception ex) {
             System.out.println("exception: " + ex.toString());
             return null; //TODO
-        }
+        } */
     } 
 
     @Override

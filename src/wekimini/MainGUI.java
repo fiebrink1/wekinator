@@ -11,6 +11,7 @@ import java.awt.event.WindowStateListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import wekimini.gui.NewProjectSettingsFrame;
 import wekimini.osc.OSCInputGroup;
 
 /**
@@ -168,7 +169,9 @@ public class MainGUI extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         learningPanel1 = new wekimini.gui.LearningPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        menuFile = new javax.swing.JMenu();
+        menuItemSave = new javax.swing.JMenuItem();
+        menuItemSaveAs = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -190,8 +193,24 @@ public class MainGUI extends javax.swing.JFrame {
             .addComponent(learningPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
         );
 
-        jMenu1.setText("File");
-        jMenuBar1.add(jMenu1);
+        menuFile.setMnemonic('F');
+        menuFile.setText("File");
+
+        menuItemSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.META_MASK));
+        menuItemSave.setText("Save");
+        menuItemSave.setToolTipText("");
+        menuItemSave.setEnabled(false);
+        menuFile.add(menuItemSave);
+
+        menuItemSaveAs.setText("Save project as...");
+        menuItemSaveAs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemSaveAsActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuItemSaveAs);
+
+        jMenuBar1.add(menuFile);
 
         jMenu2.setText("View");
 
@@ -207,6 +226,7 @@ public class MainGUI extends javax.swing.JFrame {
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Actions");
+        jMenu3.setEnabled(false);
         jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
@@ -224,6 +244,10 @@ public class MainGUI extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void menuItemSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemSaveAsActionPerformed
+        new NewProjectSettingsFrame(w).setVisible(true);
+    }//GEN-LAST:event_menuItemSaveAsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -269,7 +293,6 @@ public class MainGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
@@ -278,6 +301,9 @@ public class MainGUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private wekimini.gui.LearningPanel learningPanel1;
+    private javax.swing.JMenu menuFile;
+    private javax.swing.JMenuItem menuItemSave;
+    private javax.swing.JMenuItem menuItemSaveAs;
     // End of variables declaration//GEN-END:variables
 
     void displayEditOutput(String name) {

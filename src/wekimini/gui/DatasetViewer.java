@@ -82,6 +82,11 @@ public class DatasetViewer extends javax.swing.JFrame {
         jLabel1.setText("jLabel1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         buttonDone.setText("Done");
         buttonDone.addActionListener(new java.awt.event.ActionListener() {
@@ -174,6 +179,8 @@ public class DatasetViewer extends javax.swing.JFrame {
         /* if (WekinatorRunner.isLogging()) {
          Plog.log(Msg.DATA_VIEWER_DONE);
          } */
+        model.prepareToDie();
+
         this.dispose();
     }//GEN-LAST:event_buttonDoneActionPerformed
 
@@ -263,6 +270,10 @@ public class DatasetViewer extends javax.swing.JFrame {
         
 
     }//GEN-LAST:event_comboWhichOutputsActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        model.prepareToDie();
+    }//GEN-LAST:event_formWindowClosing
 
     private void hideAllOutputsBut(int which) {
         int j = 0;

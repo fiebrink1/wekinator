@@ -122,7 +122,7 @@ public class InputManager {
         propertyChangeSupport.firePropertyChange(PROP_INPUTGROUP, oldGroup, inputGroup);
     }
     
-    public OSCInputGroup getOSCInputGroup(String name) {
+    public OSCInputGroup getOSCInputGroup() {
         return inputGroup;
     }
 

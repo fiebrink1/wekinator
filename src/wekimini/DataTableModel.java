@@ -5,8 +5,6 @@
 
 package wekimini;
 
-import java.text.ParseException;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.ChangeEvent;
@@ -23,7 +21,9 @@ public class DataTableModel extends AbstractTableModel {
     private String[] columnNames;
     int numMetaData, numInputs, numOutputs;
     private static final Logger logger = Logger.getLogger(DataTableModel.class.getName());
-
+    private final ChangeListener tableChangeListener;
+    
+    
     public DataTableModel(DataManager m) {
         this.m = m;
         this.numInputs = m.getNumInputs();
@@ -31,13 +31,21 @@ public class DataTableModel extends AbstractTableModel {
         this.numMetaData = 3; //for now, ID, time, & training round
         setColNames();
         
-       m.addChangeListener(new ChangeListener() {
+        tableChangeListener = new ChangeListener() {
+            @Override
             public void stateChanged(ChangeEvent e) {
                 fireTableDataChanged(); //TODO for efficiency, update this...
             }
-        });
+        };
+        
+        //This listener needs to be deleted on dispose
+       m.addChangeListener(tableChangeListener);
     }
 
+    public void prepareToDie() {
+        m.removeChangeListener(tableChangeListener);
+    }
+    
     private void setColNames() {
         columnNames = new String[numMetaData + numInputs + numOutputs];
         columnNames[0] = "ID";
@@ -54,7 +62,8 @@ public class DataTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return columnNames.length;
+       // return columnNames.length;
+        return numMetaData + numInputs + numOutputs;
     }
 
     @Override
@@ -107,7 +116,25 @@ public class DataTableModel extends AbstractTableModel {
     @Override
     //TODO does this work for 0-sized table?
     public Class getColumnClass(int c) {
-        return getValueAt(0, c).getClass();
+        //System.out.println("Class for " + c + "is " + getValueAt(0, c).getClass());
+        //return getValueAt(0, c).getClass();
+        if (c == 0) {
+            //ID
+            return Integer.class;
+        } else if (c == 1) {
+            //Date
+            return String.class;
+        } else if (c == 2) {
+            //Recording round
+            return Integer.class;    
+        } else if (c >= 3 && c < (3+ numInputs)) {
+            //It's an input (no "X" allowed for missing data)
+            return Double.class;
+        } else {
+            //Output: "X" is allowed
+            return String.class;
+        }
+            
     }
 
     /*
