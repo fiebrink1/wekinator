@@ -66,7 +66,7 @@ public class NewProjectSettingsFrame extends javax.swing.JFrame {
         buttonCancel = new javax.swing.JButton();
         buttonOK = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         card1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -108,9 +108,9 @@ public class NewProjectSettingsFrame extends javax.swing.JFrame {
                 .addGroup(card1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(card1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(buttonOK)
+                        .addComponent(buttonCancel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buttonCancel))
+                        .addComponent(buttonOK))
                     .addGroup(card1Layout.createSequentialGroup()
                         .addGroup(card1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(card1Layout.createSequentialGroup()
@@ -180,17 +180,25 @@ public class NewProjectSettingsFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonBrowseActionPerformed
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
-        System.exit(0);
+        this.dispose();
     }//GEN-LAST:event_buttonCancelActionPerformed
 
     private void buttonOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOKActionPerformed
+        if (! Util.checkNotBlank(fieldProjectName, "Project name", this)) {
+            return;
+        }
+        //TODO: Check locatio not blank too?
+        
+        String projectName = fieldProjectName.getText().trim();
         File f = new File(fieldProjectLocation.getText() + File.separator + fieldProjectName.getText());
         if (f.exists()) {
             Util.showPrettyErrorPane(this,
                 "Project " + f.getAbsolutePath() + " already exists. Please choose a different project name and/or location.");
         } else {
             try {
-                WekinatorSaver.createNewProject(fieldProjectName.getText(), f, w);
+                w.saveAs(fieldProjectName.getText(), f);
+                //WekinatorSaver.createNewProject();
+                this.dispose();
             } catch (IOException ex) {
                 Util.showPrettyErrorPane(this,
                     "Cannot write to project location. Please choose a different project location.");

@@ -85,7 +85,7 @@ public class LearningPanel extends javax.swing.JPanel {
         int lastRound = w.getLearningManager().getRecordingRound();
         int numLastRound = w.getDataManager().getNumExamplesInRound(lastRound);
         //Look for most recent round with >0 examples recorded.
-        while (lastRound >= 0 && numLastRound == 0) {
+        while (lastRound > 0 && numLastRound == 0) {
             lastRound--;
             numLastRound = w.getDataManager().getNumExamplesInRound(lastRound);
         }

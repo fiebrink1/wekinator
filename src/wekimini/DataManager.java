@@ -79,6 +79,7 @@ public class DataManager {
     private Instance[] deletedTrainingRound = null;
 
     private static final Logger logger = Logger.getLogger(DataManager.class.getName());
+
     /**
      * Get the value of numExamplesPerOutput
      *
@@ -186,10 +187,10 @@ public class DataManager {
         double myVals[] = new double[numMetaData + numInputs + numOutputs];
         myVals[idIndex] = thisId;
         myVals[recordingRoundIndex] = recordingRound;
-        
+
         Date now = new Date();
         //myVals[timestampIndex] = Double.parseDouble(dateFormat.format(now)); //Error: This gives us scientific notation!
-        
+
         String pretty = prettyDateFormat.format(now);
         try {
             myVals[timestampIndex] = allInstances.attribute(timestampIndex).parseDate(pretty);
@@ -198,7 +199,7 @@ public class DataManager {
             myVals[timestampIndex] = 0;
             Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         /*for (int i = 0; i < numInputs; i++) {
          myVals[numMetaData + i] = featureVals[i];
          } */
@@ -274,7 +275,7 @@ public class DataManager {
         //add ID, timestamp, and training round #
         ff.addElement(new Attribute("ID"));
        // ff.addElement(new Attribute("Timestamp")); //yyMMddHHmmss format; stored as String
-        
+
         ff.addElement(new Attribute("Time", prettyDateFormatString));
         ff.addElement(new Attribute("Training round"));
         //new Attribute
@@ -430,11 +431,17 @@ public class DataManager {
     /*public int getNumInstancesForOutput(int which) {
      return outputInstanceCounts[which];
      } */
-    
     public void deleteExample(int whichExample) {
+        for (int j = 0; j < numOutputs; j++) {
+            if (!allInstances.instance(whichExample).isMissing(numMetaData + numInputs + j)) {
+                setNumExamplesPerOutput(j, getNumExamplesPerOutput(j) - 1);
+                //soutputInstanceCounts[j]--; //TODO: Test this
+            }
+        }
         allInstances.delete(whichExample);
+        
     }
-    
+
     public boolean deleteTrainingRound(int which) {
         List<Instance> deleted = new LinkedList<Instance>();
 
@@ -527,7 +534,7 @@ public class DataManager {
             i.setValue(numMetaData + numInputs + whichOutput, val);
         }
         if (changesNumberOfInstances) {
-            setNumExamplesPerOutput(index, getNumExamplesPerOutput(index) + 1);
+            setNumExamplesPerOutput(whichOutput, getNumExamplesPerOutput(whichOutput) + 1);
         }
     }
 
@@ -644,28 +651,28 @@ public class DataManager {
         Instances temp = new Instances(allInstances);
         //Attribute niceDate = new Attribute("Time", nullF); 
       /*  Attribute niceDate = new Attribute("Time", prettyDateFormatString);
-        temp.insertAttributeAt(niceDate, timestampIndex);
+         temp.insertAttributeAt(niceDate, timestampIndex);
 
-        Date d;
-        for (int i = 0; i < temp.numInstances(); i++) {
-            double ddate = temp.instance(i).value(timestampIndex+1);
-            String niceDecimal = decimalFormat.format(ddate);
-            try {
-                d = dateFormat.parse(niceDecimal);
-                String pretty = prettyDateFormat.format(d);
-                temp.instance(i).setValue(timestampIndex, niceDate.parseDate(pretty));
+         Date d;
+         for (int i = 0; i < temp.numInstances(); i++) {
+         double ddate = temp.instance(i).value(timestampIndex+1);
+         String niceDecimal = decimalFormat.format(ddate);
+         try {
+         d = dateFormat.parse(niceDecimal);
+         String pretty = prettyDateFormat.format(d);
+         temp.instance(i).setValue(timestampIndex, niceDate.parseDate(pretty));
 
-            } catch (ParseException ex) {
-                temp.instance(i).setValue(timestampIndex, 0);
-                Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
-            } 
+         } catch (ParseException ex) {
+         temp.instance(i).setValue(timestampIndex, 0);
+         Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+         } 
            
            
-        }
+         }
         
-        temp.deleteAttributeAt(timestampIndex+1);
-        */
-        
+         temp.deleteAttributeAt(timestampIndex+1);
+         */
+
         /*for (int i = 0; i < numFeatures; i++) {
          temp.renameAttribute(i, featureNames[i]);
          }*/
@@ -680,9 +687,9 @@ public class DataManager {
             /* String ds = Double.toString(d); */ //hack
             /*String ds = "" + (int) d;
 
-            while (ds.length() < 9) {
-                ds = "0" + ds;
-            } */
+             while (ds.length() < 9) {
+             ds = "0" + ds;
+             } */
 
             String s = decimalFormat.format(d);
             date = dateFormat.parse(s);
@@ -704,12 +711,12 @@ public class DataManager {
             Instance in = allInstances.instance(index);
             if (in != null) {
                 return in.attribute(timestampIndex).formatDate(in.value(timestampIndex));
-               // return in.value(timestampIndex);
+                // return in.value(timestampIndex);
             }
         }
         return "error";
     }
-    
+
     public int getRecordingRound(int index) {
         if (index >= 0 && index < allInstances.numInstances()) {
             Instance in = allInstances.instance(index);
@@ -719,7 +726,7 @@ public class DataManager {
         }
         return -1;
     }
-    
+
     public boolean isProposedOutputLegal(double value, int whichOutput) {
         OSCOutput o = outputGroup.getOutput(whichOutput);
         if (o != null) {
@@ -729,24 +736,23 @@ public class DataManager {
             return false;
         }
     }
-    
-    //private transient DatasetViewer viewer = null;
 
+    //private transient DatasetViewer viewer = null;
     private boolean isShowingViewer = false;
-    
+
     public void showViewer() {
         /*if (viewer == null) {
-            viewer = new DatasetViewer(this);
-        }
-        viewer.setVisible(true);
-        viewer.toFront();
-                */
+         viewer = new DatasetViewer(this);
+         }
+         viewer.setVisible(true);
+         viewer.toFront();
+         */
         if (!isShowingViewer) {
-        isShowingViewer = true;
-        DatasetViewer viewer = new DatasetViewer(this);
-        viewer.setVisible(true);
-        viewer.toFront();
-        viewer.addWindowListener(new WindowListener() {
+            isShowingViewer = true;
+            DatasetViewer viewer = new DatasetViewer(this);
+            viewer.setVisible(true);
+            viewer.toFront();
+            viewer.addWindowListener(new WindowListener() {
 
                 @Override
                 public void windowOpened(WindowEvent e) {
@@ -758,7 +764,7 @@ public class DataManager {
 
                 @Override
                 public void windowClosed(WindowEvent e) {
-                        isShowingViewer = false;
+                    isShowingViewer = false;
                 }
 
                 @Override

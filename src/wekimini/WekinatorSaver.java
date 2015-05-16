@@ -36,8 +36,7 @@ public class WekinatorSaver {
             saveInputs(projectDir, w);
             saveOutputs(projectDir, w);
             saveData(projectDir, w);
-            saveModels(projectDir, w);
-            
+            saveModels(projectDir, w);  
         }
     }
     
@@ -74,7 +73,7 @@ public class WekinatorSaver {
    
     
     private static void saveModels(File projectDir, Wekinator w) {
-        
+      //  throw new UnsupportedOperationException("Not implemented yet");
     }
     
     private static void saveWekinatorFile(String name, File projectDir, Wekinator w) {
@@ -102,5 +101,9 @@ public class WekinatorSaver {
         new File(stash).mkdirs();
         //String logs = f.getAbsolutePath() + File.separator + "logs";
         //new File(logs).mkdirs();
+    }
+
+    static void saveExistingProject(Wekinator aThis) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -5,10 +5,13 @@
  */
 package wekimini;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import wekimini.osc.OSCSender;
 import java.io.File;
 import java.io.IOException;
-import javax.swing.JOptionPane;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import wekimini.osc.OSCReceiver;
 
 /**
@@ -26,6 +29,43 @@ public class Wekinator {
     private final LearningManager learningManager;
     private final DataManager dataManager;
     private final TrainingRunner trainingRunner;
+    
+    private String projectName = "New Project";
+
+    public static final String PROP_PROJECT_NAME = "projectName";
+
+    private String projectLocation = "";
+
+    public static final String PROP_PROJECT_LOCATION = "projectLocation";
+
+    private boolean hasSaveLocation = false;
+
+    public static final String PROP_HAS_SAVE_LOCATION = "hasSaveLocation";
+
+
+
+
+    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+    /**
+     * Add PropertyChangeListener.
+     *
+     * @param listener
+     */
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    /**
+     * Remove PropertyChangeListener.
+     *
+     * @param listener
+     */
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
+    }
+
+    
    // private final Scheduler scheduler;
    // private final CommunicationManager communicationManager;
   /*  private final LearningManager learningManager;
@@ -128,6 +168,7 @@ public class Wekinator {
         //scheduler = new Scheduler(this);
       //  communicationManager = new CommunicationManager();
     }
+   
     
   /*  private void createProjectFiles(File f) throws SecurityException {
         projectLocation.mkdirs();
@@ -189,6 +230,73 @@ public class Wekinator {
        // }
        // return (option == JOptionPane.YES_OPTION);
         return true;
+    }
+    
+        /**
+     * Get the value of projectName
+     *
+     * @return the value of projectName
+     */
+    public String getProjectName() {
+        return projectName;
+    }
+
+    /**
+     * Set the value of projectName
+     *
+     * @param projectName new value of projectName
+     */
+    public void setProjectName(String projectName) {
+        String oldProjectName = this.projectName;
+        this.projectName = projectName;
+        propertyChangeSupport.firePropertyChange(PROP_PROJECT_NAME, oldProjectName, projectName);
+    }
+    
+        /**
+     * Get the value of projectLocation
+     *
+     * @return the value of projectLocation
+     */
+    public String getProjectLocation() {
+        return projectLocation;
+    }
+
+    /**
+     * Set the value of projectLocation
+     *
+     * @param projectLocation new value of projectLocation
+     */
+    public void setProjectLocation(String projectLocation) {
+        String oldProjectLocation = this.projectLocation;
+        this.projectLocation = projectLocation;
+        propertyChangeSupport.firePropertyChange(PROP_PROJECT_LOCATION, oldProjectLocation, projectLocation);
+    }
+    
+    /**
+     * Get the value of hasSaveLocation
+     *
+     * @return the value of hasSaveLocation
+     */
+    public boolean hasSaveLocation() {
+        return hasSaveLocation;
+    }
+
+    public void setHasSaveLocation(boolean hasSaveLocation) {
+        boolean oldHasSaveLocation= this.hasSaveLocation;
+        this.hasSaveLocation = hasSaveLocation;
+        propertyChangeSupport.firePropertyChange(PROP_HAS_SAVE_LOCATION, oldHasSaveLocation, hasSaveLocation);
+    }
+
+    public void saveAs(String name, File projectDir) throws IOException {
+        WekinatorSaver.createNewProject(name, projectDir, this);
+        setProjectName(name);
+        setProjectLocation(projectDir.getAbsolutePath());  
+        setHasSaveLocation(true);
+    }
+    
+    public void save() {
+        WekinatorSaver.saveExistingProject(this);
+        setHasSaveLocation(true);
     }
 
 }

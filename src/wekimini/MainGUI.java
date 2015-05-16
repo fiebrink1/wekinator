@@ -8,6 +8,8 @@ package wekimini;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -155,8 +157,23 @@ public class MainGUI extends javax.swing.JFrame {
     public MainGUI(Wekinator w) {
         initComponents();
         this.w = w;
+        setGUIForWekinator();
+        
     }
 
+    private void setGUIForWekinator() {
+        this.setTitle(w.getProjectName());
+        w.addPropertyChangeListener(this::wekinatorPropertyChanged);
+    }
+    
+    private void wekinatorPropertyChanged(PropertyChangeEvent evt) {
+        if (evt.getPropertyName() == Wekinator.PROP_PROJECT_NAME) {
+            this.setTitle(w.getProjectName());
+        } else if (evt.getPropertyName() == Wekinator.PROP_HAS_SAVE_LOCATION) {
+            menuItemSave.setEnabled(w.hasSaveLocation());
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -179,6 +196,7 @@ public class MainGUI extends javax.swing.JFrame {
         jMenu3 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("New project");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -200,6 +218,11 @@ public class MainGUI extends javax.swing.JFrame {
         menuItemSave.setText("Save");
         menuItemSave.setToolTipText("");
         menuItemSave.setEnabled(false);
+        menuItemSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemSaveActionPerformed(evt);
+            }
+        });
         menuFile.add(menuItemSave);
 
         menuItemSaveAs.setText("Save project as...");
@@ -248,6 +271,10 @@ public class MainGUI extends javax.swing.JFrame {
     private void menuItemSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemSaveAsActionPerformed
         new NewProjectSettingsFrame(w).setVisible(true);
     }//GEN-LAST:event_menuItemSaveAsActionPerformed
+
+    private void menuItemSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemSaveActionPerformed
+        w.save();
+    }//GEN-LAST:event_menuItemSaveActionPerformed
 
     /**
      * @param args the command line arguments
