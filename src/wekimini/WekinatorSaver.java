@@ -30,8 +30,9 @@ public class WekinatorSaver {
     private static final Logger logger = Logger.getLogger(WekinatorSaver.class.getName());
     
     public static void createNewProject(String name, File projectDir, Wekinator w) throws IOException {
-        createProjectFiles(projectDir);
-        saveWekinatorFile( name,  projectDir,  w);
+        
+        createProjectFiles(projectDir);        
+        saveWekinatorFile(name, projectDir,  w);
         if (w != null) {
             saveInputs(projectDir, w);
             saveOutputs(projectDir, w);
@@ -76,15 +77,15 @@ public class WekinatorSaver {
       //  throw new UnsupportedOperationException("Not implemented yet");
     }
     
-    private static void saveWekinatorFile(String name, File projectDir, Wekinator w) {
+    private static void saveWekinatorFile(String name, File projectDir, Wekinator w) throws IOException {
+        WekinatorFileData wfd;
         if (w == null) {
-            //Just save name somewhere?
+            wfd = new WekinatorFileData(name);
         } else {
-            //What to save?
-            //OSC receive port
-            //Project name
-            
+            wfd = new WekinatorFileData(w);            
         }
+        String filename = projectDir + File.separator + name + "." + WekinatorFileData.FILENAME_EXTENSION;
+        wfd.writeToFile(filename);
     }
     
     private static void createProjectFiles(File f) throws SecurityException {

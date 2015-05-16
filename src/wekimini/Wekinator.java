@@ -12,7 +12,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import wekimini.osc.OSCOutputGroup;
 import wekimini.osc.OSCReceiver;
+import wekimini.util.Util;
 
 /**
  *
@@ -288,9 +290,18 @@ public class Wekinator {
     }
 
     public void saveAs(String name, File projectDir) throws IOException {
-        WekinatorSaver.createNewProject(name, projectDir, this);
-        setProjectName(name);
-        setProjectLocation(projectDir.getAbsolutePath());  
+        String oldName = getProjectName();
+        String oldLocation = getProjectLocation();
+        try {
+            setProjectName(name);
+            setProjectLocation(projectDir.getAbsolutePath());
+            WekinatorSaver.createNewProject(name, projectDir, this); 
+        } catch (IOException ex) {
+            setProjectName(oldName);
+            setProjectLocation(oldLocation);
+            throw ex;
+        }
+          
         setHasSaveLocation(true);
     }
     
