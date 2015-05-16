@@ -184,10 +184,11 @@ public class DataManager {
         double myVals[] = new double[numMetaData + numInputs + numOutputs];
         myVals[idIndex] = thisId;
         myVals[recordingRoundIndex] = recordingRound;
+        
         Date now = new Date();
         myVals[timestampIndex] = Double.parseDouble(dateFormat.format(now)); //Error: This gives us scientific notation!
-        //myVals[timestampIndex] = dateFormat.format(now);
-
+        //myVals[timestampIndex] =
+        
         /*for (int i = 0; i < numInputs; i++) {
          myVals[numMetaData + i] = featureVals[i];
          } */
@@ -262,7 +263,8 @@ public class DataManager {
         FastVector ff = new FastVector(numInputs + numOutputs + numMetaData); //Include ID, timestamp, training round
         //add ID, timestamp, and training round #
         ff.addElement(new Attribute("ID"));
-        ff.addElement(new Attribute("Timestamp")); //yyMMddHHmmss format; stored as double
+        FastVector nullF = null;
+        ff.addElement(new Attribute("Timestamp", nullF)); //yyMMddHHmmss format; stored as String
         ff.addElement(new Attribute("Training round"));
         //new Attribute
 
@@ -629,6 +631,24 @@ public class DataManager {
     public void writeInstancesToArff(File file) throws IOException {
         ArffSaver saver = new ArffSaver();
         Instances temp = new Instances(allInstances);
+        FastVector nullF = null;
+        Attribute niceDate = new Attribute("Time", nullF); 
+        temp.insertAttributeAt(niceDate, timestampIndex);
+        String pretty = "none";
+        for (int i = 0; i < temp.numInstances(); i++) {
+            double ddate = temp.instance(i).value(timestampIndex+1);
+            String niceDecimal = decimalFormat.format(ddate);
+            Date d;
+            try {
+                d = dateFormat.parse(niceDecimal);
+                pretty = prettyDateFormat.format(d);
+            } catch (ParseException ex) {
+                Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            temp.instance(i).setValue(timestampIndex, pretty);
+           
+        }
+        temp.deleteAttributeAt(timestampIndex+1);
         /*for (int i = 0; i < numFeatures; i++) {
          temp.renameAttribute(i, featureNames[i]);
          }*/
