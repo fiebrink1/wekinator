@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -142,7 +143,8 @@ public class DataManager {
     }
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-    private static final SimpleDateFormat prettyDateFormat = new SimpleDateFormat("MM/dd HH:mm:ss:SSS");
+    private static final String prettyDateFormatString = "yyyy/MM/dd HH:mm:ss:SSS";
+    private static final SimpleDateFormat prettyDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
     private static final DecimalFormat decimalFormat = new DecimalFormat("#################");
     //TODO: Should use min/max hard limits here too
 
@@ -263,8 +265,7 @@ public class DataManager {
         FastVector ff = new FastVector(numInputs + numOutputs + numMetaData); //Include ID, timestamp, training round
         //add ID, timestamp, and training round #
         ff.addElement(new Attribute("ID"));
-        FastVector nullF = null;
-        ff.addElement(new Attribute("Timestamp", nullF)); //yyMMddHHmmss format; stored as String
+        ff.addElement(new Attribute("Timestamp")); //yyMMddHHmmss format; stored as String
         ff.addElement(new Attribute("Training round"));
         //new Attribute
 
@@ -632,20 +633,24 @@ public class DataManager {
         ArffSaver saver = new ArffSaver();
         Instances temp = new Instances(allInstances);
         FastVector nullF = null;
-        Attribute niceDate = new Attribute("Time", nullF); 
+        //Attribute niceDate = new Attribute("Time", nullF); 
+        Attribute niceDate = new Attribute("Time", prettyDateFormatString);
         temp.insertAttributeAt(niceDate, timestampIndex);
-        String pretty = "none";
+
+        Date d;
         for (int i = 0; i < temp.numInstances(); i++) {
             double ddate = temp.instance(i).value(timestampIndex+1);
             String niceDecimal = decimalFormat.format(ddate);
-            Date d;
             try {
                 d = dateFormat.parse(niceDecimal);
-                pretty = prettyDateFormat.format(d);
+                String pretty = prettyDateFormat.format(d);
+                temp.instance(i).setValue(timestampIndex, niceDate.parseDate(pretty));
+
             } catch (ParseException ex) {
+                temp.instance(i).setValue(timestampIndex, 0);
                 Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
             }
-            temp.instance(i).setValue(timestampIndex, pretty);
+           
            
         }
         temp.deleteAttributeAt(timestampIndex+1);
