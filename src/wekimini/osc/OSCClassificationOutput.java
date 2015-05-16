@@ -13,7 +13,7 @@ import wekimini.util.Util;
  * @author rebecca
  */
 public class OSCClassificationOutput implements OSCOutput {
-
+    
     private final String name;
     private final int numClasses;
     private OSCOutputGroup outputGroup;
@@ -23,11 +23,11 @@ public class OSCClassificationOutput implements OSCOutput {
         this.name = name;
         this.numClasses = numClasses;
     }
-
+    
     public String getName() {
         return name;
     }
-
+    
     public int getNumClasses() {
         return numClasses;
     }
@@ -46,14 +46,14 @@ public class OSCClassificationOutput implements OSCOutput {
     public String toString() {
         return Util.toXMLString(this, "OSCClassificationOutput", OSCClassificationOutput.class);
     }
-
+    
     @Override
     public double generateRandomValue() {
         Random r = new Random();
         int i = r.nextInt(numClasses);
         return i + 1;
     }
-
+    
     @Override
     public double getDefaultValue() {
         return 1;
@@ -63,14 +63,35 @@ public class OSCClassificationOutput implements OSCOutput {
     public ModelBuilder getDefaultModelBuilder() {
         return new SimpleModelBuilder();
     }
-
+    
+    @Override
+    public boolean isLegalTrainingValue(double value) {
+        return isLegalOutputValue(value);
+    }
+    
     @Override
     public boolean isLegalOutputValue(double value) {
         if (value < 1 || value > numClasses) { //out of range
             return false;
         }
-        
-        return value == Math.floor(value); //is it really an int?
+        return Util.isInteger(value); //is it really an int?
     }
-
+    
+    @Override
+    public double forceLegalTrainingValue(double value) {
+        return forceLegalOutputValue(value);
+    }
+    
+    @Override
+    public double forceLegalOutputValue(double value) {
+        int which = (int) value;
+        if (which < 1) {
+            which = 1;
+        }
+        if (which > numClasses) {
+            which = numClasses;
+        }
+        return which;
+    }
+    
 }

@@ -159,7 +159,6 @@ public class DataTableModel extends AbstractTableModel {
      */
     @Override
     public void setValueAt(Object value, int row, int col) {
-        //TODO: check that this value is legal!
         if (col < numMetaData) {    
             logger.log(Level.WARNING, "Attempt to set value for column {0}", col);
             return;

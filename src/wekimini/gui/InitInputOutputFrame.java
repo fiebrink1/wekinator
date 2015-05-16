@@ -6,8 +6,11 @@
 package wekimini.gui;
 
 import java.awt.CardLayout;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -18,6 +21,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import wekimini.Wekinator;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCInputGroup;
@@ -43,8 +48,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     private final static int COMBO_REGRESSION_INDEX = 0;
     private final static int COMBO_CLASSIFICATION_INDEX = 1;
     private final static int COMBO_CUSTOM_INDEX = 2;
-    private final static int COMBO_FILE_INDEX = 3;
-    
+    private OutputConfigurationFrame outputConfigViewer = null;
+    private final OutputConfigurationFrame.OutputGroupReceiver outputGroupReceiver = this::initFormForOutputGroup;
+    private OSCOutputGroup customConfiguredOutput = null;
+    private static final Logger logger = Logger.getLogger(InitInputOutputFrame.class.getName());
     /**
      * Creates new form initInputOutputFrame
      */
@@ -56,8 +63,36 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         initComponents();
         setWekinator(w);
         updateOutputCard();
+       /* fieldNumOutputs.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateCustomOutputPermissions();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateCustomOutputPermissions();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateCustomOutputPermissions();
+            }
+        }); */
     }
 
+    private void initFormForOutputGroup(OSCOutputGroup g) {
+       customConfiguredOutput = g;
+       fieldOutputOSCMessage.setText(g.getOscMessage());
+       fieldHostName.setText(g.getHostname());
+       fieldSendPort.setText(Integer.toString(g.getOutputPort()));
+       fieldNumOutputs.setText(Integer.toString(g.getNumOutputs()));
+       currentOutputNames = new String[g.getNumOutputs()];
+       System.arraycopy(g.getOutputNames(), 0, currentOutputNames, 0, currentOutputNames.length);
+       comboOutputType.setSelectedIndex(COMBO_CUSTOM_INDEX);
+    }
+    
         public void setWekinator(Wekinator w) {
         this.w = w;
         updateGUIForConnectionState(w.getOSCReceiver().getConnectionState());
@@ -124,19 +159,19 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         comboOutputType = new javax.swing.JComboBox();
         panelOutputTypes = new javax.swing.JPanel();
         cardBlank = new javax.swing.JPanel();
-        cardChooseFile = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
-        buttonChooseOutputFile = new javax.swing.JButton();
         cardNumClasses = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         fieldNumClasses = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
+        panelCustom = new javax.swing.JPanel();
+        buttonConfigureOutputs = new javax.swing.JButton();
         jLabel12 = new javax.swing.JLabel();
         buttonCustomiseOutputNames = new javax.swing.JButton();
         jLabel13 = new javax.swing.JLabel();
         fieldHostName = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         fieldSendPort = new javax.swing.JTextField();
+        buttonChooseOutputFile = new javax.swing.JButton();
         buttonNext = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -239,7 +274,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             }
         });
 
-        buttonLoadInputsFromFile.setText("Configure from file");
+        buttonLoadInputsFromFile.setText("Load from file");
         buttonLoadInputsFromFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonLoadInputsFromFileActionPerformed(evt);
@@ -270,13 +305,13 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(fieldNumInputs, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel11)
-                        .addGap(0, 0, 0)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonCustomiseInputNames)
-                        .addGap(0, 0, 0)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonLoadInputsFromFile)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addContainerGap())))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -301,6 +336,11 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         jLabel5.setText("# outputs:");
 
         fieldNumOutputs.setText("5");
+        fieldNumOutputs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fieldNumOutputsActionPerformed(evt);
+            }
+        });
         fieldNumOutputs.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 fieldNumOutputsKeyTyped(evt);
@@ -318,7 +358,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
 
         jLabel7.setText("Output types:");
 
-        comboOutputType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All continuous (default settings)", "All classifiers (default settings)", "Customise outputs on next screen", "Load from file" }));
+        comboOutputType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All continuous (default settings)", "All classifiers (default settings)", "Custom" }));
         comboOutputType.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboOutputTypeActionPerformed(evt);
@@ -342,32 +382,6 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
 
         panelOutputTypes.add(cardBlank, "cardBlank");
 
-        cardChooseFile.setBackground(new java.awt.Color(255, 255, 255));
-
-        jLabel8.setText("No file chosen.");
-
-        buttonChooseOutputFile.setText("Choose file");
-
-        javax.swing.GroupLayout cardChooseFileLayout = new javax.swing.GroupLayout(cardChooseFile);
-        cardChooseFile.setLayout(cardChooseFileLayout);
-        cardChooseFileLayout.setHorizontalGroup(
-            cardChooseFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(cardChooseFileLayout.createSequentialGroup()
-                .addContainerGap(140, Short.MAX_VALUE)
-                .addComponent(buttonChooseOutputFile)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        cardChooseFileLayout.setVerticalGroup(
-            cardChooseFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(cardChooseFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(buttonChooseOutputFile)
-                .addComponent(jLabel8))
-        );
-
-        panelOutputTypes.add(cardChooseFile, "cardChooseFile");
-
         cardNumClasses.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel9.setText("with");
@@ -386,13 +400,13 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         cardNumClassesLayout.setHorizontalGroup(
             cardNumClassesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cardNumClassesLayout.createSequentialGroup()
-                .addGap(45, 45, 45)
+                .addGap(96, 96, 96)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fieldNumClasses, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
-                .addContainerGap(330, Short.MAX_VALUE))
+                .addContainerGap(279, Short.MAX_VALUE))
         );
         cardNumClassesLayout.setVerticalGroup(
             cardNumClassesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -406,6 +420,33 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
 
         panelOutputTypes.add(cardNumClasses, "cardClassification");
 
+        panelCustom.setBackground(new java.awt.Color(255, 255, 255));
+
+        buttonConfigureOutputs.setText("Configure");
+        buttonConfigureOutputs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonConfigureOutputsActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout panelCustomLayout = new javax.swing.GroupLayout(panelCustom);
+        panelCustom.setLayout(panelCustomLayout);
+        panelCustomLayout.setHorizontalGroup(
+            panelCustomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelCustomLayout.createSequentialGroup()
+                .addGap(91, 91, 91)
+                .addComponent(buttonConfigureOutputs)
+                .addContainerGap(312, Short.MAX_VALUE))
+        );
+        panelCustomLayout.setVerticalGroup(
+            panelCustomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelCustomLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(buttonConfigureOutputs))
+        );
+
+        panelOutputTypes.add(panelCustom, "cardCustom");
+
         jLabel12.setText("Optional:");
 
         buttonCustomiseOutputNames.setText("Customise names");
@@ -417,7 +458,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
 
         jLabel13.setText("Host (IP address or name):");
 
-        fieldHostName.setText("255.255.255.255");
+        fieldHostName.setText("localhost");
 
         jLabel14.setText("Port:");
 
@@ -428,6 +469,13 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             }
         });
 
+        buttonChooseOutputFile.setText("Load from file");
+        buttonChooseOutputFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonChooseOutputFileActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -435,37 +483,35 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelOutputTypes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(panelOutputTypes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(fieldOutputOSCMessage))
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(jLabel13)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(fieldHostName)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel14)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(fieldSendPort, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap())
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(fieldOutputOSCMessage))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(fieldNumOutputs, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel12)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buttonCustomiseOutputNames))
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(jLabel7)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(comboOutputType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(fieldHostName)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel14)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(fieldSendPort, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(fieldNumOutputs, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel12)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buttonCustomiseOutputNames)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buttonChooseOutputFile))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(comboOutputType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -485,12 +531,13 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                     .addComponent(jLabel5)
                     .addComponent(fieldNumOutputs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12)
-                    .addComponent(buttonCustomiseOutputNames))
+                    .addComponent(buttonCustomiseOutputNames)
+                    .addComponent(buttonChooseOutputFile))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(comboOutputType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 0, 0)
                 .addComponent(panelOutputTypes, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))
         );
@@ -544,7 +591,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             .addGap(0, 469, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 469, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(0, 0, Short.MAX_VALUE)))
         );
 
@@ -614,8 +661,27 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         }*/
     }//GEN-LAST:event_fieldInputOSCMessageKeyTyped
 
+    private void initFormForInputGroup(OSCInputGroup group) {
+        fieldInputOSCMessage.setText(group.getOscMessage());
+        fieldNumInputs.setText(Integer.toString(group.getNumInputs()));
+        currentInputNames = new String[group.getNumInputs()];
+        System.arraycopy(group.getInputNames(), 0, currentInputNames, 0, currentInputNames.length);
+        
+    }
+    
     private void buttonLoadInputsFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoadInputsFromFileActionPerformed
-        // TODO add your handling code here:
+        String homeDir = System.getProperty("user.home");
+        File f = Util.findLoadFile("xml", "Input configuration file", homeDir, this);
+        if (f == null) {
+            return;
+        }
+        try {
+            OSCInputGroup inputGroup = OSCInputGroup.readFromFile(f.getAbsolutePath());
+            initFormForInputGroup(inputGroup);
+        } catch (Exception ex) {
+            Util.showPrettyErrorPane(this, "Could not load inputs from file " + f.getAbsolutePath() + ". Error: " + ex.getMessage());
+            Logger.getLogger(InitInputOutputFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_buttonLoadInputsFromFileActionPerformed
 
     private void buttonCustomiseInputNamesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCustomiseInputNamesActionPerformed
@@ -643,6 +709,56 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         customiser.setVisible(true);
     }//GEN-LAST:event_buttonCustomiseInputNamesActionPerformed
 
+    private boolean customConfigMatchesGUI() {
+        boolean matches = false;
+        if (comboOutputType.getSelectedIndex() != COMBO_CUSTOM_INDEX) {
+            return true;
+        }
+        if (customConfiguredOutput == null) {
+            Util.showPrettyErrorPane(this, "You have selected a custom set of output types. Please hit \"Configure\" to configure these outputs.");
+            return false;
+        }
+        int numOutputsOnForm;
+        try {
+            numOutputsOnForm = Integer.parseInt(fieldNumOutputs.getText());
+        } catch (NumberFormatException ex) {
+            Util.showPrettyErrorPane(this, "The number of outputs must match the custom configuration entered using \"Configure\" or loaded from a file.");
+            return false;
+        }
+        
+        if (customConfiguredOutput.getNumOutputs() != numOutputsOnForm) {
+            Util.showPrettyErrorPane(this, "The number of OSC outputs must match the custom configuration entered using \"Configure\" or loaded from a file. Hit \"Configure\" to fix this.");
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+   /* private void updateCustomOutputPermissions() {
+        System.out.println("Computing");
+        if (comboOutputType.getSelectedIndex() != COMBO_CUSTOM_INDEX) {
+            buttonNext.setEnabled(true);
+            return;
+        }
+        if (customConfiguredOutput == null) {
+            buttonNext.setEnabled(false);
+            return;
+        }
+        int numOutputsOnForm;
+        try {
+            numOutputsOnForm = Integer.parseInt(fieldNumOutputs.getText());
+        } catch (NumberFormatException ex) {
+            buttonNext.setEnabled(false);
+            return;
+        }
+        
+        if (customConfiguredOutput.getNumOutputs() != numOutputsOnForm) {
+            buttonNext.setEnabled(false);
+        } else {
+            buttonNext.setEnabled(true);
+        }
+    } */
+    
     private void fieldNumOutputsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumOutputsKeyTyped
         char enter = evt.getKeyChar();
         if (!(Character.isDigit(enter))) {
@@ -699,6 +815,8 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     private OSCOutputGroup getOutputGroupFromForm() {
         String name = "Outputs";
         String oscMessage = fieldOutputOSCMessage.getText().trim();
+        String hostname = getHostnameFromForm();
+        int port = getSendPortFromForm();
         int numOutputs = Integer.parseInt(fieldNumOutputs.getText());
         
         if (currentOutputNames.length != numOutputs) {      
@@ -724,7 +842,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 OSCClassificationOutput o = new OSCClassificationOutput(currentOutputNames[i], numClasses);
                 outputs.add(o);
             }
-            OSCOutputGroup og = new OSCOutputGroup(outputs, oscMessage);
+            OSCOutputGroup og = new OSCOutputGroup(outputs, oscMessage, hostname, port);
             return og;
         } else if (comboOutputType.getSelectedIndex() == COMBO_REGRESSION_INDEX) {
             List<OSCOutput> outputs = new LinkedList<>();
@@ -737,11 +855,12 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                         OSCNumericOutput.LimitType.SOFT);
                 outputs.add(o);
             }
-            OSCOutputGroup og = new OSCOutputGroup(outputs, oscMessage);
+            OSCOutputGroup og = new OSCOutputGroup(outputs, oscMessage, hostname, port);
             return og;
         } else {
-            //TODO do something about this
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            List<OSCOutput> outputs = customConfiguredOutput.getOutputs();
+            OSCOutputGroup og = new OSCOutputGroup(outputs, oscMessage, hostname, port);
+            return og;
         }
     }
     
@@ -769,15 +888,23 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         return ig;
     }
     
+    private String getHostnameFromForm() {
+        return fieldHostName.getText().trim();
+    }
+    
+    private int getSendPortFromForm() {
+        return Integer.parseInt(fieldSendPort.getText());
+    }
+    
     private void configureOSCSenderFromForm() throws UnknownHostException, SocketException {
-        String hostName = fieldHostName.getText().trim();
-        int port = Integer.parseInt(fieldSendPort.getText());
+        String hostName = getHostnameFromForm();
+        int port = getSendPortFromForm();
         w.getOSCSender().setHostnameAndPort(InetAddress.getByName(hostName), port);
     }
     
     private void buttonNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonNextActionPerformed
         //TODO: have to do more if configuringOSC on next screen...
-        if (checkOSCReady() && checkInputReady() && checkOutputReady()) {
+        if (checkOSCReady() && checkInputReady() && checkOutputReady() && customConfigMatchesGUI()) {
             //System.out.println("READY TO GO");
             try {
             configureOSCSenderFromForm();
@@ -800,6 +927,87 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             System.out.println("ERROR SOMEWHERE");
         }
     }//GEN-LAST:event_buttonNextActionPerformed
+
+    private void buttonConfigureOutputsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonConfigureOutputsActionPerformed
+        if (outputConfigViewer != null) {
+            outputConfigViewer.toFront();
+            return;
+        }
+        
+        String sendMsg = fieldOutputOSCMessage.getText().trim();
+        String hostname = getHostnameFromForm();
+        int port = getSendPortFromForm();
+        String baseName = setBaseNameFromOscField(fieldOutputOSCMessage, "output");
+        int numOutputs = Integer.parseInt(fieldNumOutputs.getText());
+        List<OSCOutput> existingOutputs = null;
+        if (customConfiguredOutput != null) {
+            List<OSCOutput> customConfigOutputs = customConfiguredOutput.getOutputs();
+            if (customConfigOutputs.size() == numOutputs) {
+                existingOutputs = customConfigOutputs;
+            } else {
+                existingOutputs = new LinkedList<>();
+                for (int i = 0; (i < customConfigOutputs.size() && i < numOutputs); i++) {
+                    existingOutputs.add(customConfigOutputs.get(i));
+                }
+                
+            }
+        }
+        
+        outputConfigViewer = new OutputConfigurationFrame(w, sendMsg, hostname, port, numOutputs, existingOutputs, currentOutputNames, baseName, outputGroupReceiver);
+        
+            outputConfigViewer.setAlwaysOnTop(true);
+            outputConfigViewer.setVisible(true);
+            outputConfigViewer.addWindowListener(new WindowListener() {
+
+                @Override
+                public void windowOpened(WindowEvent e) {
+                }
+
+                @Override
+                public void windowClosing(WindowEvent e) {
+                }
+
+                @Override
+                public void windowClosed(WindowEvent e) {
+                        outputConfigViewer = null;
+                }
+
+                @Override
+                public void windowIconified(WindowEvent e) {
+                }
+
+                @Override
+                public void windowDeiconified(WindowEvent e) {
+                }
+
+                @Override
+                public void windowActivated(WindowEvent e) {
+                }
+
+                @Override
+                public void windowDeactivated(WindowEvent e) {
+                }
+            });
+        
+    }//GEN-LAST:event_buttonConfigureOutputsActionPerformed
+
+    private void buttonChooseOutputFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChooseOutputFileActionPerformed
+        String homeDir = System.getProperty("user.home");
+        File f = Util.findLoadFile("xml", "Output configuration file", homeDir, this);
+        if (f == null) {
+            return;
+        }
+        try {
+            OSCOutputGroup outputGroup = OSCOutputGroup.readFromFile(f.getAbsolutePath());
+            initFormForOutputGroup(outputGroup);
+        } catch (Exception ex) {
+            Util.showPrettyErrorPane(this, "Could not load outputs from file " + f.getAbsolutePath() + ". Error: " + ex.getMessage());
+            Logger.getLogger(InitInputOutputFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_buttonChooseOutputFileActionPerformed
+
+    private void fieldNumOutputsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldNumOutputsActionPerformed
+    }//GEN-LAST:event_fieldNumOutputsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -940,10 +1148,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         int index = comboOutputType.getSelectedIndex();
         if (index == COMBO_CLASSIFICATION_INDEX) {
             return Util.checkIsPositiveNumber(fieldNumClasses, "Number of classes", this);
-        } else if (index == COMBO_FILE_INDEX) {
-            Util.showPrettyErrorPane(this, "Loading from a file is not yet supported");
-            return false;
-        }
+        } 
         return true;
     }
 
@@ -958,22 +1163,20 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             layout.show(panelOutputTypes, "cardBlank");
         } else if (index == COMBO_CLASSIFICATION_INDEX) {
             layout.show(panelOutputTypes, "cardClassification");
-        } else if (index == COMBO_FILE_INDEX) {
-            layout.show(panelOutputTypes, "cardChooseFile");
         } else {
-            layout.show(panelOutputTypes, "cardBlank");
+            layout.show(panelOutputTypes, "cardCustom");
         }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonChooseOutputFile;
+    private javax.swing.JButton buttonConfigureOutputs;
     private javax.swing.JButton buttonCustomiseInputNames;
     private javax.swing.JButton buttonCustomiseOutputNames;
     private javax.swing.JButton buttonLoadInputsFromFile;
     private javax.swing.JButton buttonNext;
     private javax.swing.JButton buttonOscListen;
     private javax.swing.JPanel cardBlank;
-    private javax.swing.JPanel cardChooseFile;
     private javax.swing.JPanel cardNumClasses;
     private javax.swing.JComboBox comboOutputType;
     private javax.swing.JTextField fieldHostName;
@@ -996,13 +1199,13 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JLabel labelOscStatus;
+    private javax.swing.JPanel panelCustom;
     private javax.swing.JPanel panelOutputTypes;
     // End of variables declaration//GEN-END:variables
 

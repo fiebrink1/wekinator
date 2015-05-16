@@ -338,10 +338,8 @@ public class MainGUI extends javax.swing.JFrame {
     }
 
     public void showExamplesViewer() {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-       String s = w.getDataManager().toString();
-       System.out.println(s);
-       
+       //String s = w.getDataManager().toString();
+       //System.out.println(s);
        w.getDataManager().showViewer();
     }
 

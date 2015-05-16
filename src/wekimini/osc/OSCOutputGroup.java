@@ -16,8 +16,8 @@ import wekimini.util.Util;
  */
 public class OSCOutputGroup {
     private final String oscMessage; //Does make sense to save this with OSC output group
-   // private final String hostName;
-   // private final int outputPort;
+    private final String hostName;
+    private final int outputPort;
     private final List<OSCOutput> outputs;
    // private float[] values;
     
@@ -63,7 +63,13 @@ public class OSCOutputGroup {
         return oscMessage;
     }
     
+    public String getHostname() {
+        return hostName;
+    }
     
+    public int getOutputPort() {
+        return outputPort;
+    }
     
     /**
      * Remove PropertyChangeListener.
@@ -74,7 +80,7 @@ public class OSCOutputGroup {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
-    public OSCOutputGroup(List<OSCOutput> outputs, String oscMessage) 
+    public OSCOutputGroup(List<OSCOutput> outputs, String oscMessage, String hostname, int outputPort) 
     {
         if (outputs == null || outputs.isEmpty()) {
             throw new IllegalArgumentException("outputs must be a non-null list with at least one element");
@@ -82,6 +88,12 @@ public class OSCOutputGroup {
         this.outputs = new LinkedList<>(outputs);
         //values = new float[outputs.size()];
         this.oscMessage = oscMessage; //will copy value
+        this.hostName = hostname;
+        this.outputPort = outputPort;
+    }
+    
+    public List<OSCOutput> getOutputs() {
+        return outputs;
     }
     
     public OSCOutput getOutput(int which) {

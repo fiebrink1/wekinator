@@ -9,6 +9,7 @@ package wekimini.gui;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.JSeparator;
 import wekimini.OutputManager;
 import wekimini.Path;
 import wekimini.Wekinator;
@@ -78,6 +79,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
             SimpleLearningRow r = new SimpleLearningRow(w, paths.get(i));
             r.setValue(currentValues[i]);
             pathPanels.add(r);
+            pathsPanel.add(new JSeparator());
             pathsPanel.add(r);
         }
         

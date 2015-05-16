@@ -23,6 +23,12 @@ public interface OSCOutput {
     
     public ModelBuilder getDefaultModelBuilder();
     
+    public boolean isLegalTrainingValue(double value);
+    
     public boolean isLegalOutputValue(double value);
+    
+    public double forceLegalTrainingValue(double value);
+    
+    public double forceLegalOutputValue(double value);
 
 }

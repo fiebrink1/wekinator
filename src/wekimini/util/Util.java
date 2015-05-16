@@ -203,4 +203,33 @@ public class Util {
 
      }
     
+    public static boolean isInteger(double d) {
+        return d == Math.floor(d);
+    }
+    
+    public static File findLoadFile(String ext, String description, String defDir, Component c) {
+       /* File defaultFile = null;
+        if (defFile != null)
+            defaultFile = new File(defFile); */
+       // String lastLoc = WekinatorInstance.getWekinatorInstance().getSettings().getLastKeyValue(ext);
+        File defaultFile = null;
+        File defaultDir = null;
+        if (defDir != null) {
+            defaultDir = new File(defDir);
+        }
+        
+        FileChooserWithExtension fc = new FileChooserWithExtension(
+                ext,
+                description,
+                defaultFile,
+                defaultDir,
+                false);
+        
+        File file = null;
+        int returnVal = fc.showOpenDialog(c);
+        if (returnVal == FileChooserWithExtension.APPROVE_OPTION) {
+            file = fc.getSelectedFile();
+        }
+        return file;
+    }
 }

@@ -472,8 +472,8 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         warningPanelLayout.setVerticalGroup(
             warningPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(warningPanelLayout.createSequentialGroup()
-                .addComponent(labelModelStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(labelModelStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+                .addGap(0, 0, 0))
         );
 
         panelModelOutput.setLayout(new java.awt.CardLayout());
@@ -482,6 +482,11 @@ public class SimpleLearningRow extends javax.swing.JPanel {
 
         comboClassifier.setBackground(new java.awt.Color(255, 255, 255));
         comboClassifier.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "100" }));
+        comboClassifier.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboClassifierActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout cardClassifierLayout = new javax.swing.GroupLayout(cardClassifier);
         cardClassifier.setLayout(cardClassifierLayout);
@@ -574,23 +579,22 @@ public class SimpleLearningRow extends javax.swing.JPanel {
             .addGroup(panelMainLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(toggleLearnerPlay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jSeparator1)
                     .addComponent(jSeparator2)
-                    .addComponent(toggleLearnerRecord, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                    .addComponent(buttonEditLearner, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelMainLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelMainLayout.createSequentialGroup()
                         .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(buttonDeleteLearnerExamples, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(labelNumExamples, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(panelModelOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(labelModelName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(buttonDeleteLearnerExamples, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(labelNumExamples, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(panelModelOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(labelModelName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(toggleLearnerRecord, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(toggleLearnerPlay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(buttonEditLearner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 1, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sliderModelValue, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -614,7 +618,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     private void setValueFromText() {
         try {
             double d = Double.parseDouble(textModelValue.getText());
-                if (isHardLimits) {
+                /*if (isHardLimits) {
                     if (d < minValue) {
                         d = minValue;
                         textModelValue.setText(dFormat.format(d));
@@ -622,6 +626,10 @@ public class SimpleLearningRow extends javax.swing.JPanel {
                         d = maxValue;
                         textModelValue.setText(dFormat.format(d));
                     }
+                } */
+                if (!myPath.getOSCOutput().isLegalTrainingValue(d)) {
+                    d = myPath.getOSCOutput().forceLegalTrainingValue(d);
+                    textModelValue.setText(dFormat.format(d));
                 }
                 colorDone();
                 setValue(d);
@@ -707,6 +715,10 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     private void sliderModelValueMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sliderModelValueMouseReleased
        // userUpdatedSlider();
     }//GEN-LAST:event_sliderModelValueMouseReleased
+
+    private void comboClassifierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboClassifierActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboClassifierActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

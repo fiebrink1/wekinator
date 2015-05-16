@@ -57,6 +57,7 @@ public class DataManager {
     private List<int[]> inputListsForOutputs;
     private Instances allInstances = null;
     private int nextID = 1;
+    
 
     private static final int numMetaData = 3; //TODO
 
@@ -77,7 +78,7 @@ public class DataManager {
     public static final String PROP_NUMEXAMPLESPEROUTPUT = "numExamplesPerOutput";
 
     private Instance[] deletedTrainingRound = null;
-
+    private DatasetViewer viewer = null;
     private static final Logger logger = Logger.getLogger(DataManager.class.getName());
 
     /**
@@ -730,15 +731,12 @@ public class DataManager {
     public boolean isProposedOutputLegal(double value, int whichOutput) {
         OSCOutput o = outputGroup.getOutput(whichOutput);
         if (o != null) {
-            return o.isLegalOutputValue(value);
+            return o.isLegalTrainingValue(value);
         } else {
             logger.log(Level.WARNING, "Attempted to check invalid output index {0}", whichOutput);
             return false;
         }
     }
-
-    //private transient DatasetViewer viewer = null;
-    private boolean isShowingViewer = false;
 
     public void showViewer() {
         /*if (viewer == null) {
@@ -747,9 +745,13 @@ public class DataManager {
          viewer.setVisible(true);
          viewer.toFront();
          */
-        if (!isShowingViewer) {
-            isShowingViewer = true;
-            DatasetViewer viewer = new DatasetViewer(this);
+        if (viewer != null) {
+            viewer.toFront();
+            return;
+        }
+        
+
+            viewer = new DatasetViewer(this);
             viewer.setVisible(true);
             viewer.toFront();
             viewer.addWindowListener(new WindowListener() {
@@ -764,7 +766,7 @@ public class DataManager {
 
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    isShowingViewer = false;
+                    viewer = null;
                 }
 
                 @Override
@@ -783,6 +785,6 @@ public class DataManager {
                 public void windowDeactivated(WindowEvent e) {
                 }
             });
-        }
+        
     }
 }
