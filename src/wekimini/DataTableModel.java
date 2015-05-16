@@ -95,7 +95,8 @@ public class DataTableModel extends AbstractTableModel {
         if (col == 0) {
             return m.getID(row);
         } else if (col == 1) {
-            return DataManager.dateDoubleToString(m.getTimestamp(row));
+            return(m.getTimestampAsString(row));
+           // return DataManager.dateDoubleToString(m.getTimestamp(row));
         } else if (col == 2) {
             return m.getRecordingRound(row);
         } else if (col < numMetaData + numInputs) {

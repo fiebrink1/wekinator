@@ -19,7 +19,7 @@ public class OSCOutputGroup {
    // private final String hostName;
    // private final int outputPort;
     private final List<OSCOutput> outputs;
-    private float[] values;
+   // private float[] values;
     
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -37,7 +37,7 @@ public class OSCOutputGroup {
     }
     
     //Requires both arrays are same length
-    public void setValues(float[] values) {
+   /* public void setValues(float[] values) {
         //TODO: check if this is really necessary
         System.arraycopy(values, 0, this.values, 0, values.length);
     }
@@ -49,7 +49,7 @@ public class OSCOutputGroup {
     //Danger: values can be modified by caller
     public float[] getValues() {
         return values;
-    }
+    } */
     
     public String[] getOutputNames() {
         String s[] = new String[outputs.size()];
@@ -80,7 +80,7 @@ public class OSCOutputGroup {
             throw new IllegalArgumentException("outputs must be a non-null list with at least one element");
         }
         this.outputs = new LinkedList<>(outputs);
-        values = new float[outputs.size()];
+        //values = new float[outputs.size()];
         this.oscMessage = oscMessage; //will copy value
     }
     

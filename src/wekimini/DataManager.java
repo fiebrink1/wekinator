@@ -188,8 +188,16 @@ public class DataManager {
         myVals[recordingRoundIndex] = recordingRound;
         
         Date now = new Date();
-        myVals[timestampIndex] = Double.parseDouble(dateFormat.format(now)); //Error: This gives us scientific notation!
-        //myVals[timestampIndex] =
+        //myVals[timestampIndex] = Double.parseDouble(dateFormat.format(now)); //Error: This gives us scientific notation!
+        
+        String pretty = prettyDateFormat.format(now);
+        try {
+            myVals[timestampIndex] = allInstances.attribute(timestampIndex).parseDate(pretty);
+            //myVals[timestampIndex] =
+        } catch (ParseException ex) {
+            myVals[timestampIndex] = 0;
+            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         /*for (int i = 0; i < numInputs; i++) {
          myVals[numMetaData + i] = featureVals[i];
@@ -265,7 +273,9 @@ public class DataManager {
         FastVector ff = new FastVector(numInputs + numOutputs + numMetaData); //Include ID, timestamp, training round
         //add ID, timestamp, and training round #
         ff.addElement(new Attribute("ID"));
-        ff.addElement(new Attribute("Timestamp")); //yyMMddHHmmss format; stored as String
+       // ff.addElement(new Attribute("Timestamp")); //yyMMddHHmmss format; stored as String
+        
+        ff.addElement(new Attribute("Time", prettyDateFormatString));
         ff.addElement(new Attribute("Training round"));
         //new Attribute
 
@@ -632,9 +642,8 @@ public class DataManager {
     public void writeInstancesToArff(File file) throws IOException {
         ArffSaver saver = new ArffSaver();
         Instances temp = new Instances(allInstances);
-        FastVector nullF = null;
         //Attribute niceDate = new Attribute("Time", nullF); 
-        Attribute niceDate = new Attribute("Time", prettyDateFormatString);
+      /*  Attribute niceDate = new Attribute("Time", prettyDateFormatString);
         temp.insertAttributeAt(niceDate, timestampIndex);
 
         Date d;
@@ -649,11 +658,14 @@ public class DataManager {
             } catch (ParseException ex) {
                 temp.instance(i).setValue(timestampIndex, 0);
                 Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } 
            
            
         }
+        
         temp.deleteAttributeAt(timestampIndex+1);
+        */
+        
         /*for (int i = 0; i < numFeatures; i++) {
          temp.renameAttribute(i, featureNames[i]);
          }*/
@@ -687,14 +699,15 @@ public class DataManager {
         return allInstances.toString();
     }
 
-    public double getTimestamp(int index) {
+    public String getTimestampAsString(int index) {
         if (index >= 0 && index < allInstances.numInstances()) {
             Instance in = allInstances.instance(index);
             if (in != null) {
-                return in.value(timestampIndex);
+                return in.attribute(timestampIndex).formatDate(in.value(timestampIndex));
+               // return in.value(timestampIndex);
             }
         }
-        return 0;
+        return "error";
     }
     
     public int getRecordingRound(int index) {
