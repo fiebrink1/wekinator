@@ -5,8 +5,6 @@
  */
 package wekimini;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import wekimini.gui.NewProjectSettingsFrame;
 import wekimini.gui.OSCInputStatusFrame;
-import wekimini.osc.OSCReceiver;
 import wekimini.util.Util;
 
 /**

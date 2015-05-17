@@ -25,5 +25,7 @@ public interface ModelBuilder {
     public Model build(String name) throws Exception;
     
     public boolean isCompatible(OSCOutput o);
+    
+    public ModelBuilder fromTemplate(ModelBuilder template);
 
 }

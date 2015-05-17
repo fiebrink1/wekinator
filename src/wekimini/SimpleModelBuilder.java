@@ -36,5 +36,13 @@ public class SimpleModelBuilder implements LearningModelBuilder {
     public boolean isCompatible(OSCOutput o) {
         return true;
     }
+
+    @Override
+    public ModelBuilder fromTemplate(ModelBuilder template) {
+        if (template instanceof SimpleModelBuilder) {
+            return new SimpleModelBuilder();
+        }
+        return null;
+    }
     
 }

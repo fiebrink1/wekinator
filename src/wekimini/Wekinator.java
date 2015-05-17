@@ -10,6 +10,9 @@ import java.beans.PropertyChangeSupport;
 import wekimini.osc.OSCSender;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.EventListenerList;
 import wekimini.osc.OSCReceiver;
 
 /**
@@ -28,7 +31,9 @@ public class Wekinator {
     private final DataManager dataManager;
     private final TrainingRunner trainingRunner;
     private final StatusUpdateCenter statusUpdateCenter;
-    
+    protected EventListenerList exitListenerList = new EventListenerList();
+    private ChangeEvent changeEvent = null;
+
     private String projectName = "New Project";
 
     public static final String PROP_PROJECT_NAME = "projectName";
@@ -41,11 +46,32 @@ public class Wekinator {
 
     public static final String PROP_HAS_SAVE_LOCATION = "hasSaveLocation";
 
-
-
-
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    
+    public void addCloseListener(ChangeListener l) {
+        exitListenerList.add(ChangeListener.class, l);
+    }
 
+    public void removeCloseListener(ChangeListener l) {
+        exitListenerList.remove(ChangeListener.class, l);
+    }
+
+    private void fireCloseEvent() {
+        Object[] listeners = exitListenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == ChangeListener.class) {
+                if (changeEvent == null) {
+                    changeEvent = new ChangeEvent(this);
+                }
+                ((ChangeListener) listeners[i + 1]).stateChanged(changeEvent);
+            }
+        }
+    }
+
+    public void close() {
+        fireCloseEvent(); 
+    }
+    
     /**
      * Add PropertyChangeListener.
      *

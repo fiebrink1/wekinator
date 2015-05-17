@@ -6,8 +6,12 @@
 package wekimini;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import wekimini.gui.InitInputOutputFrame;
 
 /**
@@ -16,6 +20,7 @@ import wekimini.gui.InitInputOutputFrame;
  */
 public class WekiMiniRunner {
     private static final Logger logger = Logger.getLogger(WekiMiniRunner.class.getName());
+    private static final List<Wekinator> runningWekinators = new LinkedList<>();
     
     public static void main(String[] args) {
         //WelcomeScreen
@@ -74,6 +79,15 @@ public class WekiMiniRunner {
                     Wekinator w = new Wekinator();
                     InitInputOutputFrame f = new InitInputOutputFrame(w);
                     f.setVisible(true);
+                    
+                    runningWekinators.add(w);
+                    w.addCloseListener(new ChangeListener() {
+
+                        @Override
+                        public void stateChanged(ChangeEvent e) {
+                            logger.log(Level.INFO, "Wekinator project closed");
+                        }
+                    });
                     
                 } catch (IOException | SecurityException ex) {
                     logger.log(Level.SEVERE, null, ex);

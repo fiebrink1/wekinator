@@ -43,4 +43,10 @@ public class NeuralNetModelBuilder implements LearningModelBuilder {
         return true;
     }
     
+    public NeuralNetModelBuilder fromTemplate(ModelBuilder b) {
+        if (b instanceof NeuralNetModelBuilder) {
+            return new NeuralNetModelBuilder();
+        }
+        return null;
+    }
 }

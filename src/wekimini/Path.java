@@ -123,7 +123,9 @@ public class Path {
         this.lastModel = p.lastModel;
         this.lastModelState = p.lastModelState;
         this.learningManager = p.learningManager;
-        this.modelBuilder = p.modelBuilder;
+        //this.modelBuilder =   p.modelBuilder;
+        this.modelBuilder = p.modelBuilder.fromTemplate(p.modelBuilder); //hack for now: modelBuilder not loaded correctly from file
+        this.model = p.model;
         this.numExamples = p.numExamples;
         this.output = p.output;
         this.outputName = output.getName();
