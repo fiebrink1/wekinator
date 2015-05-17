@@ -35,13 +35,7 @@ public class LearningPanel extends javax.swing.JPanel {
         this.w = w;
 
         simpleLearningSet1.setup(w, ps, modelNames);
-        w.getLearningManager().addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                learningManagerPropertyChanged(evt);
-            }
-        });
+        w.getLearningManager().addPropertyChangeListener(this::learningManagerPropertyChanged);
 
         w.getTrainingRunner().addCancelledListener(new ChangeListener() {
 

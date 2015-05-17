@@ -10,11 +10,7 @@ import java.beans.PropertyChangeSupport;
 import wekimini.osc.OSCSender;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import wekimini.osc.OSCOutputGroup;
 import wekimini.osc.OSCReceiver;
-import wekimini.util.Util;
 
 /**
  *
@@ -265,6 +261,7 @@ public class Wekinator {
 
     /**
      * Set the value of projectLocation
+     * i.e., the folder in which the .wekproj file is currently saved
      *
      * @param projectLocation new value of projectLocation
      */

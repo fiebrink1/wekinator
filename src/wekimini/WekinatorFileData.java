@@ -38,6 +38,11 @@ public class WekinatorFileData {
         this.projectName = w.getProjectName();
     }
     
+    public void applySettings(Wekinator w) {
+        w.getOSCReceiver().setReceivePort(oscReceivePort);
+        w.setProjectName(projectName);
+    }
+    
     public WekinatorFileData(String projectName) {
         this.projectName = projectName;
     }

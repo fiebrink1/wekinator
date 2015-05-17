@@ -5,6 +5,9 @@
  */
 package wekimini;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
 import weka.core.Instance;
 import wekimini.osc.OSCOutput;
@@ -45,6 +48,15 @@ public class SimpleModel implements Model {
     public boolean isCompatible(OSCOutput o) {
         return true;
     }
+
+    @Override
+    public void writeToOutputStream(ObjectOutputStream os) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public static Model readFromInputStream(ObjectInputStream is) throws IOException, ClassNotFoundException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    } 
 
    
     

@@ -5,6 +5,11 @@
  */
 package wekimini;
 
+import com.thoughtworks.xstream.XStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Instance;
@@ -19,7 +24,7 @@ public class NeuralNetworKModel implements Model {
     private final String prettyName;
     private final String timestamp;
     private final String myId;
-    private final MultilayerPerceptron wmodel;
+    private transient MultilayerPerceptron wmodel;
     
     public NeuralNetworKModel(String name, MultilayerPerceptron wmodel) { 
         this.prettyName = name;
@@ -49,6 +54,25 @@ public class NeuralNetworKModel implements Model {
     public boolean isCompatible(OSCOutput o) {
         //Might tweak this for hard/soft limits... Not sure how to handle this ; in path?
         return true;
+    }
+    
+    public void writeToOutputStream(ObjectOutputStream os) throws IOException {
+        XStream xstream = new XStream();
+        xstream.alias("NeuralNetworKModel", NeuralNetworKModel.class);
+        String xml = xstream.toXML(this);
+        os.writeObject(xml);
+        os.writeObject(wmodel);
+//Util.writeToXMLFile(this, "Path", Path.class, filename);
+    }
+    
+    public static NeuralNetworKModel readFromInputStream(ObjectInputStream is) throws IOException, ClassNotFoundException {
+        String xml = (String)is.readObject();
+        XStream xstream = new XStream();
+        xstream.alias("NeuralNetworKModel", NeuralNetworKModel.class);
+        NeuralNetworKModel nn = (NeuralNetworKModel) xstream.fromXML(xml);
+        MultilayerPerceptron mlp = (MultilayerPerceptron)is.readObject();
+        nn.wmodel = mlp;
+        return nn;
     }
     
 }

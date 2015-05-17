@@ -5,16 +5,13 @@
  */
 package wekimini;
 
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowStateListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import wekimini.gui.NewProjectSettingsFrame;
-import wekimini.osc.OSCInputGroup;
+import wekimini.util.Util;
 
 /**
  *
@@ -187,6 +184,7 @@ public class MainGUI extends javax.swing.JFrame {
         learningPanel1 = new wekimini.gui.LearningPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
+        jMenuItem4 = new javax.swing.JMenuItem();
         menuItemSave = new javax.swing.JMenuItem();
         menuItemSaveAs = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
@@ -213,6 +211,14 @@ public class MainGUI extends javax.swing.JFrame {
 
         menuFile.setMnemonic('F');
         menuFile.setText("File");
+
+        jMenuItem4.setText("Open project...");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        menuFile.add(jMenuItem4);
 
         menuItemSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.META_MASK));
         menuItemSave.setText("Save");
@@ -276,6 +282,19 @@ public class MainGUI extends javax.swing.JFrame {
         w.save();
     }//GEN-LAST:event_menuItemSaveActionPerformed
 
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        String homeDir = System.getProperty("user.home");
+        File f = Util.findLoadFile(WekinatorFileData.FILENAME_EXTENSION, "Wekinator file", homeDir, this);
+        try {
+            //TODO: Check this isn't same wekinator as mine! (don't load from my same place, or from something already open...)
+            Wekinator w = WekinatorSaver.loadWekinatorFromFile(f.getAbsolutePath());
+            w.getMainGUI().setVisible(true);
+        } catch (Exception ex) {
+            
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -326,6 +345,7 @@ public class MainGUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JPanel jPanel1;
     private wekimini.gui.LearningPanel learningPanel1;
     private javax.swing.JMenu menuFile;

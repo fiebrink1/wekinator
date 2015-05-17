@@ -626,7 +626,8 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 return;
             }
 
-            w.getOSCReceiver().startListening(port);
+            w.getOSCReceiver().setReceivePort(port);
+            w.getOSCReceiver().startListening();
         }
     }//GEN-LAST:event_buttonOscListenActionPerformed
 

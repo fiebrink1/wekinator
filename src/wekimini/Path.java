@@ -5,10 +5,18 @@
  */
 package wekimini;
 
+import com.thoughtworks.xstream.XStream;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -41,21 +49,17 @@ public class Path {
     //Then do computation for all
     //Then tell output manager to trigger for list of outputs all at once
     
-    protected EventListenerList listenerList = new EventListenerList();
-    private ChangeEvent changeEvent = null;
+    protected transient EventListenerList listenerList = new EventListenerList();
+    private transient ChangeEvent changeEvent = null;
 
     
-    private Model model = null;
+    private transient Model model = null;
     private ModelBuilder modelBuilder = null;
     private final OSCOutput output;
     private String outputName;
-    private final Wekinator w;
-    //private double outputValue;
-    //
-   
-    
+    private transient final Wekinator w;
     private final List<String> inputNames;
-    private final LearningManager learningManager;
+    private transient final LearningManager learningManager;
     
     public static enum ModelState {NOT_READY, READY_FOR_BUILDING, BUILDING, BUILT, NEEDS_REBUILDING};
     //private boolean hasData = false;
@@ -76,14 +80,15 @@ public class Path {
 
     public static final String PROP_NUMEXAMPLES = "numExamples";
 
-        private String currentModelName = "model";
+    private String currentModelName = "model";
 
     public static final String PROP_CURRENTMODELNAME = "currentModelName";
 
     private Model lastModel = null;
     private ModelState lastModelState = ModelState.NOT_READY;
     private boolean trainingCompleted = false;
-
+    private static final Logger logger = Logger.getLogger(Path.class.getName());
+    
     public String[] getSelectedInputs() {
         return inputNames.toArray(new String[0]);
     }
@@ -111,6 +116,26 @@ public class Path {
         
     }
     
+    public Path(Path p, Wekinator w) {
+        //Must include all non-transient fields here.
+        this.currentModelName = p.currentModelName;
+        this.inputNames = new LinkedList<>(p.inputNames);
+        this.lastModel = p.lastModel;
+        this.lastModelState = p.lastModelState;
+        this.learningManager = p.learningManager;
+        this.modelBuilder = p.modelBuilder;
+        this.numExamples = p.numExamples;
+        this.output = p.output;
+        this.outputName = output.getName();
+        this.recordEnabled = p.recordEnabled;
+        this.runEnabled = p.runEnabled;
+        this.trainingCompleted = p.trainingCompleted;
+        this.w = w; //Can't set from p: w is transient
+        
+        //TODO: Add listener for output manager - change in output names will be important
+        //TODO: Also add listener for input name changes! This will screw us up...
+        
+    }
     
     public Path(OSCOutput output, String[] inputs, Wekinator w) {
         this.w = w;
@@ -381,5 +406,112 @@ public class Path {
             return false;
         }
         return true;
+    }
+    
+     /*   @Override
+    public String toString() {
+        return Util.toXMLString(this, "Path", Path.class);
+    } */
+    
+
+    public void writeToFile(String filename) throws IOException {
+        boolean success = false;
+        IOException myEx = new IOException();
+        
+        FileOutputStream outstream = null;
+        ObjectOutputStream objout = null;
+        try {
+            outstream = new FileOutputStream(filename);
+            objout = new ObjectOutputStream(outstream);
+        
+            XStream xstream = new XStream();
+            xstream.alias("Path", Path.class);
+            String xml = xstream.toXML(this);
+            objout.writeObject(xml);
+            if (model != null) {
+                String modelClassName = model.getClass().getName();
+                objout.writeObject(modelClassName);
+                model.writeToOutputStream(objout);
+            } else {
+                objout.writeObject("null");
+            }
+            
+            success = true;
+        } catch (IOException ex) {
+            success = false;
+            myEx = ex;
+            logger.log(Level.WARNING, "Could not write to file {0", ex.getMessage());
+        } finally {
+            try {
+                if (objout != null) {
+                    objout.close();
+                }
+                if (outstream != null) {
+                    outstream.close();
+                }
+            } catch (IOException ex) {
+                logger.log(Level.WARNING, "Could not close file objects");
+            }
+        }
+        if (!success) {
+            throw myEx;
+        }
+        
+       // os.writeObject(xml);
+       // os.writeObject(wmodel);
+       //Util.writeToXMLFile(this, "Path", Path.class, filename);
+    }
+    
+    public static Path readFromFile(String filename) throws Exception {
+        //Danger: Will not have any transient fields initialised!
+        Path p = null;
+        FileInputStream instream = null;
+        ObjectInputStream objin = null;
+        Object o = null;
+        boolean err = false;
+        Exception myEx = new Exception();
+        try {
+            instream = new FileInputStream(filename);
+            objin = new ObjectInputStream(instream);
+           // o = objin.readObject();
+            
+            String xml = (String)objin.readObject();
+             XStream xstream = new XStream();
+             xstream.alias("Path", Path.class);
+             p = (Path) xstream.fromXML(xml);
+             
+             String modelClassName = (String) objin.readObject();
+             Model m= null;
+             if (! modelClassName.equals("null")) {
+                Class c = Class.forName(modelClassName);
+                m = ModelLoader.loadModel(c, objin);
+             }
+            
+             p.setModel(m);
+        } catch (Exception ex) {
+            myEx = ex;
+            err = true;
+            logger.log(Level.WARNING, "Error encountered in reading from file: {0}", ex.getMessage());
+        } finally {
+            try {
+                if (objin != null) {
+                    objin.close();
+                }
+                if (instream != null) {
+                    instream.close();
+                }
+            } catch (IOException ex) {
+                logger.log(Level.WARNING, "Encountered error closing file objects");
+            }
+
+        }
+        if (err) {
+            throw myEx;
+        }
+        return p;
+        
+
+        //Path g = (Path) Util.readFromXMLFile("Path", Path.class, filename);
+        //return g;
     }
 }

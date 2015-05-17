@@ -66,7 +66,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     private final ImageIcon trainedIcon = new ImageIcon(getClass().getResource("/wekimini/icons/greenlight.png")); // NOI18N
     private final ImageIcon needsRetrainingIcon = new ImageIcon(getClass().getResource("/wekimini/icons/yellowlight.png")); // NOI18N
     private final ImageIcon trainingIcon = new ImageIcon(getClass().getResource("/wekimini/icons/pinklight.png")); // NOI18N
-
+    private static final Logger logger = Logger.getLogger(SimpleLearningRow.class.getName());
     
     
     /**
@@ -302,9 +302,9 @@ public class SimpleLearningRow extends javax.swing.JPanel {
                     f.add(r);
                     f.setVisible(true);
                 } catch (IOException ex) {
-                    Logger.getLogger(InitInputOutput.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.log(Level.SEVERE, null, ex);
                 } catch (SecurityException ex) {
-                    Logger.getLogger(InitInputOutput.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.log(Level.SEVERE, null, ex);
                 }
             }
         });

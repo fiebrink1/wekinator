@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -25,6 +24,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import weka.core.Attribute;
+import weka.core.AttributeStats;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -57,7 +57,6 @@ public class DataManager {
     private List<int[]> inputListsForOutputs;
     private Instances allInstances = null;
     private int nextID = 1;
-    
 
     private static final int numMetaData = 3; //TODO
 
@@ -248,6 +247,52 @@ public class DataManager {
         return outputNames[i];
     }
 
+    public void initialize(String[] inputNames, OSCOutputGroup outputGroup, Instances data) {
+        initialize(inputNames, outputGroup);
+        setFromDataset(data);
+    }
+
+    private void setFromDataset(Instances data) {
+        allInstances = new Instances(data);
+        updateOutputCounts();
+        updateNextId();
+    }
+
+    public int getMaxRecordingRound() {
+       //Attribute a = allInstances.attribute(recordingRoundIndex);
+       AttributeStats a = allInstances.attributeStats(recordingRoundIndex);
+       return (int) a.numericStats.max;  
+    }
+    
+    private void updateNextId() {
+        AttributeStats a = allInstances.attributeStats(idIndex);
+        nextID = (int)a.numericStats.max + 1;
+    }
+    
+    private void updateOutputCounts() {
+        int[] examplesSum = new int[numOutputs];
+
+        if (allInstances.numInstances() > 0) {
+            for (int i = allInstances.numInstances() - 1; i >= 0; i--) {
+                for (int j = 0; j < numOutputs; j++) {
+                    if (!allInstances.instance(i).isMissing(numMetaData + numInputs + j)) {
+                        examplesSum[j]++;
+                    }
+                }
+            }
+            
+            for (int j = 0; j < numOutputs; j++) {
+                setNumExamplesPerOutput(j, examplesSum[j]);
+            }
+            setHasInstances(true);
+        } else {
+            for (int j = 0; j < numOutputs; j++) {
+                setNumExamplesPerOutput(j, 0);
+            }
+            setHasInstances(false);
+        }
+    }
+
     public void initialize(String[] inputNames, OSCOutputGroup outputGroup) {
         numOutputs = outputGroup.getNumOutputs();
         numExamplesPerOutput = new int[numOutputs];
@@ -275,7 +320,7 @@ public class DataManager {
         FastVector ff = new FastVector(numInputs + numOutputs + numMetaData); //Include ID, timestamp, training round
         //add ID, timestamp, and training round #
         ff.addElement(new Attribute("ID"));
-       // ff.addElement(new Attribute("Timestamp")); //yyMMddHHmmss format; stored as String
+        // ff.addElement(new Attribute("Timestamp")); //yyMMddHHmmss format; stored as String
 
         ff.addElement(new Attribute("Time", prettyDateFormatString));
         ff.addElement(new Attribute("Training round"));
@@ -440,11 +485,11 @@ public class DataManager {
             }
         }
         allInstances.delete(whichExample);
-        
+
     }
 
     public boolean deleteTrainingRound(int which) {
-        List<Instance> deleted = new LinkedList<Instance>();
+        List<Instance> deleted = new LinkedList<>();
 
         if (allInstances.numInstances() > 0) {
             int r = which;
@@ -473,8 +518,7 @@ public class DataManager {
 
     public void reAddDeletedTrainingRound() {
         if (deletedTrainingRound != null) {
-            for (int i = 0; i < deletedTrainingRound.length; i++) {
-                Instance in = deletedTrainingRound[i];
+            for (Instance in : deletedTrainingRound) {
                 for (int j = 0; j < numOutputs; j++) {
                     if (!in.isMissing(numMetaData + numInputs + j)) {
                         setNumExamplesPerOutput(j, getNumExamplesPerOutput(j) + 1);
@@ -703,6 +747,7 @@ public class DataManager {
         }
     }
 
+    @Override
     public String toString() {
         return allInstances.toString();
     }
@@ -749,42 +794,41 @@ public class DataManager {
             viewer.toFront();
             return;
         }
-        
 
-            viewer = new DatasetViewer(this);
-            viewer.setVisible(true);
-            viewer.toFront();
-            viewer.addWindowListener(new WindowListener() {
+        viewer = new DatasetViewer(this);
+        viewer.setVisible(true);
+        viewer.toFront();
+        viewer.addWindowListener(new WindowListener() {
 
-                @Override
-                public void windowOpened(WindowEvent e) {
-                }
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
 
-                @Override
-                public void windowClosing(WindowEvent e) {
-                }
+            @Override
+            public void windowClosing(WindowEvent e) {
+            }
 
-                @Override
-                public void windowClosed(WindowEvent e) {
-                    viewer = null;
-                }
+            @Override
+            public void windowClosed(WindowEvent e) {
+                viewer = null;
+            }
 
-                @Override
-                public void windowIconified(WindowEvent e) {
-                }
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
 
-                @Override
-                public void windowDeiconified(WindowEvent e) {
-                }
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
 
-                @Override
-                public void windowActivated(WindowEvent e) {
-                }
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
 
-                @Override
-                public void windowDeactivated(WindowEvent e) {
-                }
-            });
-        
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
+
     }
 }

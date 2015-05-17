@@ -30,6 +30,9 @@ public class LearningManager {
     public static enum LearningState {DONE_TRAINING, TRAINING, READY_TO_TRAIN, NOT_READY_TO_TRAIN};
     public static enum RunningState {RUNNING, NOT_RUNNING};
     public static enum RecordingState {RECORDING, NOT_RECORDING};
+    
+    
+    
     //private RunningState runningState = RunningState.NOT_RUNNING;
     private final List<Path> paths = new ArrayList<>(5);
     private final Wekinator w;
@@ -215,6 +218,49 @@ public class LearningManager {
         for (int i = 0; i < inputNames.length; i++) {
             inputNamesToIndices.put(inputNames[i], i);
         }
+    }
+    
+    //TODO (low): merge this with other init function
+    public void initializeInputsAndOutputsWithExisting(Instances data, List<Path> paths) {
+        String[] inputNames = w.getInputManager().getInputNames();
+        initializeInputIndices(inputNames);
+        int numOutputs = w.getOutputManager().getOutputGroup().getNumOutputs();
+        pathRecordingMask = new boolean[numOutputs];
+        pathRunningMask = new boolean[numOutputs];
+        myComputedOutputs = new double[numOutputs];
+        
+        for (int i = 0; i < numOutputs; i++) {
+            pathRecordingMask[i] = paths.get(i).isRecordEnabled();
+            pathRunningMask[i] = paths.get(i).isRunEnabled();
+            //OSCOutput o = w.getOutputManager().getOutputGroup().getOutput(i);
+            //Path p = new Path(o, inputNames, w);
+            Path p = paths.get(i);
+            PropertyChangeListener pChange = new PropertyChangeListener() {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    pathChanged(p, evt);
+                }
+            };
+            p.addPropertyChangeListener(wls.propertyChange(pChange));
+            p.addInputSelectionChangeListener(new ChangeListener() {
+
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    pathInputsChanged((Path)e.getSource());
+                }
+            });
+            pathsToOutputIndices.put(p, i);
+            this.paths.add(p);
+        }  
+        w.getDataManager().initialize(inputNames, w.getOutputManager().getOutputGroup(), data);
+
+        if (w.getDataManager().getNumExamples() >0) {
+            setLearningState(LearningState.READY_TO_TRAIN);
+        } else {
+            setLearningState(LearningState.NOT_READY_TO_TRAIN);
+        }        
+        w.getInputManager().addInputValueListener(this::updateInputs);
+        
     }
     
     //Call when both Input and Output Managers are ready

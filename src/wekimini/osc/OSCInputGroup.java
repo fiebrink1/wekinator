@@ -44,6 +44,14 @@ public class OSCInputGroup {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
+    public OSCInputGroup(OSCInputGroup groupFromFile) {
+        this.oscMessage = groupFromFile.oscMessage;
+        this.numInputs = groupFromFile.numInputs;
+        this.groupName = groupFromFile.groupName;
+        this.inputNames = new String[groupFromFile.inputNames.length];
+        System.arraycopy(groupFromFile.inputNames, 0, this.inputNames, 0, groupFromFile.inputNames.length);
+    }
+    
     public OSCInputGroup(String groupName, String oscMessage, int numInputs, String[] inputNames) {
         if (inputNames == null || inputNames.length != numInputs) {
             throw new IllegalArgumentException("inputNames[] must have size equal to numInputs");

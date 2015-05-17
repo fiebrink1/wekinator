@@ -5,6 +5,9 @@
  */
 package wekimini;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import weka.core.Instance;
 import wekimini.osc.OSCOutput;
 
@@ -21,6 +24,9 @@ public interface Model {
     public String getUniqueIdentifier();
     
     public boolean isCompatible(OSCOutput o);
+
+    public void writeToOutputStream(ObjectOutputStream os) throws IOException;
     
-    
+    //TODO: FIgure out how to make this static in helper
+    //public Model readFromInputStream(ObjectInputStream is) throws IOException, ClassNotFoundException;
 }

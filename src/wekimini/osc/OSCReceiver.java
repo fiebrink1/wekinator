@@ -55,9 +55,12 @@ public class OSCReceiver {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
     
-    public void startListening(int port) {
+    public void setReceivePort(int port) {
+        receivePort = port;
+    }
+    
+    public void startListening() {
         try {
-            receivePort = port;
             receiver = new OSCPortIn(receivePort);
         } catch (Exception ex) {
             Util.showPrettyErrorPane(null, 

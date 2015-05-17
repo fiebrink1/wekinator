@@ -8,7 +8,6 @@ package wekimini;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import wekimini.gui.InitInputOutput;
 import wekimini.gui.InitInputOutputFrame;
 
 /**
@@ -16,6 +15,7 @@ import wekimini.gui.InitInputOutputFrame;
  * @author rebecca
  */
 public class WekiMiniRunner {
+    private static final Logger logger = Logger.getLogger(WekiMiniRunner.class.getName());
     
     public static void main(String[] args) {
         //WelcomeScreen
@@ -76,7 +76,7 @@ public class WekiMiniRunner {
                     f.setVisible(true);
                     
                 } catch (IOException | SecurityException ex) {
-                    Logger.getLogger(InitInputOutput.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.log(Level.SEVERE, null, ex);
                 }
             }
         });

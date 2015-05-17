@@ -92,6 +92,14 @@ public class OSCOutputGroup {
         this.outputPort = outputPort;
     }
     
+    public OSCOutputGroup(OSCOutputGroup groupFromFile) {
+        this.outputs = new LinkedList<>(groupFromFile.getOutputs());
+        //values = new float[outputs.size()];
+        this.oscMessage = groupFromFile.oscMessage; //will copy value
+        this.hostName = groupFromFile.hostName;
+        this.outputPort = groupFromFile.outputPort;
+    }
+    
     public List<OSCOutput> getOutputs() {
         return outputs;
     }
