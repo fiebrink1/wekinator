@@ -113,6 +113,10 @@ public class LearningPanel extends javax.swing.JPanel {
             updateRunButtonAndText();
         } else if (evt.getPropertyName() == LearningManager.PROP_NUMEXAMPLESTHISROUND) {
             setStatus(w.getLearningManager().getNumExamplesThisRound() + " new examples recorded");
+        } else if (evt.getPropertyName() == LearningManager.PROP_ABLE_TO_RECORD) {
+            setButtonsForLearningState();
+        } else if (evt.getPropertyName() == LearningManager.PROP_ABLE_TO_RUN) {
+            setButtonsForLearningState();
         }
 //Could do training state for GUI too... Want to have singleton Training Worker so all GUI elements can access update info
     }
@@ -157,6 +161,9 @@ public class LearningPanel extends javax.swing.JPanel {
     }
 
     private void setButtonsForLearningState() {
+        buttonRun.setEnabled(w.getLearningManager().isAbleToRun());
+        buttonRecord.setEnabled(w.getLearningManager().isAbleToRecord());
+        
         LearningManager.LearningState ls = w.getLearningManager().getLearningState();
         if (ls == LearningManager.LearningState.NOT_READY_TO_TRAIN) {
             buttonTrain.setText("Train");
@@ -166,23 +173,14 @@ public class LearningPanel extends javax.swing.JPanel {
             buttonTrain.setEnabled(true);
             buttonTrain.setText("Cancel training");
             buttonTrain.setForeground(Color.RED);
-
-            buttonRecord.setEnabled(false);
-            buttonRun.setEnabled(false);
         } else if (ls == LearningManager.LearningState.DONE_TRAINING) {
             buttonTrain.setEnabled(true); //Don't prevent immediate retraining; some model builders may give different models on same data.
             buttonTrain.setText("Train");
             buttonTrain.setForeground(Color.BLACK);
-
-            buttonRecord.setEnabled(true);
-            buttonRun.setEnabled(true);
         } else if (ls == LearningManager.LearningState.READY_TO_TRAIN) {
             buttonTrain.setEnabled(true);
             buttonTrain.setText("Train");
             buttonTrain.setForeground(Color.BLACK);
-
-            buttonRecord.setEnabled(true);
-            buttonRun.setEnabled(false);
         }
     }
 
