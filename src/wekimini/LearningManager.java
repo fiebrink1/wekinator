@@ -20,6 +20,7 @@ import org.jdesktop.swingworker.SwingWorker;
 import weka.core.Instances;
 import weka.core.Instance;
 import wekimini.osc.OSCOutput;
+import wekimini.osc.OSCReceiver;
 import wekimini.util.WeakListenerSupport;
 
 /**
@@ -30,8 +31,6 @@ public class LearningManager {
     public static enum LearningState {DONE_TRAINING, TRAINING, READY_TO_TRAIN, NOT_READY_TO_TRAIN};
     public static enum RunningState {RUNNING, NOT_RUNNING};
     public static enum RecordingState {RECORDING, NOT_RECORDING};
-    
-    
     
     //private RunningState runningState = RunningState.NOT_RUNNING;
     private final List<Path> paths = new ArrayList<>(5);
@@ -63,6 +62,16 @@ public class LearningManager {
 
     
     protected PropertyChangeListener trainingWorkerListener = this::trainingWorkerChanged;
+    
+    private boolean ableToRecord = false;
+
+    public static final String PROP_ABLE_TO_RECORD = "ableToRecord";
+
+        private boolean ableToRun = false;
+
+    public static final String PROP_ABLE_TO_RUN = "ableToRun";
+
+
     
     private void trainingWorkerChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("state")) {
@@ -155,6 +164,7 @@ public class LearningManager {
         LearningState oldLearningState = this.learningState;
         this.learningState = learningState;
         propertyChangeSupport.firePropertyChange(PROP_LEARNINGSTATE, oldLearningState, learningState);
+        updateAbleToRun();
     }
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -194,9 +204,17 @@ public class LearningManager {
             }
         }); 
         
-        w.getDataManager().addPropertyChangeListener(this::dataManagerPropertyChange);          
+        w.getDataManager().addPropertyChangeListener(this::dataManagerPropertyChange); 
+        
+        w.getOSCReceiver().addPropertyChangeListener(this::oscReceiverPropertyChanged);
     }
     
+    private void oscReceiverPropertyChanged(PropertyChangeEvent evt) {
+        if (evt.getPropertyName() == OSCReceiver.PROP_CONNECTIONSTATE) {
+            updateAbleToRun();
+            updateAbleToRecord();
+        }
+    }
     
     private void dataManagerPropertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == DataManager.PROP_NUMEXAMPLESPEROUTPUT) {
@@ -221,6 +239,7 @@ public class LearningManager {
     }
     
     //TODO (low): merge this with other init function
+    //TODO: set able to record, able to run here
     public void initializeInputsAndOutputsWithExisting(Instances data, List<Path> paths) {
         String[] inputNames = w.getInputManager().getInputNames();
         initializeInputIndices(inputNames);
@@ -260,7 +279,29 @@ public class LearningManager {
             setLearningState(LearningState.NOT_READY_TO_TRAIN);
         }        
         w.getInputManager().addInputValueListener(this::updateInputs);
-        
+        updateAbleToRecord();
+        updateAbleToRun();
+    }
+    
+    private void updateAbleToRecord() {
+       if (w.getOSCReceiver().getConnectionState() != OSCReceiver.ConnectionState.CONNECTED) {
+            setAbleToRecord(false);
+        } else {
+           setAbleToRecord(true);
+       }    
+    }
+    
+    private void updateAbleToRun() {
+        //Requires models in runnable state (at least some)
+        if (w.getOSCReceiver().getConnectionState() != OSCReceiver.ConnectionState.CONNECTED) {
+            setAbleToRun(false);
+            return;
+        }
+        if (learningState == LearningState.DONE_TRAINING) {
+            setAbleToRun(true);   
+        } else {
+            setAbleToRun(false);
+        }
     }
     
     //Call when both Input and Output Managers are ready
@@ -507,6 +548,48 @@ public class LearningManager {
         this.numExamplesThisRound = numExamplesThisRound;
         propertyChangeSupport.firePropertyChange(PROP_NUMEXAMPLESTHISROUND, oldNumExamplesThisRound, numExamplesThisRound);
     }
+    
+        /**
+     * Get the value of ableToRun
+     *
+     * @return the value of ableToRun
+     */
+    public boolean isAbleToRun() {
+        return ableToRun;
+    }
+
+    /**
+     * Set the value of ableToRun
+     *
+     * @param ableToRun new value of ableToRun
+     */
+    public void setAbleToRun(boolean ableToRun) {
+        boolean oldAbleToRun = this.ableToRun;
+        this.ableToRun = ableToRun;
+        propertyChangeSupport.firePropertyChange(PROP_ABLE_TO_RUN, oldAbleToRun, ableToRun);
+    }
+
+    
+    /**
+     * Get the value of ableToRecord
+     *
+     * @return the value of ableToRecord
+     */
+    public boolean isAbleToRecord() {
+        return ableToRecord;
+    }
+
+    /**
+     * Set the value of ableToRecord
+     *
+     * @param ableToRecord new value of ableToRecord
+     */
+    public void setAbleToRecord(boolean ableToRecord) {
+        boolean oldAbleToRecord = this.ableToRecord;
+        this.ableToRecord = ableToRecord;
+        propertyChangeSupport.firePropertyChange(PROP_ABLE_TO_RECORD, oldAbleToRecord, ableToRecord);
+    }
+
 
     
 }
