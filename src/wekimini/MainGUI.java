@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import wekimini.gui.InputMonitor;
 import wekimini.gui.NewProjectSettingsFrame;
 import wekimini.gui.OSCInputStatusFrame;
 import wekimini.util.Util;
@@ -24,6 +25,7 @@ public class MainGUI extends javax.swing.JFrame {
     private boolean isDisplayingReceiverWindow = false;
     private boolean isDisplayingAddInput = false;
     private OSCInputStatusFrame oscInputStatusFrame = null;
+    private InputMonitor inputMonitorFrame = null;
     private Wekinator w;
     
    /* public void displayEditInput(String name) {
@@ -263,6 +265,11 @@ public class MainGUI extends javax.swing.JFrame {
         jMenu2.add(jMenuItem5);
 
         jMenuItem1.setText("Inputs");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem1);
 
         jMenuItem2.setText("Outputs");
@@ -319,6 +326,10 @@ public class MainGUI extends javax.swing.JFrame {
         showOSCReceiverWindow();
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        showInputMonitorWindow();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     private void showOSCReceiverWindow() {        
         if (oscInputStatusFrame == null) {
             oscInputStatusFrame = new OSCInputStatusFrame(w);
@@ -331,6 +342,20 @@ public class MainGUI extends javax.swing.JFrame {
             }); 
         } else {
             oscInputStatusFrame.toFront();
+        }
+    }
+    
+    private void showInputMonitorWindow() {        
+        if (inputMonitorFrame == null) {
+            inputMonitorFrame = new InputMonitor(w);
+            inputMonitorFrame.setVisible(true);
+            
+            Util.callOnClosed(inputMonitorFrame, (Callable) () -> {
+                inputMonitorFrame = null;
+                return null;
+            }); 
+        } else {
+            inputMonitorFrame.toFront();
         }
     }
     
