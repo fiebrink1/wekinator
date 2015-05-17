@@ -5,6 +5,7 @@
  */
 package wekimini;
 
+import wekimini.learning.ModelBuilder;
 import weka.core.Instances;
 
 /**

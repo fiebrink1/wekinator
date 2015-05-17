@@ -5,7 +5,7 @@
  */
 package wekimini.osc;
 
-import wekimini.ModelBuilder;
+import wekimini.learning.ModelBuilder;
 
 /**
  *

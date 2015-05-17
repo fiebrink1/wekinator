@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini;
+package wekimini.learning;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Instances;
+import wekimini.LearningModelBuilder;
+import wekimini.WekaModelBuilderHelper;
 import wekimini.osc.OSCOutput;
 
 /**

@@ -5,6 +5,8 @@
  */
 package wekimini;
 
+import wekimini.learning.ModelBuilder;
+import wekimini.learning.Model;
 import com.thoughtworks.xstream.XStream;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

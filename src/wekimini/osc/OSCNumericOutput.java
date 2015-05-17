@@ -4,8 +4,8 @@
 package wekimini.osc;
 
 import java.util.Random;
-import wekimini.ModelBuilder;
-import wekimini.NeuralNetModelBuilder;
+import wekimini.learning.ModelBuilder;
+import wekimini.learning.NeuralNetModelBuilder;
 import wekimini.util.Util;
 
 /**

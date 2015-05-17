@@ -5,6 +5,9 @@
  */
 package wekimini;
 
+import wekimini.learning.SimpleModel;
+import wekimini.learning.NeuralNetworKModel;
+import wekimini.learning.Model;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 

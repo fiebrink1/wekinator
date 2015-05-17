@@ -4,8 +4,8 @@
 package wekimini.osc;
 
 import java.util.Random;
-import wekimini.ModelBuilder;
-import wekimini.SimpleModelBuilder;
+import wekimini.learning.ModelBuilder;
+import wekimini.learning.SimpleModelBuilder;
 import wekimini.util.Util;
 
 /**
