@@ -6,6 +6,7 @@
 
 package wekimini.gui;
 
+import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,7 +80,9 @@ public class SimpleLearningSet extends javax.swing.JPanel {
             SimpleLearningRow r = new SimpleLearningRow(w, paths.get(i));
             r.setValue(currentValues[i]);
             pathPanels.add(r);
-            pathsPanel.add(new JSeparator());
+            JSeparator sep = new JSeparator();
+            sep.setMaximumSize(new Dimension(32767, 5));
+            pathsPanel.add(sep);
             pathsPanel.add(r);
         }
         
