@@ -389,6 +389,9 @@ public class SimpleLearningRow extends javax.swing.JPanel {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 sliderModelValueMouseReleased(evt);
             }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                sliderModelValueMouseClicked(evt);
+            }
         });
         sliderModelValue.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
@@ -584,9 +587,8 @@ public class SimpleLearningRow extends javax.swing.JPanel {
                     .addGroup(panelMainLayout.createSequentialGroup()
                         .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(buttonDeleteLearnerExamples, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(labelNumExamples, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(buttonDeleteLearnerExamples, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(labelNumExamples, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(panelModelOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(labelModelName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -719,6 +721,10 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     private void comboClassifierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboClassifierActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_comboClassifierActionPerformed
+
+    private void sliderModelValueMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sliderModelValueMouseClicked
+        userUpdatedSlider();
+    }//GEN-LAST:event_sliderModelValueMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
