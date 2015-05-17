@@ -62,10 +62,13 @@ public class OSCReceiver {
     public void startListening() {
         try {
             receiver = new OSCPortIn(receivePort);
+            receiver.startListening();
+            setConnectionState(ConnectionState.CONNECTED);
         } catch (Exception ex) {
             Util.showPrettyErrorPane(null, 
                     "Could not bind to port " + receivePort 
                             + ". Please ensure that nothing else is trying to listen on this same port.");
+            
         }
         
         //TODO:
@@ -73,8 +76,7 @@ public class OSCReceiver {
         w.getOutputGroups().addOutputGroupListeners(receiver); //ouput updates (optional)
         w.getOscController().addOscControlListeners(receiver); //control messages (optional) */
         
-        receiver.startListening();
-        setConnectionState(ConnectionState.CONNECTED);
+       
         
         //TODO: Need to ensure that we're not adding duplicate listeners later on (e.g. when we change some input names and not others)
         //However, also need to update all listeners appropriately if port has changed (i.e. add everyone)

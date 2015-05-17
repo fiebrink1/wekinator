@@ -5,12 +5,17 @@
  */
 package wekimini;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import wekimini.gui.NewProjectSettingsFrame;
+import wekimini.gui.OSCInputStatusFrame;
+import wekimini.osc.OSCReceiver;
 import wekimini.util.Util;
 
 /**
@@ -19,8 +24,9 @@ import wekimini.util.Util;
  */
 public class MainGUI extends javax.swing.JFrame {
     //private GUIAddNewInput addNewInputGUI;
+    private boolean isDisplayingReceiverWindow = false;
     private boolean isDisplayingAddInput = false;
-    private boolean isDisplayingAddOutput = false;
+    private OSCInputStatusFrame oscInputStatusFrame = null;
     private Wekinator w;
     
    /* public void displayEditInput(String name) {
@@ -194,6 +200,7 @@ public class MainGUI extends javax.swing.JFrame {
         menuItemSave = new javax.swing.JMenuItem();
         menuItemSaveAs = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -249,6 +256,14 @@ public class MainGUI extends javax.swing.JFrame {
 
         jMenu2.setText("View");
 
+        jMenuItem5.setText("OSC receiver status");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem5ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem5);
+
         jMenuItem1.setText("Inputs");
         jMenu2.add(jMenuItem1);
 
@@ -256,6 +271,7 @@ public class MainGUI extends javax.swing.JFrame {
         jMenu2.add(jMenuItem2);
 
         jMenuItem3.setText("Logging console");
+        jMenuItem3.setEnabled(false);
         jMenu2.add(jMenuItem3);
 
         jMenuBar1.add(jMenu2);
@@ -301,6 +317,25 @@ public class MainGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
+    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+        showOSCReceiverWindow();
+    }//GEN-LAST:event_jMenuItem5ActionPerformed
+
+    private void showOSCReceiverWindow() {        
+        if (oscInputStatusFrame == null) {
+            oscInputStatusFrame = new OSCInputStatusFrame(w);
+            oscInputStatusFrame.setVisible(true);
+            
+            Util.callOnClosed(oscInputStatusFrame, (Callable) () -> {
+                System.out.println("WOAH HERE");
+                oscInputStatusFrame = null;
+                return null;
+            }); 
+        } else {
+            oscInputStatusFrame.toFront();
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -352,6 +387,7 @@ public class MainGUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JPanel jPanel1;
     private wekimini.gui.LearningPanel learningPanel1;
     private javax.swing.JMenu menuFile;

@@ -208,6 +208,7 @@ public class LearningPanel extends javax.swing.JPanel {
         }
     }
 
+    //TODO: Remove many listeners for this and replace them with update from Status Center
     private void setStatus(String s) {
         labelStatus.setText(s);
     }

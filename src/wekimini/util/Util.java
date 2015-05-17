@@ -2,19 +2,23 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package wekimini.util;
 
 import com.thoughtworks.xstream.XStream;
 import java.awt.Component;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
@@ -25,16 +29,14 @@ import javax.swing.filechooser.FileFilter;
  */
 public class Util {
 
-
-
     public static String getCanonicalPath(File f) {
-            String s;
+        String s;
         try {
             s = f.getCanonicalPath();
         } catch (IOException ex) {
             s = f.getAbsolutePath();
         }
-            return s;
+        return s;
     }
 
     public static String getExtension(File f) {
@@ -42,40 +44,40 @@ public class Util {
         String s = f.getName();
         int i = s.lastIndexOf('.');
 
-        if (i > 0 &&  i < s.length() - 1) {
-            ext = s.substring(i+1).toLowerCase();
+        if (i > 0 && i < s.length() - 1) {
+            ext = s.substring(i + 1).toLowerCase();
         }
         return ext;
     }
-    
+
     public static void showPrettyErrorPane(Component caller, String msg) {
-        JOptionPane.showMessageDialog(caller, 
-              "<html><body><p style='width: 200px;'>" + msg + "</p></body></html>",
-              "Error", 
-              JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(caller,
+                "<html><body><p style='width: 200px;'>" + msg + "</p></body></html>",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
     }
-    
+
     public static int showPrettyWarningPromptPane(Component caller, String msg) {
         Object[] options = {"OK", "Cancel"};
- 
-        int response = JOptionPane.showOptionDialog(null, 
-                 "<html><body><p syle='width: 200px;'>" + msg + "</p></body></html>",
-                 "Warning",
+
+        int response = JOptionPane.showOptionDialog(null,
+                "<html><body><p syle='width: 200px;'>" + msg + "</p></body></html>",
+                "Warning",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                 null, options, options[0]);
         return response;
     }
-    
+
     public static void writeBlankFile(String filename) throws IOException {
         File f = new File(filename);
         if (f.exists()) {
             f.delete();
-        } 
+        }
         f.createNewFile();
     }
-    
+
     public static void writeToXMLFile(Object o, String id, Class c, String filename) throws FileNotFoundException, IOException {
-       FileOutputStream fos = null;
+        FileOutputStream fos = null;
         try {
             XStream xstream = new XStream();
             xstream.alias(id, c);
@@ -85,12 +87,13 @@ public class Util {
             fos.write("<?xml version=\"1.0\"?>\n".getBytes("UTF-8")); //write XML header, as XStream doesn't do that for us
             if (o != null) {
                 xstream.toXML(o, fos);
-            } 
+            }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
             try {
-                if (fos != null)
+                if (fos != null) {
                     fos.close();
+                }
             } catch (IOException ex2) {
                 //Don't care
             }
@@ -98,8 +101,9 @@ public class Util {
         } catch (IOException ex) {
             Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
             try {
-                if (fos != null)
+                if (fos != null) {
                     fos.close();
+                }
             } catch (IOException ex2) {
                 //Don't care
             }
@@ -111,14 +115,14 @@ public class Util {
         XStream xstream = new XStream();
         xstream.alias(id, c);
         return xstream.fromXML(new File(filename));
-    } 
+    }
 
     public static String toXMLString(Object o, String id, Class c) {
-         XStream xstream = new XStream();
-         xstream.alias(id, c);
-         return xstream.toXML(o);
+        XStream xstream = new XStream();
+        xstream.alias(id, c);
+        return xstream.toXML(o);
     }
-    
+
     public static boolean checkIsPositiveNumber(JTextField textField, String name, Component caller) {
         try {
             int i = Integer.parseInt(textField.getText());
@@ -132,6 +136,7 @@ public class Util {
         }
         return true;
     }
+
     public static boolean checkNotBlank(JTextField textField, String name, Component caller) {
         if (textField.getText().trim().length() == 0) {
             Util.showPrettyErrorPane(caller, name + " cannot be blank");
@@ -139,7 +144,7 @@ public class Util {
         }
         return true;
     }
-    
+
     public static boolean checkNoSpace(JTextField textField, String name, Component caller) {
         if (textField.getText().trim().length() == 0) {
             Util.showPrettyErrorPane(caller, name + " cannot contain a space");
@@ -147,7 +152,7 @@ public class Util {
         }
         return true;
     }
-    
+
     public static boolean checkAllUnique(String[] strings) {
         HashSet<String> set = new HashSet<>();
         for (int i = 0; i < strings.length; i++) {
@@ -156,9 +161,9 @@ public class Util {
             }
             set.add(strings[i]);
         }
-        return true; 
+        return true;
     }
-    
+
 //For testing:
     public static void main(String[] args) {
         String s[] = new String[3];
@@ -171,15 +176,15 @@ public class Util {
     //Requires a < b
     //String array starts with a and goes up to (including) b
     public static String[] numbersFromAtoBAsStrings(int a, int b) {
-        String[] s = new String[b-a + 1];
-        for (int i = 0; i <= (b-a); i++) {
+        String[] s = new String[b - a + 1];
+        for (int i = 0; i <= (b - a); i++) {
             s[i] = Integer.toString(a + i);
         }
         return s;
     }
-    
+
     public static void logWarning(Object o, String msg) {
-         Logger.getLogger(o.getClass().getName()).log(Level.WARNING, msg);
+        Logger.getLogger(o.getClass().getName()).log(Level.WARNING, msg);
     }
 
     public static File findSaveFile(String ext, String defaultName, String description, Component c) {
@@ -197,39 +202,88 @@ public class Util {
         int returnVal = fc.showSaveDialog(c);
         if (returnVal == FileChooserWithExtension.APPROVE_OPTION) {
             file = fc.getSelectedFile();
-           // fc.getCu
+            // fc.getCu
         }
         return file;
 
-     }
-    
+    }
+
     public static boolean isInteger(double d) {
         return d == Math.floor(d);
     }
-    
+
     public static File findLoadFile(String ext, String description, String defDir, Component c) {
-       /* File defaultFile = null;
-        if (defFile != null)
-            defaultFile = new File(defFile); */
-       // String lastLoc = WekinatorInstance.getWekinatorInstance().getSettings().getLastKeyValue(ext);
+        /* File defaultFile = null;
+         if (defFile != null)
+         defaultFile = new File(defFile); */
+        // String lastLoc = WekinatorInstance.getWekinatorInstance().getSettings().getLastKeyValue(ext);
         File defaultFile = null;
         File defaultDir = null;
         if (defDir != null) {
             defaultDir = new File(defDir);
         }
-        
+
         FileChooserWithExtension fc = new FileChooserWithExtension(
                 ext,
                 description,
                 defaultFile,
                 defaultDir,
                 false);
-        
+
         File file = null;
         int returnVal = fc.showOpenDialog(c);
         if (returnVal == FileChooserWithExtension.APPROVE_OPTION) {
             file = fc.getSelectedFile();
         }
         return file;
+    }
+
+    public static void callOnClosed(JFrame f, Callable func) {
+        f.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    func.call();
+                } catch (Exception ex) {
+                    Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        /*f.addWindowListener(new WindowListener() {
+
+         @Override
+         public void windowOpened(WindowEvent e) {
+         }
+
+         @Override
+         public void windowClosing(WindowEvent e) {
+         }
+
+         @Override
+         public void windowClosed(WindowEvent e) {
+         try {
+         func.call();
+         } catch (Exception ex) {
+         Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         }
+
+         @Override
+         public void windowIconified(WindowEvent e) {
+         }
+
+         @Override
+         public void windowDeiconified(WindowEvent e) {
+         }
+
+         @Override
+         public void windowActivated(WindowEvent e) {
+         }
+
+         @Override
+         public void windowDeactivated(WindowEvent e) {
+         }
+         }); */
     }
 }
