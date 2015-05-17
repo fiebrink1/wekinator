@@ -45,5 +45,10 @@ public class SimpleModelBuilder implements LearningModelBuilder {
         }
         return null;
     }
+
+    @Override
+    public String getPrettyName() {
+        return "Simple Model (testing only)";
+    }
     
 }

@@ -51,4 +51,9 @@ public class NeuralNetModelBuilder implements LearningModelBuilder {
         }
         return null;
     }
+
+    @Override
+    public String getPrettyName() {
+        return "Neural Network";
+    }
 }

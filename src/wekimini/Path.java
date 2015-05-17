@@ -268,6 +268,10 @@ public class Path {
     public Model getModel() {
         return model;
     }
+    
+    public ModelBuilder getModelBuilder() {
+        return modelBuilder;
+    }
 
     public void setModel(Model model) {
         this.model = model;

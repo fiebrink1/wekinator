@@ -51,4 +51,9 @@ public class KNNModelBuilder implements LearningModelBuilder {
         }
         return null;
     }
+
+    @Override
+    public String getPrettyName() {
+        return "k-Nearest Neighbor";
+    }
 }

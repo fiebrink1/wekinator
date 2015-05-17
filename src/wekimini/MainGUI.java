@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import wekimini.gui.InputMonitor;
 import wekimini.gui.NewProjectSettingsFrame;
 import wekimini.gui.OSCInputStatusFrame;
+import wekimini.gui.OutputViewerTable;
 import wekimini.util.Util;
 
 /**
@@ -26,6 +27,7 @@ public class MainGUI extends javax.swing.JFrame {
     private boolean isDisplayingAddInput = false;
     private OSCInputStatusFrame oscInputStatusFrame = null;
     private InputMonitor inputMonitorFrame = null;
+    private OutputViewerTable outputTableWindow = null;
     private Wekinator w;
     
    /* public void displayEditInput(String name) {
@@ -273,6 +275,11 @@ public class MainGUI extends javax.swing.JFrame {
         jMenu2.add(jMenuItem1);
 
         jMenuItem2.setText("Outputs");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem2);
 
         jMenuItem3.setText("Logging console");
@@ -330,6 +337,24 @@ public class MainGUI extends javax.swing.JFrame {
         showInputMonitorWindow();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        showOutputTable();
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void showOutputTable() {
+        if (outputTableWindow == null) {
+            outputTableWindow = new OutputViewerTable(w);
+            outputTableWindow.setVisible(true);
+            
+            Util.callOnClosed(outputTableWindow, (Callable) () -> {
+                outputTableWindow = null;
+                return null;
+            }); 
+        } else {
+            outputTableWindow.toFront();
+        }
+    }
+    
     private void showOSCReceiverWindow() {        
         if (oscInputStatusFrame == null) {
             oscInputStatusFrame = new OSCInputStatusFrame(w);

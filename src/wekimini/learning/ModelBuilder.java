@@ -27,5 +27,7 @@ public interface ModelBuilder {
     public boolean isCompatible(OSCOutput o);
     
     public ModelBuilder fromTemplate(ModelBuilder template);
+    
+    public String getPrettyName();
 
 }

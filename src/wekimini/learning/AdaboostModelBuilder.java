@@ -56,4 +56,9 @@ public class AdaboostModelBuilder implements LearningModelBuilder {
         }
         return null;
     }
+
+    @Override
+    public String getPrettyName() {
+        return "AdaBoost.M1";
+    }
 }

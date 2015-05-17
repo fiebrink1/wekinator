@@ -100,4 +100,9 @@ public class SVMModelBuilder implements LearningModelBuilder {
         }
         return null;
     }
+
+    @Override
+    public String getPrettyName() {
+        return "Support Vector Machine";
+    }
 }

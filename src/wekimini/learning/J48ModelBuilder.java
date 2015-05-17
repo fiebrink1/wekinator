@@ -50,4 +50,9 @@ public class J48ModelBuilder implements LearningModelBuilder {
         }
         return null;
     }
+
+    @Override
+    public String getPrettyName() {
+        return "Decision Tree (J48)";
+    }
 }
