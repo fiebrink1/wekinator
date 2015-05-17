@@ -177,6 +177,7 @@ public class WekinatorSaver {
         w.getLearningManager().initializeInputsAndOutputsWithExisting(data, paths);
         // the above calls w.getDataManager().initialize(...) with data
         w.getMainGUI().initializeInputsAndOutputs();
+        w.getStatusUpdateCenter().update(null, "Successfully loaded Wekinator project from file.");
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         return w;
     }

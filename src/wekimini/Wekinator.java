@@ -27,6 +27,7 @@ public class Wekinator {
     private final LearningManager learningManager;
     private final DataManager dataManager;
     private final TrainingRunner trainingRunner;
+    private final StatusUpdateCenter statusUpdateCenter;
     
     private String projectName = "New Project";
 
@@ -79,6 +80,10 @@ public class Wekinator {
     /*public Scheduler getScheduler() {
         return scheduler;
     } */
+    
+    public StatusUpdateCenter getStatusUpdateCenter() {
+        return statusUpdateCenter;
+    }
     
     public TrainingRunner getTrainingRunner() {
         return trainingRunner;
@@ -153,6 +158,8 @@ public class Wekinator {
        // createProjectFiles(projectLocation);
         //settings = new Settings(projectName);
        // settings.writeToFile(projectLocation);
+        statusUpdateCenter = new StatusUpdateCenter(this);
+
         oscReceiver = new OSCReceiver();
         oscSender = new OSCSender();
         oscSender.setDefaultHostAndPort();

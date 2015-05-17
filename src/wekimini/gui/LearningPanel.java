@@ -7,6 +7,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import wekimini.LearningManager;
 import wekimini.Path;
+import wekimini.StatusUpdateCenter;
 import wekimini.TrainingRunner;
 import wekimini.Wekinator;
 
@@ -56,11 +57,24 @@ public class LearningPanel extends javax.swing.JPanel {
             }
         });
 
-        setStatus("Ready to go! Press \"Start Recording\" above to record some examples.");
+        w.getStatusUpdateCenter().addPropertyChangeListener(this::statusUpdated);
+        if (w.getStatusUpdateCenter().getLastUpdate() == null) {
+            setStatus("Ready to go! Press \"Start Recording\" above to record some examples.");
+        } else {
+           setStatus(w.getStatusUpdateCenter().getLastUpdate().toString()); 
+        }
+        
+        
+        
         setButtonsForLearningState();
         updateDeleteLastRoundButton();
     }
 
+    private void statusUpdated(PropertyChangeEvent evt) {
+        StatusUpdateCenter.StatusUpdate u = (StatusUpdateCenter.StatusUpdate)evt.getNewValue();
+        setStatus(u.toString());
+    }
+    
     private void learningCancelled() {
         setStatus("Training was cancelled.");
     }

@@ -161,7 +161,13 @@ public class MainGUI extends javax.swing.JFrame {
     private void setGUIForWekinator() {
         this.setTitle(w.getProjectName());
         w.addPropertyChangeListener(this::wekinatorPropertyChanged);
+      //  w.getStatusUpdateCenter().addPropertyChangeListener(this::statusUpdated);
     }
+    
+   /* private void statusUpdated(PropertyChangeEvent evt) {
+        StatusUpdateCenter.StatusUpdate u = (StatusUpdateCenter.StatusUpdate)evt.getNewValue();
+        
+    }*/
     
     private void wekinatorPropertyChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == Wekinator.PROP_PROJECT_NAME) {
