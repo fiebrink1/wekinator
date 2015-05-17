@@ -6,23 +6,39 @@
 package wekimini;
 
 import wekimini.learning.SimpleModel;
-import wekimini.learning.NeuralNetworKModel;
+import wekimini.learning.NeuralNetworkModel;
 import wekimini.learning.Model;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import wekimini.learning.AdaboostModel;
+import wekimini.learning.J48Model;
+import wekimini.learning.KNNModel;
+import wekimini.learning.SVMModel;
 
 /**
  *
  * @author rebecca
  */
 public class ModelLoader {
+    private static final Logger logger = Logger.getLogger(ModelLoader.class.getName());
     
     public static Model loadModel(Class c, ObjectInputStream is) throws IOException, ClassNotFoundException {
         if (c == SimpleModel.class) {
             return SimpleModel.readFromInputStream(is);
-        } else if (c == NeuralNetworKModel.class) {
-            return NeuralNetworKModel.readFromInputStream(is);  
+        } else if (c == NeuralNetworkModel.class) {
+            return NeuralNetworkModel.readFromInputStream(is);  
+        } else if (c == AdaboostModel.class) {
+            return AdaboostModel.readFromInputStream(is);
+        } else if (c == KNNModel.class) {
+            return KNNModel.readFromInputStream(is);
+        } else if (c == J48Model.class){ 
+            return J48Model.readFromInputStream(is);
+        } else if (c == SVMModel.class) {
+            return SVMModel.readFromInputStream(is);
         } else {
+            logger.log(Level.WARNING, "Could not find input reader for class {0}", c);
             return null;
         }
     }

@@ -6,24 +6,23 @@
 package wekimini.learning;
 
 import weka.classifiers.Classifier;
-import weka.classifiers.functions.MultilayerPerceptron;
+import weka.classifiers.trees.J48;
 import weka.core.Instances;
 import wekimini.LearningModelBuilder;
 import wekimini.WekaModelBuilderHelper;
+import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 
 /**
  *
  * @author rebecca
  */
-public class NeuralNetModelBuilder implements LearningModelBuilder {
+public class J48ModelBuilder implements LearningModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
     
-    
-    public NeuralNetModelBuilder() {
-        classifier = new MultilayerPerceptron();
-        ((MultilayerPerceptron)classifier).setHiddenLayers("i");
+    public J48ModelBuilder() {
+        classifier = new J48();
     }
     
     @Override
@@ -36,18 +35,18 @@ public class NeuralNetModelBuilder implements LearningModelBuilder {
        if (trainingData == null) {
            throw new IllegalStateException("Must set training examples (to not null) before building model");
        }
-       MultilayerPerceptron m = (MultilayerPerceptron)WekaModelBuilderHelper.build(classifier, trainingData);
-       return new NeuralNetworkModel(name, m);
+       J48 m = (J48)WekaModelBuilderHelper.build(classifier, trainingData);
+       return new J48Model(name, m);
     }
 
     @Override
     public boolean isCompatible(OSCOutput o) {
-        return true;
+        return (o instanceof OSCClassificationOutput);
     }
     
-    public NeuralNetModelBuilder fromTemplate(ModelBuilder b) {
-        if (b instanceof NeuralNetModelBuilder) {
-            return new NeuralNetModelBuilder();
+    public J48ModelBuilder fromTemplate(ModelBuilder b) {
+        if (b instanceof J48ModelBuilder) {
+            return new J48ModelBuilder();
         }
         return null;
     }

@@ -6,24 +6,29 @@
 package wekimini.learning;
 
 import weka.classifiers.Classifier;
-import weka.classifiers.functions.MultilayerPerceptron;
+import weka.classifiers.meta.AdaBoostM1;
+import weka.classifiers.trees.J48;
 import weka.core.Instances;
 import wekimini.LearningModelBuilder;
 import wekimini.WekaModelBuilderHelper;
+import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 
 /**
  *
  * @author rebecca
  */
-public class NeuralNetModelBuilder implements LearningModelBuilder {
+public class AdaboostModelBuilder implements LearningModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
+    private static final int defaultNumRounds = 100;
+    private static final boolean isBaseTree = true;
     
-    
-    public NeuralNetModelBuilder() {
-        classifier = new MultilayerPerceptron();
-        ((MultilayerPerceptron)classifier).setHiddenLayers("i");
+    public AdaboostModelBuilder() {
+        classifier = new AdaBoostM1();
+       // ((AdaBoostM1) classifier).setClassifier(new DecisionStump());
+        ((AdaBoostM1)classifier).setClassifier(new J48());
+        ((AdaBoostM1) classifier).setNumIterations(defaultNumRounds);
     }
     
     @Override
@@ -36,18 +41,18 @@ public class NeuralNetModelBuilder implements LearningModelBuilder {
        if (trainingData == null) {
            throw new IllegalStateException("Must set training examples (to not null) before building model");
        }
-       MultilayerPerceptron m = (MultilayerPerceptron)WekaModelBuilderHelper.build(classifier, trainingData);
-       return new NeuralNetworkModel(name, m);
+       AdaBoostM1 m = (AdaBoostM1)WekaModelBuilderHelper.build(classifier, trainingData);
+       return new AdaboostModel(name, m);
     }
 
     @Override
     public boolean isCompatible(OSCOutput o) {
-        return true;
+        return (o instanceof OSCClassificationOutput);
     }
     
-    public NeuralNetModelBuilder fromTemplate(ModelBuilder b) {
-        if (b instanceof NeuralNetModelBuilder) {
-            return new NeuralNetModelBuilder();
+    public AdaboostModelBuilder fromTemplate(ModelBuilder b) {
+        if (b instanceof AdaboostModelBuilder) {
+            return new AdaboostModelBuilder();
         }
         return null;
     }

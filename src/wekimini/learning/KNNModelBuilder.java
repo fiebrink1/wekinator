@@ -6,7 +6,7 @@
 package wekimini.learning;
 
 import weka.classifiers.Classifier;
-import weka.classifiers.functions.MultilayerPerceptron;
+import weka.classifiers.lazy.IBk;
 import weka.core.Instances;
 import wekimini.LearningModelBuilder;
 import wekimini.WekaModelBuilderHelper;
@@ -16,14 +16,14 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class NeuralNetModelBuilder implements LearningModelBuilder {
+public class KNNModelBuilder implements LearningModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
+    private static final int defaultNumNeighbors = 10;
     
-    
-    public NeuralNetModelBuilder() {
-        classifier = new MultilayerPerceptron();
-        ((MultilayerPerceptron)classifier).setHiddenLayers("i");
+    public KNNModelBuilder() {
+        classifier = new IBk();
+        ((IBk)classifier).setKNN(defaultNumNeighbors);
     }
     
     @Override
@@ -36,8 +36,8 @@ public class NeuralNetModelBuilder implements LearningModelBuilder {
        if (trainingData == null) {
            throw new IllegalStateException("Must set training examples (to not null) before building model");
        }
-       MultilayerPerceptron m = (MultilayerPerceptron)WekaModelBuilderHelper.build(classifier, trainingData);
-       return new NeuralNetworkModel(name, m);
+       IBk m = (IBk)WekaModelBuilderHelper.build(classifier, trainingData);
+       return new KNNModel(name, m);
     }
 
     @Override
@@ -45,9 +45,9 @@ public class NeuralNetModelBuilder implements LearningModelBuilder {
         return true;
     }
     
-    public NeuralNetModelBuilder fromTemplate(ModelBuilder b) {
-        if (b instanceof NeuralNetModelBuilder) {
-            return new NeuralNetModelBuilder();
+    public KNNModelBuilder fromTemplate(ModelBuilder b) {
+        if (b instanceof KNNModelBuilder) {
+            return new KNNModelBuilder();
         }
         return null;
     }

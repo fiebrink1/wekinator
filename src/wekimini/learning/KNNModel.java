@@ -6,27 +6,27 @@
 package wekimini.learning;
 
 import com.thoughtworks.xstream.XStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
-import weka.classifiers.functions.MultilayerPerceptron;
+import weka.classifiers.lazy.IBk;
 import weka.core.Instance;
+import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 
 /**
  *
  * @author rebecca
  */
-public class NeuralNetworKModel implements Model {
+public class KNNModel implements Model {
     
     private final String prettyName;
     private final String timestamp;
     private final String myId;
-    private transient MultilayerPerceptron wmodel;
+    private transient IBk wmodel;
     
-    public NeuralNetworKModel(String name, MultilayerPerceptron wmodel) { 
+    public KNNModel(String name, IBk wmodel) { 
         this.prettyName = name;
         Date d= new Date();
         timestamp = Long.toString(d.getTime());
@@ -53,26 +53,27 @@ public class NeuralNetworKModel implements Model {
     @Override
     public boolean isCompatible(OSCOutput o) {
         //Might tweak this for hard/soft limits... Not sure how to handle this ; in path?
-        return true;
+       // return true;
+        return (o instanceof OSCClassificationOutput);
     }
     
     public void writeToOutputStream(ObjectOutputStream os) throws IOException {
         XStream xstream = new XStream();
-        xstream.alias("NeuralNetworKModel", NeuralNetworKModel.class);
+        xstream.alias("KNNModel", KNNModel.class);
         String xml = xstream.toXML(this);
         os.writeObject(xml);
         os.writeObject(wmodel);
 //Util.writeToXMLFile(this, "Path", Path.class, filename);
     }
     
-    public static NeuralNetworKModel readFromInputStream(ObjectInputStream is) throws IOException, ClassNotFoundException {
+    public static KNNModel readFromInputStream(ObjectInputStream is) throws IOException, ClassNotFoundException {
         String xml = (String)is.readObject();
         XStream xstream = new XStream();
-        xstream.alias("NeuralNetworKModel", NeuralNetworKModel.class);
-        NeuralNetworKModel nn = (NeuralNetworKModel) xstream.fromXML(xml);
-        MultilayerPerceptron mlp = (MultilayerPerceptron)is.readObject();
-        nn.wmodel = mlp;
-        return nn;
+        xstream.alias("KNNModel", KNNModel.class);
+        KNNModel model = (KNNModel) xstream.fromXML(xml);
+        IBk knn = (IBk)is.readObject();
+        model.wmodel = knn;
+        return model;
     }
     
 }
