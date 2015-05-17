@@ -177,11 +177,16 @@ public class DataTableModel extends AbstractTableModel {
             //Check if legal? Probably should.
             int outputNum = col - numMetaData - numInputs; //DANGER DANGER TODOTODO
             double d = 0;
+            
+            int stuffWekaNeedsToAdd = 0;
+            if (m.isOutputClassifier(outputNum)) {
+                stuffWekaNeedsToAdd = -1;
+            }
 
             if (value instanceof Integer) {
-                d = ((Integer) value);
+                d = ((Integer) value) + stuffWekaNeedsToAdd;
             } else if (value instanceof Double) {
-                d = ((Double) value);
+                d = ((Double) value) + stuffWekaNeedsToAdd;
             } else if (value instanceof String) {
                 String s = (String) value;
                 if (s.equals("X") || s.equals("x")) {
@@ -190,7 +195,7 @@ public class DataTableModel extends AbstractTableModel {
                     return;
                 } else {
                     try {
-                        d = Double.parseDouble((String) value);
+                        d = Double.parseDouble((String) value) + stuffWekaNeedsToAdd;
                     } catch (Exception ex) {
                         logger.log(Level.WARNING, "Could not convert string value{0} to output", value);
                         return;

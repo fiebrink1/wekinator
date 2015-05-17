@@ -32,6 +32,7 @@ public class TrainingRunner {
     protected EventListenerList cancelListenerList = new EventListenerList();
     private ChangeEvent cancelEvent = null;
     private boolean wasCancelled = false;
+    private boolean hadError = false;
     private static final Logger logger = Logger.getLogger(TrainingRunner.class.getName());
 
     public TrainingRunner(Wekinator w) {
@@ -40,6 +41,10 @@ public class TrainingRunner {
 
     public boolean wasCancelled() {
         return wasCancelled;
+    }
+    
+    public boolean errorEncountered(){
+        return hadError;
     }
 
     /**
@@ -170,6 +175,7 @@ public class TrainingRunner {
 
                         // System.out.println("progress is " + progress);
                 wasCancelled = false;
+                hadError = trainingProgress.numErrorsEncountered > 0;
                 return 0;
             }
 

@@ -4,6 +4,8 @@
 package wekimini.osc;
 
 import java.util.Random;
+import wekimini.learning.KNNModel;
+import wekimini.learning.KNNModelBuilder;
 import wekimini.learning.ModelBuilder;
 import wekimini.learning.SimpleModelBuilder;
 import wekimini.util.Util;
@@ -56,12 +58,12 @@ public class OSCClassificationOutput implements OSCOutput {
     
     @Override
     public double getDefaultValue() {
-        return 1;
+        return 0;
     }
     
     @Override
     public ModelBuilder getDefaultModelBuilder() {
-        return new SimpleModelBuilder();
+        return new KNNModelBuilder();
     }
     
     @Override
@@ -71,7 +73,7 @@ public class OSCClassificationOutput implements OSCOutput {
     
     @Override
     public boolean isLegalOutputValue(double value) {
-        if (value < 1 || value > numClasses) { //out of range
+        if (value < 0 || value >= numClasses) { //out of range
             return false;
         }
         return Util.isInteger(value); //is it really an int?
@@ -85,11 +87,11 @@ public class OSCClassificationOutput implements OSCOutput {
     @Override
     public double forceLegalOutputValue(double value) {
         int which = (int) value;
-        if (which < 1) {
-            which = 1;
+        if (which < 0) {
+            which = 0;
         }
-        if (which > numClasses) {
-            which = numClasses;
+        if (which >= numClasses) {
+            which = numClasses-1;
         }
         return which;
     }

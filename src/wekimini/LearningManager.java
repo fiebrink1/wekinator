@@ -19,6 +19,7 @@ import javax.swing.event.ChangeListener;
 import org.jdesktop.swingworker.SwingWorker;
 import weka.core.Instances;
 import weka.core.Instance;
+import wekimini.learning.ModelBuilder;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCReceiver;
 import wekimini.util.WeakListenerSupport;
@@ -28,6 +29,8 @@ import wekimini.util.WeakListenerSupport;
  * @author rebecca
  */
 public class LearningManager {
+
+
     public static enum LearningState {DONE_TRAINING, TRAINING, READY_TO_TRAIN, NOT_READY_TO_TRAIN};
     public static enum RunningState {RUNNING, NOT_RUNNING};
     public static enum RecordingState {RECORDING, NOT_RECORDING};
@@ -163,8 +166,8 @@ public class LearningManager {
     private void setLearningState(LearningState learningState) {
         LearningState oldLearningState = this.learningState;
         this.learningState = learningState;
-        propertyChangeSupport.firePropertyChange(PROP_LEARNINGSTATE, oldLearningState, learningState);
         updateAbleToRun();
+        propertyChangeSupport.firePropertyChange(PROP_LEARNINGSTATE, oldLearningState, learningState);
     }
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -298,7 +301,13 @@ public class LearningManager {
             return;
         }
         if (learningState == LearningState.DONE_TRAINING) {
-            setAbleToRun(true);   
+            for (Path p : paths) {
+                if (p.canCompute()) {
+                    setAbleToRun(true);
+                    return;
+                }
+            }   
+            setAbleToRun(false);   
         } else {
             setAbleToRun(false);
         }
@@ -590,7 +599,9 @@ public class LearningManager {
         propertyChangeSupport.firePropertyChange(PROP_ABLE_TO_RECORD, oldAbleToRecord, ableToRecord);
     }
 
-
+    public void setModelBuilderForPath(ModelBuilder mb, int i) {
+        paths.get(i).setModelBuilder(mb);
+    }
     
 }
 

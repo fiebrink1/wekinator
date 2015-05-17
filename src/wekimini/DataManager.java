@@ -293,6 +293,10 @@ public class DataManager {
         }
     }
 
+    public boolean isOutputClassifier(int outputIndex) {
+        return (outputGroup.getOutput(outputIndex) instanceof OSCClassificationOutput);
+    }
+    
     public void initialize(String[] inputNames, OSCOutputGroup outputGroup) {
         numOutputs = outputGroup.getNumOutputs();
         numExamplesPerOutput = new int[numOutputs];
@@ -337,6 +341,7 @@ public class DataManager {
                 //Create fastVector w/ possible
                 FastVector classes = new FastVector(numOutputs);
                 for (int val = 0; val < numClasses[i]; val++) {
+                    System.out.println("Adding legal value " + (new Integer(val + 1)).toString());
                     classes.addElement((new Integer(val + 1)).toString()); //Values 1 to numClasses
                 }
                 ff.addElement(new Attribute(outputNames[i], classes));
@@ -626,7 +631,13 @@ public class DataManager {
         if (i.isMissing(numMetaData + numInputs + whichOutput)) {
             return Double.NaN;
         }
-        return i.value(numMetaData + numInputs + whichOutput);
+        if (i.attribute(numMetaData + numInputs + whichOutput).isNumeric()) {
+            return i.value(numMetaData + numInputs + whichOutput);
+        } else {
+            //What we need to do if we allow classes that don't start at 1:
+            //return Double.parseDouble(i.attribute(numMetaData + numInputs + whichOutput).value((int)i.value(numMetaData + numInputs + whichOutput)));
+            return i.value(numMetaData + numInputs + whichOutput) + 1;
+        }
     }
 
     public double getInputValue(int index, int whichInput) {

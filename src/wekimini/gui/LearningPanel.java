@@ -122,7 +122,7 @@ public class LearningPanel extends javax.swing.JPanel {
         } else if (evt.getPropertyName() == LearningManager.PROP_LEARNINGSTATE) {
             setButtonsForLearningState();
             updateStatusForLearningState();
-            System.out.println("Learning state updated: " + w.getLearningManager().getLearningState());
+           // System.out.println("Learning state updated: " + w.getLearningManager().getLearningState());
         } else if (evt.getPropertyName() == LearningManager.PROP_RUNNINGSTATE) {
             updateRunButtonAndText();
         } else if (evt.getPropertyName() == LearningManager.PROP_NUMEXAMPLESTHISROUND) {
@@ -161,6 +161,8 @@ public class LearningPanel extends javax.swing.JPanel {
         } else if (ls == LearningManager.LearningState.DONE_TRAINING) {
             if (w.getTrainingRunner().wasCancelled()) {
                 setStatus("Training was cancelled.");
+            } else if (w.getTrainingRunner().errorEncountered()) {
+                setStatus("Error(s) encountered during training.");
             } else {
                 int n = w.getLearningManager().numRunnableModels();
                 if (n > 0) {

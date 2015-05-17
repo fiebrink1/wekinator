@@ -204,6 +204,7 @@ public class Path {
         lastModelState = modelState;
         trainingCompleted = false;
         
+        try {
         setModelState(ModelState.BUILDING);
         if (modelBuilder instanceof LearningModelBuilder) {
             ((LearningModelBuilder)modelBuilder).setTrainingExamples(i);
@@ -211,7 +212,14 @@ public class Path {
         model = modelBuilder.build(name);
         setCurrentModelName(name);
         setModelState(ModelState.BUILT);
-        
+        } catch (Exception ex) {
+            model = lastModel;
+            setModelState(lastModelState);
+            logger.log(Level.SEVERE, "Exception encountered in building : {0}", ex.getMessage());
+            logger.log(Level.INFO   , "Setting model state to {0}", lastModelState);
+            trainingCompleted = true;
+            throw ex;
+        }
         trainingCompleted = true;
 
     }
@@ -289,6 +297,7 @@ public class Path {
      * @param modelState new value of modelState
      */
     public void setModelState(ModelState modelState) {
+        logger.log(Level.INFO, "Setting model state to {0}", modelState);
         ModelState oldModelState = this.modelState;
         this.modelState = modelState;
         propertyChangeSupport.firePropertyChange(PROP_MODELSTATE, oldModelState, modelState);
@@ -517,5 +526,9 @@ public class Path {
 
         //Path g = (Path) Util.readFromXMLFile("Path", Path.class, filename);
         //return g;
+    }
+    
+    public void setModelBuilder(ModelBuilder mb) {
+        this.modelBuilder = mb;
     }
 }

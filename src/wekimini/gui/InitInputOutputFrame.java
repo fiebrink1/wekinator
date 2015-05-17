@@ -24,6 +24,11 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import wekimini.Wekinator;
+import wekimini.learning.AdaboostModelBuilder;
+import wekimini.learning.J48ModelBuilder;
+import wekimini.learning.KNNModelBuilder;
+import wekimini.learning.ModelBuilder;
+import wekimini.learning.SVMModelBuilder;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCInputGroup;
 import wekimini.osc.OSCNumericOutput;
@@ -48,52 +53,59 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     private final static int COMBO_REGRESSION_INDEX = 0;
     private final static int COMBO_CLASSIFICATION_INDEX = 1;
     private final static int COMBO_CUSTOM_INDEX = 2;
+
+    private final static int COMBO_KNN_INDEX = 0;
+    private final static int COMBO_ADABOOST_INDEX = 2;
+    private final static int COMBO_SVM_INDEX = 1;
+    private final static int COMBO_J48_INDEX = 3;
+
     private OutputConfigurationFrame outputConfigViewer = null;
     private final OutputConfigurationFrame.OutputGroupReceiver outputGroupReceiver = this::initFormForOutputGroup;
     private OSCOutputGroup customConfiguredOutput = null;
     private static final Logger logger = Logger.getLogger(InitInputOutputFrame.class.getName());
+
     /**
      * Creates new form initInputOutputFrame
      */
     public InitInputOutputFrame() {
         initComponents();
     }
-    
+
     public InitInputOutputFrame(Wekinator w) {
         initComponents();
         setWekinator(w);
         updateOutputCard();
-       /* fieldNumOutputs.getDocument().addDocumentListener(new DocumentListener() {
+        /* fieldNumOutputs.getDocument().addDocumentListener(new DocumentListener() {
 
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                updateCustomOutputPermissions();
-            }
+         @Override
+         public void insertUpdate(DocumentEvent e) {
+         updateCustomOutputPermissions();
+         }
 
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                updateCustomOutputPermissions();
-            }
+         @Override
+         public void removeUpdate(DocumentEvent e) {
+         updateCustomOutputPermissions();
+         }
 
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                updateCustomOutputPermissions();
-            }
-        }); */
+         @Override
+         public void changedUpdate(DocumentEvent e) {
+         updateCustomOutputPermissions();
+         }
+         }); */
     }
 
     private void initFormForOutputGroup(OSCOutputGroup g) {
-       customConfiguredOutput = g;
-       fieldOutputOSCMessage.setText(g.getOscMessage());
-       fieldHostName.setText(g.getHostname());
-       fieldSendPort.setText(Integer.toString(g.getOutputPort()));
-       fieldNumOutputs.setText(Integer.toString(g.getNumOutputs()));
-       currentOutputNames = new String[g.getNumOutputs()];
-       System.arraycopy(g.getOutputNames(), 0, currentOutputNames, 0, currentOutputNames.length);
-       comboOutputType.setSelectedIndex(COMBO_CUSTOM_INDEX);
+        customConfiguredOutput = g;
+        fieldOutputOSCMessage.setText(g.getOscMessage());
+        fieldHostName.setText(g.getHostname());
+        fieldSendPort.setText(Integer.toString(g.getOutputPort()));
+        fieldNumOutputs.setText(Integer.toString(g.getNumOutputs()));
+        currentOutputNames = new String[g.getNumOutputs()];
+        System.arraycopy(g.getOutputNames(), 0, currentOutputNames, 0, currentOutputNames.length);
+        comboOutputType.setSelectedIndex(COMBO_CUSTOM_INDEX);
     }
-    
-        public void setWekinator(Wekinator w) {
+
+    public void setWekinator(Wekinator w) {
         this.w = w;
         updateGUIForConnectionState(w.getOSCReceiver().getConnectionState());
         oscReceiverListener = this::oscReceiverPropertyChanged;
@@ -163,6 +175,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         fieldNumClasses = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
+        comboClassifierType = new javax.swing.JComboBox();
         panelCustom = new javax.swing.JPanel();
         buttonConfigureOutputs = new javax.swing.JButton();
         jLabel12 = new javax.swing.JLabel();
@@ -393,7 +406,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel10.setText("classes");
+        jLabel10.setText("classes, using");
+
+        comboClassifierType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "k-Nearest Neighbor", "Support Vector Machine", "AdaBoost", "Decision Tree" }));
 
         javax.swing.GroupLayout cardNumClassesLayout = new javax.swing.GroupLayout(cardNumClasses);
         cardNumClasses.setLayout(cardNumClassesLayout);
@@ -406,7 +421,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 .addComponent(fieldNumClasses, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
-                .addContainerGap(279, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(comboClassifierType, 0, 224, Short.MAX_VALUE)
+                .addContainerGap())
         );
         cardNumClassesLayout.setVerticalGroup(
             cardNumClassesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -415,7 +432,8 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 .addGroup(cardNumClassesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(fieldNumClasses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10)))
+                    .addComponent(jLabel10)
+                    .addComponent(comboClassifierType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         panelOutputTypes.add(cardNumClasses, "cardClassification");
@@ -611,7 +629,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
 
     private void buttonOscListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOscListenActionPerformed
         if (w.getOSCReceiver().getConnectionState()
-            == OSCReceiver.ConnectionState.CONNECTED) {
+                == OSCReceiver.ConnectionState.CONNECTED) {
             w.getOSCReceiver().stopListening();
         } else {
             int port = 0;
@@ -649,17 +667,17 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     private void fieldInputOSCMessageKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldInputOSCMessageKeyTyped
         /* char enter = evt.getKeyChar();
 
-        if (enter == '\n') {
-            System.out.println("One");
-        } else if (enter == '\r') {
-            System.out.println("two");
-        } else {
-            System.out.println("Other: " + enter + ".");
-        }
-        */
+         if (enter == '\n') {
+         System.out.println("One");
+         } else if (enter == '\r') {
+         System.out.println("two");
+         } else {
+         System.out.println("Other: " + enter + ".");
+         }
+         */
         /* if (keyIsEnter) {
-            updateOSCListener();
-        }*/
+         updateOSCListener();
+         }*/
     }//GEN-LAST:event_fieldInputOSCMessageKeyTyped
 
     private void initFormForInputGroup(OSCInputGroup group) {
@@ -667,9 +685,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         fieldNumInputs.setText(Integer.toString(group.getNumInputs()));
         currentInputNames = new String[group.getNumInputs()];
         System.arraycopy(group.getInputNames(), 0, currentInputNames, 0, currentInputNames.length);
-        
+
     }
-    
+
     private void buttonLoadInputsFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoadInputsFromFileActionPerformed
         String homeDir = System.getProperty("user.home");
         File f = Util.findLoadFile("xml", "Input configuration file", homeDir, this);
@@ -701,11 +719,11 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
 
         String baseName = setBaseNameFromOscField(fieldInputOSCMessage, "Input");
         GuiIONameCustomise customiser = new GuiIONameCustomise(
-            numNames,
-            baseName,
-            currentInputNames,
-            r,
-            GuiIONameCustomise.IOType.INPUT);
+                numNames,
+                baseName,
+                currentInputNames,
+                r,
+                GuiIONameCustomise.IOType.INPUT);
         customiser.setAlwaysOnTop(true);
         customiser.setVisible(true);
     }//GEN-LAST:event_buttonCustomiseInputNamesActionPerformed
@@ -726,7 +744,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             Util.showPrettyErrorPane(this, "The number of outputs must match the custom configuration entered using \"Configure\" or loaded from a file.");
             return false;
         }
-        
+
         if (customConfiguredOutput.getNumOutputs() != numOutputsOnForm) {
             Util.showPrettyErrorPane(this, "The number of OSC outputs must match the custom configuration entered using \"Configure\" or loaded from a file. Hit \"Configure\" to fix this.");
             return false;
@@ -734,32 +752,32 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             return true;
         }
     }
-    
-   /* private void updateCustomOutputPermissions() {
-        System.out.println("Computing");
-        if (comboOutputType.getSelectedIndex() != COMBO_CUSTOM_INDEX) {
-            buttonNext.setEnabled(true);
-            return;
-        }
-        if (customConfiguredOutput == null) {
-            buttonNext.setEnabled(false);
-            return;
-        }
-        int numOutputsOnForm;
-        try {
-            numOutputsOnForm = Integer.parseInt(fieldNumOutputs.getText());
-        } catch (NumberFormatException ex) {
-            buttonNext.setEnabled(false);
-            return;
-        }
+
+    /* private void updateCustomOutputPermissions() {
+     System.out.println("Computing");
+     if (comboOutputType.getSelectedIndex() != COMBO_CUSTOM_INDEX) {
+     buttonNext.setEnabled(true);
+     return;
+     }
+     if (customConfiguredOutput == null) {
+     buttonNext.setEnabled(false);
+     return;
+     }
+     int numOutputsOnForm;
+     try {
+     numOutputsOnForm = Integer.parseInt(fieldNumOutputs.getText());
+     } catch (NumberFormatException ex) {
+     buttonNext.setEnabled(false);
+     return;
+     }
         
-        if (customConfiguredOutput.getNumOutputs() != numOutputsOnForm) {
-            buttonNext.setEnabled(false);
-        } else {
-            buttonNext.setEnabled(true);
-        }
-    } */
-    
+     if (customConfiguredOutput.getNumOutputs() != numOutputsOnForm) {
+     buttonNext.setEnabled(false);
+     } else {
+     buttonNext.setEnabled(true);
+     }
+     } */
+
     private void fieldNumOutputsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumOutputsKeyTyped
         char enter = evt.getKeyChar();
         if (!(Character.isDigit(enter))) {
@@ -797,11 +815,11 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
 
         String baseName = setBaseNameFromOscField(fieldOutputOSCMessage, "Output");
         GuiIONameCustomise customiser = new GuiIONameCustomise(
-            numNames,
-            baseName,
-            currentOutputNames,
-            r,
-            GuiIONameCustomise.IOType.OUTPUT);
+                numNames,
+                baseName,
+                currentOutputNames,
+                r,
+                GuiIONameCustomise.IOType.OUTPUT);
         customiser.setAlwaysOnTop(true);
         customiser.setVisible(true);
     }//GEN-LAST:event_buttonCustomiseOutputNamesActionPerformed
@@ -819,8 +837,8 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         String hostname = getHostnameFromForm();
         int port = getSendPortFromForm();
         int numOutputs = Integer.parseInt(fieldNumOutputs.getText());
-        
-        if (currentOutputNames.length != numOutputs) {      
+
+        if (currentOutputNames.length != numOutputs) {
             if (currentOutputNames.length > numOutputs) {
                 String[] newNames = new String[numOutputs];
                 System.arraycopy(currentOutputNames, 0, newNames, 0, numOutputs);
@@ -830,12 +848,12 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 System.arraycopy(currentOutputNames, 0, newNames, 0, currentOutputNames.length);
                 String baseName = setBaseNameFromOscField(fieldOutputOSCMessage, "Output");
                 for (int i = currentOutputNames.length; i < numOutputs; i++) {
-                    newNames[i] = baseName + "-" + (i+1);
+                    newNames[i] = baseName + "-" + (i + 1);
                 }
                 currentOutputNames = newNames;
             }
-        } 
-        
+        }
+
         if (comboOutputType.getSelectedIndex() == COMBO_CLASSIFICATION_INDEX) {
             List<OSCOutput> outputs = new LinkedList<>();
             int numClasses = Integer.parseInt(fieldNumClasses.getText());
@@ -849,10 +867,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             List<OSCOutput> outputs = new LinkedList<>();
             for (int i = 0; i < numOutputs; i++) {
                 OSCNumericOutput o = new OSCNumericOutput(
-                        currentOutputNames[i], 
-                        0, 
-                        1, 
-                        OSCNumericOutput.NumericOutputType.REAL, 
+                        currentOutputNames[i],
+                        0,
+                        1,
+                        OSCNumericOutput.NumericOutputType.REAL,
                         OSCNumericOutput.LimitType.SOFT);
                 outputs.add(o);
             }
@@ -864,12 +882,12 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             return og;
         }
     }
-    
+
     private OSCInputGroup getInputGroupFromForm() {
         String name = "Inputs";
         String oscMessage = fieldInputOSCMessage.getText().trim();
         int numInputs = Integer.parseInt(fieldNumInputs.getText());
-        
+
         if (currentInputNames.length != numInputs) {
             if (currentInputNames.length > numInputs) {
                 String[] newNames = new String[numInputs];
@@ -880,44 +898,66 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 System.arraycopy(currentInputNames, 0, newNames, 0, currentInputNames.length);
                 String baseName = setBaseNameFromOscField(fieldInputOSCMessage, "Input");
                 for (int i = currentInputNames.length; i < numInputs; i++) {
-                    newNames[i] = baseName + "-" + (i+1);
+                    newNames[i] = baseName + "-" + (i + 1);
                 }
                 currentInputNames = newNames;
             }
-        } 
-        OSCInputGroup ig = new OSCInputGroup(name, oscMessage, numInputs, currentInputNames); 
+        }
+        OSCInputGroup ig = new OSCInputGroup(name, oscMessage, numInputs, currentInputNames);
         return ig;
     }
-    
+
     private String getHostnameFromForm() {
         return fieldHostName.getText().trim();
     }
-    
+
     private int getSendPortFromForm() {
         return Integer.parseInt(fieldSendPort.getText());
     }
-    
+
     private void configureOSCSenderFromForm() throws UnknownHostException, SocketException {
         String hostName = getHostnameFromForm();
         int port = getSendPortFromForm();
         w.getOSCSender().setHostnameAndPort(InetAddress.getByName(hostName), port);
     }
-    
+
     private void buttonNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonNextActionPerformed
         //TODO: have to do more if configuringOSC on next screen...
         if (checkOSCReady() && checkInputReady() && checkOutputReady() && customConfigMatchesGUI()) {
             //System.out.println("READY TO GO");
             try {
-            configureOSCSenderFromForm();
-            
-            OSCInputGroup inputGroup = getInputGroupFromForm();
-            OSCOutputGroup outputGroup = getOutputGroupFromForm();
-            w.getInputManager().setOSCInputGroup(inputGroup);
-            w.getOutputManager().setOSCOutputGroup(outputGroup);
-            w.getLearningManager().initializeInputsAndOutputs();
-            w.getMainGUI().initializeInputsAndOutputs();
-            w.getMainGUI().setVisible(true);
-            this.dispose();
+                configureOSCSenderFromForm();
+
+                OSCInputGroup inputGroup = getInputGroupFromForm();
+                OSCOutputGroup outputGroup = getOutputGroupFromForm();
+                w.getInputManager().setOSCInputGroup(inputGroup);
+                w.getOutputManager().setOSCOutputGroup(outputGroup);
+                w.getLearningManager().initializeInputsAndOutputs();
+                if (comboOutputType.getSelectedIndex() == COMBO_CLASSIFICATION_INDEX) {
+                    int whichClassifier = comboClassifierType.getSelectedIndex();
+                    ModelBuilder mb;
+                    if (whichClassifier == COMBO_KNN_INDEX) {
+                        mb = new KNNModelBuilder();
+                    } else if (whichClassifier == COMBO_ADABOOST_INDEX) {
+                        mb = new AdaboostModelBuilder();
+                    } else if (whichClassifier == COMBO_SVM_INDEX) {
+                        mb = new SVMModelBuilder();
+                    } else if (whichClassifier == COMBO_J48_INDEX) {
+                        mb = new J48ModelBuilder();
+                    } else {
+                        mb = new KNNModelBuilder();
+                        logger.log(Level.WARNING, "Classifier index not found");
+                    }
+                    /*for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
+                        ModelBuilder mbnew = mb.fromTemplate(mb);
+                        w.getLearningManager().setModelBuilderForPath(mbnew, i);
+                    }*/
+                    
+
+                }
+                w.getMainGUI().initializeInputsAndOutputs();
+                w.getMainGUI().setVisible(true);
+                this.dispose();
             } catch (UnknownHostException ex) {
                 Util.showPrettyErrorPane(this, "Host name " + fieldHostName.getText() + " is invalid; please try a different host.");
             } catch (SocketException ex) {
@@ -934,7 +974,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             outputConfigViewer.toFront();
             return;
         }
-        
+
         String sendMsg = fieldOutputOSCMessage.getText().trim();
         String hostname = getHostnameFromForm();
         int port = getSendPortFromForm();
@@ -950,46 +990,46 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 for (int i = 0; (i < customConfigOutputs.size() && i < numOutputs); i++) {
                     existingOutputs.add(customConfigOutputs.get(i));
                 }
-                
+
             }
         }
-        
+
         outputConfigViewer = new OutputConfigurationFrame(w, sendMsg, hostname, port, numOutputs, existingOutputs, currentOutputNames, baseName, outputGroupReceiver);
-        
-            outputConfigViewer.setAlwaysOnTop(true);
-            outputConfigViewer.setVisible(true);
-            outputConfigViewer.addWindowListener(new WindowListener() {
 
-                @Override
-                public void windowOpened(WindowEvent e) {
-                }
+        outputConfigViewer.setAlwaysOnTop(true);
+        outputConfigViewer.setVisible(true);
+        outputConfigViewer.addWindowListener(new WindowListener() {
 
-                @Override
-                public void windowClosing(WindowEvent e) {
-                }
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
 
-                @Override
-                public void windowClosed(WindowEvent e) {
-                        outputConfigViewer = null;
-                }
+            @Override
+            public void windowClosing(WindowEvent e) {
+            }
 
-                @Override
-                public void windowIconified(WindowEvent e) {
-                }
+            @Override
+            public void windowClosed(WindowEvent e) {
+                outputConfigViewer = null;
+            }
 
-                @Override
-                public void windowDeiconified(WindowEvent e) {
-                }
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
 
-                @Override
-                public void windowActivated(WindowEvent e) {
-                }
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
 
-                @Override
-                public void windowDeactivated(WindowEvent e) {
-                }
-            });
-        
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
+
     }//GEN-LAST:event_buttonConfigureOutputsActionPerformed
 
     private void buttonChooseOutputFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChooseOutputFileActionPerformed
@@ -1052,12 +1092,11 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                     Logger.getLogger(InitInputOutputFrame.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-                
-            
+
         });
     }
 
-        private boolean checkOutputNumberValid() {
+    private boolean checkOutputNumberValid() {
         return Util.checkIsPositiveNumber(fieldNumOutputs, "Number of outputs", this);
     }
 
@@ -1087,11 +1126,11 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         }
         return Util.checkNoSpace(fieldOutputOSCMessage, "OSC output message", this);
     }
-    
-       private boolean checkInputNumberValid() {
+
+    private boolean checkInputNumberValid() {
         return Util.checkIsPositiveNumber(fieldNumInputs, "Number of inputs", this);
     }
-       
+
     private String setBaseNameFromOscField(JTextField f, String defaultName) {
         String currentInputOSC = f.getText().trim();
         String baseName = defaultName;
@@ -1109,18 +1148,16 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     }
 
     private void receivedNewInputNames(String[] names) {
-        System.out.println("YAY");
         currentInputNames = new String[names.length];
         System.arraycopy(names, 0, currentInputNames, 0, names.length);
     }
 
     private void receivedNewOutputNames(String[] names) {
-        System.out.println("YAY OUTPUT");
         currentOutputNames = new String[names.length];
         System.arraycopy(names, 0, currentOutputNames, 0, names.length);
     }
 
-        private boolean checkOSCReady() {
+    private boolean checkOSCReady() {
         boolean ready = (w != null && w.getOSCReceiver().getConnectionState() == OSCReceiver.ConnectionState.CONNECTED);
         if (!ready) {
             Util.showPrettyErrorPane(this, "Please start OSC listener above in order to proceed");
@@ -1149,15 +1186,15 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         int index = comboOutputType.getSelectedIndex();
         if (index == COMBO_CLASSIFICATION_INDEX) {
             return Util.checkIsPositiveNumber(fieldNumClasses, "Number of classes", this);
-        } 
+        }
         return true;
     }
 
     private void updateOSCListener() {
         System.out.println("ERROR: updateOSCListener is not implemented");
     }
-    
-      private void updateOutputCard() {
+
+    private void updateOutputCard() {
         int index = comboOutputType.getSelectedIndex();
         CardLayout layout = (CardLayout) panelOutputTypes.getLayout();
         if (index == COMBO_REGRESSION_INDEX) {
@@ -1179,6 +1216,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     private javax.swing.JButton buttonOscListen;
     private javax.swing.JPanel cardBlank;
     private javax.swing.JPanel cardNumClasses;
+    private javax.swing.JComboBox comboClassifierType;
     private javax.swing.JComboBox comboOutputType;
     private javax.swing.JTextField fieldHostName;
     private javax.swing.JTextField fieldInputOSCMessage;
