@@ -948,10 +948,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                         mb = new KNNModelBuilder();
                         logger.log(Level.WARNING, "Classifier index not found");
                     }
-                    /*for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
+                    for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
                         ModelBuilder mbnew = mb.fromTemplate(mb);
                         w.getLearningManager().setModelBuilderForPath(mbnew, i);
-                    }*/
+                    }
                     
 
                 }

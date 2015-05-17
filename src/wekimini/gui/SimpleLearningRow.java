@@ -124,7 +124,6 @@ public class SimpleLearningRow extends javax.swing.JPanel {
      *      Put that in a separate function that's called only when GUI is modified.
      */
     public void setValue(double value) {
-        System.out.println("Value set to " + value);
         double oldValue = this.value;
         setValueQuietly(value);
         propertyChangeSupport.firePropertyChange(PROP_VALUE, oldValue, value);
