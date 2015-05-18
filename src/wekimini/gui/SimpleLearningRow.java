@@ -755,7 +755,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     }//GEN-LAST:event_sliderModelValueMouseReleased
 
     private void comboClassifierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboClassifierActionPerformed
-        // TODO add your handling code here:
+        setValue(comboClassifier.getSelectedIndex());
     }//GEN-LAST:event_comboClassifierActionPerformed
 
     private void sliderModelValueMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sliderModelValueMouseClicked
