@@ -58,7 +58,7 @@ public class OSCClassificationOutput implements OSCOutput {
     
     @Override
     public double getDefaultValue() {
-        return 0;
+        return 1;
     }
     
     @Override
@@ -87,11 +87,11 @@ public class OSCClassificationOutput implements OSCOutput {
     @Override
     public double forceLegalOutputValue(double value) {
         int which = (int) value;
-        if (which < 0) {
-            which = 0;
+        if (which < 1) {
+            which = 1;
         }
-        if (which >= numClasses) {
-            which = numClasses-1;
+        if (which >numClasses) {
+            which = numClasses;
         }
         return which;
     }

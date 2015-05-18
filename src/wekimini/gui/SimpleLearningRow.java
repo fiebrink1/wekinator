@@ -64,7 +64,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     private static final Color trainedColor = new Color(153, 255, 0);
     private static final Color needsRetrainingColor = new Color(255, 153, 0);
     private static final Color trainingColor = new Color(0, 204, 255); */
-    private double value = 0.0;
+    private double value = 1.0;
 
     public static final String PROP_VALUE = "value";
 
@@ -147,8 +147,8 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     public void setValueOnlyForDisplay(double value) {
         this.value = value;
         if (isClassifier) {
-            if (comboClassifier.getSelectedIndex() != ((int)value)) {
-                comboClassifier.setSelectedIndex((int) value );
+            if (comboClassifier.getSelectedIndex() != ((int)value) - 1) {
+                comboClassifier.setSelectedIndex((int) value - 1 );
             }
         } else {
             setSliderValueScaled(value);
@@ -755,7 +755,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
     }//GEN-LAST:event_sliderModelValueMouseReleased
 
     private void comboClassifierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboClassifierActionPerformed
-        setValue(comboClassifier.getSelectedIndex());
+        setValue(comboClassifier.getSelectedIndex()+1);
     }//GEN-LAST:event_comboClassifierActionPerformed
 
     private void sliderModelValueMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sliderModelValueMouseClicked
