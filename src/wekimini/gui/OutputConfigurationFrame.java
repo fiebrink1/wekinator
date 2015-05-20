@@ -242,8 +242,6 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
         textHost = new javax.swing.JTextField();
         jLabel29 = new javax.swing.JLabel();
         textPort = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        jSeparator1 = new javax.swing.JSeparator();
         scrollOutputsList = new javax.swing.JScrollPane();
         panelOutputsContainer = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -260,12 +258,13 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
         buttonAdd = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Customise Output Types");
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
 
         panelTop.setBackground(new java.awt.Color(255, 255, 255));
-        panelTop.setMaximumSize(new java.awt.Dimension(32767, 120));
-        panelTop.setMinimumSize(new java.awt.Dimension(664, 120));
-        panelTop.setPreferredSize(new java.awt.Dimension(675, 120));
+        panelTop.setMaximumSize(new java.awt.Dimension(32767, 76));
+        panelTop.setMinimumSize(new java.awt.Dimension(664, 76));
+        panelTop.setPreferredSize(new java.awt.Dimension(675, 76));
 
         jLabel1.setText("OSC message:");
 
@@ -289,33 +288,25 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
             }
         });
 
-        jLabel4.setText("Outputs:");
-
         javax.swing.GroupLayout panelTopLayout = new javax.swing.GroupLayout(panelTop);
         panelTop.setLayout(panelTopLayout);
         panelTopLayout.setHorizontalGroup(
             panelTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelTopLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(panelTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelTopLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(panelTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelTopLayout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(textOSCMessage))
-                            .addGroup(panelTopLayout.createSequentialGroup()
-                                .addComponent(jLabel28)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(textHost, javax.swing.GroupLayout.PREFERRED_SIZE, 321, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel29)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(textPort, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE))
-                            .addGroup(panelTopLayout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(textOSCMessage))
+                    .addGroup(panelTopLayout.createSequentialGroup()
+                        .addComponent(jLabel28)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(textHost, javax.swing.GroupLayout.PREFERRED_SIZE, 321, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel29)
+                        .addGap(0, 0, 0)
+                        .addComponent(textPort, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelTopLayout.setVerticalGroup(
@@ -325,16 +316,12 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
                 .addGroup(panelTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(textOSCMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 0, 0)
                 .addGroup(panelTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel28)
                     .addComponent(textHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(textPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel29))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
                 .addContainerGap(14, Short.MAX_VALUE))
         );
 
@@ -595,10 +582,8 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPanel panelButtons;
     private javax.swing.JPanel panelOutputsContainer;
