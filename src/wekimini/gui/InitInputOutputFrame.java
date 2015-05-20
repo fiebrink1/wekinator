@@ -6,6 +6,7 @@
 package wekimini.gui;
 
 import java.awt.CardLayout;
+import java.awt.MouseInfo;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
@@ -147,6 +148,18 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        popupMenuInputOptions = new javax.swing.JPopupMenu();
+        menuCustomiseInputNames = new javax.swing.JMenuItem();
+        menuLoadFromFile = new javax.swing.JMenuItem();
+        popupMenuOutputOptions = new javax.swing.JPopupMenu();
+        menuCustomiseOutputNames = new javax.swing.JMenuItem();
+        menuLoadOutputFromFile = new javax.swing.JMenuItem();
+        menuChooseClassifier = new javax.swing.JMenu();
+        buttonKNN = new javax.swing.JRadioButtonMenuItem();
+        buttonAdaboost = new javax.swing.JRadioButtonMenuItem();
+        buttonSVM = new javax.swing.JRadioButtonMenuItem();
+        buttonJ48 = new javax.swing.JRadioButtonMenuItem();
+        classifierRadioGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -154,20 +167,17 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         buttonOscListen = new javax.swing.JButton();
         labelOscStatus = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
+        panelInputs = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         fieldNumInputs = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         fieldInputOSCMessage = new javax.swing.JTextField();
-        buttonLoadInputsFromFile = new javax.swing.JButton();
-        buttonCustomiseInputNames = new javax.swing.JButton();
-        jLabel11 = new javax.swing.JLabel();
-        jPanel4 = new javax.swing.JPanel();
+        buttonInputOptions = new javax.swing.JButton();
+        panelOutputs = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         fieldNumOutputs = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         fieldOutputOSCMessage = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
         comboOutputType = new javax.swing.JComboBox();
         panelOutputTypes = new javax.swing.JPanel();
         cardBlank = new javax.swing.JPanel();
@@ -175,19 +185,72 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         fieldNumClasses = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        comboClassifierType = new javax.swing.JComboBox();
         panelCustom = new javax.swing.JPanel();
         buttonConfigureOutputs = new javax.swing.JButton();
-        jLabel12 = new javax.swing.JLabel();
-        buttonCustomiseOutputNames = new javax.swing.JButton();
+        buttonOutputOptions = new javax.swing.JButton();
         jLabel13 = new javax.swing.JLabel();
         fieldHostName = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         fieldSendPort = new javax.swing.JTextField();
-        buttonChooseOutputFile = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
         buttonNext = new javax.swing.JButton();
 
+        menuCustomiseInputNames.setText("Customise names");
+        menuCustomiseInputNames.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuCustomiseInputNamesActionPerformed(evt);
+            }
+        });
+        popupMenuInputOptions.add(menuCustomiseInputNames);
+
+        menuLoadFromFile.setText("Load from file");
+        menuLoadFromFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuLoadFromFileActionPerformed(evt);
+            }
+        });
+        popupMenuInputOptions.add(menuLoadFromFile);
+
+        menuCustomiseOutputNames.setText("Customise names");
+        menuCustomiseOutputNames.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuCustomiseOutputNamesActionPerformed(evt);
+            }
+        });
+        popupMenuOutputOptions.add(menuCustomiseOutputNames);
+
+        menuLoadOutputFromFile.setText("Load from file");
+        menuLoadOutputFromFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuLoadOutputFromFileActionPerformed(evt);
+            }
+        });
+        popupMenuOutputOptions.add(menuLoadOutputFromFile);
+
+        menuChooseClassifier.setText("Choose classifier");
+        menuChooseClassifier.setEnabled(false);
+
+        classifierRadioGroup.add(buttonKNN);
+        buttonKNN.setSelected(true);
+        buttonKNN.setText("k-Nearest Neighbor");
+        menuChooseClassifier.add(buttonKNN);
+
+        classifierRadioGroup.add(buttonAdaboost);
+        buttonAdaboost.setText("AdaBoost");
+        menuChooseClassifier.add(buttonAdaboost);
+
+        classifierRadioGroup.add(buttonSVM);
+        buttonSVM.setText("Support Vector Machine");
+        menuChooseClassifier.add(buttonSVM);
+
+        classifierRadioGroup.add(buttonJ48);
+        buttonJ48.setText("Decision Tree");
+        menuChooseClassifier.add(buttonJ48);
+
+        popupMenuOutputOptions.add(menuChooseClassifier);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Set up new project");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -227,9 +290,6 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(buttonOscListen)
-                        .addGap(250, 250, 250))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(labelOscStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -239,6 +299,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                         .addComponent(fieldOscPort, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(buttonOscListen)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -247,17 +310,17 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(labelOscStatus))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 0, 0)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(fieldOscPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 0, 0)
                 .addComponent(buttonOscListen)
                 .addContainerGap())
         );
 
-        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Inputs"));
+        panelInputs.setBackground(new java.awt.Color(255, 255, 255));
+        panelInputs.setBorder(javax.swing.BorderFactory.createTitledBorder("Inputs"));
 
         jLabel3.setText("# inputs:");
 
@@ -268,7 +331,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel4.setText("OSC message name:");
+        jLabel4.setText("OSC message:");
 
         fieldInputOSCMessage.setText("/wek/inputs");
         fieldInputOSCMessage.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -287,64 +350,43 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             }
         });
 
-        buttonLoadInputsFromFile.setText("Load from file");
-        buttonLoadInputsFromFile.addActionListener(new java.awt.event.ActionListener() {
+        buttonInputOptions.setText("Options");
+        buttonInputOptions.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonLoadInputsFromFileActionPerformed(evt);
+                buttonInputOptionsActionPerformed(evt);
             }
         });
 
-        buttonCustomiseInputNames.setText("Customise names");
-        buttonCustomiseInputNames.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonCustomiseInputNamesActionPerformed(evt);
-            }
-        });
-
-        jLabel11.setText("Optional:");
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout panelInputsLayout = new javax.swing.GroupLayout(panelInputs);
+        panelInputs.setLayout(panelInputsLayout);
+        panelInputsLayout.setHorizontalGroup(
+            panelInputsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelInputsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fieldInputOSCMessage))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fieldNumInputs, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel11)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buttonCustomiseInputNames)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buttonLoadInputsFromFile)
-                        .addContainerGap())))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(fieldInputOSCMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
+                .addComponent(fieldInputOSCMessage)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fieldNumInputs, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonInputOptions))
+        );
+        panelInputsLayout.setVerticalGroup(
+            panelInputsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelInputsLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(panelInputsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(fieldInputOSCMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(fieldNumInputs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel11)
-                    .addComponent(buttonCustomiseInputNames)
-                    .addComponent(buttonLoadInputsFromFile))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel3)
+                    .addComponent(buttonInputOptions)))
         );
 
-        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Outputs"));
+        panelOutputs.setBackground(new java.awt.Color(255, 255, 255));
+        panelOutputs.setBorder(javax.swing.BorderFactory.createTitledBorder("Outputs"));
 
         jLabel5.setText("# outputs:");
 
@@ -360,7 +402,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel6.setText("OSC message name:");
+        jLabel6.setText("OSC message:");
 
         fieldOutputOSCMessage.setText("/wek/outputs");
         fieldOutputOSCMessage.addActionListener(new java.awt.event.ActionListener() {
@@ -368,8 +410,6 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 fieldOutputOSCMessageActionPerformed(evt);
             }
         });
-
-        jLabel7.setText("Output types:");
 
         comboOutputType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All continuous (default settings)", "All classifiers (default settings)", "Custom" }));
         comboOutputType.addActionListener(new java.awt.event.ActionListener() {
@@ -386,7 +426,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         cardBlank.setLayout(cardBlankLayout);
         cardBlankLayout.setHorizontalGroup(
             cardBlankLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 509, Short.MAX_VALUE)
+            .addGap(0, 534, Short.MAX_VALUE)
         );
         cardBlankLayout.setVerticalGroup(
             cardBlankLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -406,24 +446,20 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel10.setText("classes, using");
-
-        comboClassifierType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "k-Nearest Neighbor", "Support Vector Machine", "AdaBoost", "Decision Tree" }));
+        jLabel10.setText("classes");
 
         javax.swing.GroupLayout cardNumClassesLayout = new javax.swing.GroupLayout(cardNumClasses);
         cardNumClasses.setLayout(cardNumClassesLayout);
         cardNumClassesLayout.setHorizontalGroup(
             cardNumClassesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cardNumClassesLayout.createSequentialGroup()
-                .addGap(96, 96, 96)
+                .addGap(47, 47, 47)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fieldNumClasses, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(comboClassifierType, 0, 224, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap(353, Short.MAX_VALUE))
         );
         cardNumClassesLayout.setVerticalGroup(
             cardNumClassesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -432,8 +468,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 .addGroup(cardNumClassesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(fieldNumClasses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10)
-                    .addComponent(comboClassifierType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jLabel10)))
         );
 
         panelOutputTypes.add(cardNumClasses, "cardClassification");
@@ -454,7 +489,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             .addGroup(panelCustomLayout.createSequentialGroup()
                 .addGap(91, 91, 91)
                 .addComponent(buttonConfigureOutputs)
-                .addContainerGap(312, Short.MAX_VALUE))
+                .addContainerGap(337, Short.MAX_VALUE))
         );
         panelCustomLayout.setVerticalGroup(
             panelCustomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -465,12 +500,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
 
         panelOutputTypes.add(panelCustom, "cardCustom");
 
-        jLabel12.setText("Optional:");
-
-        buttonCustomiseOutputNames.setText("Customise names");
-        buttonCustomiseOutputNames.addActionListener(new java.awt.event.ActionListener() {
+        buttonOutputOptions.setText("Options");
+        buttonOutputOptions.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonCustomiseOutputNamesActionPerformed(evt);
+                buttonOutputOptionsActionPerformed(evt);
             }
         });
 
@@ -487,74 +520,62 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             }
         });
 
-        buttonChooseOutputFile.setText("Load from file");
-        buttonChooseOutputFile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonChooseOutputFileActionPerformed(evt);
-            }
-        });
+        jLabel7.setText("Type:");
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
+        javax.swing.GroupLayout panelOutputsLayout = new javax.swing.GroupLayout(panelOutputs);
+        panelOutputs.setLayout(panelOutputsLayout);
+        panelOutputsLayout.setHorizontalGroup(
+            panelOutputsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelOutputsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelOutputTypes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fieldOutputOSCMessage))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel13)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fieldHostName)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel14)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fieldSendPort, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fieldNumOutputs, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buttonCustomiseOutputNames)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buttonChooseOutputFile))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(panelOutputsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelOutputsLayout.createSequentialGroup()
+                        .addGroup(panelOutputsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(panelOutputTypes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(panelOutputsLayout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(fieldOutputOSCMessage)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(fieldNumOutputs, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelOutputsLayout.createSequentialGroup()
+                                .addComponent(jLabel13)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(fieldHostName)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel14)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(fieldSendPort, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap())
+                    .addGroup(panelOutputsLayout.createSequentialGroup()
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(comboOutputType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(comboOutputType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buttonOutputOptions))))
         );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        panelOutputsLayout.setVerticalGroup(
+            panelOutputsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelOutputsLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(panelOutputsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(fieldOutputOSCMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(fieldOutputOSCMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(fieldNumOutputs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5))
+                .addGap(0, 0, 0)
+                .addGroup(panelOutputsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(fieldHostName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(fieldSendPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(fieldNumOutputs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12)
-                    .addComponent(buttonCustomiseOutputNames)
-                    .addComponent(buttonChooseOutputFile))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(comboOutputType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addGroup(panelOutputsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(buttonOutputOptions)
+                    .addComponent(comboOutputType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
                 .addGap(0, 0, 0)
                 .addComponent(panelOutputTypes, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))
@@ -574,8 +595,8 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelOutputs, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelInputs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -588,9 +609,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(panelInputs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(panelOutputs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(buttonNext)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -600,13 +621,13 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 545, Short.MAX_VALUE)
+            .addGap(0, 570, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 469, Short.MAX_VALUE)
+            .addGap(0, 359, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -688,7 +709,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
 
     }
 
-    private void buttonLoadInputsFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoadInputsFromFileActionPerformed
+    private void loadInputsFromFile() {
         String homeDir = System.getProperty("user.home");
         File f = Util.findLoadFile("xml", "Input configuration file", homeDir, this);
         if (f == null) {
@@ -701,11 +722,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             Util.showPrettyErrorPane(this, "Could not load inputs from file " + f.getAbsolutePath() + ". Error: " + ex.getMessage());
             Logger.getLogger(InitInputOutputFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_buttonLoadInputsFromFileActionPerformed
-
-    private void buttonCustomiseInputNamesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCustomiseInputNamesActionPerformed
-        //String = fieldNumInputs.ge
-        if (!checkInputNumberValid()) {
+    }
+    private void customiseInputNames() {
+         if (!checkInputNumberValid()) {
             return;
         }
         int numNames = Integer.parseInt(fieldNumInputs.getText());
@@ -726,7 +745,13 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 GuiIONameCustomise.IOType.INPUT);
         customiser.setAlwaysOnTop(true);
         customiser.setVisible(true);
-    }//GEN-LAST:event_buttonCustomiseInputNamesActionPerformed
+    }
+    
+    private void buttonInputOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonInputOptionsActionPerformed
+        //String = fieldNumInputs.ge
+       //customiseInputNames();
+        popupMenuInputOptions.show(panelInputs, buttonInputOptions.getX(), buttonInputOptions.getY());
+    }//GEN-LAST:event_buttonInputOptionsActionPerformed
 
     private boolean customConfigMatchesGUI() {
         boolean matches = false;
@@ -791,8 +816,21 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
 
     private void comboOutputTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboOutputTypeActionPerformed
         updateOutputCard();
+        updateOutputOptions();
     }//GEN-LAST:event_comboOutputTypeActionPerformed
 
+    private void updateOutputOptions() {
+        int index = comboOutputType.getSelectedIndex();
+        CardLayout layout = (CardLayout) panelOutputTypes.getLayout();
+        if (index == COMBO_REGRESSION_INDEX) {
+            menuChooseClassifier.setEnabled(false);
+        } else if (index == COMBO_CLASSIFICATION_INDEX) {
+            menuChooseClassifier.setEnabled(true);
+        } else {
+            menuChooseClassifier.setEnabled(false);
+        }
+    }
+    
     private void fieldNumClassesKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumClassesKeyTyped
         char enter = evt.getKeyChar();
         if (!(Character.isDigit(enter))) {
@@ -800,7 +838,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_fieldNumClassesKeyTyped
 
-    private void buttonCustomiseOutputNamesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCustomiseOutputNamesActionPerformed
+    private void customiseOutputNames() {
         if (!Util.checkIsPositiveNumber(fieldNumOutputs, "Number of outputs", this)) {
             return;
         }
@@ -822,7 +860,11 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 GuiIONameCustomise.IOType.OUTPUT);
         customiser.setAlwaysOnTop(true);
         customiser.setVisible(true);
-    }//GEN-LAST:event_buttonCustomiseOutputNamesActionPerformed
+    }
+    
+    private void buttonOutputOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOutputOptionsActionPerformed
+        popupMenuOutputOptions.show(panelOutputs,buttonOutputOptions.getX(), buttonOutputOptions.getY());
+    }//GEN-LAST:event_buttonOutputOptionsActionPerformed
 
     private void fieldSendPortKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldSendPortKeyTyped
         char enter = evt.getKeyChar();
@@ -934,19 +976,20 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 w.getOutputManager().setOSCOutputGroup(outputGroup);
                 w.getLearningManager().initializeInputsAndOutputs();
                 if (comboOutputType.getSelectedIndex() == COMBO_CLASSIFICATION_INDEX) {
-                    int whichClassifier = comboClassifierType.getSelectedIndex();
+                    //
+                    //int whichClassifier = comboClassifierType.getSelectedIndex();
                     ModelBuilder mb;
-                    if (whichClassifier == COMBO_KNN_INDEX) {
+                    if (classifierRadioGroup.getSelection() == buttonKNN.getModel()) {
                         mb = new KNNModelBuilder();
-                    } else if (whichClassifier == COMBO_ADABOOST_INDEX) {
+                    } else if (classifierRadioGroup.getSelection() == buttonAdaboost.getModel()) {
                         mb = new AdaboostModelBuilder();
-                    } else if (whichClassifier == COMBO_SVM_INDEX) {
+                    } else if (classifierRadioGroup.getSelection() == buttonSVM.getModel()) {
                         mb = new SVMModelBuilder();
-                    } else if (whichClassifier == COMBO_J48_INDEX) {
+                    } else if (classifierRadioGroup.getSelection() == buttonJ48.getModel()) {
                         mb = new J48ModelBuilder();
                     } else {
                         mb = new KNNModelBuilder();
-                        logger.log(Level.WARNING, "Classifier index not found");
+                        logger.log(Level.WARNING, "Classifier choice button model not found");
                     }
                     for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
                         ModelBuilder mbnew = mb.fromTemplate(mb);
@@ -1032,7 +1075,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_buttonConfigureOutputsActionPerformed
 
-    private void buttonChooseOutputFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChooseOutputFileActionPerformed
+    private void loadOutputsFromFile() {
         String homeDir = System.getProperty("user.home");
         File f = Util.findLoadFile("xml", "Output configuration file", homeDir, this);
         if (f == null) {
@@ -1045,10 +1088,26 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             Util.showPrettyErrorPane(this, "Could not load outputs from file " + f.getAbsolutePath() + ". Error: " + ex.getMessage());
             Logger.getLogger(InitInputOutputFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_buttonChooseOutputFileActionPerformed
-
+    }
+    
     private void fieldNumOutputsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldNumOutputsActionPerformed
     }//GEN-LAST:event_fieldNumOutputsActionPerformed
+
+    private void menuCustomiseInputNamesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCustomiseInputNamesActionPerformed
+        customiseInputNames();
+    }//GEN-LAST:event_menuCustomiseInputNamesActionPerformed
+
+    private void menuLoadFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuLoadFromFileActionPerformed
+        loadInputsFromFile();
+    }//GEN-LAST:event_menuLoadFromFileActionPerformed
+
+    private void menuCustomiseOutputNamesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCustomiseOutputNamesActionPerformed
+        customiseOutputNames();
+    }//GEN-LAST:event_menuCustomiseOutputNamesActionPerformed
+
+    private void menuLoadOutputFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuLoadOutputFromFileActionPerformed
+        loadOutputsFromFile();
+    }//GEN-LAST:event_menuLoadOutputFromFileActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1207,16 +1266,18 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonChooseOutputFile;
+    private javax.swing.JRadioButtonMenuItem buttonAdaboost;
     private javax.swing.JButton buttonConfigureOutputs;
-    private javax.swing.JButton buttonCustomiseInputNames;
-    private javax.swing.JButton buttonCustomiseOutputNames;
-    private javax.swing.JButton buttonLoadInputsFromFile;
+    private javax.swing.JButton buttonInputOptions;
+    private javax.swing.JRadioButtonMenuItem buttonJ48;
+    private javax.swing.JRadioButtonMenuItem buttonKNN;
     private javax.swing.JButton buttonNext;
     private javax.swing.JButton buttonOscListen;
+    private javax.swing.JButton buttonOutputOptions;
+    private javax.swing.JRadioButtonMenuItem buttonSVM;
     private javax.swing.JPanel cardBlank;
     private javax.swing.JPanel cardNumClasses;
-    private javax.swing.JComboBox comboClassifierType;
+    private javax.swing.ButtonGroup classifierRadioGroup;
     private javax.swing.JComboBox comboOutputType;
     private javax.swing.JTextField fieldHostName;
     private javax.swing.JTextField fieldInputOSCMessage;
@@ -1228,8 +1289,6 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     private javax.swing.JTextField fieldSendPort;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
@@ -1241,11 +1300,18 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JLabel labelOscStatus;
+    private javax.swing.JMenu menuChooseClassifier;
+    private javax.swing.JMenuItem menuCustomiseInputNames;
+    private javax.swing.JMenuItem menuCustomiseOutputNames;
+    private javax.swing.JMenuItem menuLoadFromFile;
+    private javax.swing.JMenuItem menuLoadOutputFromFile;
     private javax.swing.JPanel panelCustom;
+    private javax.swing.JPanel panelInputs;
     private javax.swing.JPanel panelOutputTypes;
+    private javax.swing.JPanel panelOutputs;
+    private javax.swing.JPopupMenu popupMenuInputOptions;
+    private javax.swing.JPopupMenu popupMenuOutputOptions;
     // End of variables declaration//GEN-END:variables
 
 }
