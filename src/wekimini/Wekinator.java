@@ -339,5 +339,9 @@ public class Wekinator {
         WekinatorSaver.saveExistingProject(this);
         setHasSaveLocation(true);
     }
+    
+    public void prepareToDie() {
+        oscReceiver.stopListening();
+    }
 
 }

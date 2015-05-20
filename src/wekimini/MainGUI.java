@@ -5,12 +5,17 @@
  */
 package wekimini;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import wekimini.gui.InitInputOutputFrame;
 import wekimini.gui.InputMonitor;
 import wekimini.gui.NewProjectSettingsFrame;
 import wekimini.gui.OSCInputStatusFrame;
@@ -162,7 +167,37 @@ public class MainGUI extends javax.swing.JFrame {
         initComponents();
         this.w = w;
         setGUIForWekinator();
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.out.println("HERE");
+                finishUp();
+            }
+        });
         
+        
+    }
+
+    private void finishUp() {
+       /* Wekinator w2 = new Wekinator();
+                    InitInputOutputFrame f = new InitInputOutputFrame(w);
+                    f.setVisible(true);
+                    
+                    runningWekinators.add(w2);
+                    w2.addCloseListener(new ChangeListener() {
+
+                        @Override
+                        public void stateChanged(ChangeEvent e) {
+                            logger.log(Level.INFO, "Wekinator project closed");
+                        }
+                    }); */
+        
+        w.prepareToDie();
+        if (WekiMiniRunner.numRunningProjects() == 1) {
+            WekiMiniRunner.main(null);
+        }
+        System.out.println("MADE IT HERE");
+                this.dispose();
     }
 
     private void setGUIForWekinator() {
@@ -197,6 +232,7 @@ public class MainGUI extends javax.swing.JFrame {
         learningPanel1 = new wekimini.gui.LearningPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
+        jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
         menuItemSave = new javax.swing.JMenuItem();
         menuItemSaveAs = new javax.swing.JMenuItem();
@@ -207,7 +243,7 @@ public class MainGUI extends javax.swing.JFrame {
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("New project");
         setMaximumSize(new java.awt.Dimension(817, 2147483647));
 
@@ -227,6 +263,16 @@ public class MainGUI extends javax.swing.JFrame {
         menuFile.setMnemonic('F');
         menuFile.setText("File");
 
+        jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.META_MASK));
+        jMenuItem6.setText("New project");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
+        menuFile.add(jMenuItem6);
+
+        jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.META_MASK));
         jMenuItem4.setText("Open project...");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -341,6 +387,13 @@ public class MainGUI extends javax.swing.JFrame {
         showOutputTable();
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+       
+            WekiMiniRunner.runNewProject();
+        //TODO: this or main?
+        
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
+
     private void showOutputTable() {
         if (outputTableWindow == null) {
             outputTableWindow = new OutputViewerTable(w);
@@ -436,6 +489,7 @@ public class MainGUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JPanel jPanel1;
     private wekimini.gui.LearningPanel learningPanel1;
     private javax.swing.JMenu menuFile;

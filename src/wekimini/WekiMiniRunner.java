@@ -71,6 +71,10 @@ public class WekiMiniRunner {
         }
     } */
     
+    public static int numRunningProjects() {
+        return runningWekinators.size();
+    }
+    
     public static void runNewProject() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
