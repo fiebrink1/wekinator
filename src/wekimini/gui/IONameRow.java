@@ -57,6 +57,8 @@ public class IONameRow extends javax.swing.JPanel {
         labelNum = new javax.swing.JLabel();
         fieldName = new javax.swing.JTextField();
 
+        setBackground(new java.awt.Color(255, 255, 255));
+
         labelNum.setText("100.");
 
         fieldName.setText("Input 100");
