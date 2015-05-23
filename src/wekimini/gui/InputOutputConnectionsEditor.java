@@ -32,16 +32,23 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
     private final JLabel[] colNames;
     private final JCheckBox[] rowChecks;
     private final JCheckBox[] colChecks;
+    private final boolean[][] originallyEnabled;
+    private final ConnectionsListener listener;
 
     /**
      * Creates new form MockupInputSelection
      */
-    public InputOutputConnectionsEditor(int numRows, int numCols, String[] rowNames, String[] colNames) {
+    public InputOutputConnectionsEditor(int numRows, int numCols, String[] rowNames, String[] colNames, boolean[][] enabled, ConnectionsListener listener) {
 
         initComponents();
+        this.listener = listener;
 
         if (rowNames == null || colNames == null || rowNames.length != numRows || colNames.length != numCols) {
             throw new IllegalArgumentException("Number of rows/columns must match number of row/column names");
+        }
+
+        if (enabled == null || rowNames.length == 0 || enabled.length != rowNames.length || enabled[0] == null || enabled[0].length != colNames.length) {
+            throw new IllegalArgumentException("Dimensions of enabled must match dimensions of row/column names");
         }
 
         this.rowNames = new JLabel[rowNames.length];
@@ -49,25 +56,11 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         this.colNames = new JLabel[colNames.length];
         colChecks = new JCheckBox[colNames.length];
 
+        originallyEnabled = new boolean[rowNames.length][colNames.length];
+
         panelRowNames.removeAll();
         panelRowNames.setLayout(new java.awt.GridLayout(numRows, 1));
         for (int i = 0; i < rowNames.length; i++) {
-            //JPanel p = new JPanel();
-           // this.rowNames[i] = new JLabel(rowNames[i]);
-           // this.rowNames[i].setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-           // p.add(this.rowNames[i]);
-            //panelRowNames.add(this.rowNames[i]);
-           // JCheckBox jc = new JCheckBox("", false);
-            /*jc.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    rowCheckChanged(e);
-                }
-
-            }); */
-            
-            //panelRowNames.add(jc);]
-            //p.add(jc);
             JPanel p = makeRowPanel(rowNames[i], i);
             panelRowNames.add(p);
         }
@@ -76,21 +69,6 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         panelColumnNames.setLayout(new java.awt.GridLayout(1, numCols));
 
         for (int i = 0; i < colNames.length; i++) {
-            /*this.colNames[i] = new JLabel(colNames[i]);
-            this.colNames[i].setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-
-            panelColumnNames.add(this.colNames[i]);
-
-            JCheckBox jc = new JCheckBox("", false);
-            jc.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    colCheckChanged(e);
-                }
-
-            });
-            colChecks[i] = jc; */
-            
             JPanel p = makeColPanel(colNames[i], i);
             panelColumnNames.add(p);
         }
@@ -130,18 +108,21 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
                     }
                 }
                 );
-                /*mt.addActionListener(new ActionListener() {
-
-                 @Override
-                 public void actionPerformed(ActionEvent e) {
-                 // System.out.println("Action " + x + "," + y);
-                 }
-                 }); */
+                originallyEnabled[i][j] = enabled[i][j];
+                mt.setSelected(enabled[i][j]);
                 toggles[i][j] = mt;
                 panelButtons.add(mt);
             }
         }
         repaint();
+    }
+
+    private void revert() {
+        for (int i = 0; i < toggles.length; i++) {
+            for (int j = 0; j < toggles[0].length; j++) {
+                toggles[i][j].setSelected(originallyEnabled[i][j]);
+            }
+        }
     }
 
     private void rowCheckChanged(ActionEvent e) {
@@ -163,14 +144,14 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
                 for (int j = 0; j < toggles.length; j++) {
                     toggles[j][i].setSelected(colChecks[i].isSelected());
                 }
-                
+
                 return;
             }
         }
     }
 
     private void mouseExit(int x, int y) {
-        System.out.println("exit " + x + y);
+        //System.out.println("exit " + x + y);
         if (isMouseDragging) {
             if (lastPressStart.x == x && lastPressStart.y == y) {
                 toggles[x][y].setSelected(isDraggingTurningOn);
@@ -252,7 +233,7 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
             lastClickLocation.y = y;
         }
     }
-    
+
     private JPanel makeColPanel(String name, int i) {
         JPanel p = new JPanel();
         JLabel l = new JLabel();
@@ -262,41 +243,41 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         JCheckBox jc = new JCheckBox();
         jc.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jc.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    colCheckChanged(e);
-                }
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                colCheckChanged(e);
+            }
         });
         colChecks[i] = jc;
-        
+
         javax.swing.GroupLayout pLayout = new javax.swing.GroupLayout(p);
-       /* p.setLayout(pLayout);
-        pLayout.setHorizontalGroup(
-            pLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(l, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        pLayout.setVerticalGroup(
-            pLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pLayout.createSequentialGroup()
-                .addComponent(l, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jc))
-        ); */
-        
+        /* p.setLayout(pLayout);
+         pLayout.setHorizontalGroup(
+         pLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addComponent(l, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+         .addComponent(jc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+         );
+         pLayout.setVerticalGroup(
+         pLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pLayout.createSequentialGroup()
+         .addComponent(l, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+         .addComponent(jc))
+         ); */
+
         p.setLayout(pLayout);
         pLayout.setHorizontalGroup(
-            pLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(l, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
-            .addComponent(jc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                pLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(l, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
+                .addComponent(jc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         pLayout.setVerticalGroup(
-            pLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(l)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jc))
+                pLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(l)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jc))
         );
         return p;
     }
@@ -308,30 +289,30 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         l.setText(name);
         JCheckBox jc = new JCheckBox();
         jc.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    rowCheckChanged(e);
-                }
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                rowCheckChanged(e);
+            }
         });
         rowChecks[i] = jc;
-        
+
         javax.swing.GroupLayout pLayout = new javax.swing.GroupLayout(p);
         p.setLayout(pLayout);
         pLayout.setHorizontalGroup(
-            pLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pLayout.createSequentialGroup()
-                .addComponent(l, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jc))
+                pLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pLayout.createSequentialGroup()
+                        .addComponent(l, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jc))
         );
         pLayout.setVerticalGroup(
-            pLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(l, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                pLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(l, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         return p;
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -341,10 +322,10 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPopupMenu1 = new javax.swing.JPopupMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
+        popupMenuAction = new javax.swing.JPopupMenu();
+        menuItemRevert = new javax.swing.JMenuItem();
+        menuItemEnableAll = new javax.swing.JMenuItem();
+        menuItemDisableAll = new javax.swing.JMenuItem();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
@@ -381,19 +362,29 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
 
-        jMenuItem1.setText("Revert all changes");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        menuItemRevert.setText("Revert all changes");
+        menuItemRevert.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                menuItemRevertActionPerformed(evt);
             }
         });
-        jPopupMenu1.add(jMenuItem1);
+        popupMenuAction.add(menuItemRevert);
 
-        jMenuItem2.setText("Enable all");
-        jPopupMenu1.add(jMenuItem2);
+        menuItemEnableAll.setText("Enable all");
+        menuItemEnableAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemEnableAllActionPerformed(evt);
+            }
+        });
+        popupMenuAction.add(menuItemEnableAll);
 
-        jMenuItem3.setText("Disable all");
-        jPopupMenu1.add(jMenuItem3);
+        menuItemDisableAll.setText("Disable all");
+        menuItemDisableAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemDisableAllActionPerformed(evt);
+            }
+        });
+        popupMenuAction.add(menuItemDisableAll);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addKeyListener(new java.awt.event.KeyAdapter() {
@@ -768,7 +759,7 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         );
 
         jButton1.setText("Actions...");
-        jButton1.setComponentPopupMenu(jPopupMenu1);
+        jButton1.setComponentPopupMenu(popupMenuAction);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -776,8 +767,18 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         });
 
         jButton2.setText("OK");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Cancel");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -949,13 +950,47 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jToggleButton16ActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    private void menuItemRevertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemRevertActionPerformed
+        revert();
+    }//GEN-LAST:event_menuItemRevertActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       jButton1.getComponentPopupMenu().show(jButton1, 0, 0);
+        jButton1.getComponentPopupMenu().show(jButton1, 0, 0);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void menuItemEnableAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemEnableAllActionPerformed
+        setAll(true);
+    }//GEN-LAST:event_menuItemEnableAllActionPerformed
+
+    private void menuItemDisableAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemDisableAllActionPerformed
+        setAll(false);
+    }//GEN-LAST:event_menuItemDisableAllActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        listener.notify(getConnectionsFromForm());
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private boolean[][] getConnectionsFromForm() {
+        boolean[][] c = new boolean[toggles.length][toggles[0].length];
+        for (int i = 0; i < toggles.length; i++) {
+            for (int j = 0; j < toggles[0].length; j++) {
+                c[i][j] = toggles[i][j].isSelected();
+            }
+        }
+        return c;
+    }
+    
+    private void setAll(boolean b) {
+        for (int i = 0; i < toggles.length; i++) {
+            for (int j = 0; j < toggles[0].length; j++) {
+                toggles[i][j].setSelected(b);
+            }
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -987,10 +1022,23 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                String[] rowNames = {"r1", "r2", "r3", "r4", "r5", "r1", "r2", "r3", "r4", "r5"};
-                String[] colNames = {"asdfasdf", "b", "c", "d", "r1", "r2", "r3", "r4", "r5"};
+                String[] rowNames = {"a", "b"};
+                String[] colNames = {"1", "2"};
+                boolean[][] enabled = {{true, true}, {false, true}};
 
-                new InputOutputConnectionsEditor(10, 9, rowNames, colNames).setVisible(true);
+                new InputOutputConnectionsEditor(rowNames.length, colNames.length, rowNames, colNames, enabled, new ConnectionsListener() {
+
+                    @Override
+                    public void notify(boolean[][] connections) {
+                        System.out.println("Got them");
+                        for (int i = 0; i < connections.length; i++) {
+                            for (int j = 0; j < connections[0].length; j++) {
+                                System.out.print(connections[i][j] + "/");
+                            }
+                            System.out.println("");
+                        }
+                    }
+                }).setVisible(true);
             }
         });
     }
@@ -1007,12 +1055,8 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JToggleButton jToggleButton10;
@@ -1030,9 +1074,13 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
     private javax.swing.JToggleButton jToggleButton7;
     private javax.swing.JToggleButton jToggleButton8;
     private javax.swing.JToggleButton jToggleButton9;
+    private javax.swing.JMenuItem menuItemDisableAll;
+    private javax.swing.JMenuItem menuItemEnableAll;
+    private javax.swing.JMenuItem menuItemRevert;
     private javax.swing.JPanel panelButtons;
     private javax.swing.JPanel panelColumnNames;
     private javax.swing.JPanel panelRowNames;
+    private javax.swing.JPopupMenu popupMenuAction;
     private javax.swing.JPanel testColPanel;
     private javax.swing.JPanel testPanel1;
     // End of variables declaration//GEN-END:variables
@@ -1124,6 +1172,10 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
             g2d.rotate(Math.toRadians(270.0));
             g2d.drawString(text, 0, 0);
         }
+    }
+    
+    public interface ConnectionsListener {
+        public void notify(boolean[][] connections);
     }
 
 }
