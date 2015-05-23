@@ -30,11 +30,21 @@ import wekimini.util.WeakListenerSupport;
  */
 public class LearningManager {
 
+    public static enum LearningState {
 
-    public static enum LearningState {DONE_TRAINING, TRAINING, READY_TO_TRAIN, NOT_READY_TO_TRAIN};
-    public static enum RunningState {RUNNING, NOT_RUNNING};
-    public static enum RecordingState {RECORDING, NOT_RECORDING};
-    
+        DONE_TRAINING, TRAINING, READY_TO_TRAIN, NOT_READY_TO_TRAIN
+    };
+
+    public static enum RunningState {
+
+        RUNNING, NOT_RUNNING
+    };
+
+    public static enum RecordingState {
+
+        RECORDING, NOT_RECORDING
+    };
+
     //private RunningState runningState = RunningState.NOT_RUNNING;
     private final List<Path> paths = new ArrayList<>(5);
     private final Wekinator w;
@@ -48,34 +58,32 @@ public class LearningManager {
     private final HashMap<Path, Integer> pathsToOutputIndices;
     //private boolean wasCancelled = false;
     //private final HashMap<String, Integer> outputNamesToIndices;
-    
+
     public static final String PROP_LEARNINGSTATE = "learningState";
     private LearningState learningState = LearningState.NOT_READY_TO_TRAIN;
 
     private RunningState runningState = RunningState.NOT_RUNNING;
     public static final String PROP_RUNNINGSTATE = "runningState";
-    
+
     private RecordingState recordingState = RecordingState.NOT_RECORDING;
     public static final String PROP_RECORDINGSTATE = "recordingState";
-   
+
     private int numExamplesThisRound;
 
     public static final String PROP_NUMEXAMPLESTHISROUND = "numExamplesThisRound";
     private static final Logger logger = Logger.getLogger(LearningManager.class.getName());
 
-    
     protected PropertyChangeListener trainingWorkerListener = this::trainingWorkerChanged;
-    
+
     private boolean ableToRecord = false;
 
     public static final String PROP_ABLE_TO_RECORD = "ableToRecord";
 
-        private boolean ableToRun = false;
+    private boolean ableToRun = false;
 
     public static final String PROP_ABLE_TO_RUN = "ableToRun";
+    private boolean notifyPathsOfDatasetChange = true;
 
-
-    
     private void trainingWorkerChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("state")) {
             if (evt.getNewValue() == SwingWorker.StateValue.DONE) {
@@ -85,8 +93,6 @@ public class LearningManager {
             }
         } // else if = progress: TODO do anything with tthis?
     }
-    
-    
 
     /**
      * Get the value of recordingState
@@ -96,7 +102,7 @@ public class LearningManager {
     public RecordingState getRecordingState() {
         return recordingState;
     }
-    
+
     public int getRecordingRound() {
         return recordingRound;
     }
@@ -117,11 +123,11 @@ public class LearningManager {
         recordingRound++;
         setRecordingState(RecordingState.RECORDING);
     }
-    
+
     public void stopRecording() {
         setRecordingState(RecordingState.NOT_RECORDING);
     }
-    
+
     /**
      * Get the value of runningState
      *
@@ -148,7 +154,7 @@ public class LearningManager {
             //trainingWorker.cancel(true);
         }
     }
-    
+
     /**
      * Get the value of learningState
      *
@@ -190,7 +196,6 @@ public class LearningManager {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
-    
     public LearningManager(Wekinator w) {
         this.w = w;
         inputNamesToIndices = new HashMap<>();
@@ -205,54 +210,58 @@ public class LearningManager {
                     outputGroupChanged(evt);
                 }
             }
-        }); 
-        
-        w.getDataManager().addPropertyChangeListener(this::dataManagerPropertyChange); 
-        
+        });
+
+        w.getDataManager().addPropertyChangeListener(this::dataManagerPropertyChange);
+
         w.getOSCReceiver().addPropertyChangeListener(this::oscReceiverPropertyChanged);
     }
-    
+
     private void oscReceiverPropertyChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == OSCReceiver.PROP_CONNECTIONSTATE) {
             updateAbleToRun();
             updateAbleToRecord();
         }
     }
-    
+
     private void dataManagerPropertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == DataManager.PROP_NUMEXAMPLESPEROUTPUT) {
-            IndexedPropertyChangeEvent evt1 = (IndexedPropertyChangeEvent)evt;
-            int newVal = (Integer)evt1.getNewValue();
-            paths.get(evt1.getIndex()).notifyExamplesChanged(newVal);
-            pathNumExamplesChanged(evt1.getIndex());
-            
+            if (notifyPathsOfDatasetChange) {
+                IndexedPropertyChangeEvent evt1 = (IndexedPropertyChangeEvent) evt;
+                int newVal = (Integer) evt1.getNewValue();
+                paths.get(evt1.getIndex()).notifyExamplesChanged(newVal);
+                pathNumExamplesChanged(evt1.getIndex());
+            }
+
         }
     }
-    
+
     //For now, assume only 1 path per output is allowed in system
     public List<Path> getPaths() {
         return paths;
     }
-    
+
     private void initializeInputIndices(String[] inputNames) {
         inputNamesToIndices.clear();
         for (int i = 0; i < inputNames.length; i++) {
             inputNamesToIndices.put(inputNames[i], i);
         }
     }
+
     //newConnections[i][j] is true if input i is connected to output j
+
     public void updateInputOutputConnections(boolean[][] newConnections) {
         if (newConnections.length != w.getInputManager().getInputNames().length
                 || newConnections[0].length != w.getOutputManager().getOutputGroup().getNumOutputs()) {
             throw new IllegalArgumentException("newConnections must have same rows as number of inputs and same columns as number of outputs");
         }
-        
+
         List<List<String>> newInputsForPaths = new ArrayList<>();
         for (int i = 0; i < paths.size(); i++) {
             List<String> next = new ArrayList<>();
             newInputsForPaths.add(next);
         }
-        
+
         for (int input = 0; input < newConnections.length; input++) {
             for (int output = 0; output < newConnections[0].length; output++) {
                 if (newConnections[input][output]) {
@@ -265,9 +274,9 @@ public class LearningManager {
         for (int i = 0; i < paths.size(); i++) {
             paths.get(i).setSelectedInputs(newInputsForPaths.get(i).toArray(new String[0]));
         }
-        
+
     }
-    
+
     public boolean[][] getConnectionMatrix() {
         boolean[][] b = new boolean[w.getInputManager().getNumInputs()][w.getOutputManager().getOutputGroup().getNumOutputs()];
         for (int input = 0; input < b.length; input++) {
@@ -278,8 +287,7 @@ public class LearningManager {
         }
         return b;
     }
-    
-    
+
     //TODO (low): merge this with other init function
     //TODO: set able to record, able to run here
     public void initializeInputsAndOutputsWithExisting(Instances data, List<Path> paths) {
@@ -289,7 +297,7 @@ public class LearningManager {
         pathRecordingMask = new boolean[numOutputs];
         pathRunningMask = new boolean[numOutputs];
         myComputedOutputs = new double[numOutputs];
-        
+
         for (int i = 0; i < numOutputs; i++) {
             pathRecordingMask[i] = paths.get(i).isRecordEnabled();
             pathRunningMask[i] = paths.get(i).isRunEnabled();
@@ -307,21 +315,35 @@ public class LearningManager {
 
                 @Override
                 public void stateChanged(ChangeEvent e) {
-                    pathInputsChanged((Path)e.getSource());
+                    pathInputsChanged((Path) e.getSource());
                 }
             });
-            
+
             pathsToOutputIndices.put(p, i);
             this.paths.add(p);
-        }  
+        }
+        
+        //Without this, paths will think that examples have changed since their training    
+        notifyPathsOfDatasetChange = false;
         w.getDataManager().initialize(inputNames, w.getOutputManager().getOutputGroup(), data);
-
-        if (w.getDataManager().getNumExamples() >0) {
+        notifyPathsOfDatasetChange = true;
+        
+        boolean allTrained = true;
+        for (Path p : paths) {
+            if (!p.canCompute()) {
+                allTrained = false;
+                break;
+            }
+        }
+        
+        if (allTrained) {
+            setLearningState(LearningState.DONE_TRAINING);
+        } else if (w.getDataManager().getNumExamples() > 0) {
             setLearningState(LearningState.READY_TO_TRAIN);
         } else {
             setLearningState(LearningState.NOT_READY_TO_TRAIN);
-        }     
-        
+        }
+
         for (int i = 0; i < paths.size(); i++) {
             Path p = paths.get(i);
             String[] inputs = p.getSelectedInputs();
@@ -332,15 +354,15 @@ public class LearningManager {
         updateAbleToRecord();
         updateAbleToRun();
     }
-    
+
     private void updateAbleToRecord() {
-       if (w.getOSCReceiver().getConnectionState() != OSCReceiver.ConnectionState.CONNECTED) {
+        if (w.getOSCReceiver().getConnectionState() != OSCReceiver.ConnectionState.CONNECTED) {
             setAbleToRecord(false);
         } else {
-           setAbleToRecord(true);
-       }    
+            setAbleToRecord(true);
+        }
     }
-    
+
     private void updateAbleToRun() {
         //Requires models in runnable state (at least some)
         if (w.getOSCReceiver().getConnectionState() != OSCReceiver.ConnectionState.CONNECTED) {
@@ -353,28 +375,28 @@ public class LearningManager {
                     setAbleToRun(true);
                     return;
                 }
-            }   
-            setAbleToRun(false);   
+            }
+            setAbleToRun(false);
         } else {
             setAbleToRun(false);
         }
     }
-    
+
     //Call when both Input and Output Managers are ready
     public void initializeInputsAndOutputs() {
         String[] inputNames = w.getInputManager().getInputNames();
         initializeInputIndices(inputNames);
         int numOutputs = w.getOutputManager().getOutputGroup().getNumOutputs();
-      //  initializeOutputIndices(outputNames);
+        //  initializeOutputIndices(outputNames);
         w.getDataManager().initialize(inputNames, w.getOutputManager().getOutputGroup());
         pathRecordingMask = new boolean[numOutputs];
         pathRunningMask = new boolean[numOutputs];
         myComputedOutputs = new double[numOutputs];
-        
+
         for (int i = 0; i < numOutputs; i++) {
             pathRecordingMask[i] = true;
             pathRunningMask[i] = true;
-            
+
             OSCOutput o = w.getOutputManager().getOutputGroup().getOutput(i);
             Path p = new Path(o, inputNames, w);
             PropertyChangeListener pChange = new PropertyChangeListener() {
@@ -389,17 +411,17 @@ public class LearningManager {
 
                 @Override
                 public void stateChanged(ChangeEvent e) {
-                    pathInputsChanged((Path)e.getSource());
+                    pathInputsChanged((Path) e.getSource());
                 }
             });
             pathsToOutputIndices.put(p, i);
             paths.add(p);
-        }  
+        }
         setLearningState(LearningState.NOT_READY_TO_TRAIN);
-        
+
         w.getInputManager().addInputValueListener(this::updateInputs);
     }
-    
+
     private void pathInputsChanged(Path p) {
         Integer outputIndex = pathsToOutputIndices.get(p);
         if (outputIndex == null) {
@@ -410,7 +432,7 @@ public class LearningManager {
         int[] indices = convertInputNamesToIndices(inputs);
         w.getDataManager().setInputIndicesForOutput(indices, outputIndex);
     }
-    
+
     private int[] convertInputNamesToIndices(String[] names) {
         int[] indices = new int[names.length];
         for (int i = 0; i < names.length; i++) {
@@ -421,10 +443,10 @@ public class LearningManager {
             } else {
                 indices[i] = index;
             }
-        } 
+        }
         return indices;
     }
-    
+
     private void pathRecordChanged(Path p) {
         Integer index = pathsToOutputIndices.get(p);
         if (index != null) {
@@ -433,7 +455,7 @@ public class LearningManager {
             System.out.println("ERROR : Null path in pathRecordChanged");
         }
     }
-    
+
     private void pathRunChanged(Path p) {
         Integer index = pathsToOutputIndices.get(p);
         if (index != null) {
@@ -442,7 +464,7 @@ public class LearningManager {
             System.out.println("ERROR : Null path in pathRunChanged");
         }
     }
-    
+
     private boolean noExamplesAnywhere() {
         for (Path p : paths) {
             if (p.getNumExamples() > 0) {
@@ -451,10 +473,10 @@ public class LearningManager {
         }
         return true;
     }
-    
+
     private void pathNumExamplesChanged(int pathIndex) {
-        
-        if (learningState == LearningState.NOT_READY_TO_TRAIN && paths.get(pathIndex).getNumExamples() >0){
+
+        if (learningState == LearningState.NOT_READY_TO_TRAIN && paths.get(pathIndex).getNumExamples() > 0) {
             setLearningState(LearningState.READY_TO_TRAIN);
         } else if (learningState == LearningState.READY_TO_TRAIN && paths.get(pathIndex).getNumExamples() == 0) {
             if (noExamplesAnywhere()) {
@@ -462,23 +484,23 @@ public class LearningManager {
             }
         }
     }
-    
+
     //Called when modelState changed
     private void pathChanged(Path p, PropertyChangeEvent evt) {
         if (evt.getPropertyName() == Path.PROP_RECORDENABLED) {
             pathRecordChanged(p);
         } else if (evt.getPropertyName() == Path.PROP_RUNENABLED) {
-            pathRunChanged(p);         
+            pathRunChanged(p);
         } /*else if (evt.getPropertyName() == Path.PROP_NUMEXAMPLES) {
-            pathNumExamplesChanged(p);
-        } */ //this is called explicitly when we hear back from Datamanager
+         pathNumExamplesChanged(p);
+         } */ //this is called explicitly when we hear back from Datamanager
 
         //if (evt.getPropertyName() == Path.)
         //TODO: listen for record/run enable change and update our Mask
-       // System.out.println("What do we do? Path changed for output: " + p.getOSCOutput().getName());
-        
+        // System.out.println("What do we do? Path changed for output: " + p.getOSCOutput().getName());
+
     }
-    
+
     //Right now, this simply won't change indices where mask is false
     public double[] computeValues(double[] inputs, boolean[] computeMask) {
         for (int i = 0; i < computeMask.length; i++) {
@@ -495,25 +517,24 @@ public class LearningManager {
         }
         return myComputedOutputs;
     }
-    
+
     public void addToTraining(double[] inputs, double[] outputs, boolean[] recordingMask) {
         /*double[] trainingOutputs = new double[outputs.length];
         
-        for (int i = 0; i < outputs.length; i++) {
-            if (recordingMask[i]) {
+         for (int i = 0; i < outputs.length; i++) {
+         if (recordingMask[i]) {
                 
-            }
-        } */
-        setNumExamplesThisRound(numExamplesThisRound+1);
+         }
+         } */
+        setNumExamplesThisRound(numExamplesThisRound + 1);
         w.getDataManager().addToTraining(inputs, outputs, recordingMask, recordingRound);
-    } 
-    
-   /* public boolean wasCancelled() {
-        return wasCancelled;
-    } */
-    
+    }
+
+    /* public boolean wasCancelled() {
+     return wasCancelled;
+     } */
     public int numRunnableModels() {
-        int i = 0; 
+        int i = 0;
         for (Path p : paths) {
             if (p.canCompute()) {
                 i++;
@@ -521,21 +542,19 @@ public class LearningManager {
         }
         return i;
     }
-    
+
     //TODO: Need to do this in background and change training state
    /* public void buildModels(boolean trainMask[]) {
-        for (int i = 0; i < trainMask.length; i++) {
-            if (trainMask[i]) {
-                paths.get(i).buildModel(
-                        paths.get(i).getOSCOutput().getName() + "-" + trainingRound,
-                        w.getDataManager().getTrainingDataForOutput(i));
-            }
-        }
-        trainingRound++;
-    } */
-    
+     for (int i = 0; i < trainMask.length; i++) {
+     if (trainMask[i]) {
+     paths.get(i).buildModel(
+     paths.get(i).getOSCOutput().getName() + "-" + trainingRound,
+     w.getDataManager().getTrainingDataForOutput(i));
+     }
+     }
+     trainingRound++;
+     } */
     //
-    
     public void updateInputs(double[] inputs) {
         if (recordingState == RecordingState.RECORDING) {
             addToTraining(inputs, w.getOutputManager().getCurrentValues(), pathRecordingMask);
@@ -544,15 +563,15 @@ public class LearningManager {
             w.getOutputManager().setNewComputedValues(d);
         }
     }
-    
+
     private void outputGroupChanged(PropertyChangeEvent evt) {
         System.out.println("ERROR: LearningManager doesn't know how to handle this output group change");
     }
-    
+
     private void inputGroupChanged(PropertyChangeEvent evt) {
         System.out.println("ERROR: LearningManager doesn't know how to handle this input group change");
     }
-    
+
     public void deleteExamplesForPath(Path myPath) {
         Integer whichPath = pathsToOutputIndices.get(myPath);
         if (whichPath == null) {
@@ -561,7 +580,7 @@ public class LearningManager {
         }
         w.getDataManager().setOutputMissingForAll(whichPath);
     }
-    
+
     //Currently coming from Path GUI (row)
     public void setOutputValueForPath(double value, Path p) {
         w.getOutputManager().setNewValueFromGUI(pathsToOutputIndices.get(p), value);
@@ -571,7 +590,7 @@ public class LearningManager {
         w.getDataManager().deleteAll();
         setLearningState(LearningState.NOT_READY_TO_TRAIN);
     }
-    
+
     public void buildAll() {
         //Launch training threads & get notified ...        
         synchronized (this) {
@@ -580,11 +599,10 @@ public class LearningManager {
                 data.add(w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p)));
             }
             w.getTrainingRunner().buildAll(paths, data, trainingWorkerListener);
-            setLearningState(LearningState.TRAINING);      
-        }      
+            setLearningState(LearningState.TRAINING);
+        }
     }
-    
-   
+
     /**
      * Get the value of numExamplesThisRound
      *
@@ -604,8 +622,8 @@ public class LearningManager {
         this.numExamplesThisRound = numExamplesThisRound;
         propertyChangeSupport.firePropertyChange(PROP_NUMEXAMPLESTHISROUND, oldNumExamplesThisRound, numExamplesThisRound);
     }
-    
-        /**
+
+    /**
      * Get the value of ableToRun
      *
      * @return the value of ableToRun
@@ -625,7 +643,6 @@ public class LearningManager {
         propertyChangeSupport.firePropertyChange(PROP_ABLE_TO_RUN, oldAbleToRun, ableToRun);
     }
 
-    
     /**
      * Get the value of ableToRecord
      *
@@ -649,6 +666,5 @@ public class LearningManager {
     public void setModelBuilderForPath(ModelBuilder mb, int i) {
         paths.get(i).setModelBuilder(mb);
     }
-    
-}
 
+}

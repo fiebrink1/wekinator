@@ -272,7 +272,7 @@ public class DataManager {
         AttributeStats a = allInstances.attributeStats(idIndex);
         nextID = (int)a.numericStats.max + 1;
     }
-    
+    //Problem: gets called when loading from file...
     private void updateOutputCounts() {
         int[] examplesSum = new int[numOutputs];
 

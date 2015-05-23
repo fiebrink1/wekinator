@@ -122,6 +122,7 @@ public class Path {
         
     }
     
+    //Copy from existing path
     public Path(Path p, Wekinator w) {
         //Must include all non-transient fields here.
         this.currentModelName = p.currentModelName;
@@ -132,6 +133,7 @@ public class Path {
         //this.modelBuilder =   p.modelBuilder;
         this.modelBuilder = p.modelBuilder.fromTemplate(p.modelBuilder); //hack for now: modelBuilder not loaded correctly from file
         this.model = p.model;
+        this.modelState = p.modelState;
         this.numExamples = p.numExamples;
         this.output = p.output;
         this.outputName = output.getName();
@@ -504,7 +506,7 @@ public class Path {
              XStream xstream = new XStream();
              xstream.alias("Path", Path.class);
              p = (Path) xstream.fromXML(xml);
-             
+             //Is p state correct here? yes
              String modelClassName = (String) objin.readObject();
              Model m= null;
              if (! modelClassName.equals("null")) {
