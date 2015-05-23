@@ -240,6 +240,45 @@ public class LearningManager {
             inputNamesToIndices.put(inputNames[i], i);
         }
     }
+    //newConnections[i][j] is true if input i is connected to output j
+    public void updateInputOutputConnections(boolean[][] newConnections) {
+        if (newConnections.length != w.getInputManager().getInputNames().length
+                || newConnections[0].length != w.getOutputManager().getOutputGroup().getNumOutputs()) {
+            throw new IllegalArgumentException("newConnections must have same rows as number of inputs and same columns as number of outputs");
+        }
+        
+        List<List<String>> newInputsForPaths = new ArrayList<>();
+        for (int i = 0; i < paths.size(); i++) {
+            List<String> next = new ArrayList<>();
+            newInputsForPaths.add(next);
+        }
+        
+        for (int input = 0; input < newConnections.length; input++) {
+            for (int output = 0; output < newConnections[0].length; output++) {
+                if (newConnections[input][output]) {
+                    //Output output uses input
+                    newInputsForPaths.get(output).add(w.getInputManager().getInputNames()[input]);
+                }
+            }
+        }
+        int temp = 0; //Check here! TODO
+        for (int i = 0; i < paths.size(); i++) {
+            paths.get(i).setSelectedInputs(newInputsForPaths.get(i).toArray(new String[0]));
+        }
+        
+    }
+    
+    public boolean[][] getConnectionMatrix() {
+        boolean[][] b = new boolean[w.getInputManager().getNumInputs()][w.getOutputManager().getOutputGroup().getNumOutputs()];
+        for (int input = 0; input < b.length; input++) {
+            for (int output = 0; output < b[0].length; output++) {
+                Path p = paths.get(output);
+                b[input][output] = p.usesInput(w.getInputManager().getInputNames()[input]);
+            }
+        }
+        return b;
+    }
+    
     
     //TODO (low): merge this with other init function
     //TODO: set able to record, able to run here
@@ -271,6 +310,7 @@ public class LearningManager {
                     pathInputsChanged((Path)e.getSource());
                 }
             });
+            
             pathsToOutputIndices.put(p, i);
             this.paths.add(p);
         }  
@@ -280,7 +320,14 @@ public class LearningManager {
             setLearningState(LearningState.READY_TO_TRAIN);
         } else {
             setLearningState(LearningState.NOT_READY_TO_TRAIN);
-        }        
+        }     
+        
+        for (int i = 0; i < paths.size(); i++) {
+            Path p = paths.get(i);
+            String[] inputs = p.getSelectedInputs();
+            int[] indices = convertInputNamesToIndices(inputs);
+            w.getDataManager().setInputIndicesForOutput(indices, i);
+        }
         w.getInputManager().addInputValueListener(this::updateInputs);
         updateAbleToRecord();
         updateAbleToRun();

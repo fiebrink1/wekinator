@@ -95,6 +95,10 @@ public class Path {
         return inputNames.toArray(new String[0]);
     }
     
+    //Important: Ordering of inputs is meaningless here!!!
+    //We assume that the trained model (if any) wants inputs in the same order as they're
+    //coming into our system. If we want to be able to load models from other projects where
+    //ordering might be different, we'll need to re-arrange features first (probably w/in Model object)
     public void setSelectedInputs(String[] s) {
         String[] oldInputNames = inputNames.toArray(new String[0]);
         boolean hasChanged = (s.length != inputNames.size());
@@ -139,6 +143,10 @@ public class Path {
         //TODO: Add listener for output manager - change in output names will be important
         //TODO: Also add listener for input name changes! This will screw us up...
         
+    }
+    
+    public boolean usesInput(String input) {
+        return (inputNames.contains(input)); //Not the most efficient, but who cares right now
     }
     
     public Path(OSCOutput output, String[] inputs, Wekinator w) {

@@ -173,10 +173,14 @@ public class DataManager {
     }
 
     public void setInputIndicesForOutput(int[] indices, int outputIndex) {
-        //TODO: adjust filters
         int[] myIndices = new int[indices.length];
         System.arraycopy(indices, 0, myIndices, 0, indices.length);
         inputListsForOutputs.set(outputIndex, myIndices);
+        try {
+            updateFilterForOutput(outputIndex);
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Could not update input selection filter", ex);
+        }
     }
 
     public void addToTraining(double[] inputs, double[] outputs, boolean[] recordingMask, int recordingRound) {
@@ -378,6 +382,24 @@ public class DataManager {
         for (int i = 0; i < numOutputs; i++) {
             inputListsForOutputs.add(inputList);
         }
+    }
+    
+    private void updateFilterForOutput(int output) throws Exception {
+        Reorder r = new Reorder();
+        int[] inputList = inputListsForOutputs.get(output); //includes only "selected" inputs
+        int[] reordering = new int[inputList.length + 1];
+
+        //Features
+        for (int f = 0; f < inputList.length; f++) {
+            reordering[f] = inputList[f] + numMetaData;
+        }
+
+        //The actual "class" output
+        reordering[reordering.length - 1] = numMetaData + numInputs + output;
+        r.setAttributeIndicesArray(reordering);
+        r.setInputFormat(dummyInstances);
+
+        outputFilters[output] = r;
     }
 
     private void setupFilters() throws Exception {

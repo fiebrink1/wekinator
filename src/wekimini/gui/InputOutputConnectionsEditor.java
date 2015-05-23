@@ -10,11 +10,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import wekimini.Wekinator;
+import wekimini.util.Util;
 
 /**
  *
@@ -27,21 +30,32 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
     private boolean isClickTurningOn = false;
     private final ButtonLocation lastClickLocation = new ButtonLocation(-1, -1);
     private final ButtonLocation lastPressStart = new ButtonLocation(-1, -1);
-    private final MyToggle[][] toggles;
-    private final JLabel[] rowNames;
-    private final JLabel[] colNames;
-    private final JCheckBox[] rowChecks;
-    private final JCheckBox[] colChecks;
-    private final boolean[][] originallyEnabled;
-    private final ConnectionsListener listener;
+    private  MyToggle[][] toggles;
+    private  JLabel[] rowNames;
+    private  JLabel[] colNames;
+    private  JCheckBox[] rowChecks;
+    private  JCheckBox[] colChecks;
+    private  boolean[][] originallyEnabled;
+    //private  ConnectionsListener listener;
+    private  Wekinator w;
 
+    public InputOutputConnectionsEditor(Wekinator w) {
+        initComponents();
+        this.w = w;
+        setup(w.getInputManager().getNumInputs(),
+                w.getOutputManager().getOutputGroup().getNumOutputs(),
+                w.getInputManager().getInputNames(),
+                w.getOutputManager().getOutputGroup().getOutputNames(),
+                w.getLearningManager().getConnectionMatrix());
+        
+    }
+    
     /**
      * Creates new form MockupInputSelection
      */
-    public InputOutputConnectionsEditor(int numRows, int numCols, String[] rowNames, String[] colNames, boolean[][] enabled, ConnectionsListener listener) {
+    private void setup(int numRows, int numCols, String[] rowNames, String[] colNames, boolean[][] enabled) {
 
-        initComponents();
-        this.listener = listener;
+      //  this.listener = listener;
 
         if (rowNames == null || colNames == null || rowNames.length != numRows || colNames.length != numCols) {
             throw new IllegalArgumentException("Number of rows/columns must match number of row/column names");
@@ -193,10 +207,10 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
 
     private void mouseClick(int x, int y, java.awt.event.MouseEvent evt) {
 
-        System.out.println("Click " + x + y);
+       // System.out.println("Click " + x + y);
 
         if (evt.isShiftDown() && lastClickLocation.x != -1) {
-            System.out.println("A");
+            //System.out.println("A");
             int startx, starty, endx, endy;
             if (lastClickLocation.x < x) {
                 startx = lastClickLocation.x;
@@ -386,12 +400,14 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         });
         popupMenuAction.add(menuItemDisableAll);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 formKeyPressed(evt);
             }
         });
+
+        jPanel1.setPreferredSize(new java.awt.Dimension(200, 200));
 
         panelRowNames.setLayout(new java.awt.GridLayout(4, 0));
 
@@ -440,6 +456,7 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         jToggleButton1.setMaximumSize(new java.awt.Dimension(25, 25));
         jToggleButton1.setMinimumSize(new java.awt.Dimension(25, 25));
         jToggleButton1.setPreferredSize(new java.awt.Dimension(25, 25));
+        jToggleButton1.setSize(new java.awt.Dimension(25, 25));
         jToggleButton1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 jToggleButton1MousePressed(evt);
@@ -694,7 +711,7 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         testColPanel.setLayout(testColPanelLayout);
         testColPanelLayout.setHorizontalGroup(
             testColPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 741, Short.MAX_VALUE)
+            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
             .addComponent(jCheckBox2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         testColPanelLayout.setVerticalGroup(
@@ -728,9 +745,8 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
                 .addComponent(panelColumnNames, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelButtons, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
-                    .addComponent(panelRowNames, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addComponent(panelButtons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelRowNames, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         jScrollPane1.setViewportView(jPanel1);
@@ -744,7 +760,7 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 686, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -754,7 +770,7 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -787,7 +803,7 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
                 .addComponent(jButton3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2))
@@ -807,15 +823,15 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jToggleButton2MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton2MouseDragged
-        System.out.println("DRAG");
+        //System.out.println("DRAG");
     }//GEN-LAST:event_jToggleButton2MouseDragged
 
     private void jToggleButton2MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton2MouseEntered
-        System.out.println("Mouse enter");
+       // System.out.println("Mouse enter");
     }//GEN-LAST:event_jToggleButton2MouseEntered
 
     private void jToggleButton2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton2MouseExited
-        System.out.println("Mouse exit");
+       //// System.out.println("Mouse exit");
     }//GEN-LAST:event_jToggleButton2MouseExited
 
     private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
@@ -823,7 +839,7 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_jToggleButton2ActionPerformed
 
     private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
-        System.out.println("AC");
+       // System.out.println("AC");
     }//GEN-LAST:event_jToggleButton1ActionPerformed
 
     private void jToggleButton1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton1MousePressed
@@ -831,11 +847,11 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_jToggleButton1MousePressed
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
-        System.out.println("KEY PRESSED");
+        //System.out.println("KEY PRESSED");
     }//GEN-LAST:event_formKeyPressed
 
     private void panelButtonsKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_panelButtonsKeyPressed
-        System.out.println("KEY PRESSED");
+        //System.out.println("KEY PRESSED");
     }//GEN-LAST:event_panelButtonsKeyPressed
 
     private void jToggleButton3MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton3MousePressed
@@ -967,13 +983,36 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_menuItemDisableAllActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        listener.notify(getConnectionsFromForm());
+         boolean[][] c = getConnectionsFromForm();
+        if (checkValid(c)) {
+            w.getLearningManager().updateInputOutputConnections(c);
+            this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+            this.dispose();
+            
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private boolean checkValid(boolean[][] c) {
+        for (int output = 0; output < c[0].length; output++) {
+            int sum = 0;
+            for (int input = 0; input < c.length; input++) {
+                if (c[input][output]) {
+                    sum++;
+                }
+            }
+            if (sum ==0) {
+                Util.showPrettyErrorPane(this, "At least one input must be selected for each output");
+                return false;
+            }
+        }
+        return true;
+    }
+    
     private boolean[][] getConnectionsFromForm() {
         boolean[][] c = new boolean[toggles.length][toggles[0].length];
         for (int i = 0; i < toggles.length; i++) {
@@ -1025,7 +1064,7 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
                 String[] rowNames = {"a", "b"};
                 String[] colNames = {"1", "2"};
                 boolean[][] enabled = {{true, true}, {false, true}};
-
+/*
                 new InputOutputConnectionsEditor(rowNames.length, colNames.length, rowNames, colNames, enabled, new ConnectionsListener() {
 
                     @Override
@@ -1038,9 +1077,10 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
                             System.out.println("");
                         }
                     }
-                }).setVisible(true);
-            }
+                }).setVisible(true); */
+            } 
         });
+                
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1095,6 +1135,7 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
             this.y = bl.y;
             // System.out.println("h");
             setMinimumSize(new Dimension(30, 30));
+            //setMaximumSize(new Dimension(80, 80)); //Doesn't seem to work
             this.addActionListener(new ActionListener() {
 
                 @Override

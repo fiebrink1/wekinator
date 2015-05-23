@@ -13,10 +13,8 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import wekimini.gui.InitInputOutputFrame;
 import wekimini.gui.InputMonitor;
+import wekimini.gui.InputOutputConnectionsEditor;
 import wekimini.gui.NewProjectSettingsFrame;
 import wekimini.gui.OSCInputStatusFrame;
 import wekimini.gui.OutputViewerTable;
@@ -33,6 +31,7 @@ public class MainGUI extends javax.swing.JFrame {
     private OSCInputStatusFrame oscInputStatusFrame = null;
     private InputMonitor inputMonitorFrame = null;
     private OutputViewerTable outputTableWindow = null;
+    private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
     private Wekinator w;
     
    /* public void displayEditInput(String name) {
@@ -240,6 +239,7 @@ public class MainGUI extends javax.swing.JFrame {
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
 
@@ -328,6 +328,14 @@ public class MainGUI extends javax.swing.JFrame {
         });
         jMenu2.add(jMenuItem2);
 
+        jMenuItem7.setText("Input/output connection editor");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem7);
+
         jMenuItem3.setText("Logging console");
         jMenuItem3.setEnabled(false);
         jMenu2.add(jMenuItem3);
@@ -394,6 +402,10 @@ public class MainGUI extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        showInputOutputConnectionWindow();
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
+
     private void showOutputTable() {
         if (outputTableWindow == null) {
             outputTableWindow = new OutputViewerTable(w);
@@ -436,6 +448,22 @@ public class MainGUI extends javax.swing.JFrame {
             inputMonitorFrame.toFront();
         }
     }
+    
+    private void showInputOutputConnectionWindow() {        
+        if (inputOutputConnectionsWindow == null) {
+            inputOutputConnectionsWindow = new InputOutputConnectionsEditor(w);
+            inputOutputConnectionsWindow.setVisible(true);
+            
+            //Problem: Won't call on button-triggered dispose...
+            Util.callOnClosed(inputOutputConnectionsWindow, (Callable) () -> {
+                inputOutputConnectionsWindow = null;
+                return null;
+            }); 
+        } else {
+            inputOutputConnectionsWindow.toFront();
+        }
+    }
+    
     
     /**
      * @param args the command line arguments
@@ -490,6 +518,7 @@ public class MainGUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JPanel jPanel1;
     private wekimini.gui.LearningPanel learningPanel1;
     private javax.swing.JMenu menuFile;
