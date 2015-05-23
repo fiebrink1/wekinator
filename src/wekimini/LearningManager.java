@@ -289,7 +289,6 @@ public class LearningManager {
     }
 
     //TODO (low): merge this with other init function
-    //TODO: set able to record, able to run here
     public void initializeInputsAndOutputsWithExisting(Instances data, List<Path> paths) {
         String[] inputNames = w.getInputManager().getInputNames();
         initializeInputIndices(inputNames);
