@@ -236,7 +236,7 @@ public class OutputManager {
 
         //In future, may want OSC Sender to listen and respond rather than push
         try {
-            w.getOSCSender().sendOutputValuesMessage(values);
+            w.getOSCSender().sendOutputValuesMessage(outputGroup.getOscMessage(), values);
         } catch (IOException ex) {
             System.out.println("Error: couldn't send message");
             Logger.getLogger(OutputManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -251,7 +251,7 @@ public class OutputManager {
         }
         currentValues[which] = value;
         try {
-            w.getOSCSender().sendOutputValuesMessage(currentValues);
+            w.getOSCSender().sendOutputValuesMessage(outputGroup.getOscMessage(), currentValues);
         } catch (IOException ex) {
             System.out.println("Error: couldn't send message");
             Logger.getLogger(OutputManager.class.getName()).log(Level.SEVERE, null, ex);

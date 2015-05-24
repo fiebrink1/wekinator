@@ -20,7 +20,8 @@ public class OSCReceiver {
     private int receivePort = 6448;
     private OSCPortIn receiver;
     
-    private String oscOutputReceiveString = "/wek/outputs";
+    //TODO: Fix this
+    private String oscOutputReceiveString = "/wekinator/outputs";
     
     public OSCReceiver() {
     }

@@ -25,71 +25,71 @@ import wekimini.gui.InitInputOutputFrame;
  * @author rebecca
  */
 public final class WekiMiniRunner {
+
     private static final Logger logger = Logger.getLogger(WekiMiniRunner.class.getName());
-   // private static final List<Wekinator> runningWekinators = new LinkedList<>();
+    // private static final List<Wekinator> runningWekinators = new LinkedList<>();
     private static WekiMiniRunner ref = null; //Singleton
     private HashMap<Wekinator, Closeable> wekinatorCurrentMainFrames = new HashMap<>();
     private final WindowListener wl;
-    
+
     public static WekiMiniRunner getInstance() {
         if (ref == null) {
             ref = new WekiMiniRunner();
         }
         return ref;
     }
-    
+
     public WekiMiniRunner() {
         registerForMacOSXEvents();
-        
+
         wl = new WindowAdapter() {
-                        @Override
-                        public void windowClosed(WindowEvent e) {
-                            handleWindowClosing(e);
-                        } 
-                };
+            @Override
+            public void windowClosed(WindowEvent e) {
+                handleWindowClosing(e);
+            }
+        };
     }
-    
+
     //TODO: remove unnecessary argument
     public void transferControl(Wekinator w, Closeable oldC, Closeable newC) {
         oldC.removeWindowListener(wl);
         newC.addWindowListener(wl);
         wekinatorCurrentMainFrames.put(w, newC);
     }
-    
+
     public static void main(String[] args) {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 WekiMiniRunner.getInstance().runNewProject();
             }
-        });  
+        });
     }
-    
+
     public int numRunningProjects() {
         return wekinatorCurrentMainFrames.size();
     }
-    
+
     public void runNewProject() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                
+
                 try {
                     Wekinator w = new Wekinator();
                     InitInputOutputFrame f = new InitInputOutputFrame(w);
                     f.setVisible(true);
                     wekinatorCurrentMainFrames.put(w, f);
-                    
+
                     f.addWindowListener(wl);
-                    
-                   /* if (runningWekinators.size() == 0) {
-                        f.setCloseable(false);
-                    } else {
-                        f.setCloseable(true);
-                        for (Closeable c : wekinatorCurrentMainFrames.values()) {
-                            c.setCloseable(true);
-                        }
-                    } */
-                    
+
+                    /* if (runningWekinators.size() == 0) {
+                     f.setCloseable(false);
+                     } else {
+                     f.setCloseable(true);
+                     for (Closeable c : wekinatorCurrentMainFrames.values()) {
+                     c.setCloseable(true);
+                     }
+                     } */
                     w.addCloseListener(new ChangeListener() {
 
                         @Override
@@ -99,64 +99,67 @@ public final class WekiMiniRunner {
                                 //It's our last great hope
                                 handleClosingLast();
                             } else {
-                                System.out.println("Wek closed, but not the last one");
+                             //   System.out.println("Wek closed, but not the last one");
                             }
-                            wekinatorCurrentMainFrames.remove((Wekinator)e.getSource());
+                            wekinatorCurrentMainFrames.remove((Wekinator) e.getSource());
                         }
                     });
-                    
+
                 } catch (IOException | SecurityException ex) {
                     logger.log(Level.SEVERE, null, ex);
                 }
             }
         });
     }
-    
+
     private void handleWindowClosing(WindowEvent e) {
         if (wekinatorCurrentMainFrames.containsValue(e.getComponent())) {
-                                System.out.println("Close window event for known wekinator");
-                            } else {
-                                System.out.println("Close window event for unknown wekinator");
-                            }
-                            if (wekinatorCurrentMainFrames.size() == 0) {
-                                quitWithoutPrompt();
-                            }
+            /*     System.out.println("Close window event for known wekinator");
+             } else {
+             System.out.println("Close window event for unknown wekinator");
+             } */
+            if (wekinatorCurrentMainFrames.size() == 0) {
+                quitWithoutPrompt();
+            }
+        }
     }
-    
+
     private void handleClosingLast() {
         System.out.println("Closing the last one now");
     }
-    
+
     public void runFromFile(String fileLocation) throws Exception {
         Wekinator w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
         w.getMainGUI().setVisible(true);
         w.getMainGUI().showOSCReceiverWindow();
     }
-    
+
     public void registerForMacOSXEvents() {
-       System.setProperty("apple.laf.useScreenMenuBar", "true");
-       System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Wekinator");
-       //TODO: Do we want to use flag for this to protect Windows/Linux?
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Wekinator");
+        //TODO: Do we want to use flag for this to protect Windows/Linux?
         //if (MAC_OS_X) {
-            try {
+        try {
                 // Generate and register the OSXAdapter, passing it a hash of all the methods we wish to
-                // use as delegates for various com.apple.eawt.ApplicationListener methods
-                OSXAdapter.setQuitHandler(this, getClass().getDeclaredMethod("quit", (Class[]) null));
-                OSXAdapter.setAboutHandler(this, getClass().getDeclaredMethod("about", (Class[]) null));
-                OSXAdapter.setPreferencesHandler(this, getClass().getDeclaredMethod("preferences", (Class[]) null));
-                //  OSXAdapter.setFileHandler(this, getClass().getDeclaredMethod("loadImageFile", new Class[] { String.class }));
-            } catch (Exception e) {
-                System.err.println("Error while loading the OSXAdapter:");
-                logger.log(Level.WARNING, "Error while loading OSXAdapter: {0}", e.getMessage());
-                e.printStackTrace();
-            }
+            // use as delegates for various com.apple.eawt.ApplicationListener methods
+            OSXAdapter.setQuitHandler(this, getClass().getDeclaredMethod("quit", (Class[]) null));
+            OSXAdapter.setAboutHandler(this, getClass().getDeclaredMethod("about", (Class[]) null));
+            OSXAdapter.setPreferencesHandler(this, getClass().getDeclaredMethod("preferences", (Class[]) null));
+            //  OSXAdapter.setFileHandler(this, getClass().getDeclaredMethod("loadImageFile", new Class[] { String.class }));
+        } catch (Exception e) {
+            System.err.println("Error while loading the OSXAdapter:");
+            logger.log(Level.WARNING, "Error while loading OSXAdapter: {0}", e.getMessage());
+            e.printStackTrace();
+        }
         //}
     }
+
     // General info dialog; fed to the OSXAdapter as the method to call when
     // "About OSXAdapter" is selected from the application menu
+
     public void about() {
        // aboutBox.setLocation((int) this.getLocation().getX() + 22, (int) this.getLocation().getY() + 22);
-       // aboutBox.setVisible(true);
+        // aboutBox.setVisible(true);
     }
 
     // General preferences dialog; fed to the OSXAdapter as the method to call when
@@ -170,7 +173,7 @@ public final class WekiMiniRunner {
     public boolean quit() {
         return quitNicely();
     }
-    
+
     // General quit handler; fed to the OSXAdapter as the method to call when a system quit event occurs
     // A quit event is triggered by Cmd-Q, selecting Quit from the application or Dock menu, or logging out
     public boolean quitNicely() {
@@ -180,21 +183,22 @@ public final class WekiMiniRunner {
         }
         return (option == JOptionPane.YES_OPTION);
     }
-    
+
     public void quitWithoutPrompt() {
         //This is where we save logs, shutdown any OSC if needed, etc.
-        
+
         System.exit(0);
     }
-    
+
     public interface Closeable {
+
         public void setCloseable(boolean b);
+
         public Wekinator getWekinator();
+
         public void addWindowListener(WindowListener wl);
+
         public void removeWindowListener(WindowListener wl);
     }
-    
-    
+
 }
-
-

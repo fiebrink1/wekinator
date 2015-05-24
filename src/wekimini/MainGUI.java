@@ -19,6 +19,7 @@ import wekimini.gui.InputOutputConnectionsEditor;
 import wekimini.gui.NewProjectSettingsFrame;
 import wekimini.gui.OSCInputStatusFrame;
 import wekimini.gui.OutputViewerTable;
+import wekimini.gui.PathEditorFrame;
 import wekimini.util.Util;
 
 /**
@@ -561,6 +562,12 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             modelNames[i] = paths[i].getCurrentModelName();
         }
         learningPanel1.setup(w, paths, modelNames);
+    }
+    
+    public void showPathEditor(Path p) {
+        PathEditorFrame f = PathEditorFrame.getEditorForPath(p);
+        f.setVisible(true);
+        f.toFront();
     }
 
     @Override

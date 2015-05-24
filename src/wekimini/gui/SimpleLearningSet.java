@@ -281,6 +281,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         jLabel4.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/save2.png"))); // NOI18N
+        jButton3.setEnabled(false);
         jButton3.setMaximumSize(new java.awt.Dimension(30, 34));
         jButton3.setName(""); // NOI18N
         jButton3.setPreferredSize(new java.awt.Dimension(34, 34));
@@ -334,9 +335,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
                 .addComponent(jLabel4)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(buttonRecord, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(0, 0, 0)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         jLabel1.setText("Models");

@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
@@ -285,5 +286,14 @@ public class Util {
          public void windowDeactivated(WindowEvent e) {
          }
          }); */
+    }
+    
+    public static String prettyDecimalFormat(double d, int numPlaces) {
+        StringBuilder sb = new StringBuilder("#.");
+        for (int i = 0; i < numPlaces; i++) {
+            sb.append("#");
+        }
+        DecimalFormat dFormat = new DecimalFormat(sb.toString());
+        return dFormat.format(d);
     }
 }

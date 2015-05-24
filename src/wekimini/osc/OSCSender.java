@@ -91,7 +91,7 @@ public class OSCSender {
     }
 
 
-    public void sendOutputValuesMessage(double[] data) throws IOException {
+    public void sendOutputValuesMessage(String msgName, double[] data) throws IOException {
         if (isValidState) {
             Object[] o = new Object[data.length];
             try {
@@ -99,7 +99,7 @@ public class OSCSender {
                     o[i] = (float)data[i];
                 }
 
-                OSCMessage msg = new OSCMessage(sendMessage, o);
+                OSCMessage msg = new OSCMessage(msgName, o);
                 sender.send(msg);
             } catch (IOException ex) {
                 Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);

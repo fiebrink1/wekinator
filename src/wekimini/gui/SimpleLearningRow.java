@@ -469,6 +469,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         buttonEditLearner.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         buttonEditLearner.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/pencil2.png"))); // NOI18N
         buttonEditLearner.setToolTipText("Edit this model");
+        buttonEditLearner.setEnabled(false);
         buttonEditLearner.setMaximumSize(new java.awt.Dimension(30, 30));
         buttonEditLearner.setMinimumSize(new java.awt.Dimension(30, 30));
         buttonEditLearner.setPreferredSize(new java.awt.Dimension(30, 30));
@@ -724,6 +725,7 @@ public class SimpleLearningRow extends javax.swing.JPanel {
 
     private void buttonEditLearnerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditLearnerActionPerformed
         //w.getLearningManager().
+        w.getMainGUI().showPathEditor(myPath);
     }//GEN-LAST:event_buttonEditLearnerActionPerformed
 
     private void textModelValueKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textModelValueKeyPressed
