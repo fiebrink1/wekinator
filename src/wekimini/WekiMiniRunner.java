@@ -29,7 +29,8 @@ public final class WekiMiniRunner {
    // private static final List<Wekinator> runningWekinators = new LinkedList<>();
     private static WekiMiniRunner ref = null; //Singleton
     private HashMap<Wekinator, Closeable> wekinatorCurrentMainFrames = new HashMap<>();
-
+    private final WindowListener wl;
+    
     public static WekiMiniRunner getInstance() {
         if (ref == null) {
             ref = new WekiMiniRunner();
@@ -39,16 +40,19 @@ public final class WekiMiniRunner {
     
     public WekiMiniRunner() {
         registerForMacOSXEvents();
-    }
-    
-    //TODO: remove unnecessary argument
-    public void transferControl(Wekinator w, Closeable oldC, Closeable newC) {
-        newC.addWindowListener(new WindowAdapter() {
+        
+        wl = new WindowAdapter() {
                         @Override
                         public void windowClosed(WindowEvent e) {
                             handleWindowClosing(e);
                         } 
-                });
+                };
+    }
+    
+    //TODO: remove unnecessary argument
+    public void transferControl(Wekinator w, Closeable oldC, Closeable newC) {
+        oldC.removeWindowListener(wl);
+        newC.addWindowListener(wl);
         wekinatorCurrentMainFrames.put(w, newC);
     }
     
@@ -75,12 +79,7 @@ public final class WekiMiniRunner {
                     f.setVisible(true);
                     wekinatorCurrentMainFrames.put(w, f);
                     
-                    f.addWindowListener(new WindowAdapter() {
-                        @Override
-                        public void windowClosed(WindowEvent e) {
-                            handleWindowClosing(e);
-                        } 
-                });
+                    f.addWindowListener(wl);
                     
                    /* if (runningWekinators.size() == 0) {
                         f.setCloseable(false);
@@ -153,7 +152,7 @@ public final class WekiMiniRunner {
             }
         //}
     }
-            // General info dialog; fed to the OSXAdapter as the method to call when
+    // General info dialog; fed to the OSXAdapter as the method to call when
     // "About OSXAdapter" is selected from the application menu
     public void about() {
        // aboutBox.setLocation((int) this.getLocation().getX() + 22, (int) this.getLocation().getY() + 22);
@@ -192,6 +191,7 @@ public final class WekiMiniRunner {
         public void setCloseable(boolean b);
         public Wekinator getWekinator();
         public void addWindowListener(WindowListener wl);
+        public void removeWindowListener(WindowListener wl);
     }
     
     
