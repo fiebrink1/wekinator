@@ -317,8 +317,8 @@ public class DataManager {
         try {
             setupFilters();
         } catch (Exception ex) {
-            System.out.println("Error: Couldn't set up filters correctly");
-            System.exit(0);
+            logger.log(Level.SEVERE, "Couldn't set up filters correctly");
+            WekiMiniRunner.getInstance().quitWithoutPrompt();
         }
         setInitialized(true);
     }

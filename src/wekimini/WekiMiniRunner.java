@@ -7,6 +7,7 @@ package wekimini;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -25,13 +26,9 @@ import wekimini.gui.InitInputOutputFrame;
  */
 public final class WekiMiniRunner {
     private static final Logger logger = Logger.getLogger(WekiMiniRunner.class.getName());
-    private static final List<Wekinator> runningWekinators = new LinkedList<>();
+   // private static final List<Wekinator> runningWekinators = new LinkedList<>();
     private static WekiMiniRunner ref = null; //Singleton
     private HashMap<Wekinator, Closeable> wekinatorCurrentMainFrames = new HashMap<>();
-
-    
-    private boolean isInitialState = true;
-   // private List<Closeable> wekinatorCurrentMainFrames = new LinkedList<>();
 
     public static WekiMiniRunner getInstance() {
         if (ref == null) {
@@ -44,43 +41,18 @@ public final class WekiMiniRunner {
         registerForMacOSXEvents();
     }
     
+    //TODO: remove unnecessary argument
     public void transferControl(Wekinator w, Closeable oldC, Closeable newC) {
-        /*if (wekinatorCurrentMainFrames.containsValue(oldC)) {
-            wekinatorCurrentMainFrames.remove(oldC);
-
-        }
-        wekinatorCurrentMainFrames.add(newC);
-                    if (wekinatorCurrentMainFrames.size() == 1) {
-                                    wekinatorCurrentMainFrames.get(0).setCloseable(false);
-            }*/
+        newC.addWindowListener(new WindowAdapter() {
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                            handleWindowClosing(e);
+                        } 
+                });
         wekinatorCurrentMainFrames.put(w, newC);
     }
     
     public static void main(String[] args) {
-        //WelcomeScreen
-                 /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-       /* try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(WelcomeScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(WelcomeScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(WelcomeScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(WelcomeScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } */
-        //</editor-fold>
-
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -90,7 +62,7 @@ public final class WekiMiniRunner {
     }
     
     public int numRunningProjects() {
-        return runningWekinators.size();
+        return wekinatorCurrentMainFrames.size();
     }
     
     public void runNewProject() {
@@ -101,50 +73,36 @@ public final class WekiMiniRunner {
                     Wekinator w = new Wekinator();
                     InitInputOutputFrame f = new InitInputOutputFrame(w);
                     f.setVisible(true);
+                    wekinatorCurrentMainFrames.put(w, f);
+                    
                     f.addWindowListener(new WindowAdapter() {
-                        
                         @Override
                         public void windowClosed(WindowEvent e) {
-                            if (wekinatorCurrentMainFrames.containsValue(e.getComponent())) {
-                                System.out.println("Found it");
-                               // Wekinator wek = ((Closeable)e.getComponent()).getWekinator();
-                               // wekinatorCurrentMainFrames.remove(wek);
-                                
-                               //  wekinatorCurrentMainFrames.remove(e.getComponent());
-                              //  if (wekinatorCurrentMainFrames.size() == 1) {
-                              //      wekinatorCurrentMainFrames.get(0).setCloseable(false);
-                               // }
-                            } else {
-                                System.out.println("Danger: component not found");
-                            }
-                            System.out.println("CLOSEEVENT");
-                        }
+                            handleWindowClosing(e);
+                        } 
                 });
-                    if (runningWekinators.size() == 0) {
+                    
+                   /* if (runningWekinators.size() == 0) {
                         f.setCloseable(false);
                     } else {
                         f.setCloseable(true);
                         for (Closeable c : wekinatorCurrentMainFrames.values()) {
                             c.setCloseable(true);
                         }
-                    }
+                    } */
                     
-                    runningWekinators.add(w);
-                    wekinatorCurrentMainFrames.put(w, f);
                     w.addCloseListener(new ChangeListener() {
 
                         @Override
                         public void stateChanged(ChangeEvent e) {
-                            runningWekinators.remove(w);
                             logger.log(Level.INFO, "Wekinator project closed");
-                            if (runningWekinators.size() == 0) {
-                                System.out.println("Making last one noncloseable");
-                                //Problem: size of this can be different from size of runningWekinators!
-                                //wekinator might be closed before we get windowclose event.
-                                wekinatorCurrentMainFrames.get(w).setCloseable(false);
+                            if (wekinatorCurrentMainFrames.size() == 1) {
+                                //It's our last great hope
+                                handleClosingLast();
                             } else {
-                                System.out.println("Not on the last one");
+                                System.out.println("Wek closed, but not the last one");
                             }
+                            wekinatorCurrentMainFrames.remove((Wekinator)e.getSource());
                         }
                     });
                     
@@ -153,6 +111,21 @@ public final class WekiMiniRunner {
                 }
             }
         });
+    }
+    
+    private void handleWindowClosing(WindowEvent e) {
+        if (wekinatorCurrentMainFrames.containsValue(e.getComponent())) {
+                                System.out.println("Close window event for known wekinator");
+                            } else {
+                                System.out.println("Close window event for unknown wekinator");
+                            }
+                            if (wekinatorCurrentMainFrames.size() == 0) {
+                                quitWithoutPrompt();
+                            }
+    }
+    
+    private void handleClosingLast() {
+        System.out.println("Closing the last one now");
     }
     
     public void runFromFile(String fileLocation) throws Exception {
@@ -195,17 +168,21 @@ public final class WekiMiniRunner {
         //prefs.setVisible(true);
     }
 
+    public boolean quit() {
+        return quitNicely();
+    }
+    
     // General quit handler; fed to the OSXAdapter as the method to call when a system quit event occurs
     // A quit event is triggered by Cmd-Q, selecting Quit from the application or Dock menu, or logging out
-    public boolean quit() {
+    public boolean quitNicely() {
         int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
         if (option == JOptionPane.YES_OPTION) {
-            exit();
+            quitWithoutPrompt();
         }
         return (option == JOptionPane.YES_OPTION);
     }
     
-    private void exit() {
+    public void quitWithoutPrompt() {
         //This is where we save logs, shutdown any OSC if needed, etc.
         
         System.exit(0);
@@ -213,8 +190,8 @@ public final class WekiMiniRunner {
     
     public interface Closeable {
         public void setCloseable(boolean b);
-        
         public Wekinator getWekinator();
+        public void addWindowListener(WindowListener wl);
     }
     
     

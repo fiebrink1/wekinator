@@ -195,10 +195,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
         w.prepareToDie();
         w.close();
-        if (WekiMiniRunner.getInstance().numRunningProjects() == 0) {
+      /*  if (WekiMiniRunner.getInstance().numRunningProjects() == 0) {
            WekiMiniRunner.getInstance().runNewProject();
             
-        }
+        } */
         System.out.println("MADE IT HERE");
         this.dispose();
     }

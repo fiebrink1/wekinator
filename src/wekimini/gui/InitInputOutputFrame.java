@@ -1161,6 +1161,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             try {
                 //TODO: Check this isn't same wekinator as mine! (don't load from my same place, or from something already open...)
                 WekiMiniRunner.getInstance().runFromFile(f.getAbsolutePath());
+                w.prepareToDie();
                 w.close();
                 this.dispose();
             } catch (Exception ex) {
@@ -1170,15 +1171,15 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     }//GEN-LAST:event_menuItemOpenProjectActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        if (isCloseable) {
+       // if (isCloseable) {
             if (w.getOSCReceiver().getConnectionState() == OSCReceiver.ConnectionState.CONNECTED) {
                 w.getOSCReceiver().stopListening();
             }
             w.close();
             this.dispose();
-        } else {
+        //} else {
             //do nothing
-        }
+        //}
 
     }//GEN-LAST:event_formWindowClosing
 
