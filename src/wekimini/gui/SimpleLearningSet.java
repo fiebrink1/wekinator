@@ -23,7 +23,7 @@ import wekimini.Wekinator;
 public class SimpleLearningSet extends javax.swing.JPanel {
     private Wekinator w;
     private List<Path> paths;
-    private List<SimpleLearningRow> pathPanels;
+    private List<LearningRow> pathPanels;
     private boolean recordAll = true;
     private boolean runAll = true;
     private final ImageIcon recordIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/record1.png"));
@@ -85,13 +85,13 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         pathsPanel.removeAll();
         double[] currentValues = w.getOutputManager().getCurrentValues();
         for (int i = 0; i < paths.size(); i++) {
-            SimpleLearningRow r = new SimpleLearningRow(w, paths.get(i));
+            LearningRow r = new SimpleLearningRow_NoSlider(w, paths.get(i));
             r.setValue(currentValues[i]);
             pathPanels.add(r);
             JSeparator sep = new JSeparator();
             sep.setMaximumSize(new Dimension(32767, 5));
             pathsPanel.add(sep);
-            pathsPanel.add(r);
+            pathsPanel.add(r.getComponent());
         }
         
         pathsPanel.revalidate();
@@ -415,7 +415,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     private void runClicked() {
         runAll = !runAll;
         updateRunButton();
-        for (SimpleLearningRow r : pathPanels) {
+        for (LearningRow r : pathPanels) {
            r.setRunEnabled(runAll);
        } 
     }
@@ -430,7 +430,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     
     private void selectAllCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllCheckboxActionPerformed
        boolean selected = selectAllCheckbox.isSelected();
-        for (SimpleLearningRow r : pathPanels) {
+        for (LearningRow r : pathPanels) {
            r.setSelected(selected);
        }
         
@@ -447,7 +447,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     private void recordClicked() {
         recordAll = !recordAll;
         updateRecordButton();
-        for (SimpleLearningRow r : pathPanels) {
+        for (LearningRow r : pathPanels) {
            r.setRecordEnabled(recordAll);
        }
     }

@@ -228,7 +228,7 @@ public class OutputManager {
 
     //Call this when new values available
     public void setNewComputedValues(double[] values) {
-        System.out.println("IN SETTING NEW COMPUTED");
+       // System.out.println("IN SETTING NEW COMPUTED");
         if (values == null || values.length != currentValues.length) {
             throw new IllegalArgumentException("values is null or wrong length");
         }
@@ -247,7 +247,7 @@ public class OutputManager {
     //For right now, send message whenever any output is changed in GUI
     //In future, could change this so that only one output acts as trigger, or user has to press button to trigger send.
     public void setNewValueFromGUI(int which, double value) {
-        System.out.println("IN SETTING VALUE FROM GUI");
+      //  System.out.println("IN SETTING VALUE FROM GUI");
         if (which >= currentValues.length) {
             throw new IllegalArgumentException("Attempted to set index of values out of bounds");
         }

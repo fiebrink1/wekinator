@@ -31,7 +31,7 @@ import wekimini.util.Util;
  *
  * @author fiebrink
  */
-public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow {
+public class SimpleLearningRow_NoSlider extends javax.swing.JPanel implements LearningRow {
 
     private Wekinator w;
     private Path myPath;
@@ -41,10 +41,8 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     private boolean isNumericInteger = false;
     private boolean isHardLimits = false;
     private String modelName = "modelName";
-    private double sliderScale = 1.0;
-    private double sliderScaleInv = 1.0;
     // private double value = 1.0; //TODO make property w/ listeners & notification
-    private static final DecimalFormat dFormat = new DecimalFormat("#.#####");
+    private static final DecimalFormat dFormat = new DecimalFormat("#.##");
 
     //Colors for text entry
     private static final Color doneColor = Color.WHITE;
@@ -67,6 +65,7 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     private static final Color trainingColor = new Color(0, 204, 255); */
     private double value = 1.0;
 
+    public static final String PROP_VALUE = "value";
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -75,7 +74,7 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     private final ImageIcon trainedIcon = new ImageIcon(getClass().getResource("/wekimini/icons/greenlight.png")); // NOI18N
     private final ImageIcon needsRetrainingIcon = new ImageIcon(getClass().getResource("/wekimini/icons/yellowlight.png")); // NOI18N
     private final ImageIcon trainingIcon = new ImageIcon(getClass().getResource("/wekimini/icons/pinklight.png")); // NOI18N
-    private static final Logger logger = Logger.getLogger(SimpleLearningRow.class.getName());
+    private static final Logger logger = Logger.getLogger(SimpleLearningRow_NoSlider.class.getName());
     
     
     /**
@@ -83,7 +82,6 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
      *
      * @param listener
      */
-    @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(listener);
     }
@@ -93,7 +91,6 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
      *
      * @param listener
      */
-    @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
@@ -101,11 +98,11 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     /**
      * Creates new form TestLearningRow1
      */
-    public SimpleLearningRow() {
+    public SimpleLearningRow_NoSlider() {
         initComponents();
     }
 
-    public SimpleLearningRow(Wekinator w, Path p) {
+    public SimpleLearningRow_NoSlider(Wekinator w, Path p) {
         initComponents();
         this.w = w;
         myPath = p;
@@ -114,7 +111,6 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
         initForPath();
     }
 
-    @Override
     public boolean isChecked() {
         return checkbox1.isSelected();
     }
@@ -124,7 +120,6 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
      *
      * @return the value of value
      */
-    @Override
     public double getValue() {
         return value;
     }
@@ -136,26 +131,22 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
      * TODO: This should probably NOT result in call to learning manager output value change!
      *      Put that in a separate function that's called only when GUI is modified.
      */
-    @Override
     public void setValue(double value) {
         double oldValue = this.value;
         setValueQuietly(value);
         propertyChangeSupport.firePropertyChange(PROP_VALUE, oldValue, value);
     }
     
-    @Override
     public void setComputedValue(double value) {
         setValueOnlyForDisplay(value);
     }
 
     //This should only be 
-    @Override
     public void setValueQuietly(double value) {
         setValueOnlyForDisplay(value);
         w.getLearningManager().setOutputValueForPath(value, myPath);
     }
     
-    @Override
     public void setValueOnlyForDisplay(double value) {
         this.value = value;
         if (isClassifier) {
@@ -163,12 +154,11 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
                 comboClassifier.setSelectedIndex((int) value - 1 );
             }
         } else {
-            setSliderValueScaled(value);
+           // setSliderValueScaled(value);
             textModelValue.setText(dFormat.format(value)); //TODO pretty format?
         }
     }
 
-    @Override
     public void setModelName(String name) {
         modelName = name;
         labelModelName.setText(modelName);
@@ -259,7 +249,7 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
         CardLayout c = ((CardLayout) panelModelOutput.getLayout());
         DefaultComboBoxModel m = new DefaultComboBoxModel(Util.numbersFromAtoBAsStrings(1, numClasses));
         comboClassifier.setModel(m);
-        sliderModelValue.setVisible(false);
+      //  sliderModelValue.setVisible(false);
         c.show(panelModelOutput, "cardClassifier");
     }
 
@@ -271,13 +261,13 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
         isHardLimits = (no.getLimitType() == OSCNumericOutput.LimitType.HARD);
 
         //sliderModelValue.setMinimum(WIDTH);
-        setupSlider();
+      //  setupSlider();
 
         CardLayout c = ((CardLayout) panelModelOutput.getLayout());
         c.show(panelModelOutput, "cardNumeric");
     }
 
-    private void setupSlider() {
+    /*private void setupSlider() {
         if (isNumericInteger) {
             //We only want integers anyway, so this is easy
             sliderModelValue.setMinimum((int) minValue);
@@ -292,22 +282,20 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
             sliderModelValue.setMinimum((int) (minValue * sliderScale));
             sliderModelValue.setMaximum((int) (maxValue * sliderScale));
         }
-    }
+    } */
 
-    private double getSliderValueScaled() {
+   /* private double getSliderValueScaled() {
         return sliderModelValue.getValue() * sliderScaleInv;
     }
 
     private void setSliderValueScaled(double value) {
         sliderModelValue.setValue((int) (value * sliderScale));
-    }
+    } */
 
-    @Override
     public void setSelected(boolean s) {
         checkbox1.setSelected(s);
     }
     
-    @Override
     public void setRecordEnabled(boolean e) {
         learnerRecord = e;
         if (learnerRecord) {
@@ -318,7 +306,6 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
         myPath.setRecordEnabled(e);
     }
     
-    @Override
     public void setRunEnabled(boolean e) {
         learnerRun = e;
         if (learnerRun) {
@@ -329,7 +316,6 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
         myPath.setRunEnabled(e);
     }
     
-    @Override
     public boolean isSelected() {
         return checkbox1.isSelected();
     }
@@ -346,7 +332,7 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
                     OSCNumericOutput no = new OSCNumericOutput("model1", 5, 10, OSCNumericOutput.NumericOutputType.REAL, OSCNumericOutput.LimitType.HARD);
                     String[] names = new String[]{"abc", "def"};
                     Path p = new Path(no, names, w);
-                    SimpleLearningRow r = new SimpleLearningRow(w, p);
+                    SimpleLearningRow_NoSlider r = new SimpleLearningRow_NoSlider(w, p);
                     f.add(r);
                     f.setVisible(true);
                 } catch (IOException ex) {
@@ -372,7 +358,6 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
         checkbox1 = new javax.swing.JCheckBox();
         panelMain = new javax.swing.JPanel();
         labelModelName = new javax.swing.JLabel();
-        sliderModelValue = new javax.swing.JSlider();
         labelNumExamples = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         buttonDeleteLearnerExamples = new javax.swing.JButton();
@@ -422,30 +407,6 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
         labelModelName.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
         labelModelName.setText("MaxVolume1_1");
         labelModelName.setToolTipText("Model name");
-
-        sliderModelValue.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                sliderModelValueStateChanged(evt);
-            }
-        });
-        sliderModelValue.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseDragged(java.awt.event.MouseEvent evt) {
-                sliderModelValueMouseDragged(evt);
-            }
-        });
-        sliderModelValue.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                sliderModelValueMouseReleased(evt);
-            }
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                sliderModelValueMouseClicked(evt);
-            }
-        });
-        sliderModelValue.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                sliderModelValuePropertyChange(evt);
-            }
-        });
 
         labelNumExamples.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
         labelNumExamples.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -627,8 +588,8 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
                 .addGap(36, 36, 36)
                 .addComponent(buttonEditLearner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(sliderModelValue, javax.swing.GroupLayout.PREFERRED_SIZE, 323, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(6, 6, 6))
         );
         panelMainLayout.setVerticalGroup(
             panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -648,10 +609,7 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
                                 .addComponent(labelModelName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(buttonLearnerRecord, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(buttonLearnerPlay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sliderModelValue, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
 
         add(panelMain);
@@ -660,11 +618,6 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     private void textModelValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textModelValueActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_textModelValueActionPerformed
-
-    private void sliderModelValueStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderModelValueStateChanged
-       //Problem is that this gets triggered whether slider change is
-        //from user GUI or from code!
-    }//GEN-LAST:event_sliderModelValueStateChanged
 
     private void textModelValuePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_textModelValuePropertyChange
     }//GEN-LAST:event_textModelValuePropertyChange
@@ -755,31 +708,16 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
         }
     }//GEN-LAST:event_textModelValueFocusLost
 
-    private void sliderModelValuePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_sliderModelValuePropertyChange
-    }//GEN-LAST:event_sliderModelValuePropertyChange
-
-    private void userUpdatedSlider() {
+    /*private void userUpdatedSlider() {
         double d = getSliderValueScaled();
         if (value != d) {        
             setValue(getSliderValueScaled());
         }
-    }
+    } */
     
-    private void sliderModelValueMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sliderModelValueMouseDragged
-       userUpdatedSlider();
-    }//GEN-LAST:event_sliderModelValueMouseDragged
-
-    private void sliderModelValueMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sliderModelValueMouseReleased
-       // userUpdatedSlider();
-    }//GEN-LAST:event_sliderModelValueMouseReleased
-
     private void comboClassifierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboClassifierActionPerformed
         setValue(comboClassifier.getSelectedIndex()+1);
     }//GEN-LAST:event_comboClassifierActionPerformed
-
-    private void sliderModelValueMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sliderModelValueMouseClicked
-        userUpdatedSlider();
-    }//GEN-LAST:event_sliderModelValueMouseClicked
 
     private void buttonLearnerRecordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLearnerRecordActionPerformed
         toggleLearnerRecord();
@@ -807,7 +745,6 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     private javax.swing.JLabel labelNumExamples;
     private javax.swing.JPanel panelMain;
     private javax.swing.JPanel panelModelOutput;
-    private javax.swing.JSlider sliderModelValue;
     private javax.swing.JTextField textModelValue;
     private javax.swing.JPanel warningPanel;
     // End of variables declaration//GEN-END:variables
