@@ -580,7 +580,7 @@ public class LearningManager {
         w.getDataManager().setOutputMissingForAll(whichPath);
     }
 
-    //Currently coming from Path GUI (row)
+    //Currently coming from Path GUI (row) - should NOT be called when new output is computed!
     public void setOutputValueForPath(double value, Path p) {
         w.getOutputManager().setNewValueFromGUI(pathsToOutputIndices.get(p), value);
     }

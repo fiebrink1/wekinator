@@ -137,6 +137,10 @@ public class SimpleLearningRow extends javax.swing.JPanel {
         setValueQuietly(value);
         propertyChangeSupport.firePropertyChange(PROP_VALUE, oldValue, value);
     }
+    
+    public void setComputedValue(double value) {
+        setValueOnlyForDisplay(value);
+    }
 
     //This should only be 
     public void setValueQuietly(double value) {

@@ -70,7 +70,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     //Assumes that ordering of outputs is never going to change; don't have to look up anything or refer to LearningManager.
     private void outputValuesComputed(double[] vals) {
         for (int i = 0; i < vals.length; i++) {
-            pathPanels.get(i).setValue(vals[i]);
+            pathPanels.get(i).setComputedValue(vals[i]);
         }
     }
     
