@@ -10,10 +10,13 @@ import java.beans.PropertyChangeSupport;
 import wekimini.osc.OSCSender;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import wekimini.osc.OSCReceiver;
+import wekimini.util.Util;
 
 /**
  *
@@ -47,6 +50,8 @@ public class Wekinator {
     public static final String PROP_HAS_SAVE_LOCATION = "hasSaveLocation";
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private static final Logger logger = Logger.getLogger(Wekinator.class.getName());
+    
     
     public void addCloseListener(ChangeListener l) {
         exitListenerList.add(ChangeListener.class, l);
@@ -336,8 +341,14 @@ public class Wekinator {
     }
     
     public void save() {
-        WekinatorSaver.saveExistingProject(this);
-        setHasSaveLocation(true);
+        try {
+            WekinatorSaver.saveExistingProject(this);
+            setHasSaveLocation(true);
+
+        } catch (IOException ex) {
+            Util.showPrettyWarningPromptPane(null, "Error encountered in saving file: " + ex.getLocalizedMessage());
+            logger.log(Level.SEVERE, "Could not save Wekinator file:{0}", ex.getMessage());
+        }
     }
     
     public void prepareToDie() {

@@ -24,7 +24,11 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import wekimini.MainGUI;
+import wekimini.WekiMiniRunner;
+import wekimini.WekiMiniRunner.Closeable;
 import wekimini.Wekinator;
+import wekimini.WekinatorFileData;
 import wekimini.learning.AdaboostModelBuilder;
 import wekimini.learning.J48ModelBuilder;
 import wekimini.learning.KNNModelBuilder;
@@ -43,7 +47,7 @@ import wekimini.util.WeakListenerSupport;
  *
  * @author rebecca
  */
-public class InitInputOutputFrame extends javax.swing.JFrame {
+public class InitInputOutputFrame extends javax.swing.JFrame implements Closeable {
 
     private Wekinator w = null;
     private PropertyChangeListener oscReceiverListener = null;
@@ -65,6 +69,8 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     private OSCOutputGroup customConfiguredOutput = null;
     private static final Logger logger = Logger.getLogger(InitInputOutputFrame.class.getName());
 
+    private boolean isCloseable = false;
+
     /**
      * Creates new form initInputOutputFrame
      */
@@ -76,6 +82,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         initComponents();
         setWekinator(w);
         updateOutputCard();
+
         /* fieldNumOutputs.getDocument().addDocumentListener(new DocumentListener() {
 
          @Override
@@ -194,6 +201,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         fieldSendPort = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         buttonNext = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        menuItemNewProject = new javax.swing.JMenuItem();
+        menuItemOpenProject = new javax.swing.JMenuItem();
 
         menuCustomiseInputNames.setText("Customise names");
         menuCustomiseInputNames.addActionListener(new java.awt.event.ActionListener() {
@@ -249,8 +260,13 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
 
         popupMenuOutputOptions.add(menuChooseClassifier);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Set up new project");
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("Create new project");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -617,6 +633,30 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jMenu1.setText("File");
+
+        menuItemNewProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.META_MASK));
+        menuItemNewProject.setText("New project");
+        menuItemNewProject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemNewProjectActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuItemNewProject);
+
+        menuItemOpenProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.META_MASK));
+        menuItemOpenProject.setText("Open project...");
+        menuItemOpenProject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemOpenProjectActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuItemOpenProject);
+
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -723,8 +763,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             Logger.getLogger(InitInputOutputFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
     private void customiseInputNames() {
-         if (!checkInputNumberValid()) {
+        if (!checkInputNumberValid()) {
             return;
         }
         int numNames = Integer.parseInt(fieldNumInputs.getText());
@@ -746,10 +787,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         customiser.setAlwaysOnTop(true);
         customiser.setVisible(true);
     }
-    
+
     private void buttonInputOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonInputOptionsActionPerformed
         //String = fieldNumInputs.ge
-       //customiseInputNames();
+        //customiseInputNames();
         popupMenuInputOptions.show(panelInputs, buttonInputOptions.getX(), buttonInputOptions.getY());
     }//GEN-LAST:event_buttonInputOptionsActionPerformed
 
@@ -830,7 +871,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             menuChooseClassifier.setEnabled(false);
         }
     }
-    
+
     private void fieldNumClassesKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumClassesKeyTyped
         char enter = evt.getKeyChar();
         if (!(Character.isDigit(enter))) {
@@ -861,9 +902,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         customiser.setAlwaysOnTop(true);
         customiser.setVisible(true);
     }
-    
+
     private void buttonOutputOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOutputOptionsActionPerformed
-        popupMenuOutputOptions.show(panelOutputs,buttonOutputOptions.getX(), buttonOutputOptions.getY());
+        popupMenuOutputOptions.show(panelOutputs, buttonOutputOptions.getX(), buttonOutputOptions.getY());
     }//GEN-LAST:event_buttonOutputOptionsActionPerformed
 
     private void fieldSendPortKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldSendPortKeyTyped
@@ -995,11 +1036,11 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
                         ModelBuilder mbnew = mb.fromTemplate(mb);
                         w.getLearningManager().setModelBuilderForPath(mbnew, i);
                     }
-                    
 
                 }
                 w.getMainGUI().initializeInputsAndOutputs();
                 w.getMainGUI().setVisible(true);
+                WekiMiniRunner.getInstance().transferControl(w, this, w.getMainGUI());
                 this.dispose();
             } catch (UnknownHostException ex) {
                 Util.showPrettyErrorPane(this, "Host name " + fieldHostName.getText() + " is invalid; please try a different host.");
@@ -1089,7 +1130,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
             Logger.getLogger(InitInputOutputFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private void fieldNumOutputsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldNumOutputsActionPerformed
     }//GEN-LAST:event_fieldNumOutputsActionPerformed
 
@@ -1108,6 +1149,38 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     private void menuLoadOutputFromFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuLoadOutputFromFileActionPerformed
         loadOutputsFromFile();
     }//GEN-LAST:event_menuLoadOutputFromFileActionPerformed
+
+    private void menuItemNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemNewProjectActionPerformed
+        WekiMiniRunner.getInstance().runNewProject();
+    }//GEN-LAST:event_menuItemNewProjectActionPerformed
+
+    private void menuItemOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemOpenProjectActionPerformed
+        String homeDir = System.getProperty("user.home");
+        File f = Util.findLoadFile(WekinatorFileData.FILENAME_EXTENSION, "Wekinator file", homeDir, this);
+        if (f != null) {
+            try {
+                //TODO: Check this isn't same wekinator as mine! (don't load from my same place, or from something already open...)
+                WekiMiniRunner.getInstance().runFromFile(f.getAbsolutePath());
+                w.close();
+                this.dispose();
+            } catch (Exception ex) {
+                logger.log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_menuItemOpenProjectActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        if (isCloseable) {
+            if (w.getOSCReceiver().getConnectionState() == OSCReceiver.ConnectionState.CONNECTED) {
+                w.getOSCReceiver().stopListening();
+            }
+            w.close();
+            this.dispose();
+        } else {
+            //do nothing
+        }
+
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
@@ -1249,6 +1322,20 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
         return true;
     }
 
+    public boolean isCloseable() {
+        return isCloseable;
+    }
+
+    public void setCloseable(boolean isCloseable) {
+        if (isCloseable) {
+           // this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        } else {
+            //this.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+
+        }
+        this.isCloseable = isCloseable;
+    }
+
     private void updateOSCListener() {
         System.out.println("ERROR: updateOSCListener is not implemented");
     }
@@ -1298,12 +1385,16 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel labelOscStatus;
     private javax.swing.JMenu menuChooseClassifier;
     private javax.swing.JMenuItem menuCustomiseInputNames;
     private javax.swing.JMenuItem menuCustomiseOutputNames;
+    private javax.swing.JMenuItem menuItemNewProject;
+    private javax.swing.JMenuItem menuItemOpenProject;
     private javax.swing.JMenuItem menuLoadFromFile;
     private javax.swing.JMenuItem menuLoadOutputFromFile;
     private javax.swing.JPanel panelCustom;
@@ -1313,5 +1404,12 @@ public class InitInputOutputFrame extends javax.swing.JFrame {
     private javax.swing.JPopupMenu popupMenuInputOptions;
     private javax.swing.JPopupMenu popupMenuOutputOptions;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public Wekinator getWekinator() {
+        return w;
+    }
+
+
 
 }

@@ -274,7 +274,7 @@ public class LearningManager {
         for (int i = 0; i < paths.size(); i++) {
             paths.get(i).setSelectedInputs(newInputsForPaths.get(i).toArray(new String[0]));
         }
-
+        w.getStatusUpdateCenter().update(this, "Input/Output connections updated.");
     }
 
     public boolean[][] getConnectionMatrix() {

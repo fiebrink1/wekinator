@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import wekimini.WekiMiniRunner.Closeable;
 import wekimini.gui.InputMonitor;
 import wekimini.gui.InputOutputConnectionsEditor;
 import wekimini.gui.NewProjectSettingsFrame;
@@ -24,8 +25,10 @@ import wekimini.util.Util;
  *
  * @author rebecca
  */
-public class MainGUI extends javax.swing.JFrame {
+public class MainGUI extends javax.swing.JFrame implements Closeable {
+
     //private GUIAddNewInput addNewInputGUI;
+
     private boolean isDisplayingReceiverWindow = false;
     private boolean isDisplayingAddInput = false;
     private OSCInputStatusFrame oscInputStatusFrame = null;
@@ -33,132 +36,132 @@ public class MainGUI extends javax.swing.JFrame {
     private OutputViewerTable outputTableWindow = null;
     private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
     private Wekinator w;
+    private boolean closeable = true; //flaseif this is the last window open
+
+    /* public void displayEditInput(String name) {
+     //Only show 1 of these at once
+     if (! isDisplayingAddInput) {
+     isDisplayingAddInput = true;
+     GUIAddEditInput g = new GUIAddEditInput(w, name);
+     g.setAlwaysOnTop(true);
+     g.setVisible(true);
+     g.addWindowListener(new WindowListener() {
+
+     @Override
+     public void windowOpened(WindowEvent e) {
+     }
+
+     @Override
+     public void windowClosing(WindowEvent e) {
+     }
+
+     @Override
+     public void windowClosed(WindowEvent e) {
+     isDisplayingAddInput = false;
+     }
+
+     @Override
+     public void windowIconified(WindowEvent e) {
+     }
+
+     @Override
+     public void windowDeiconified(WindowEvent e) {
+     }
+
+     @Override
+     public void windowActivated(WindowEvent e) {
+     }
+
+     @Override
+     public void windowDeactivated(WindowEvent e) {
+     }
+     });
+     }
+     }
     
-   /* public void displayEditInput(String name) {
-        //Only show 1 of these at once
-        if (! isDisplayingAddInput) {
-            isDisplayingAddInput = true;
-            GUIAddEditInput g = new GUIAddEditInput(w, name);
-            g.setAlwaysOnTop(true);
-            g.setVisible(true);
-            g.addWindowListener(new WindowListener() {
+     public void displayAddInput() {
+     //Only show 1 of these at once
+     if (! isDisplayingAddInput) {
+     isDisplayingAddInput = true;
+     GUIAddEditInput g = new GUIAddEditInput(w);
+     g.setAlwaysOnTop(true);
+     g.setVisible(true);
+     g.addWindowListener(new WindowListener() {
 
-                @Override
-                public void windowOpened(WindowEvent e) {
-                }
+     @Override
+     public void windowOpened(WindowEvent e) {
+     }
 
-                @Override
-                public void windowClosing(WindowEvent e) {
-                }
+     @Override
+     public void windowClosing(WindowEvent e) {
+     }
 
-                @Override
-                public void windowClosed(WindowEvent e) {
-                        isDisplayingAddInput = false;
-                }
+     @Override
+     public void windowClosed(WindowEvent e) {
+     isDisplayingAddInput = false;
+     }
 
-                @Override
-                public void windowIconified(WindowEvent e) {
-                }
+     @Override
+     public void windowIconified(WindowEvent e) {
+     }
 
-                @Override
-                public void windowDeiconified(WindowEvent e) {
-                }
+     @Override
+     public void windowDeiconified(WindowEvent e) {
+     }
 
-                @Override
-                public void windowActivated(WindowEvent e) {
-                }
+     @Override
+     public void windowActivated(WindowEvent e) {
+     }
 
-                @Override
-                public void windowDeactivated(WindowEvent e) {
-                }
-            });
-        }
-    }
+     @Override
+     public void windowDeactivated(WindowEvent e) {
+     }
+     });
+     }
+     }
+
+     public void displayAddOutput() {
+     //Only show 1 of these at once
+     if (! isDisplayingAddOutput) {
+     isDisplayingAddOutput = true;
+     GUIAddEditOutputGroup g = new GUIAddEditOutputGroup(w);
+     g.setAlwaysOnTop(true);
+     g.setVisible(true);
+     g.addWindowListener(new WindowListener() {
+
+     @Override
+     public void windowOpened(WindowEvent e) {
+     }
+
+     @Override
+     public void windowClosing(WindowEvent e) {
+     }
+
+     @Override
+     public void windowClosed(WindowEvent e) {
+     isDisplayingAddOutput = false;
+     }
+
+     @Override
+     public void windowIconified(WindowEvent e) {
+     }
+
+     @Override
+     public void windowDeiconified(WindowEvent e) {
+     }
+
+     @Override
+     public void windowActivated(WindowEvent e) {
+     }
+
+     @Override
+     public void windowDeactivated(WindowEvent e) {
+     }
+     });
+     }
+     }
     
-    public void displayAddInput() {
-        //Only show 1 of these at once
-        if (! isDisplayingAddInput) {
-            isDisplayingAddInput = true;
-            GUIAddEditInput g = new GUIAddEditInput(w);
-            g.setAlwaysOnTop(true);
-            g.setVisible(true);
-            g.addWindowListener(new WindowListener() {
-
-                @Override
-                public void windowOpened(WindowEvent e) {
-                }
-
-                @Override
-                public void windowClosing(WindowEvent e) {
-                }
-
-                @Override
-                public void windowClosed(WindowEvent e) {
-                        isDisplayingAddInput = false;
-                }
-
-                @Override
-                public void windowIconified(WindowEvent e) {
-                }
-
-                @Override
-                public void windowDeiconified(WindowEvent e) {
-                }
-
-                @Override
-                public void windowActivated(WindowEvent e) {
-                }
-
-                @Override
-                public void windowDeactivated(WindowEvent e) {
-                }
-            });
-        }
-    }
-
-        public void displayAddOutput() {
-        //Only show 1 of these at once
-        if (! isDisplayingAddOutput) {
-            isDisplayingAddOutput = true;
-            GUIAddEditOutputGroup g = new GUIAddEditOutputGroup(w);
-            g.setAlwaysOnTop(true);
-            g.setVisible(true);
-            g.addWindowListener(new WindowListener() {
-
-                @Override
-                public void windowOpened(WindowEvent e) {
-                }
-
-                @Override
-                public void windowClosing(WindowEvent e) {
-                }
-
-                @Override
-                public void windowClosed(WindowEvent e) {
-                        isDisplayingAddOutput = false;
-                }
-
-                @Override
-                public void windowIconified(WindowEvent e) {
-                }
-
-                @Override
-                public void windowDeiconified(WindowEvent e) {
-                }
-
-                @Override
-                public void windowActivated(WindowEvent e) {
-                }
-
-                @Override
-                public void windowDeactivated(WindowEvent e) {
-                }
-            });
-        }
-    }
-    
-    */
-    
+     */
     /**
      * Creates new form MainGUI
      */
@@ -169,47 +172,47 @@ public class MainGUI extends javax.swing.JFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.out.println("HERE");
+                System.out.println("HERE, closeable=" + closeable);
                 finishUp();
             }
         });
-        
-        
+
     }
 
     private void finishUp() {
-       /* Wekinator w2 = new Wekinator();
-                    InitInputOutputFrame f = new InitInputOutputFrame(w);
-                    f.setVisible(true);
+        /* Wekinator w2 = new Wekinator();
+         InitInputOutputFrame f = new InitInputOutputFrame(w);
+         f.setVisible(true);
                     
-                    runningWekinators.add(w2);
-                    w2.addCloseListener(new ChangeListener() {
+         runningWekinators.add(w2);
+         w2.addCloseListener(new ChangeListener() {
 
-                        @Override
-                        public void stateChanged(ChangeEvent e) {
-                            logger.log(Level.INFO, "Wekinator project closed");
-                        }
-                    }); */
-        
+         @Override
+         public void stateChanged(ChangeEvent e) {
+         logger.log(Level.INFO, "Wekinator project closed");
+         }
+         }); */
+
         w.prepareToDie();
-        if (WekiMiniRunner.numRunningProjects() == 1) {
-            WekiMiniRunner.main(null);
+        w.close();
+        if (WekiMiniRunner.getInstance().numRunningProjects() == 0) {
+           WekiMiniRunner.getInstance().runNewProject();
+            
         }
         System.out.println("MADE IT HERE");
-                this.dispose();
+        this.dispose();
     }
 
     private void setGUIForWekinator() {
         this.setTitle(w.getProjectName());
         w.addPropertyChangeListener(this::wekinatorPropertyChanged);
-      //  w.getStatusUpdateCenter().addPropertyChangeListener(this::statusUpdated);
+        //  w.getStatusUpdateCenter().addPropertyChangeListener(this::statusUpdated);
     }
-    
-   /* private void statusUpdated(PropertyChangeEvent evt) {
-        StatusUpdateCenter.StatusUpdate u = (StatusUpdateCenter.StatusUpdate)evt.getNewValue();
+
+    /* private void statusUpdated(PropertyChangeEvent evt) {
+     StatusUpdateCenter.StatusUpdate u = (StatusUpdateCenter.StatusUpdate)evt.getNewValue();
         
-    }*/
-    
+     }*/
     private void wekinatorPropertyChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == Wekinator.PROP_PROJECT_NAME) {
             this.setTitle(w.getProjectName());
@@ -217,7 +220,7 @@ public class MainGUI extends javax.swing.JFrame {
             menuItemSave.setEnabled(w.hasSaveLocation());
         }
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -246,6 +249,14 @@ public class MainGUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("New project");
         setMaximumSize(new java.awt.Dimension(817, 2147483647));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -373,13 +384,13 @@ public class MainGUI extends javax.swing.JFrame {
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         String homeDir = System.getProperty("user.home");
         File f = Util.findLoadFile(WekinatorFileData.FILENAME_EXTENSION, "Wekinator file", homeDir, this);
-        try {
-            //TODO: Check this isn't same wekinator as mine! (don't load from my same place, or from something already open...)
-            Wekinator w = WekinatorSaver.loadWekinatorFromFile(f.getAbsolutePath());
-            w.getMainGUI().setVisible(true);
-        } catch (Exception ex) {
-            
-            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        if (f != null) {
+            try {
+                //TODO: Check this isn't same wekinator as mine! (don't load from my same place, or from something already open...)
+                WekiMiniRunner.getInstance().runFromFile(f.getAbsolutePath());
+            } catch (Exception ex) {
+                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
@@ -396,75 +407,82 @@ public class MainGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-       
-            WekiMiniRunner.runNewProject();
+
+        WekiMiniRunner.getInstance().runNewProject();
         //TODO: this or main?
-        
+
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
         showInputOutputConnectionWindow();
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formWindowClosing
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formWindowClosed
+
     private void showOutputTable() {
         if (outputTableWindow == null) {
             outputTableWindow = new OutputViewerTable(w);
             outputTableWindow.setVisible(true);
-            
+
             Util.callOnClosed(outputTableWindow, (Callable) () -> {
                 outputTableWindow = null;
                 return null;
-            }); 
+            });
         } else {
             outputTableWindow.toFront();
         }
     }
-    
-    private void showOSCReceiverWindow() {        
+
+    public void showOSCReceiverWindow() {
         if (oscInputStatusFrame == null) {
             oscInputStatusFrame = new OSCInputStatusFrame(w);
             oscInputStatusFrame.setVisible(true);
-            
+
             Util.callOnClosed(oscInputStatusFrame, (Callable) () -> {
                 System.out.println("WOAH HERE");
                 oscInputStatusFrame = null;
                 return null;
-            }); 
+            });
         } else {
             oscInputStatusFrame.toFront();
         }
     }
-    
-    private void showInputMonitorWindow() {        
+
+    private void showInputMonitorWindow() {
         if (inputMonitorFrame == null) {
             inputMonitorFrame = new InputMonitor(w);
             inputMonitorFrame.setVisible(true);
-            
+
             Util.callOnClosed(inputMonitorFrame, (Callable) () -> {
                 inputMonitorFrame = null;
                 return null;
-            }); 
+            });
         } else {
             inputMonitorFrame.toFront();
         }
     }
-    
-    private void showInputOutputConnectionWindow() {        
+
+    private void showInputOutputConnectionWindow() {
         if (inputOutputConnectionsWindow == null) {
             inputOutputConnectionsWindow = new InputOutputConnectionsEditor(w);
             inputOutputConnectionsWindow.setVisible(true);
-            
+
             //Problem: Won't call on button-triggered dispose...
             Util.callOnClosed(inputOutputConnectionsWindow, (Callable) () -> {
                 inputOutputConnectionsWindow = null;
                 return null;
-            }); 
+            });
         } else {
             inputOutputConnectionsWindow.toFront();
         }
     }
-    
-    
+
     /**
      * @param args the command line arguments
      */
@@ -475,37 +493,37 @@ public class MainGUI extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         /*try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        */
+         for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+         if ("Nimbus".equals(info.getName())) {
+         javax.swing.UIManager.setLookAndFeel(info.getClassName());
+         break;
+         }
+         }
+         } catch (ClassNotFoundException ex) {
+         java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+         } catch (InstantiationException ex) {
+         java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+         } catch (IllegalAccessException ex) {
+         java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+         java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+         }
+         //</editor-fold>
+         */
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                
+
                 try {
                     Wekinator w = Wekinator.TestingWekinator();
                     new MainGUI(w).setVisible(true);
                 } catch (IOException ex) {
                     Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             }
-        }); 
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -532,8 +550,8 @@ public class MainGUI extends javax.swing.JFrame {
 
     public void showExamplesViewer() {
        //String s = w.getDataManager().toString();
-       //System.out.println(s);
-       w.getDataManager().showViewer();
+        //System.out.println(s);
+        w.getDataManager().showViewer();
     }
 
     public void initializeInputsAndOutputs() {
@@ -543,5 +561,15 @@ public class MainGUI extends javax.swing.JFrame {
             modelNames[i] = paths[i].getCurrentModelName();
         }
         learningPanel1.setup(w, paths, modelNames);
+    }
+
+    @Override
+    public void setCloseable(boolean b) {
+        this.closeable = b;
+    }
+
+    @Override
+    public Wekinator getWekinator() {
+        return w;
     }
 }
