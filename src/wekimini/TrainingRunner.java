@@ -149,7 +149,7 @@ public class TrainingRunner {
                         //TODO: Check if trainable!
                         try {
                             p.buildModel(
-                                    p.getOSCOutput().getName() + "-" + trainingRound,
+                                    p.getOSCOutput().getName() + " (v" + trainingRound + ")",
                                     data.get(i));
                             numTrained++;
 
