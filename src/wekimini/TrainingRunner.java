@@ -169,6 +169,9 @@ public class TrainingRunner {
                             //TODO: test this works when error actually occurs in learner
                         }
                         setTrainingProgress(new TrainingStatus(numToTrain, numTrained, numErr, false));
+                    } else if (p.shouldResetOnEmptyData()) {
+                        p.resetOnEmptyData();
+                        w.getOutputManager().setCurrentValue(i, p.getOSCOutput().getDefaultValue());
                     }
 
                 }

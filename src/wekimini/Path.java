@@ -62,6 +62,8 @@ public class Path {
     private transient final Wekinator w;
     private final List<String> inputNames;
     private transient final LearningManager learningManager;
+
+
     
     public static enum ModelState {NOT_READY, READY_FOR_BUILDING, BUILDING, BUILT, NEEDS_REBUILDING};
     //private boolean hasData = false;
@@ -544,5 +546,17 @@ public class Path {
     
     public void setModelBuilder(ModelBuilder mb) {
         this.modelBuilder = mb;
+    }
+    
+    public boolean shouldResetOnEmptyData() {
+        if (numExamples == 0 && modelState == ModelState.NEEDS_REBUILDING) {
+            return true;
+        }
+        return false;
+    }
+    
+    public void resetOnEmptyData() {
+        model = null;
+        setModelState(ModelState.NOT_READY);
     }
 }
