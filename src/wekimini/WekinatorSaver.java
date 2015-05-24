@@ -7,6 +7,7 @@ package wekimini;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -180,6 +181,7 @@ public class WekinatorSaver {
             Path p = new Path(t, w);
             paths.add(p);
         }
+        w.getOSCSender().setHostnameAndPort(InetAddress.getByName(og.getHostname()), og.getOutputPort());
         w.getLearningManager().initializeInputsAndOutputsWithExisting(data, paths);
         // the above calls w.getDataManager().initialize(...) with data
         w.getMainGUI().initializeInputsAndOutputs();
