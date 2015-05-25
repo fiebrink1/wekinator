@@ -10,11 +10,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -126,6 +123,7 @@ public final class WekiMiniRunner {
 
     private void handleClosingLast() {
         System.out.println("Closing the last one now");
+        System.exit(0); //Too late to go back
     }
 
     public void runFromFile(String fileLocation) throws Exception {

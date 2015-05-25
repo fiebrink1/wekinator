@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import wekimini.WekiMiniRunner.Closeable;
 import wekimini.gui.InputMonitor;
 import wekimini.gui.InputOutputConnectionsEditor;
@@ -174,7 +175,11 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             @Override
             public void windowClosing(WindowEvent e) {
                 System.out.println("HERE, closeable=" + closeable);
-                finishUp();
+                int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
+                if (option == JOptionPane.YES_OPTION) {
+                    finishUp();
+                }
+                
             }
         });
 
