@@ -5,6 +5,7 @@
  */
 package wekimini;
 
+import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
@@ -29,7 +30,6 @@ import wekimini.util.Util;
 public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     //private GUIAddNewInput addNewInputGUI;
-
     private boolean isDisplayingReceiverWindow = false;
     private boolean isDisplayingAddInput = false;
     private OSCInputStatusFrame oscInputStatusFrame = null;
@@ -196,10 +196,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
         w.prepareToDie();
         w.close();
-      /*  if (WekiMiniRunner.getInstance().numRunningProjects() == 0) {
-           WekiMiniRunner.getInstance().runNewProject();
+        /*  if (WekiMiniRunner.getInstance().numRunningProjects() == 0) {
+         WekiMiniRunner.getInstance().runNewProject();
             
-        } */
+         } */
         System.out.println("MADE IT HERE");
         this.dispose();
     }
@@ -245,9 +245,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
+        menuPerformanceCheck = new javax.swing.JCheckBoxMenuItem();
         jMenu3 = new javax.swing.JMenu();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("New project");
         setMaximumSize(new java.awt.Dimension(817, 2147483647));
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -352,6 +353,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         jMenuItem3.setEnabled(false);
         jMenu2.add(jMenuItem3);
 
+        menuPerformanceCheck.setText("Performance mode view");
+        menuPerformanceCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuPerformanceCheckActionPerformed(evt);
+            }
+        });
+        jMenu2.add(menuPerformanceCheck);
+
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Actions");
@@ -425,6 +434,19 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         // TODO add your handling code here:
     }//GEN-LAST:event_formWindowClosed
+
+    private void menuPerformanceCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPerformanceCheckActionPerformed
+        learningPanel1.setPerfomanceMode(menuPerformanceCheck.isSelected());
+        if (menuPerformanceCheck.isSelected()) {
+            this.setSize(225, 225);
+            setMaximumSize(new Dimension(255, 255));
+        } else {
+            this.setSize(getPreferredSize());
+            this.setMaximumSize(new Dimension(817, 2147483647));
+        }
+        //pack();
+        //repaint();
+    }//GEN-LAST:event_menuPerformanceCheckActionPerformed
 
     public void showOutputTable() {
         if (outputTableWindow == null) {
@@ -543,6 +565,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenu menuFile;
     private javax.swing.JMenuItem menuItemSave;
     private javax.swing.JMenuItem menuItemSaveAs;
+    private javax.swing.JCheckBoxMenuItem menuPerformanceCheck;
     // End of variables declaration//GEN-END:variables
 
     void displayEditOutput(String name) {
@@ -550,7 +573,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }
 
     public void showExamplesViewer() {
-       //String s = w.getDataManager().toString();
+        //String s = w.getDataManager().toString();
         //System.out.println(s);
         w.getDataManager().showViewer();
     }
@@ -563,7 +586,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         }
         learningPanel1.setup(w, paths, modelNames);
     }
-    
+
     public void showPathEditor(Path p) {
         PathEditorFrame f = PathEditorFrame.getEditorForPath(p);
         f.setVisible(true);
