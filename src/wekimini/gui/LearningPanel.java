@@ -29,7 +29,6 @@ public class LearningPanel extends javax.swing.JPanel {
     private final ImageIcon offIcon = new ImageIcon(getClass().getResource("/wekimini/icons/yellow2.png")); // NOI18N
     private final ImageIcon problemIcon = new ImageIcon(getClass().getResource("/wekimini/icons/redx1.png")); // NOI18N
 
-    
     int lastRoundAdvertised = 0;
 
     /**
@@ -68,9 +67,9 @@ public class LearningPanel extends javax.swing.JPanel {
         if (w.getStatusUpdateCenter().getLastUpdate() == null) {
             setStatus("Ready to go! Press \"Start Recording\" above to record some examples.");
         } else {
-           setStatus(w.getStatusUpdateCenter().getLastUpdate().toString()); 
+            setStatus(w.getStatusUpdateCenter().getLastUpdate().toString());
         }
-        
+
         w.getOSCMonitor().startMonitoring();
         w.getOSCMonitor().addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -83,49 +82,55 @@ public class LearningPanel extends javax.swing.JPanel {
         updateDeleteLastRoundButton();
         setInIcon(w.getOSCMonitor().getReceiveState());
         setOutIcon(w.getOSCMonitor().isSending());
-        
+
     }
-    
+
     private void setInIcon(OSCMonitor.OSCReceiveState rstate) {
         if (rstate == OSCMonitor.OSCReceiveState.NOT_CONNECTED) {
-                indicatorOscIn.setIcon(problemIcon);
-                // System.out.println("OSC recv not connected");
-            } else if (rstate == OSCMonitor.OSCReceiveState.CONNECTED_NODATA) {
-                indicatorOscIn.setIcon(offIcon);
+            indicatorOscIn.setIcon(problemIcon);
+            indicatorOscIn.setToolTipText("OSC receiver is not listening");
+            // System.out.println("OSC recv not connected");
+        } else if (rstate == OSCMonitor.OSCReceiveState.CONNECTED_NODATA) {
+            indicatorOscIn.setIcon(offIcon);
+            indicatorOscIn.setToolTipText("Listening, but no data arriving");
 
-                System.out.println("Connected no data");
-            } else {
-                indicatorOscIn.setIcon(onIcon);
-                System.out.println("Receiving");
-            }
-    }
-    
-    private void setOutIcon(boolean isSending) {
-        if (isSending) {
-                indicatorOscOut.setIcon(onIcon);
-                System.out.println("SENDING");
-            } else {
-                indicatorOscOut.setIcon(offIcon);
+            System.out.println("Connected no data");
+        } else {
+            indicatorOscIn.setIcon(onIcon);
+            indicatorOscIn.setToolTipText("Receiving inputs");
 
-                System.out.println("NOT SENDING");
-            }
-    }
-    
-    private void oscMonitorChanged(PropertyChangeEvent evt) {
-        if (evt.getPropertyName() == OSCMonitor.PROP_RECEIVE_STATE) {
-            setInIcon((OSCMonitor.OSCReceiveState)evt.getNewValue());
-            
-        } else if (evt.getPropertyName() == OSCMonitor.PROP_ISSENDING) {
-            setOutIcon((Boolean)evt.getNewValue());
+            System.out.println("Receiving");
         }
     }
-            
+
+    private void setOutIcon(boolean isSending) {
+        if (isSending) {
+            indicatorOscOut.setIcon(onIcon);
+            indicatorOscIn.setToolTipText("Sending outputs");
+
+            System.out.println("SENDING");
+        } else {
+            indicatorOscOut.setIcon(offIcon);
+            indicatorOscIn.setToolTipText("Not sending outputs");
+
+            System.out.println("NOT SENDING");
+        }
+    }
+
+    private void oscMonitorChanged(PropertyChangeEvent evt) {
+        if (evt.getPropertyName() == OSCMonitor.PROP_RECEIVE_STATE) {
+            setInIcon((OSCMonitor.OSCReceiveState) evt.getNewValue());
+
+        } else if (evt.getPropertyName() == OSCMonitor.PROP_ISSENDING) {
+            setOutIcon((Boolean) evt.getNewValue());
+        }
+    }
 
     private void statusUpdated(PropertyChangeEvent evt) {
-        StatusUpdateCenter.StatusUpdate u = (StatusUpdateCenter.StatusUpdate)evt.getNewValue();
+        StatusUpdateCenter.StatusUpdate u = (StatusUpdateCenter.StatusUpdate) evt.getNewValue();
         setStatus(u.toString());
     }
-    
+
     private void learningCancelled() {
         setStatus("Training was cancelled.");
     }
@@ -173,7 +178,7 @@ public class LearningPanel extends javax.swing.JPanel {
         } else if (evt.getPropertyName() == LearningManager.PROP_LEARNINGSTATE) {
             setButtonsForLearningState();
             updateStatusForLearningState();
-           // System.out.println("Learning state updated: " + w.getLearningManager().getLearningState());
+            // System.out.println("Learning state updated: " + w.getLearningManager().getLearningState());
         } else if (evt.getPropertyName() == LearningManager.PROP_RUNNINGSTATE) {
             updateRunButtonAndText();
         } else if (evt.getPropertyName() == LearningManager.PROP_NUMEXAMPLESTHISROUND) {
@@ -230,7 +235,7 @@ public class LearningPanel extends javax.swing.JPanel {
     private void setButtonsForLearningState() {
         buttonRun.setEnabled(w.getLearningManager().isAbleToRun());
         buttonRecord.setEnabled(w.getLearningManager().isAbleToRecord());
-        
+
         LearningManager.LearningState ls = w.getLearningManager().getLearningState();
         if (ls == LearningManager.LearningState.NOT_READY_TO_TRAIN) {
             buttonTrain.setText("Train");
@@ -350,11 +355,22 @@ public class LearningPanel extends javax.swing.JPanel {
         indicatorOscIn.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         indicatorOscIn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/green3.png"))); // NOI18N
         indicatorOscIn.setText("OSC In");
+        indicatorOscIn.setToolTipText("Receiver is not listening");
         indicatorOscIn.setPreferredSize(new java.awt.Dimension(45, 28));
+        indicatorOscIn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                indicatorOscInMouseClicked(evt);
+            }
+        });
 
         indicatorOscOut.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         indicatorOscOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/yellow2.png"))); // NOI18N
         indicatorOscOut.setText("OSC Out");
+        indicatorOscOut.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                indicatorOscOutMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -380,9 +396,11 @@ public class LearningPanel extends javax.swing.JPanel {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(indicatorOscIn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(indicatorOscOut))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(indicatorOscOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(0, 0, 0)))
                 .addGap(0, 0, 0)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
@@ -470,7 +488,7 @@ public class LearningPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void updateButtonStates() {
-       // if ()
+        // if ()
 
         /*if (w.getLearningManager().getRecordingState() == LearningManager.RecordingState.RECORDING) {
          buttonRecord.setEnabled(true);
@@ -512,7 +530,7 @@ public class LearningPanel extends javax.swing.JPanel {
         setStatus("Recording set #" + lastRoundAdvertised + " (" + numDeleted + " examples) deleted.");
         if (numDeleted > 0) {
             updateReAddButton(lastRoundAdvertised);
-        } 
+        }
         updateDeleteLastRoundButton();
     }//GEN-LAST:event_buttonDeleteLastRecordingActionPerformed
 
@@ -520,7 +538,7 @@ public class LearningPanel extends javax.swing.JPanel {
         buttonReAddLastRecording.setText("Re-add last recording (#" + whichRound + ")");
         buttonReAddLastRecording.setEnabled(true);
     }
-    
+
     private void buttonReAddLastRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonReAddLastRecordingActionPerformed
         int num = w.getDataManager().getNumDeletedTrainingRound();
         w.getDataManager().reAddDeletedTrainingRound();
@@ -541,6 +559,14 @@ public class LearningPanel extends javax.swing.JPanel {
             w.getLearningManager().setRunningState(LearningManager.RunningState.NOT_RUNNING);
         }
     }//GEN-LAST:event_buttonRunActionPerformed
+
+    private void indicatorOscInMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_indicatorOscInMouseClicked
+        w.getMainGUI().showOSCReceiverWindow();
+    }//GEN-LAST:event_indicatorOscInMouseClicked
+
+    private void indicatorOscOutMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_indicatorOscOutMouseClicked
+        w.getMainGUI().showOutputTable();
+    }//GEN-LAST:event_indicatorOscOutMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -122,20 +122,20 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
     private void updateGUIForConnectionState(OSCReceiver.ConnectionState cs) {
         if (cs == OSCReceiver.ConnectionState.CONNECTED) {
-            labelOscStatus.setText("Connected on port " + w.getOSCReceiver().getReceivePort());
-            buttonOscListen.setText("Disconnect");
+            labelOscStatus.setText("Listening on port " + w.getOSCReceiver().getReceivePort());
+            buttonOscListen.setText("Stop listening");
             //  buttonNext.setEnabled(true);
         } else if (cs == OSCReceiver.ConnectionState.FAIL) {
-            labelOscStatus.setText("Failed to connect");
-            buttonOscListen.setText("Connect");
+            labelOscStatus.setText("Failed to start listener");
+            buttonOscListen.setText("Start listening");
             //  buttonNext.setEnabled(false);
         } else if (cs == OSCReceiver.ConnectionState.NOT_CONNECTED) {
-            labelOscStatus.setText("Not connected");
-            buttonOscListen.setText("Connect");
+            labelOscStatus.setText("Not listening");
+            buttonOscListen.setText("Start listening");
             //  buttonNext.setEnabled(false);
         } else if (cs == OSCReceiver.ConnectionState.CONNECTING) {
             labelOscStatus.setText("Connecting...");
-            buttonOscListen.setText("Disconnect");
+            buttonOscListen.setText("Stop listening");
             //  buttonNext.setEnabled(false);
         }
     }

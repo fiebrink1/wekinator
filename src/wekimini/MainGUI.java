@@ -426,7 +426,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         // TODO add your handling code here:
     }//GEN-LAST:event_formWindowClosed
 
-    private void showOutputTable() {
+    public void showOutputTable() {
         if (outputTableWindow == null) {
             outputTableWindow = new OutputViewerTable(w);
             outputTableWindow.setVisible(true);
