@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import wekimini.osc.OSCMonitor;
 import wekimini.osc.OSCReceiver;
 import wekimini.util.Util;
 
@@ -23,6 +24,8 @@ import wekimini.util.Util;
  * @author rebecca
  */
 public class Wekinator {
+    //TODO: Can make more efficient by initializing some of these on demand (e.g. gui, OSC Monitor)
+    
    // private final Settings settings;
   //  private File projectLocation;
     private final OSCReceiver oscReceiver;
@@ -36,6 +39,7 @@ public class Wekinator {
     private final StatusUpdateCenter statusUpdateCenter;
     protected EventListenerList exitListenerList = new EventListenerList();
     private ChangeEvent changeEvent = null;
+    private final OSCMonitor oscMonitor;
 
     private String projectName = "New Project";
 
@@ -140,6 +144,10 @@ public class Wekinator {
         return mainGUI;
     }
     
+    public OSCMonitor getOSCMonitor() {
+        return oscMonitor;
+    }
+    
     //private final OSCSender oscSender;
    // private final File projectDirectory; 
 
@@ -201,6 +209,8 @@ public class Wekinator {
         dataManager = new DataManager(this);
         trainingRunner = new TrainingRunner(this);
         learningManager = new LearningManager(this);
+        oscMonitor = new OSCMonitor(oscReceiver, inputManager, oscSender);
+        
         //scheduler = new Scheduler(this);
       //  communicationManager = new CommunicationManager();
     }

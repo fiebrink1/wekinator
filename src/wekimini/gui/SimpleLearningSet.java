@@ -10,6 +10,10 @@ import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
 import wekimini.OutputManager;
@@ -30,7 +34,8 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     private final ImageIcon recordIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/record6.png"));
     private final ImageIcon playIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/play1.png"));
     private final ImageIcon playIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/play2.png"));
-
+    private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture scheduledFuture;
     
     /**
      * Creates new form LearningSet1
@@ -59,11 +64,24 @@ public class SimpleLearningSet extends javax.swing.JPanel {
                 outputValuesReceived(vals);
             }
         });
+        setupThread();
     }
     
     public SimpleLearningSet(Wekinator w, Path[] ps, String[] modelNames) {
         initComponents();
         setup(w, ps, modelNames);
+        
+    }
+    
+    private void setupThread() {
+            scheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                for (LearningRow lr : pathPanels) {
+                    lr.updateValueGUI();
+                }
+            }
+        }, 500, 50, TimeUnit.MILLISECONDS);
     }
     
     //TODO: check if this setValue here is resulting in duplicate call to learning manager value change

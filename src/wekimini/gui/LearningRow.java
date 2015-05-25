@@ -65,4 +65,6 @@ public interface LearningRow {
     void setValueQuietly(double value);
     
     public Component getComponent();
+    
+    public void updateValueGUI();
 }

@@ -13,6 +13,9 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.EventListenerList;
 
 /**
  *
@@ -28,35 +31,38 @@ public class OSCSender {
     private final String DEFAULT_SEND_MESSAGE = "/wek/outputs";
     private final int DEFAULT_SEND_PORT = 6453;
     private boolean isValidState = false;
-    
+
+    protected EventListenerList listenerList = new EventListenerList();
+    private ChangeEvent changeEvent = null;
+
     public boolean hasValidHostAndPort() {
         return isValidState;
     }
-    
+
     public OSCSender() throws UnknownHostException, SocketException {
 //        hostname = InetAddress.getByName("localhost");
 //        port = DEFAULT_SEND_PORT;
         sendMessage = DEFAULT_SEND_MESSAGE;
 //        sender = new OSCPortOut(hostname, port);
     }
-    
+
     public OSCSender(InetAddress hostname, int port) throws SocketException {
         this.hostname = hostname;
         this.port = port;
         sendMessage = DEFAULT_SEND_MESSAGE;
-        sender = new OSCPortOut(hostname, port);  
+        sender = new OSCPortOut(hostname, port);
         isValidState = true;
     }
-    
+
     public void setDefaultHostAndPort() throws SocketException, UnknownHostException {
         setHostnameAndPort(InetAddress.getByName("localhost"), DEFAULT_SEND_PORT);
     }
-    
+
     public void setSendMessage(String sendMessage) throws SocketException {
         this.sendMessage = sendMessage;
         sender = new OSCPortOut(hostname, port);
     }
-    
+
     public String getSendMessage() {
         return sendMessage;
     }
@@ -75,8 +81,6 @@ public class OSCSender {
     public int getPort() {
         return port;
     }
-  
-    
 
     //Does not establish long-term sender
     //Use for connection testing
@@ -90,17 +94,17 @@ public class OSCSender {
         s.send(msg);
     }
 
-
     public void sendOutputValuesMessage(String msgName, double[] data) throws IOException {
         if (isValidState) {
             Object[] o = new Object[data.length];
             try {
                 for (int i = 0; i < data.length; i++) {
-                    o[i] = (float)data[i];
+                    o[i] = (float) data[i];
                 }
 
                 OSCMessage msg = new OSCMessage(msgName, o);
                 sender.send(msg);
+                fireSendEvent();
             } catch (IOException ex) {
                 Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
                 throw ex;
@@ -108,7 +112,27 @@ public class OSCSender {
         } else {
             System.out.println("Could not send OSC message: Invalid state");
         }
-        
+
+    }
+
+    public void addSendEventListener(ChangeListener l) {
+        listenerList.add(ChangeListener.class, l);
+    }
+
+    public void removeSendEventListener(ChangeListener l) {
+        listenerList.remove(ChangeListener.class, l);
+    }
+
+    private void fireSendEvent() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == ChangeListener.class) {
+                if (changeEvent == null) {
+                    changeEvent = new ChangeEvent(this);
+                }
+                ((ChangeListener) listeners[i + 1]).stateChanged(changeEvent);
+            }
+        }
     }
 
 }

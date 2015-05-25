@@ -3,6 +3,7 @@ package wekimini.gui;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.ImageIcon;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import wekimini.LearningManager;
@@ -10,6 +11,7 @@ import wekimini.Path;
 import wekimini.StatusUpdateCenter;
 import wekimini.TrainingRunner;
 import wekimini.Wekinator;
+import wekimini.osc.OSCMonitor;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -23,6 +25,11 @@ import wekimini.Wekinator;
 public class LearningPanel extends javax.swing.JPanel {
 
     private Wekinator w;
+    private final ImageIcon onIcon = new ImageIcon(getClass().getResource("/wekimini/icons/green3.png")); // NOI18N
+    private final ImageIcon offIcon = new ImageIcon(getClass().getResource("/wekimini/icons/yellow2.png")); // NOI18N
+    private final ImageIcon problemIcon = new ImageIcon(getClass().getResource("/wekimini/icons/redx1.png")); // NOI18N
+
+    
     int lastRoundAdvertised = 0;
 
     /**
@@ -64,11 +71,55 @@ public class LearningPanel extends javax.swing.JPanel {
            setStatus(w.getStatusUpdateCenter().getLastUpdate().toString()); 
         }
         
-        
-        
+        w.getOSCMonitor().startMonitoring();
+        w.getOSCMonitor().addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                oscMonitorChanged(evt);
+            }
+        });
         setButtonsForLearningState();
         updateDeleteLastRoundButton();
+        setInIcon(w.getOSCMonitor().getReceiveState());
+        setOutIcon(w.getOSCMonitor().isSending());
+        
     }
+    
+    private void setInIcon(OSCMonitor.OSCReceiveState rstate) {
+        if (rstate == OSCMonitor.OSCReceiveState.NOT_CONNECTED) {
+                indicatorOscIn.setIcon(problemIcon);
+                // System.out.println("OSC recv not connected");
+            } else if (rstate == OSCMonitor.OSCReceiveState.CONNECTED_NODATA) {
+                indicatorOscIn.setIcon(offIcon);
+
+                System.out.println("Connected no data");
+            } else {
+                indicatorOscIn.setIcon(onIcon);
+                System.out.println("Receiving");
+            }
+    }
+    
+    private void setOutIcon(boolean isSending) {
+        if (isSending) {
+                indicatorOscOut.setIcon(onIcon);
+                System.out.println("SENDING");
+            } else {
+                indicatorOscOut.setIcon(offIcon);
+
+                System.out.println("NOT SENDING");
+            }
+    }
+    
+    private void oscMonitorChanged(PropertyChangeEvent evt) {
+        if (evt.getPropertyName() == OSCMonitor.PROP_RECEIVE_STATE) {
+            setInIcon((OSCMonitor.OSCReceiveState)evt.getNewValue());
+            
+        } else if (evt.getPropertyName() == OSCMonitor.PROP_ISSENDING) {
+            setOutIcon((Boolean)evt.getNewValue());
+        }
+    }
+            
 
     private void statusUpdated(PropertyChangeEvent evt) {
         StatusUpdateCenter.StatusUpdate u = (StatusUpdateCenter.StatusUpdate)evt.getNewValue();
@@ -232,6 +283,9 @@ public class LearningPanel extends javax.swing.JPanel {
         jSeparator2 = new javax.swing.JSeparator();
         buttonDeleteLastRecording = new javax.swing.JButton();
         buttonReAddLastRecording = new javax.swing.JButton();
+        jSeparator4 = new javax.swing.JSeparator();
+        indicatorOscIn = new javax.swing.JLabel();
+        indicatorOscOut = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         simpleLearningSet1 = new wekimini.gui.SimpleLearningSet();
         jPanel3 = new javax.swing.JPanel();
@@ -293,25 +347,45 @@ public class LearningPanel extends javax.swing.JPanel {
             }
         });
 
+        indicatorOscIn.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+        indicatorOscIn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/green3.png"))); // NOI18N
+        indicatorOscIn.setText("OSC In");
+        indicatorOscIn.setPreferredSize(new java.awt.Dimension(45, 28));
+
+        indicatorOscOut.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+        indicatorOscOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/yellow2.png"))); // NOI18N
+        indicatorOscOut.setText("OSC Out");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(buttonDeleteLastRecording, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(buttonReAddLastRecording, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator2)
                     .addComponent(buttonRecord, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(buttonRun, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(buttonTrain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(buttonTrain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jSeparator4)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(indicatorOscIn, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(indicatorOscOut)))
                 .addContainerGap())
-            .addComponent(buttonDeleteLastRecording, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(buttonReAddLastRecording, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(indicatorOscIn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(indicatorOscOut))
+                .addGap(0, 0, 0)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
                 .addComponent(buttonRecord, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonTrain, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -319,7 +393,7 @@ public class LearningPanel extends javax.swing.JPanel {
                 .addComponent(buttonRun, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonDeleteLastRecording, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(buttonReAddLastRecording))
@@ -343,7 +417,7 @@ public class LearningPanel extends javax.swing.JPanel {
             .addComponent(jSeparator1)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(83, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
             .addComponent(simpleLearningSet1, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE)
         );
 
@@ -475,6 +549,8 @@ public class LearningPanel extends javax.swing.JPanel {
     private javax.swing.JButton buttonRecord;
     private javax.swing.JButton buttonRun;
     private javax.swing.JButton buttonTrain;
+    private javax.swing.JLabel indicatorOscIn;
+    private javax.swing.JLabel indicatorOscOut;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -482,6 +558,7 @@ public class LearningPanel extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JLabel labelStatus;
     private wekimini.gui.SimpleLearningSet simpleLearningSet1;
     // End of variables declaration//GEN-END:variables

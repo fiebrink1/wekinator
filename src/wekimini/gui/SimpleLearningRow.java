@@ -816,4 +816,9 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     public Component getComponent() {
         return this;
     }
+
+    @Override
+    public void updateValueGUI() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
