@@ -64,7 +64,8 @@ public class SimpleLearningSet extends javax.swing.JPanel {
                 outputValuesReceived(vals);
             }
         });
-        setupThread();
+        //setupThread(); //Was test for lower GUI update rate, didn't make too much difference
+            //Also interfered with user setting of GUI
     }
     
     public SimpleLearningSet(Wekinator w, Path[] ps, String[] modelNames) {
@@ -73,7 +74,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         
     }
     
-    private void setupThread() {
+   /* private void setupThread() {
             scheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
@@ -82,7 +83,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
                 }
             }
         }, 500, 50, TimeUnit.MILLISECONDS);
-    }
+    } */
     
     //TODO: check if this setValue here is resulting in duplicate call to learning manager value change
     //Assumes that ordering of outputs is never going to change; don't have to look up anything or refer to LearningManager.
@@ -103,7 +104,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         pathsPanel.removeAll();
         double[] currentValues = w.getOutputManager().getCurrentValues();
         for (int i = 0; i < paths.size(); i++) {
-            LearningRow r = new SimpleLearningRow_NoSlider(w, paths.get(i));
+            LearningRow r = new SimpleLearningRow(w, paths.get(i));
             r.setValue(currentValues[i]);
             pathPanels.add(r);
             JSeparator sep = new JSeparator();

@@ -96,7 +96,7 @@ public final class WekiMiniRunner {
                                 //It's our last great hope
                                 handleClosingLast();
                             } else {
-                             //   System.out.println("Wek closed, but not the last one");
+                                //   System.out.println("Wek closed, but not the last one");
                             }
                             wekinatorCurrentMainFrames.remove((Wekinator) e.getSource());
                         }
@@ -128,8 +128,26 @@ public final class WekiMiniRunner {
 
     public void runFromFile(String fileLocation) throws Exception {
         Wekinator w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
-        w.getMainGUI().setVisible(true);
-        w.getMainGUI().showOSCReceiverWindow();
+        MainGUI mg = w.getMainGUI();
+        mg.setVisible(true);
+        mg.showOSCReceiverWindow();
+        wekinatorCurrentMainFrames.put(w, mg);
+        mg.addWindowListener(wl);
+        w.addCloseListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                logger.log(Level.INFO, "Wekinator project closed");
+                if (wekinatorCurrentMainFrames.size() == 1) {
+                    //It's our last great hope
+                    handleClosingLast();
+                } else {
+                    //   System.out.println("Wek closed, but not the last one");
+                }
+                wekinatorCurrentMainFrames.remove((Wekinator) e.getSource());
+            }
+        });
+
     }
 
     public void registerForMacOSXEvents() {
@@ -138,7 +156,7 @@ public final class WekiMiniRunner {
         //TODO: Do we want to use flag for this to protect Windows/Linux?
         //if (MAC_OS_X) {
         try {
-                // Generate and register the OSXAdapter, passing it a hash of all the methods we wish to
+            // Generate and register the OSXAdapter, passing it a hash of all the methods we wish to
             // use as delegates for various com.apple.eawt.ApplicationListener methods
             OSXAdapter.setQuitHandler(this, getClass().getDeclaredMethod("quit", (Class[]) null));
             OSXAdapter.setAboutHandler(this, getClass().getDeclaredMethod("about", (Class[]) null));
@@ -154,9 +172,8 @@ public final class WekiMiniRunner {
 
     // General info dialog; fed to the OSXAdapter as the method to call when
     // "About OSXAdapter" is selected from the application menu
-
     public void about() {
-       // aboutBox.setLocation((int) this.getLocation().getX() + 22, (int) this.getLocation().getY() + 22);
+        // aboutBox.setLocation((int) this.getLocation().getX() + 22, (int) this.getLocation().getY() + 22);
         // aboutBox.setVisible(true);
     }
 
