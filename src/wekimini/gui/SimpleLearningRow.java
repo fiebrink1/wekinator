@@ -486,7 +486,6 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
         buttonEditLearner.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         buttonEditLearner.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/pencil2.png"))); // NOI18N
         buttonEditLearner.setToolTipText("Edit this model");
-        buttonEditLearner.setEnabled(false);
         buttonEditLearner.setMaximumSize(new java.awt.Dimension(30, 30));
         buttonEditLearner.setMinimumSize(new java.awt.Dimension(30, 30));
         buttonEditLearner.setPreferredSize(new java.awt.Dimension(30, 30));

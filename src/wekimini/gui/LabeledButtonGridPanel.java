@@ -19,6 +19,7 @@ import wekimini.util.Util;
  * @author rebecca
  */
 public class LabeledButtonGridPanel extends JPanel {
+
     private boolean isMouseDragging = false;
     private boolean isDraggingTurningOn = false;
     private boolean isClickTurningOn = false;
@@ -34,32 +35,31 @@ public class LabeledButtonGridPanel extends JPanel {
     private final JLabel[] colNames;
     private boolean[][] originallyEnabled;
     private final JPanel pAllButtons;
-    
-    
+
     private final boolean[] columnToggles;
     private final boolean[] rowToggles;
 
-    
     public LabeledButtonGridPanel(String[] rowLabels, String[] colLabels, boolean[][] enabled) {
         super();
-        
+
+        //Instantiate objects
         toggles = new MousableToggleButton[rowLabels.length][colLabels.length];
         columnToggles = new boolean[colLabels.length];
         rowToggles = new boolean[rowLabels.length];
-        
         originallyEnabled = new boolean[rowLabels.length][colLabels.length];
-        
+
+        //Rows setup
         rowNames = new JLabel[rowLabels.length];
         int maxRowWidth = 0;
-        for (int i = 0; i < rowLabels.length; i++) { 
+        for (int i = 0; i < rowLabels.length; i++) {
             final int t = i;
             JLabel l = new JLabel(rowLabels[i]);
             l.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                toggleRow(t);
-            }
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    toggleRow(t);
+                }
             });
-            
+
             l.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
             l.setVerticalAlignment(javax.swing.SwingConstants.CENTER);
             if (maxRowWidth < l.getPreferredSize().width) {
@@ -68,27 +68,29 @@ public class LabeledButtonGridPanel extends JPanel {
             rowNames[i] = l;
         }
         int leftColumnWidth = maxRowWidth + 10;
+
+        //Columns setup
         colNames = new VerticalLabel[colLabels.length];
         int maxColHeight = 0;
-        for (int i = 0; i < colLabels.length; i++) { 
+        for (int i = 0; i < colLabels.length; i++) {
             final int t = i;
             JLabel l = new VerticalLabel();
             l.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                toggleColumn(t);
-            }
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    toggleColumn(t);
+                }
             });
             l.setText(colLabels[i]);
-            System.out.println("p is " + l.getPreferredSize());
             if (maxColHeight < l.getPreferredSize().width) {
                 maxColHeight = l.getPreferredSize().width;
             }
             colNames[i] = l;
         }
         int topRowHeight = maxColHeight + 10;
- 
+
+        //Other sizing
         int buttonPanelWidth = colLabels.length * buttonWidth;
-        int buttonPanelHeight = rowLabels.length * buttonHeight + 2;
+        int buttonPanelHeight = rowLabels.length * buttonHeight + 5;
 
         JPanel pTop = new JPanel();
         JPanel pBottom = new JPanel();
@@ -104,48 +106,47 @@ public class LabeledButtonGridPanel extends JPanel {
         pTop.setLayout(new javax.swing.BoxLayout(pTop, javax.swing.BoxLayout.X_AXIS));
 
         setAllSizes(leftColumnWidth, topRowHeight, pTopLeft);
-        pTopLeft.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        //pTopLeft.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         pTop.add(pTopLeft);
 
-        setAllSizes(buttonPanelWidth, topRowHeight, pTopRight); 
-        pTopRight.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        setAllSizes(buttonPanelWidth, topRowHeight, pTopRight);
+       // pTopRight.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         pTopRight.setLayout(new javax.swing.BoxLayout(pTopRight, javax.swing.BoxLayout.X_AXIS));
 
-        
-       for (int i = 0; i < colNames.length; i++) {
+        for (int i = 0; i < colNames.length; i++) {
             setAllSizes(buttonWidth, topRowHeight, colNames[i]);
             colNames[i].setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
             colNames[i].setVerticalAlignment(javax.swing.SwingConstants.CENTER);
-             pTopRight.add(colNames[i]);     
-        } 
+            pTopRight.add(colNames[i]);
+        }
 
         pTop.add(pTopRight);
         add(pTop);
 
-        pBottom.setPreferredSize(new java.awt.Dimension(leftColumnWidth + buttonPanelWidth, buttonPanelHeight));
+        pBottom.setPreferredSize(new java.awt.Dimension(leftColumnWidth + buttonPanelWidth, buttonPanelHeight + 10));
         pBottom.setLayout(new javax.swing.BoxLayout(pBottom, javax.swing.BoxLayout.X_AXIS));
 
-        setAllSizes(leftColumnWidth, buttonPanelHeight, pBottomLeft);
-        pBottomLeft.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        setAllSizes(leftColumnWidth, buttonPanelHeight + 10, pBottomLeft);
+        //pBottomLeft.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         pBottomLeft.setLayout(new javax.swing.BoxLayout(pBottomLeft, javax.swing.BoxLayout.Y_AXIS));
 
-        for (int i = 0; i < rowNames.length; i++) { 
+        for (int i = 0; i < rowNames.length; i++) {
             setAllSizes(leftColumnWidth, buttonHeight, rowNames[i]);
             pBottomLeft.add(rowNames[i]);
         }
         pBottom.add(pBottomLeft);
 
-        setAllSizes(buttonPanelWidth, buttonPanelHeight, pBottomRight);
-        pBottomRight.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        setAllSizes(buttonPanelWidth, buttonPanelHeight + 10, pBottomRight);
+       // pBottomRight.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         pBottomRight.setLayout(new javax.swing.BoxLayout(pBottomRight, javax.swing.BoxLayout.Y_AXIS));
-        
-        
+
         pAllButtons = new JPanel();
         setAllSizes(buttonPanelWidth, buttonPanelHeight, pAllButtons);
         pAllButtons.setLayout(new GridLayout(rowLabels.length, colLabels.length));
+
         
-        for (int i = 0; i < colLabels.length; i++) {
             for (int j = 0; j < rowLabels.length; j++) {
+                for (int i = 0; i < colLabels.length; i++) {
                 int x = i;
                 int y = j;
                 MousableToggleButton b = new MousableToggleButton(i, j);
@@ -176,35 +177,36 @@ public class LabeledButtonGridPanel extends JPanel {
                     }
                 }
                 );
-                originallyEnabled[i][j] = enabled[i][j];
-                b.setSelected(enabled[i][j]);
-                toggles[i][j] = b;
+                originallyEnabled[j][i] = enabled[j][i];
+                b.setSelected(enabled[j][i]);
+                toggles[j][i] = b; //j = row, i= col
                 pAllButtons.add(b);
-            }   
+            }
         }
         pBottomRight.add(pAllButtons);
         pBottom.add(pBottomRight);
 
         add(pBottom);
     }
-    
+
     private void mouseExit(int x, int y) {
         if (isMouseDragging) {
             if (lastPressStartX == x && lastPressStartY == y) {
-                toggles[x][y].setSelected(isDraggingTurningOn);
+                toggles[y][x].setSelected(isDraggingTurningOn);
             }
         }
     }
 
     private void mouseEnter(int x, int y) {
         if (isMouseDragging) {
-            toggles[x][y].setSelected(isDraggingTurningOn);
+            toggles[y][x].setSelected(isDraggingTurningOn);
         }
     }
 
     private void mousePress(int x, int y) {
+        System.out.println("X, y: " + x + "," + y);
         isMouseDragging = true;
-        boolean selected = toggles[x][y].isSelected();
+        boolean selected = toggles[y][x].isSelected();
         isDraggingTurningOn = !selected;
         lastPressStartX = x;
         lastPressStartY = y;
@@ -238,7 +240,7 @@ public class LabeledButtonGridPanel extends JPanel {
 
             for (int i = startx; i <= endx; i++) {
                 for (int j = starty; j <= endy; j++) {
-                    toggles[i][j].setSelected(isClickTurningOn);
+                    toggles[j][i].setSelected(isClickTurningOn);
                 }
             }
             pAllButtons.repaint(); //needed to keep visual button state in sync for some reason
@@ -246,19 +248,20 @@ public class LabeledButtonGridPanel extends JPanel {
             lastClickLocationX = -1;
             lastClickLocationY = -1;
         } else {
-            isClickTurningOn = toggles[x][y].isSelected();
+            isClickTurningOn = toggles[y][x].isSelected();
             lastClickLocationX = x;
             lastClickLocationY = y;
         }
     }
     
-    
+          
+
     private static void setAllSizes(int width, int height, JComponent j) {
         j.setPreferredSize(new Dimension(width, height));
         j.setMaximumSize(new Dimension(width, height));
         j.setMinimumSize(new Dimension(width, height));
     }
-    
+
     public boolean checkValid(boolean[][] c) {
         for (int output = 0; output < c[0].length; output++) {
             int sum = 0;
@@ -274,6 +277,15 @@ public class LabeledButtonGridPanel extends JPanel {
         }
         return true;
     }
+
+    public void setAll(boolean s) {
+       for (int i = 0; i < toggles.length; i++) {
+            for (int j = 0; j < toggles[0].length; j++) {
+                toggles[i][j].setSelected(s);
+            }
+        } 
+       pAllButtons.repaint();
+    }
     
     public boolean[][] getConnectionsFromForm() {
         boolean[][] c = new boolean[toggles.length][toggles[0].length];
@@ -284,7 +296,7 @@ public class LabeledButtonGridPanel extends JPanel {
         }
         return c;
     }
-    
+
     public void revert() {
         for (int i = 0; i < toggles.length; i++) {
             for (int j = 0; j < toggles[0].length; j++) {
@@ -293,7 +305,7 @@ public class LabeledButtonGridPanel extends JPanel {
         }
         pAllButtons.repaint();
     }
-    
+
     private void toggleColumn(int which) {
         System.out.println("Toggle " + which);
         for (int j = 0; j < toggles.length; j++) {
@@ -302,7 +314,7 @@ public class LabeledButtonGridPanel extends JPanel {
         columnToggles[which] = !columnToggles[which];
         pAllButtons.repaint();
     }
-    
+
     private void toggleRow(int which) {
         System.out.println("Toggle " + which);
         for (int i = 0; i < toggles[0].length; i++) {
@@ -311,18 +323,17 @@ public class LabeledButtonGridPanel extends JPanel {
         rowToggles[which] = !rowToggles[which];
         pAllButtons.repaint();
     }
-    
-    
+
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 //new Tester2().setVisible(true);
-                String[] r = {"ababcabcabcabcabcc", "def", "ghi", "abc", "def", "ghi"};
+                String[] r = {"abc", "def", "ghi"};
                 String[] c = {"1111111111111111111", "2", "3", "1", "2", "3"};
                 JFrame j = new JFrame();
-                
+
                 boolean[][] enabled = new boolean[r.length][c.length];
-                
+
                 LabeledButtonGridPanel p = new LabeledButtonGridPanel(r, c, enabled);
                 JScrollPane sp = new JScrollPane();
                 sp.setViewportView(p);
@@ -331,5 +342,5 @@ public class LabeledButtonGridPanel extends JPanel {
             }
         });
     }
-    
+
 }
