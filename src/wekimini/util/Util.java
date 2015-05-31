@@ -296,4 +296,14 @@ public class Util {
         DecimalFormat dFormat = new DecimalFormat(sb.toString());
         return dFormat.format(d);
     }
+    
+    public static boolean isMac() {
+        String osName = System.getProperty("os.name").toLowerCase();
+        return osName.startsWith("mac os x");
+    }
+    
+    public static boolean isWindows() {
+      return System.getProperty("os.name").startsWith("Windows");   
+    }
+        
 }

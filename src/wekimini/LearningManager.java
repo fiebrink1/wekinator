@@ -564,6 +564,7 @@ public class LearningManager {
     }
 
     private void outputGroupChanged(PropertyChangeEvent evt) {
+        logger.log(Level.WARNING, "ERROR: LearningManager doesn't know how to handle this output group change");
         System.out.println("ERROR: LearningManager doesn't know how to handle this output group change");
     }
 

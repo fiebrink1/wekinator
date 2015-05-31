@@ -40,6 +40,7 @@ public class Wekinator {
     protected EventListenerList exitListenerList = new EventListenerList();
     private ChangeEvent changeEvent = null;
     private final OSCMonitor oscMonitor;
+    private final LoggingManager loggingManager;
 
     private String projectName = "New Project";
 
@@ -78,6 +79,7 @@ public class Wekinator {
     }
 
     public void close() {
+        prepareToDie();
         fireCloseEvent(); 
     }
     
@@ -192,11 +194,18 @@ public class Wekinator {
     }
     
     public Wekinator() throws IOException {
-        registerForMacOSXEvents();
+        /*if (Util.isMac()) {
+            registerForMacOSXEvents();
+        } */
+        
+        
        // projectLocation = projectDir;
        // createProjectFiles(projectLocation);
         //settings = new Settings(projectName);
        // settings.writeToFile(projectLocation);
+        loggingManager = new LoggingManager(this);
+        loggingManager.startLoggingToFile();
+        
         statusUpdateCenter = new StatusUpdateCenter(this);
 
         oscReceiver = new OSCReceiver();
@@ -234,7 +243,7 @@ public class Wekinator {
         new File(logs).mkdirs();
     } */
     
-    public void registerForMacOSXEvents() {
+    public final void registerForMacOSXEvents() {
        System.setProperty("apple.laf.useScreenMenuBar", "true");
 
        //TODO: Do we want to use flag for this to protect Windows/Linux?
@@ -269,14 +278,14 @@ public class Wekinator {
 
     // General quit handler; fed to the OSXAdapter as the method to call when a system quit event occurs
     // A quit event is triggered by Cmd-Q, selecting Quit from the application or Dock menu, or logging out
-    public boolean quit() {
+    /*public boolean quit() {
        // int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
        // if (option == JOptionPane.YES_OPTION) {
        //     exit();
        // }
        // return (option == JOptionPane.YES_OPTION);
         return true;
-    }
+    } */
     
         /**
      * Get the value of projectName
@@ -362,7 +371,9 @@ public class Wekinator {
     }
     
     public void prepareToDie() {
+        logger.log(Level.INFO, "Preparing to die");
         oscReceiver.stopListening();
+        loggingManager.prepareToDie(); //Problem: getting here with X but not with close handler
     }
 
 }

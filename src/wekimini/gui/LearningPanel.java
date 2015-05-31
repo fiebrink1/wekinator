@@ -132,7 +132,9 @@ public class LearningPanel extends javax.swing.JPanel {
     }
 
     private void learningCancelled() {
-        setStatus("Training was cancelled.");
+        //setStatus("Training was cancelled.");
+        w.getStatusUpdateCenter().update(this, "Training was cancelled");
+
     }
 
     private void trainerUpdated(TrainingRunner.TrainingStatus newStatus) {
@@ -142,7 +144,8 @@ public class LearningPanel extends javax.swing.JPanel {
         if (newStatus.isWasCancelled()) {
             s += " Training cancelled.";
         }
-        setStatus(s);
+      //  setStatus(s);
+        w.getStatusUpdateCenter().update(this, s);
     }
 
     private void updateDeleteLastRoundButton() {
@@ -182,7 +185,9 @@ public class LearningPanel extends javax.swing.JPanel {
         } else if (evt.getPropertyName() == LearningManager.PROP_RUNNINGSTATE) {
             updateRunButtonAndText();
         } else if (evt.getPropertyName() == LearningManager.PROP_NUMEXAMPLESTHISROUND) {
-            setStatus(w.getLearningManager().getNumExamplesThisRound() + " new examples recorded");
+            //TODO: Update somewhere else
+            w.getStatusUpdateCenter().update(this, w.getLearningManager().getNumExamplesThisRound() + " new examples recorded");
+            //setStatus();
         } else if (evt.getPropertyName() == LearningManager.PROP_ABLE_TO_RECORD) {
             setButtonsForLearningState();
         } else if (evt.getPropertyName() == LearningManager.PROP_ABLE_TO_RUN) {
@@ -195,12 +200,15 @@ public class LearningPanel extends javax.swing.JPanel {
         if (w.getLearningManager().getRunningState() == LearningManager.RunningState.RUNNING) {
             buttonRun.setText("Stop running");
             buttonRun.setForeground(Color.RED);
-            setStatus("Running.");
+          //  setStatus("Running.");
+            w.getStatusUpdateCenter().update(this, "Running");
         } else {
             buttonRun.setText("Run");
             buttonRun.setForeground(Color.BLACK);
 
-            setStatus("Stopped running.");
+           // setStatus("Stopped running.");
+            w.getStatusUpdateCenter().update(this, "Stopped running");
+
         }
     }
 
@@ -211,24 +219,29 @@ public class LearningPanel extends javax.swing.JPanel {
     private void updateStatusForLearningState() {
         LearningManager.LearningState ls = w.getLearningManager().getLearningState();
         if (ls == LearningManager.LearningState.NOT_READY_TO_TRAIN) {
-            setStatus("Ready to go! Press \"Start Recording\" above to record some examples.");
+           // setStatus("Ready to go! Press \"Start Recording\" above to record some examples.");
+            w.getStatusUpdateCenter().update(this, "Ready to go! Press \"Start Recording\" above to record some examples.");
+
         } else if (ls == LearningManager.LearningState.TRAINING) {
-            setStatus("Training...");
+            //setStatus("Training...");
+            w.getStatusUpdateCenter().update(this, "Training...");
+
         } else if (ls == LearningManager.LearningState.DONE_TRAINING) {
             if (w.getTrainingRunner().wasCancelled()) {
-                setStatus("Training was cancelled.");
+                 w.getStatusUpdateCenter().update(this, "Training was cancelled.");
             } else if (w.getTrainingRunner().errorEncountered()) {
-                setStatus("Error(s) encountered during training.");
+                 w.getStatusUpdateCenter().update(this, "Error(s) encountered during training.");
             } else {
                 int n = w.getLearningManager().numRunnableModels();
                 if (n > 0) {
-                    setStatus("Training completed. Press \"Run\" to run trained models.");
+                     w.getStatusUpdateCenter().update(this, "Training completed. Press \"Run\" to run trained models.");
                 } else {
-                    setStatus("No models are ready to run. Record data and/or train.");
+                     w.getStatusUpdateCenter().update(this, "No models are ready to run. Record data and/or train.");
                 }
             }
         } else if (ls == LearningManager.LearningState.READY_TO_TRAIN) {
-            setStatus("Examples recorded. Press \"Train\" to build models from data.");
+            w.getStatusUpdateCenter().update(this, w.getLearningManager().getNumExamplesThisRound() + " new examples recorded");
+           // setStatus("Examples recorded. Press \"Train\" to build models from data.");
         }
     }
 
@@ -507,10 +520,12 @@ public class LearningPanel extends javax.swing.JPanel {
 
         if (w.getLearningManager().getRecordingState() != LearningManager.RecordingState.RECORDING) {
             w.getLearningManager().startRecording();
-            setStatus("Recording - waiting for inputs to arrive");
+             w.getStatusUpdateCenter().update(this, "Recording - waiting for inputs to arrive");
         } else {
             w.getLearningManager().stopRecording();
-            setStatus("Examples recorded. Press \"Train\" to build models from data.");
+           // setStatus("Examples recorded. Press \"Train\" to build models from data.");
+            w.getStatusUpdateCenter().update(this, w.getLearningManager().getNumExamplesThisRound() + " new examples recorded");
+
         }
     }//GEN-LAST:event_buttonRecordActionPerformed
 
@@ -525,7 +540,7 @@ public class LearningPanel extends javax.swing.JPanel {
     private void buttonDeleteLastRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLastRecordingActionPerformed
         w.getDataManager().deleteTrainingRound(lastRoundAdvertised);
         int numDeleted = w.getDataManager().getNumDeletedTrainingRound();
-        setStatus("Recording set #" + lastRoundAdvertised + " (" + numDeleted + " examples) deleted.");
+         w.getStatusUpdateCenter().update(this, "Recording set #" + lastRoundAdvertised + " (" + numDeleted + " examples) deleted.");
         if (numDeleted > 0) {
             updateReAddButton(lastRoundAdvertised);
         }
@@ -540,7 +555,7 @@ public class LearningPanel extends javax.swing.JPanel {
     private void buttonReAddLastRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonReAddLastRecordingActionPerformed
         int num = w.getDataManager().getNumDeletedTrainingRound();
         w.getDataManager().reAddDeletedTrainingRound();
-        setStatus("Last recording set restored: undeleted " + num + " examples");
+        w.getStatusUpdateCenter().update(this, "Last recording set restored: undeleted " + num + " examples");
         updateDeleteLastRoundButton();
         buttonReAddLastRecording.setText("Re-add last recording");
         buttonReAddLastRecording.setEnabled(false);

@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import wekimini.gui.InitInputOutputFrame;
+import wekimini.util.Util;
 
 /**
  *
@@ -37,7 +38,9 @@ public final class WekiMiniRunner {
     }
 
     public WekiMiniRunner() {
-        registerForMacOSXEvents();
+        if (Util.isMac()) {
+            registerForMacOSXEvents();
+        }
 
         wl = new WindowAdapter() {
             @Override
@@ -201,7 +204,13 @@ public final class WekiMiniRunner {
 
     public void quitWithoutPrompt() {
         //This is where we save logs, shutdown any OSC if needed, etc.
-
+        //Notice that each Wekinator must do its own shutdown of OSC, logging, etc. separately (this is universal shutdown)
+        if (! wekinatorCurrentMainFrames.isEmpty()) {
+            for (Wekinator w : wekinatorCurrentMainFrames.keySet()) {
+                w.close();
+            } 
+        }
+        
         System.exit(0);
     }
 

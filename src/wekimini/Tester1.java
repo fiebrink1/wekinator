@@ -112,7 +112,11 @@ public class Tester1 extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Tester1().setVisible(true);
+               // new Tester1().setVisible(true);
+                 String property = "java.io.tmpdir";
+
+    String tempDir = System.getProperty(property);
+    System.out.println("OS current temporary directory is " + tempDir);
             }
         });
     }

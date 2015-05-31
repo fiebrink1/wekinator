@@ -1161,7 +1161,6 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             try {
                 //TODO: Check this isn't same wekinator as mine! (don't load from my same place, or from something already open...)
                 WekiMiniRunner.getInstance().runFromFile(f.getAbsolutePath());
-                w.prepareToDie();
                 w.close();
                 this.dispose();
             } catch (Exception ex) {
