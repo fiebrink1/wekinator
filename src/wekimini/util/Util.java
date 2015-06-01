@@ -10,11 +10,15 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -305,5 +309,44 @@ public class Util {
     public static boolean isWindows() {
       return System.getProperty("os.name").startsWith("Windows");   
     }
+    
+    /*public static String getVersion() {
+       // String vFile = getClass().getResource("/wekimini/"
+        System.getPrope
+    } */
+    
+   /* public static void writePropertyTest() throws FileNotFoundException, IOException {
+        //InputStream pinput = getClass().getResourceAsStream("/wekimini/util/properties.txt");
+        Util u = new Util();
+        URL p = u.getClass().getResource("/wekimini/util/properties.txt");
+        File f = new File(p.getFile());
+        FileOutputStream out = new FileOutputStream(f);
+        Properties defaultProps = new Properties();
+        defaultProps.put("TestProp1", "TestValue");
+        defaultProps.store(out, "Comments");
+    }/*
+   /* 
+     public static void readPropertyTest() throws FileNotFoundException, IOException  {
+        //InputStream pinput = getClass().getResourceAsStream("/wekimini/util/properties.txt");
+        Util u = new Util();
+        URL p = u.getClass().getResource("/wekimini/util/properties.txt");
+        File f = new File(p.getFile());
+         
+       Properties defaultProps = new Properties();
+       FileInputStream in = new FileInputStream(f);
+       defaultProps.load(in);
+       in.close();
+        
+         System.out.println("Propreties are:");
+         System.out.println(defaultProps.toString());
+         
+         /*Util u = new Util();
+        URL p = u.getClass().getResource("/wekimini/util/properties.txt");
+        File f = new File(p.getFile());
+        FileOutputStream out = new FileOutputStream(f);
+        Properties defaultProps = new Properties();
+        defaultProps.put("TestProp1", "TestValue");
+        defaultProps.store(out, "Comments"); */
+    //} */
         
 }

@@ -8,8 +8,11 @@ package wekimini;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -23,7 +26,7 @@ import wekimini.util.Util;
  * @author rebecca
  */
 public final class WekiMiniRunner {
-
+    private static final String versionString = "31 May 2015 19:03";
     private static final Logger logger = Logger.getLogger(WekiMiniRunner.class.getName());
     // private static final List<Wekinator> runningWekinators = new LinkedList<>();
     private static WekiMiniRunner ref = null; //Singleton
@@ -36,12 +39,47 @@ public final class WekiMiniRunner {
         }
         return ref;
     }
+    
+    private void loadProperties() throws FileNotFoundException, IOException {
+        //See https://docs.oracle.com/javase/tutorial/essential/environment/properties.html
+        
+        // create and load default properties
+        Properties defaultProps = new Properties();
+        FileInputStream in = new FileInputStream("defaultProperties");
+        defaultProps.load(in);
+        in.close();
+
+        // create application properties with default
+        Properties applicationProps = new Properties(defaultProps);
+
+        // now load properties 
+        // from last invocation
+        in = new FileInputStream("appProperties");
+        applicationProps.load(in);
+        in.close();
+    }
 
     public WekiMiniRunner() {
         if (Util.isMac()) {
             registerForMacOSXEvents();
         }
-
+        LoggingManager.setupUniversalLog(versionString);
+        
+        /*try {
+            //loadProperties();
+            Util.writePropertyTest();
+        } catch (IOException ex) {
+            System.out.println("NOT WORKING");
+            Logger.getLogger(WekiMiniRunner.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        try {
+            Util.readPropertyTest();
+        } catch (IOException ex) {
+            System.out.println("READ NOT WORKING");
+            Logger.getLogger(WekiMiniRunner.class.getName()).log(Level.SEVERE, null, ex);
+        } */
+        
         wl = new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
@@ -210,6 +248,7 @@ public final class WekiMiniRunner {
                 w.close();
             } 
         }
+        LoggingManager.closeUniversalLogs();
         
         System.exit(0);
     }

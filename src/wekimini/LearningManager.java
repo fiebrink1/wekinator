@@ -28,7 +28,7 @@ import wekimini.util.WeakListenerSupport;
  *
  * @author rebecca
  */
-public class LearningManager {
+public class LearningManager {    
 
     public static enum LearningState {
 
