@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
+import wekimini.Path.PathAndDataLoader;
 import wekimini.osc.OSCInputGroup;
 import wekimini.osc.OSCOutputGroup;
 import wekimini.util.Util;
@@ -162,8 +163,12 @@ public class WekinatorSaver {
         String pathsDirectory = projectDir + modelsAppend + File.separator;
         List<Path> paths = new ArrayList<>(howMany);
         for (int i = 0; i < howMany; i++) {
-            String filename = pathsDirectory + "model" + i + ".xml";
-            Path ptemp = Path.readFromFile(filename); //TODO: take care of this within Path instead
+            String filename = pathsDirectory + "model" + i + ".xml"; //TODO: need better solution here.
+            PathAndDataLoader.tryLoadFromFile(filename);
+            Path ptemp = PathAndDataLoader.getLoadedPath();
+            //Don't do anything with loaded data, since we're loading all paths for a project here.
+            PathAndDataLoader.discardLoaded();
+           // Path ptemp = Path.readFromFile(filename); //TODO: take care of this within Path instead
             paths.add(ptemp); //still need to initialise with wekinator, etc. later
         }
         return paths;

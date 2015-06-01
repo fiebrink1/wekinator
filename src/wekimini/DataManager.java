@@ -47,7 +47,8 @@ public class DataManager {
 
     private final Wekinator w;
     //  private int[] outputInstanceCounts;
-    private Filter[] outputFilters;
+    private Filter[] outputFilters; //Filters to produce instances for training & classification
+    private Filter[] savingFilters; //Filters to produce instances for saving on a per-output basis
     private boolean isInitialized = false;
     private OSCOutputGroup outputGroup;
     private String[] inputNames;
@@ -177,7 +178,7 @@ public class DataManager {
         System.arraycopy(indices, 0, myIndices, 0, indices.length);
         inputListsForOutputs.set(outputIndex, myIndices);
         try {
-            updateFilterForOutput(outputIndex);
+            updateFiltersForOutput(outputIndex);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Could not update input selection filter", ex);
         }
@@ -263,16 +264,18 @@ public class DataManager {
     }
 
     public int getMaxRecordingRound() {
-       //Attribute a = allInstances.attribute(recordingRoundIndex);
-       AttributeStats a = allInstances.attributeStats(recordingRoundIndex);
-       return (int) a.numericStats.max;  
+        //Attribute a = allInstances.attribute(recordingRoundIndex);
+        AttributeStats a = allInstances.attributeStats(recordingRoundIndex);
+        return (int) a.numericStats.max;
     }
-    
+
     private void updateNextId() {
         AttributeStats a = allInstances.attributeStats(idIndex);
-        nextID = (int)a.numericStats.max + 1;
+        nextID = (int) a.numericStats.max + 1;
     }
+
     //Problem: gets called when loading from file...
+
     private void updateOutputCounts() {
         int[] examplesSum = new int[numOutputs];
 
@@ -284,7 +287,7 @@ public class DataManager {
                     }
                 }
             }
-            
+
             for (int j = 0; j < numOutputs; j++) {
                 setNumExamplesPerOutput(j, examplesSum[j]);
             }
@@ -300,7 +303,7 @@ public class DataManager {
     public boolean isOutputClassifier(int outputIndex) {
         return (outputGroup.getOutput(outputIndex) instanceof OSCClassificationOutput);
     }
-    
+
     public void initialize(String[] inputNames, OSCOutputGroup outputGroup) {
         numOutputs = outputGroup.getNumOutputs();
         numExamplesPerOutput = new int[numOutputs];
@@ -383,56 +386,102 @@ public class DataManager {
             inputListsForOutputs.add(inputList);
         }
     }
-    
-    private void updateFilterForOutput(int output) throws Exception {
+
+    private void updateFiltersForOutput(int output) throws Exception {
         Reorder r = new Reorder();
+        Reorder s = new Reorder();
+        
         int[] inputList = inputListsForOutputs.get(output); //includes only "selected" inputs
         int[] reordering = new int[inputList.length + 1];
-
+        int[] saving = new int[numMetaData + inputList.length + 1];
+        
+        //Metadata
+        for (int f = 0; f < numMetaData; f++) {
+            saving[f] = f;
+        }
+        
         //Features
         for (int f = 0; f < inputList.length; f++) {
             reordering[f] = inputList[f] + numMetaData;
+            saving[f + numMetaData] = inputList[f] + numMetaData;
         }
 
         //The actual "class" output
         reordering[reordering.length - 1] = numMetaData + numInputs + output;
+        saving[saving.length - 1] = numMetaData + numInputs + output;
+        
         r.setAttributeIndicesArray(reordering);
         r.setInputFormat(dummyInstances);
+        
+        s.setAttributeIndicesArray(saving);
+        s.setInputFormat(dummyInstances);
 
         outputFilters[output] = r;
+        savingFilters[output] = s;
     }
 
     private void setupFilters() throws Exception {
         outputFilters = new Reorder[numOutputs];
+        savingFilters = new Reorder[numOutputs];
+        
         for (int i = 0; i < numOutputs; i++) {
             Reorder r = new Reorder();
+            Reorder s = new Reorder();
+            
             int[] inputList = inputListsForOutputs.get(i);
             int[] reordering = new int[inputList.length + 1];
+            int[] saving = new int[numMetaData + inputList.length + 1];
+            
+            //Metadata
+            for (int f = 0; f < numMetaData; f++) {
+                saving[f] = f;
+            }
 
             //Features
             for (int f = 0; f < inputList.length; f++) {
                 reordering[f] = inputList[f] + numMetaData;
+                saving[f + numMetaData] = inputList[f] + numMetaData;
             }
 
             //The actual "class" output
             reordering[reordering.length - 1] = numMetaData + numInputs + i;
+            saving[saving.length - 1] = numMetaData + numInputs + i;
+            
             r.setAttributeIndicesArray(reordering);
             r.setInputFormat(dummyInstances);
+            
+            s.setAttributeIndicesArray(saving);
+            s.setInputFormat(dummyInstances);
+            
 
             outputFilters[i] = r;
+            savingFilters[i] = s;
         }
     }
 
-    public Instances getTrainingDataForOutput(int which) {
-        try {
-            Instances in = Filter.useFilter(allInstances, outputFilters[which]);
-            in.setClassIndex(in.numAttributes() - 1);
-            in.deleteWithMissingClass();
-            return in;
-        } catch (Exception ex) {
-            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+    public Instances getTrainingDataForOutput(int which, boolean includeMetadataFields) {
+        if (!includeMetadataFields) {
+            try {
+                Instances in = Filter.useFilter(allInstances, outputFilters[which]);
+                in.setClassIndex(in.numAttributes() - 1);
+                in.deleteWithMissingClass();
+                return in;
+            } catch (Exception ex) {
+                Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
+        } else {
+            try {
+                Instances in = Filter.useFilter(allInstances, savingFilters[which]);
+                in.setClassIndex(in.numAttributes() - 1);
+                in.deleteWithMissingClass();
+                return in;
+            } catch (Exception ex) {
+                Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
         }
+
     }
 
     //Untested
@@ -655,13 +704,13 @@ public class DataManager {
             return Double.NaN;
         }
         return i.value(numMetaData + numInputs + whichOutput);
-       /* if (i.attribute(numMetaData + numInputs + whichOutput).isNumeric()) {
-            return i.value(numMetaData + numInputs + whichOutput);
-        } else {
-            //What we need to do if we allow classes that don't start at 1:
-            //return Double.parseDouble(i.attribute(numMetaData + numInputs + whichOutput).value((int)i.value(numMetaData + numInputs + whichOutput)));
-            return i.value(numMetaData + numInputs + whichOutput) + 1;
-        } */
+        /* if (i.attribute(numMetaData + numInputs + whichOutput).isNumeric()) {
+         return i.value(numMetaData + numInputs + whichOutput);
+         } else {
+         //What we need to do if we allow classes that don't start at 1:
+         //return Double.parseDouble(i.attribute(numMetaData + numInputs + whichOutput).value((int)i.value(numMetaData + numInputs + whichOutput)));
+         return i.value(numMetaData + numInputs + whichOutput) + 1;
+         } */
     }
 
     public double getInputValue(int index, int whichInput) {

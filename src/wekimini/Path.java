@@ -10,6 +10,7 @@ import wekimini.learning.Model;
 import com.thoughtworks.xstream.XStream;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,11 +25,14 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.converters.ArffLoader;
+import weka.core.converters.ArffSaver;
 import wekimini.osc.OSCOutput;
 
 /**
  * Listens for appropriate changes at InputManager, sends inputs to Model,
  * notifies output that new value is ready
+ *
  * @author rebecca
  */
 public class Path {
@@ -41,7 +45,7 @@ public class Path {
     //ModelBuilder (takes care of holding data where applicable, as well as training)
     //Model (trained; computes output from inputs)
     //*** State: Valid, Invalid (i.e., outputs & inputs all exist and are of OK type)
-    
+
     //How to deal with scheduling?
     //If output group triggered on 1st model, then will always go when 1st model is computed
     //and others are still in process!
@@ -50,11 +54,9 @@ public class Path {
     //and use this to make list of all outputs that are affected
     //Then do computation for all
     //Then tell output manager to trigger for list of outputs all at once
-    
     protected transient EventListenerList listenerList = new EventListenerList();
     private transient ChangeEvent changeEvent = null;
 
-    
     private transient Model model = null;
     private ModelBuilder modelBuilder = null;
     private final OSCOutput output;
@@ -63,11 +65,12 @@ public class Path {
     private final List<String> inputNames;
     private transient final LearningManager learningManager;
 
+    public static enum ModelState {
 
-    
-    public static enum ModelState {NOT_READY, READY_FOR_BUILDING, BUILDING, BUILT, NEEDS_REBUILDING};
+        NOT_READY, READY_FOR_BUILDING, BUILDING, BUILT, NEEDS_REBUILDING
+    };
     //private boolean hasData = false;
-    
+
     private ModelState modelState = ModelState.NOT_READY;
 
     public static final String PROP_MODELSTATE = "modelState";
@@ -92,11 +95,11 @@ public class Path {
     private ModelState lastModelState = ModelState.NOT_READY;
     private boolean trainingCompleted = false;
     private static final Logger logger = Logger.getLogger(Path.class.getName());
-    
+
     public String[] getSelectedInputs() {
         return inputNames.toArray(new String[0]);
     }
-    
+
     //Important: Ordering of inputs is meaningless here!!!
     //We assume that the trained model (if any) wants inputs in the same order as they're
     //coming into our system. If we want to be able to load models from other projects where
@@ -104,26 +107,26 @@ public class Path {
     public void setSelectedInputs(String[] s) {
         String[] oldInputNames = inputNames.toArray(new String[0]);
         boolean hasChanged = (s.length != inputNames.size());
-        
+
         inputNames.clear();
-        for (int i= 0; i < s.length; i++) {
+        for (int i = 0; i < s.length; i++) {
             inputNames.add(s[i]);
-            
+
             if (!hasChanged && !s[i].equals(oldInputNames[i])) {
                 hasChanged = true;
             }
         }
-        
+
         if (hasChanged) {
             fireInputSelectionChanged();
         }
-        
+
         if (hasChanged && modelState == ModelState.BUILT) {
             setModelState(ModelState.NEEDS_REBUILDING);
         }
-        
+
     }
-    
+
     //Copy from existing path
     public Path(Path p, Wekinator w) {
         //Must include all non-transient fields here.
@@ -143,16 +146,15 @@ public class Path {
         this.runEnabled = p.runEnabled;
         this.trainingCompleted = p.trainingCompleted;
         this.w = w; //Can't set from p: w is transient
-        
+
         //TODO: Add listener for output manager - change in output names will be important
         //TODO: Also add listener for input name changes! This will screw us up...
-        
     }
-    
+
     public boolean usesInput(String input) {
         return (inputNames.contains(input)); //Not the most efficient, but who cares right now
     }
-    
+
     public Path(OSCOutput output, String[] inputs, Wekinator w) {
         this.w = w;
         this.learningManager = w.getLearningManager();
@@ -168,36 +170,34 @@ public class Path {
         this.modelBuilder = output.getDefaultModelBuilder();
         setCurrentModelName(output.getName());
         //updateSchedulerRegistration();
-        
-       /* w.getInputManager().addInputGroupChangeListener(new InputManager.InputGroupChangeListener() {
 
-            @Override
-            public void inputGroupChange(InputManager.InputGroupChangeEvent evt) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        });
-        
-        w.getOutputManager().addOutputGroupChangeListener(new OutputManager.OutputGroupChangeListener() {
+        /* w.getInputManager().addInputGroupChangeListener(new InputManager.InputGroupChangeListener() {
 
-            @Override
-            public void outputGroupChange(OutputManager.OutputGroupChangeEvent evt) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        }); */
+         @Override
+         public void inputGroupChange(InputManager.InputGroupChangeEvent evt) {
+         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+         }
+         });
         
+         w.getOutputManager().addOutputGroupChangeListener(new OutputManager.OutputGroupChangeListener() {
+
+         @Override
+         public void outputGroupChange(OutputManager.OutputGroupChangeEvent evt) {
+         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+         }
+         }); */
         //TODO: Add listener for output manager - change in output names will be important
         //TODO: Also add listener for input name changes! This will screw us up...
-        
         //Best approach is to make in/out edit GUI make people be explicit about re-ordering / renaming, and then pass those on as specific event types.
     }
-    
+
     //Learning manager must call this
     //TODO: Have to be very careful here if model is in process of training... disallow certain operations!
     public void notifyExamplesChanged(int numExamples) {
         setNumExamples(numExamples);
        // this.numExamples = numExamples;
-       // hasData = (numExamples > 0);
-        
+        // hasData = (numExamples > 0);
+
         if (modelState == ModelState.NOT_READY) {
             if (numExamples > 0) {
                 setModelState(ModelState.READY_FOR_BUILDING);
@@ -210,25 +210,25 @@ public class Path {
             setModelState(ModelState.NEEDS_REBUILDING);
         }
     }
-    
+
     public void buildModel(String name, Instances i) throws Exception {
         lastModel = model;
         lastModelState = modelState;
         trainingCompleted = false;
-        
+
         try {
-        setModelState(ModelState.BUILDING);
-        if (modelBuilder instanceof LearningModelBuilder) {
-            ((LearningModelBuilder)modelBuilder).setTrainingExamples(i);
-        }
-        model = modelBuilder.build(name);
-        setCurrentModelName(name);
-        setModelState(ModelState.BUILT);
+            setModelState(ModelState.BUILDING);
+            if (modelBuilder instanceof LearningModelBuilder) {
+                ((LearningModelBuilder) modelBuilder).setTrainingExamples(i);
+            }
+            model = modelBuilder.build(name);
+            setCurrentModelName(name);
+            setModelState(ModelState.BUILT);
         } catch (Exception ex) {
             model = lastModel;
             setModelState(lastModelState);
             logger.log(Level.SEVERE, "Exception encountered in building : {0}", ex.getMessage());
-            logger.log(Level.INFO   , "Setting model state to {0}", lastModelState);
+            logger.log(Level.INFO, "Setting model state to {0}", lastModelState);
             trainingCompleted = true;
             throw ex;
         }
@@ -241,10 +241,9 @@ public class Path {
      *
      * @param outputValue new value of outputValue
      */
-   /* public void setOutputValue(double outputValue) {
-        this.outputValue = outputValue;
-    } */
-
+    /* public void setOutputValue(double outputValue) {
+     this.outputValue = outputValue;
+     } */
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     /**
@@ -265,10 +264,9 @@ public class Path {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
-    
     public double compute(Instance instance) throws Exception {
         //Do something
-       // float[] inputs = {1.0f, 1.0f};
+        // float[] inputs = {1.0f, 1.0f};
         //setOutputValue(model.computeOutput(inputs));
         return model.computeOutput(instance);
     }
@@ -276,11 +274,11 @@ public class Path {
     public boolean canCompute() {
         return (modelState != ModelState.NOT_READY && modelState != ModelState.READY_FOR_BUILDING);
     }
-    
+
     public Model getModel() {
         return model;
     }
-    
+
     public ModelBuilder getModelBuilder() {
         return modelBuilder;
     }
@@ -292,12 +290,12 @@ public class Path {
     public OSCOutput getOSCOutput() {
         return output;
     }
-           
+
     public void prepareToDie() {
         //TODO: Remove all of my listeners
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     /**
      * Get the value of modelState
      *
@@ -318,7 +316,7 @@ public class Path {
         this.modelState = modelState;
         propertyChangeSupport.firePropertyChange(PROP_MODELSTATE, oldModelState, modelState);
     }
-    
+
     public void addInputSelectionChangeListener(ChangeListener l) {
         listenerList.add(ChangeListener.class, l);
     }
@@ -326,21 +324,20 @@ public class Path {
     public void removeInputSelectionChangeListener(ChangeListener l) {
         listenerList.remove(ChangeListener.class, l);
     }
-    
+
     private void fireInputSelectionChanged() {
         Object[] listeners = listenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -=2 ) {
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == ChangeListener.class) {
                 if (changeEvent == null) {
                     changeEvent = new ChangeEvent(this);
                 }
-                ((ChangeListener)listeners[i+1]).stateChanged(changeEvent);
+                ((ChangeListener) listeners[i + 1]).stateChanged(changeEvent);
             }
         }
     }
-    
 
-        /**
+    /**
      * Get the value of recordEnabled
      *
      * @return the value of recordEnabled
@@ -359,8 +356,8 @@ public class Path {
         this.recordEnabled = recordEnabled;
         propertyChangeSupport.firePropertyChange(PROP_RECORDENABLED, oldRecordEnabled, recordEnabled);
     }
-    
-        /**
+
+    /**
      * Get the value of runEnabled
      *
      * @return the value of runEnabled
@@ -379,8 +376,8 @@ public class Path {
         this.runEnabled = runEnabled;
         propertyChangeSupport.firePropertyChange(PROP_RUNENABLED, oldRunEnabled, runEnabled);
     }
-    
-        /**
+
+    /**
      * Get the value of numExamples
      *
      * @return the value of numExamples
@@ -399,7 +396,7 @@ public class Path {
         this.numExamples = numExamples;
         propertyChangeSupport.firePropertyChange(PROP_NUMEXAMPLES, oldNumExamples, numExamples);
     }
-    
+
     /**
      * Get the value of currentModelName
      *
@@ -419,14 +416,14 @@ public class Path {
         this.currentModelName = currentModelName;
         propertyChangeSupport.firePropertyChange(PROP_CURRENTMODELNAME, oldCurrentModelName, currentModelName);
     }
-    
+
     public void trainingWasInterrupted() {
-        if (! trainingCompleted) {
+        if (!trainingCompleted) {
             setModel(lastModel); //Make sure this isn't a problem when null
             setModelState(lastModelState);
         }
     }
-    
+
     public boolean canBuild() {
         if (modelState == ModelState.NOT_READY) {
             return false;
@@ -436,23 +433,21 @@ public class Path {
         }
         return true;
     }
-    
-     /*   @Override
-    public String toString() {
-        return Util.toXMLString(this, "Path", Path.class);
-    } */
-    
 
+    /*   @Override
+     public String toString() {
+     return Util.toXMLString(this, "Path", Path.class);
+     } */
     public void writeToFile(String filename) throws IOException {
         boolean success = false;
         IOException myEx = new IOException();
-        
+
         FileOutputStream outstream = null;
         ObjectOutputStream objout = null;
         try {
             outstream = new FileOutputStream(filename);
             objout = new ObjectOutputStream(outstream);
-        
+
             XStream xstream = new XStream();
             xstream.alias("Path", Path.class);
             String xml = xstream.toXML(this);
@@ -464,7 +459,20 @@ public class Path {
             } else {
                 objout.writeObject("null");
             }
+            Instances i = w.getLearningManager().getTrainingDataForPath(this, true);
+                    //w.getLearningManager().getTrainingDataForPath(this);
             
+            
+            if (i != null) {
+                objout.writeObject("instances");
+                ArffSaver saver = new ArffSaver();
+                Instances temp = new Instances(i);
+                saver.setDestination(objout);
+                saver.setInstances(temp);
+                saver.writeBatch();
+            } else {
+                objout.writeObject("null");
+            }
             success = true;
         } catch (IOException ex) {
             success = false;
@@ -485,78 +493,141 @@ public class Path {
         if (!success) {
             throw myEx;
         }
-        
+
        // os.writeObject(xml);
-       // os.writeObject(wmodel);
-       //Util.writeToXMLFile(this, "Path", Path.class, filename);
+        // os.writeObject(wmodel);
+        //Util.writeToXMLFile(this, "Path", Path.class, filename);
     }
-    
-    public static Path readFromFile(String filename) throws Exception {
-        //Danger: Will not have any transient fields initialised!
-        Path p = null;
-        FileInputStream instream = null;
-        ObjectInputStream objin = null;
-        Object o = null;
-        boolean err = false;
-        Exception myEx = new Exception();
-        try {
-            instream = new FileInputStream(filename);
-            objin = new ObjectInputStream(instream);
-           // o = objin.readObject();
-            
-            String xml = (String)objin.readObject();
-             XStream xstream = new XStream();
-             xstream.alias("Path", Path.class);
-             p = (Path) xstream.fromXML(xml);
-             //Is p state correct here? yes
-             String modelClassName = (String) objin.readObject();
-             Model m= null;
-             if (! modelClassName.equals("null")) {
-                Class c = Class.forName(modelClassName);
-                m = ModelLoader.loadModel(c, objin);
-             }
-            
-             p.setModel(m);
-        } catch (Exception ex) {
-            myEx = ex;
-            err = true;
-            logger.log(Level.WARNING, "Error encountered in reading from file: {0}", ex.getMessage());
-        } finally {
-            try {
-                if (objin != null) {
-                    objin.close();
-                }
-                if (instream != null) {
-                    instream.close();
-                }
-            } catch (IOException ex) {
-                logger.log(Level.WARNING, "Encountered error closing file objects");
-            }
 
-        }
-        if (err) {
-            throw myEx;
-        }
-        return p;
+    /* public static Path readFromFile(String filename) throws Exception {
+        
         
 
-        //Path g = (Path) Util.readFromXMLFile("Path", Path.class, filename);
-        //return g;
-    }
-    
+     //Path g = (Path) Util.readFromXMLFile("Path", Path.class, filename);
+     //return g;
+     } */
     public void setModelBuilder(ModelBuilder mb) {
         this.modelBuilder = mb;
     }
-    
+
     public boolean shouldResetOnEmptyData() {
         if (numExamples == 0 && modelState == ModelState.NEEDS_REBUILDING) {
             return true;
         }
         return false;
     }
-    
+
     public void resetOnEmptyData() {
         model = null;
         setModelState(ModelState.NOT_READY);
     }
+
+    public static class PathAndDataLoader {
+
+        private static boolean isLoaded = false;
+        private static Path loadedPath = null;
+        private static Instances loadedInstances = null;
+
+        public static void tryLoadFromFile(String filename) throws Exception {
+            //Danger: Will not have any transient fields initialised!
+            Path p = null;
+            FileInputStream instream = null;
+            ObjectInputStream objin = null;
+            Object o = null;
+            boolean err = false;
+            Exception myEx = new Exception();
+            try {
+                instream = new FileInputStream(filename);
+                objin = new ObjectInputStream(instream);
+           // o = objin.readObject();
+
+                String xml = (String) objin.readObject();
+                XStream xstream = new XStream();
+                xstream.alias("Path", Path.class);
+                p = (Path) xstream.fromXML(xml);
+                //Is p state correct here? yes
+                String modelClassName = (String) objin.readObject();
+                Model m = null;
+                if (!modelClassName.equals("null")) {
+                    Class c = Class.forName(modelClassName);
+                    m = ModelLoader.loadModel(c, objin);
+                }
+                p.setModel(m);
+                
+                try {
+                    String instancesString = (String) objin.readObject();
+                    if (!instancesString.equals("null")) {
+                        ArffLoader al = new ArffLoader();
+                        al.setSource(objin);
+                        loadedInstances = al.getDataSet();
+                    } else {
+                        loadedInstances = null;
+                    }
+                } catch (Exception ex) {
+                    //Could not load instances: not necessarily a problem
+                    logger.log(Level.WARNING, "No instances found in path file; not loading them");
+                    loadedInstances = null;
+                }
+            } catch (Exception ex) {
+                myEx = ex;
+                err = true;
+                logger.log(Level.WARNING, "Error encountered in reading from file: {0}", ex.getMessage());
+            } finally {
+                try {
+                    if (objin != null) {
+                        objin.close();
+                    }
+                    if (instream != null) {
+                        instream.close();
+                    }
+                } catch (IOException ex) {
+                    logger.log(Level.WARNING, "Encountered error closing file objects");
+                }
+
+            }
+            if (err) {
+                throw myEx;
+            }
+            loadedPath = p;
+            isLoaded = true;
+        }
+    
+
+        public static Path getLoadedPath() {
+            if (isLoaded) {
+               return loadedPath;
+            } else {
+                logger.log(Level.WARNING, "Attempt to load path but isLoaded is false");
+                return null;
+            }
+        }
+        
+        //TODO: getSelectedInputs() isn't ordered yet
+        public static String[] getOrderedInputNamesForLoadedPath() {
+            if (isLoaded) {
+                return loadedPath.getSelectedInputs();
+            } else {
+                logger.log(Level.WARNING, "Attempt to load input names but isLoaded is false");
+                return null;
+            }
+        }
+
+        //Returns null if no instances could be loaded
+        public static Instances getLoadedInstances() {
+            if (isLoaded) {
+                return loadedInstances;
+                //If no instances, fail gracefully?
+            } else {
+                logger.log(Level.WARNING, "Attempt to load instances but isLoaded is false");
+                return null;
+            }
+        }
+
+        public static void discardLoaded() {
+            loadedPath = null;
+            loadedInstances = null;
+            isLoaded = false;
+        }
+    }
+
 }

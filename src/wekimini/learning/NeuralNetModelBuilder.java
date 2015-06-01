@@ -19,7 +19,7 @@ import wekimini.osc.OSCOutput;
 public class NeuralNetModelBuilder implements LearningModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
-    
+        
     
     public NeuralNetModelBuilder() {
         classifier = new MultilayerPerceptron();

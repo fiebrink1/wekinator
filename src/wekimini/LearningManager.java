@@ -591,12 +591,16 @@ public class LearningManager {
         setLearningState(LearningState.NOT_READY_TO_TRAIN);
     }
 
+    public Instances getTrainingDataForPath(Path p, boolean includeMetadataFields) {
+        return w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p), includeMetadataFields);
+    }
+    
     public void buildAll() {
         //Launch training threads & get notified ...        
         synchronized (this) {
             List<Instances> data = new ArrayList<>(paths.size());
             for (Path p : paths) {
-                data.add(w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p)));
+                data.add(w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p), false));
             }
             w.getTrainingRunner().buildAll(paths, data, trainingWorkerListener);
             setLearningState(LearningState.TRAINING);
