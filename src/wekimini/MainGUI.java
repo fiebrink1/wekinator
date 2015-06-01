@@ -473,7 +473,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             oscInputStatusFrame.setVisible(true);
 
             Util.callOnClosed(oscInputStatusFrame, (Callable) () -> {
-                System.out.println("WOAH HERE");
+               // System.out.println("WOAH HERE");
                 oscInputStatusFrame = null;
                 return null;
             });
