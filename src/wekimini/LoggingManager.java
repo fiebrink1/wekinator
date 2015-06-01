@@ -44,7 +44,6 @@ public class LoggingManager {
             f.mkdirs();
             return logParent + "/wekinator_main.log";
         } else if (Util.isWindows()) {
-            //TODO: Test on windows
             String try1 = System.getenv("APPDATA");
             if (try1 != null) {
                 return System.getenv("APPDATA") + File.separator + "wekinator_main.log";
@@ -64,8 +63,7 @@ public class LoggingManager {
             f.mkdirs();
             return logParent + "/wekinator%g.log";
         } else if (Util.isWindows()) {
-            //TODO: Test on windows
-            String try1 = System.getenv("APPDATA");
+            String try1 = System.getenv("APPDATA"); //Most likely user directory\AppData\Roaming\ on win7
             if (try1 != null) {
                 return System.getenv("APPDATA") + File.separator + "wekinator%g.log";
             } else {
