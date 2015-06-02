@@ -5,6 +5,7 @@
  */
 package wekimini.learning;
 
+import javax.swing.JPanel;
 import wekimini.osc.OSCOutput;
 
 /**
@@ -29,5 +30,7 @@ public interface ModelBuilder {
     public ModelBuilder fromTemplate(ModelBuilder template);
     
     public String getPrettyName();
+
+    public ModelBuilderEditorPanel getEditorPanel();
 
 }

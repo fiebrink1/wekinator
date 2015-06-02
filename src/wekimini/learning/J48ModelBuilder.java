@@ -5,6 +5,7 @@
  */
 package wekimini.learning;
 
+import java.awt.Component;
 import weka.classifiers.Classifier;
 import weka.classifiers.trees.J48;
 import weka.core.Instances;
@@ -54,5 +55,10 @@ public class J48ModelBuilder implements LearningModelBuilder {
     @Override
     public String getPrettyName() {
         return "Decision Tree (J48)";
+    }
+
+    @Override
+    public J48EditorPanel getEditorPanel() {
+        return new J48EditorPanel(this);
     }
 }

@@ -5,8 +5,10 @@
  */
 package wekimini.learning;
 
+import java.awt.Component;
 import weka.classifiers.Classifier;
 import weka.classifiers.meta.AdaBoostM1;
+import weka.classifiers.trees.DecisionStump;
 import weka.classifiers.trees.J48;
 import weka.core.Instances;
 import wekimini.LearningModelBuilder;
@@ -23,12 +25,43 @@ public class AdaboostModelBuilder implements LearningModelBuilder {
     private transient Classifier classifier = null;
     private static final int defaultNumRounds = 100;
     private static final boolean isBaseTree = true;
+    private int numRounds = defaultNumRounds;
+    public static enum BaseLearner {DECISION_TREE, DECISION_STUMP};
+    private BaseLearner baseLearnerType = BaseLearner.DECISION_TREE;
     
     public AdaboostModelBuilder() {
         classifier = new AdaBoostM1();
        // ((AdaBoostM1) classifier).setClassifier(new DecisionStump());
         ((AdaBoostM1)classifier).setClassifier(new J48());
         ((AdaBoostM1) classifier).setNumIterations(defaultNumRounds);
+    }
+    
+    public AdaboostModelBuilder (int numRounds, BaseLearner t) {
+        classifier = new AdaBoostM1();
+        setNumRounds(numRounds);
+        setBaseLearnerType(t);
+    }
+    
+    public int getNumRounds() {
+        return numRounds;
+    }
+    
+    public BaseLearner getBaseLearnerType() {
+        return baseLearnerType;
+    }
+    
+    public void setNumRounds(int n) {
+        numRounds = n;
+        ((AdaBoostM1) classifier).setNumIterations(numRounds);
+    }
+    
+    public void setBaseLearnerType(BaseLearner t) {
+        baseLearnerType = t;
+        if (t == BaseLearner.DECISION_STUMP) {
+            ((AdaBoostM1)classifier).setClassifier(new DecisionStump());
+        } else {
+            ((AdaBoostM1)classifier).setClassifier(new J48());
+        }
     }
     
     @Override
@@ -52,7 +85,8 @@ public class AdaboostModelBuilder implements LearningModelBuilder {
     
     public AdaboostModelBuilder fromTemplate(ModelBuilder b) {
         if (b instanceof AdaboostModelBuilder) {
-            return new AdaboostModelBuilder();
+            AdaboostModelBuilder a = (AdaboostModelBuilder)b;
+            return new AdaboostModelBuilder(a.getNumRounds(), a.getBaseLearnerType());
         }
         return null;
     }
@@ -60,5 +94,10 @@ public class AdaboostModelBuilder implements LearningModelBuilder {
     @Override
     public String getPrettyName() {
         return "AdaBoost.M1";
+    }
+
+    @Override
+    public ModelBuilderEditorPanel getEditorPanel() {
+        return new AdaBoostEditorPanel(this);
     }
 }

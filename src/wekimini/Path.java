@@ -151,7 +151,7 @@ public class Path {
         //TODO: Also add listener for input name changes! This will screw us up...
     }
 
-    public boolean usesInput(String input) {
+    public boolean isUsingInput(String input) {
         return (inputNames.contains(input)); //Not the most efficient, but who cares right now
     }
 

@@ -5,6 +5,7 @@
  */
 package wekimini.learning;
 
+import java.awt.Component;
 import weka.core.Instances;
 import wekimini.LearningModelBuilder;
 import wekimini.osc.OSCOutput;
@@ -49,6 +50,11 @@ public class SimpleModelBuilder implements LearningModelBuilder {
     @Override
     public String getPrettyName() {
         return "Simple Model (testing only)";
+    }
+
+    @Override
+    public ModelBuilderEditorPanel getEditorPanel() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

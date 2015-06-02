@@ -5,11 +5,13 @@
  */
 package wekimini.learning;
 
+import java.awt.Component;
 import weka.classifiers.Classifier;
 import weka.classifiers.lazy.IBk;
 import weka.core.Instances;
 import wekimini.LearningModelBuilder;
 import wekimini.WekaModelBuilderHelper;
+import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 
 /**
@@ -20,11 +22,28 @@ public class KNNModelBuilder implements LearningModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
     private static final int defaultNumNeighbors = 10;
+    private int numNeighbors = defaultNumNeighbors;
     
     public KNNModelBuilder() {
         classifier = new IBk();
         ((IBk)classifier).setKNN(defaultNumNeighbors);
     }
+    
+    public KNNModelBuilder(int numNeighbors) {
+        this.numNeighbors = numNeighbors;
+        classifier = new IBk();
+        ((IBk)classifier).setKNN(numNeighbors);
+    }
+    
+    public int getNumNeighbors() {
+        return numNeighbors;
+    }
+    
+    public void setNumNeighbors(int n) {
+        numNeighbors = n;
+        ((IBk)classifier).setKNN(numNeighbors);
+    }
+            
     
     @Override
     public void setTrainingExamples(Instances examples) {
@@ -42,12 +61,12 @@ public class KNNModelBuilder implements LearningModelBuilder {
 
     @Override
     public boolean isCompatible(OSCOutput o) {
-        return true;
+        return (o instanceof OSCClassificationOutput);
     }
     
     public KNNModelBuilder fromTemplate(ModelBuilder b) {
         if (b instanceof KNNModelBuilder) {
-            return new KNNModelBuilder();
+            return new KNNModelBuilder(((KNNModelBuilder)b).getNumNeighbors());
         }
         return null;
     }
@@ -55,5 +74,10 @@ public class KNNModelBuilder implements LearningModelBuilder {
     @Override
     public String getPrettyName() {
         return "k-Nearest Neighbor";
+    }
+
+    @Override
+    public KNNEditorPanel getEditorPanel() {
+        return new KNNEditorPanel(this);
     }
 }

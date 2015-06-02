@@ -282,7 +282,7 @@ public class LearningManager {
         for (int input = 0; input < b.length; input++) {
             for (int output = 0; output < b[0].length; output++) {
                 Path p = paths.get(output);
-                b[input][output] = p.usesInput(w.getInputManager().getInputNames()[input]);
+                b[input][output] = p.isUsingInput(w.getInputManager().getInputNames()[input]);
             }
         }
         return b;

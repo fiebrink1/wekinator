@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.gui;
+package wekimini.gui.path;
 
 import java.awt.CardLayout;
 import java.util.logging.Logger;
@@ -16,7 +16,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class OutputConfigRow extends javax.swing.JPanel {
+public class OutputEditRow extends javax.swing.JPanel {
 
     private static int CLASSIFICATION_INDEX = 0;
     private static int REGRESSION_INDEX = 1;
@@ -25,17 +25,17 @@ public class OutputConfigRow extends javax.swing.JPanel {
     private static int HARD_LIMIT_INDEX = 1;
     private static int SOFT_LIMIT_INDEX = 0;
     private int number = 1;
-    private static final Logger logger = Logger.getLogger(OutputConfigRow.class.getName());
+    private static final Logger logger = Logger.getLogger(OutputEditRow.class.getName());
 
     /**
      * Creates new form GUIOSCOutputPanel
      */
-    public OutputConfigRow() {
+    public OutputEditRow() {
         initComponents();
         // finishSetup();
     }
 
-    public OutputConfigRow(int num, String name) {
+    public OutputEditRow(int num, String name) {
         initComponents();
         setNum(num);
         comboType.setSelectedIndex(REGRESSION_INDEX);
@@ -45,10 +45,10 @@ public class OutputConfigRow extends javax.swing.JPanel {
         // finishSetup();
     }
 
-    public OutputConfigRow(int num, String name, OSCOutput currentOutput) {
+    public OutputEditRow(OSCOutput currentOutput) {
         initComponents();
-        setNum(num);
-        textName.setText(name);
+       // setNum(num);
+        textName.setText(currentOutput.getName());
         if (currentOutput != null) {
             setValuesFromCurrent(currentOutput);
         } else {
@@ -93,7 +93,7 @@ public class OutputConfigRow extends javax.swing.JPanel {
         labelName.setText(number + ". Name:");
     }
 
-   /* public OutputConfigRow(OSCOutput o) {
+  /*  public OutputEditRow(OSCOutput o) {
         initComponents();
         initFromOSCOutput(o);
         // finishSetup();
@@ -179,7 +179,8 @@ public class OutputConfigRow extends javax.swing.JPanel {
      public String getOutputName() {
      return name;
      } */
-   /* private void initFromOSCOutput(OSCOutput o) {
+    
+    private void initFromOSCOutput(OSCOutput o) {
         textName.setText(o.getName());
         if (o instanceof OSCNumericOutput) {
             setToRegression();
@@ -202,7 +203,7 @@ public class OutputConfigRow extends javax.swing.JPanel {
         } else {
             System.out.println("Error: Unknown output type " + o.getClass().getName());
         }
-    } */
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -225,7 +226,6 @@ public class OutputConfigRow extends javax.swing.JPanel {
         jLabel7 = new javax.swing.JLabel();
         textNumClasses = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
         cardRegression = new javax.swing.JPanel();
         jPanel26 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
@@ -242,7 +242,7 @@ public class OutputConfigRow extends javax.swing.JPanel {
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
-        labelName.setText("1. Name:");
+        labelName.setText("Name:");
 
         textName.setText("Max1");
         textName.addActionListener(new java.awt.event.ActionListener() {
@@ -257,7 +257,7 @@ public class OutputConfigRow extends javax.swing.JPanel {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(labelName, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelName)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(textName)
                 .addContainerGap())
@@ -330,9 +330,7 @@ public class OutputConfigRow extends javax.swing.JPanel {
             }
         });
 
-        jLabel8.setText("classes, using");
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "k-Nearest Neighbor", "AdaBoost", "Support Vector Machine", "Decision Tree" }));
+        jLabel8.setText("classes");
 
         javax.swing.GroupLayout cardClassificationLayout = new javax.swing.GroupLayout(cardClassification);
         cardClassification.setLayout(cardClassificationLayout);
@@ -345,17 +343,14 @@ public class OutputConfigRow extends javax.swing.JPanel {
                 .addComponent(textNumClasses, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox1, 0, 1, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap(207, Short.MAX_VALUE))
         );
         cardClassificationLayout.setVerticalGroup(
             cardClassificationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cardClassificationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel7)
                 .addComponent(textNumClasses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jLabel8)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jLabel8))
         );
 
         panelClassificationRegression.add(cardClassification, "cardClassification");
@@ -478,7 +473,6 @@ public class OutputConfigRow extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(0, 0, 0)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelClassificationRegression, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -581,7 +575,7 @@ public class OutputConfigRow extends javax.swing.JPanel {
             public void run() {
                 JFrame f = new JFrame();
                 f.setSize(200, 200);
-                OutputConfigRow p = new OutputConfigRow();
+                OutputEditRow p = new OutputEditRow();
                 f.add(p);
                 f.setVisible(true);
 
@@ -596,7 +590,6 @@ public class OutputConfigRow extends javax.swing.JPanel {
     private javax.swing.JComboBox comboLimitType;
     private javax.swing.JComboBox comboRegressionType;
     private javax.swing.JComboBox comboType;
-    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;

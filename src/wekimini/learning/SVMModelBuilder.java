@@ -5,6 +5,7 @@
  */
 package wekimini.learning;
 
+import java.awt.Component;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.functions.supportVector.Kernel;
@@ -13,6 +14,7 @@ import weka.classifiers.functions.supportVector.RBFKernel;
 import weka.core.Instances;
 import wekimini.LearningModelBuilder;
 import wekimini.WekaModelBuilderHelper;
+import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 
 /**
@@ -20,61 +22,127 @@ import wekimini.osc.OSCOutput;
  * @author rebecca
  */
 public class SVMModelBuilder implements LearningModelBuilder {
+
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
-    
-    
+
+    public static enum KernelType {
+
+        LINEAR, RBF, POLYNOMIAL
+    };
+    private KernelType kernelType;
+    private double polyExponent = 2.0;
+    private boolean polyUseLowerOrder = false;
+    private double rbfGamma = 0.;
+    private double complexity = 1.0;
+
     public SVMModelBuilder() {
         classifier = new SMO();
+        kernelType = KernelType.POLYNOMIAL;
         PolyKernel k = new PolyKernel();
-        k.setExponent(2.0);
-        ((SMO)classifier).setKernel(k);
+        k.setExponent(polyExponent);
+        ((SMO) classifier).setKernel(k);
     }
-    
+
+    public double getPolyExponent() {
+        return polyExponent;
+    }
+
+    public KernelType getKernelType() {
+        return kernelType;
+    }
+
+    public double getRbfGamma() {
+        return rbfGamma;
+    }
+
+    public void setPolyExponent(double e) {
+        this.polyExponent = e;
+        PolyKernel k = new PolyKernel();
+        k.setExponent(polyExponent);
+        k.setUseLowerOrder(polyUseLowerOrder);
+        ((SMO) classifier).setKernel(k);
+    }
+
+    public boolean getPolyUseLowerOrder() {
+        return polyUseLowerOrder;
+    }
+
+    public void setPolyUseLowerOrder(boolean u) {
+        polyUseLowerOrder = u;
+        PolyKernel k = new PolyKernel();
+        k.setExponent(polyExponent);
+        k.setUseLowerOrder(polyUseLowerOrder);
+        ((SMO) classifier).setKernel(k);
+    }
+
+    public double getComplexity() {
+        return complexity;
+    }
+
+    private void updateClassifier() {
+        if (kernelType == KernelType.LINEAR) {
+            Kernel k = getClassifier().getKernel();
+            if (k instanceof PolyKernel && ((PolyKernel) k).getExponent() == 1.0) {
+                //do nothing;  already got it
+            } else {
+                PolyKernel nk = new PolyKernel();
+                nk.setExponent(1.0);
+                ((SMO) classifier).setKernel(nk);
+            }
+        } else if (kernelType == KernelType.POLYNOMIAL) {
+            Kernel k = getClassifier().getKernel();
+            if (k instanceof PolyKernel) {
+                ((PolyKernel) k).setExponent(polyExponent);
+                ((PolyKernel) k).setUseLowerOrder(polyUseLowerOrder);
+                return;
+            } else {
+                PolyKernel nk = new PolyKernel();
+                nk.setExponent(polyExponent);
+                nk.setUseLowerOrder(polyUseLowerOrder);
+                getClassifier().setKernel(nk);
+            }
+        } else { //RBF
+            Kernel k = getClassifier().getKernel();
+            if (k instanceof RBFKernel) {
+                ((RBFKernel) k).setGamma(rbfGamma);
+                return;
+            } else {
+                RBFKernel nk = new RBFKernel();
+                nk.setGamma(rbfGamma);
+                getClassifier().setKernel(nk);
+            }
+        }
+        ((SMO) classifier).setC(complexity);
+    }
+
+    public void setComplexity(double c) {
+        complexity = c;
+        updateClassifier();
+    }
+
     private SMO getClassifier() {
-        return (SMO)classifier;
+        return (SMO) classifier;
     }
-    
+
     public void setLinearKernel() {
-        Kernel k = getClassifier().getKernel();
-        if (k instanceof PolyKernel && ((PolyKernel)k).getExponent() == 1.0) {
-            return; // already got it
-        }
-        else {
-            PolyKernel nk = new PolyKernel();
-            nk.setExponent(1.0);
-            getClassifier().setKernel(nk);
-        }
+        kernelType = KernelType.LINEAR;
+        updateClassifier();
     }
 
     public void setPolyKernel(double e, boolean useLowerOrder) {
-        Kernel k = getClassifier().getKernel();
-        if (k instanceof PolyKernel) {
-            ((PolyKernel)k).setExponent(e);
-            ((PolyKernel)k).setUseLowerOrder(useLowerOrder);
-            return;
-        }
-        else {
-            PolyKernel nk = new PolyKernel();
-            nk.setExponent(e);
-            nk.setUseLowerOrder(useLowerOrder);
-            getClassifier().setKernel(nk);
-        }
+        kernelType = KernelType.POLYNOMIAL;
+        polyExponent = e;
+        polyUseLowerOrder = useLowerOrder;
+        updateClassifier();
     }
 
     public void setRbfKernel(double gamma) {
-        Kernel k = getClassifier().getKernel();
-        if (k instanceof RBFKernel) {
-            ((RBFKernel)k).setGamma(gamma);
-            return;
-        }
-        else {
-            RBFKernel nk = new RBFKernel();
-            nk.setGamma(gamma);
-            getClassifier().setKernel(nk);
-        }
+        kernelType = KernelType.RBF;
+        rbfGamma = gamma;
+        updateClassifier();
     }
-    
+
     @Override
     public void setTrainingExamples(Instances examples) {
         trainingData = examples;
@@ -82,21 +150,31 @@ public class SVMModelBuilder implements LearningModelBuilder {
 
     @Override
     public Model build(String name) throws Exception {
-       if (trainingData == null) {
-           throw new IllegalStateException("Must set training examples (to not null) before building model");
-       }
-       SMO m = (SMO)WekaModelBuilderHelper.build(classifier, trainingData);
-       return new SVMModel(name, m);
+        if (trainingData == null) {
+            throw new IllegalStateException("Must set training examples (to not null) before building model");
+        }
+        SMO m = (SMO) WekaModelBuilderHelper.build(classifier, trainingData);
+        return new SVMModel(name, m);
     }
 
     @Override
     public boolean isCompatible(OSCOutput o) {
-        return true;
+        return (o instanceof OSCClassificationOutput);
     }
-    
+
     public SVMModelBuilder fromTemplate(ModelBuilder b) {
         if (b instanceof SVMModelBuilder) {
-            return new SVMModelBuilder();
+            SVMModelBuilder mb = new SVMModelBuilder();
+            SVMModelBuilder template = (SVMModelBuilder) b;
+            if (template.getKernelType() == KernelType.LINEAR) {
+                mb.setLinearKernel();
+            } else if (template.getKernelType() == KernelType.POLYNOMIAL) {
+                mb.setPolyKernel(template.getPolyExponent(), template.getPolyUseLowerOrder());
+            } else {
+                mb.setRbfKernel(template.getRbfGamma());
+            }
+            mb.setComplexity(template.getComplexity());
+            return mb;
         }
         return null;
     }
@@ -104,5 +182,10 @@ public class SVMModelBuilder implements LearningModelBuilder {
     @Override
     public String getPrettyName() {
         return "Support Vector Machine";
+    }
+
+    @Override
+    public ModelBuilderEditorPanel getEditorPanel() {
+        return new SVMEditorPanel(this);
     }
 }

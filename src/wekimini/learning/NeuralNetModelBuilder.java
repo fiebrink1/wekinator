@@ -5,11 +5,13 @@
  */
 package wekimini.learning;
 
+import java.awt.Component;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Instances;
 import wekimini.LearningModelBuilder;
 import wekimini.WekaModelBuilderHelper;
+import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
 
 /**
@@ -42,7 +44,7 @@ public class NeuralNetModelBuilder implements LearningModelBuilder {
 
     @Override
     public boolean isCompatible(OSCOutput o) {
-        return true;
+        return (o instanceof OSCNumericOutput);
     }
     
     public NeuralNetModelBuilder fromTemplate(ModelBuilder b) {
@@ -55,5 +57,10 @@ public class NeuralNetModelBuilder implements LearningModelBuilder {
     @Override
     public String getPrettyName() {
         return "Neural Network";
+    }
+
+    @Override
+    public NeuralNetEditorPanel getEditorPanel() {
+        return new NeuralNetEditorPanel(this);
     }
 }
