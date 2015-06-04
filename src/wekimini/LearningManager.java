@@ -694,6 +694,7 @@ public class LearningManager {
         if (newOutput != null) {
             w.getOutputManager().updateOutput(newOutput, p.getOSCOutput());
             newP = new Path(newOutput, selectedInputNames, w);
+            newP.setNumExamples(p.getNumExamples());
             if (newModelBuilder != null) {
                 newP.setModelBuilder(newModelBuilder);
             } else {

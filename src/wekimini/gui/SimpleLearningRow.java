@@ -183,7 +183,7 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
             initForNumeric(o);
         }
 
-        updateNumExamples(myPath.getNumExamples());
+        updateNumExamples(myPath.getNumExamples()); //TODO: Make sure that new path starts out with same num examples
         updateModelState(myPath.getModelState());
         updateRecordEnabled(myPath.isRecordEnabled());
         updateRunEnabled(myPath.isRunEnabled());

@@ -243,11 +243,13 @@ public class DataManager {
 
         Instances newAll;
         try {
+            r.setAttributeIndex(Integer.toString(numMetaData + numInputs + index + 1)); //Weka indexing stupidity
             r.setNominalIndices(rangeList);
-            r.setInputFormat(allInstances);
             r.setInvertSelection(true); //Keep all classes from 0 to newNumClasses
+            r.setMatchMissingValues(false);
             r.setModifyHeader(true);
-            r.setAttributeIndex(Integer.toString(numMetaData + numInputs + index));
+            r.setInputFormat(allInstances);
+
             newAll = Filter.useFilter(allInstances, r);
         } catch (Exception ex) {
             Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);

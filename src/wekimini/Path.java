@@ -391,7 +391,7 @@ public class Path {
      *
      * @param numExamples new value of numExamples
      */
-    private void setNumExamples(int numExamples) {
+    public void setNumExamples(int numExamples) {
         int oldNumExamples = this.numExamples;
         this.numExamples = numExamples;
         propertyChangeSupport.firePropertyChange(PROP_NUMEXAMPLES, oldNumExamples, numExamples);
