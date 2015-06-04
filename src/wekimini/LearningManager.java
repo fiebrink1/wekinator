@@ -11,6 +11,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,6 +84,16 @@ public class LearningManager {
 
     public static final String PROP_ABLE_TO_RUN = "ableToRun";
     private boolean notifyPathsOfDatasetChange = true;
+    
+    private List<PathOutputTypeEditedListener> pathEditedListeners = new LinkedList<>();
+    
+    public void addPathEditedListener(PathOutputTypeEditedListener l) {
+        pathEditedListeners.add(l);
+    }
+    
+    public void removePathEditedListener(PathOutputTypeEditedListener l) {
+        pathEditedListeners.remove(l);
+    }
 
     private void trainingWorkerChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("state")) {
@@ -670,5 +681,55 @@ public class LearningManager {
     public void setModelBuilderForPath(ModelBuilder mb, int i) {
         paths.get(i).setModelBuilder(mb);
     }
+    
+    public void updatePath(Path p, OSCOutput newOutput, ModelBuilder newModelBuilder, String[] selectedInputNames) {
+        //Which path?
+        int which = paths.indexOf(p);
+        if (which == -1) {
+            logger.log(Level.WARNING, "Trying to update path that does not exist");
+            throw new IllegalArgumentException("Trying to update path that does not exist");
+        }
+        
+        Path newP;
+        if (newOutput != null) {
+            w.getOutputManager().updateOutput(newOutput, p.getOSCOutput());
+            newP = new Path(newOutput, selectedInputNames, w);
+            if (newModelBuilder != null) {
+                newP.setModelBuilder(newModelBuilder);
+            } else {
+                newP.setModelBuilder(p.getModelBuilder());
+            }
+           // updateDataForPathChange(which, newP, p); 
+            //w.getDataManager().notifyOutputTypeChange(); //DataManager should listen to OutputManager for this
+            
+        } else { //keep old output; just apply input names and possibly modelBuilder
+            newP = p;
+            newP.setSelectedInputs(selectedInputNames);
+            if (newModelBuilder != null) {
+                newP.setModelBuilder(newModelBuilder);
+            }     
+        }
+
+        
+        //Finally: Only do this when path object has changed:
+        if (newOutput != null) {
+            //Update path here, then fire change 
+            paths.remove(p);
+            paths.add(which, newP);
+            pathsToOutputIndices.remove(p);
+            pathsToOutputIndices.put(newP, which);
+            notifyPathEditedListeners(which, newP, p);   
+        }
+    }
+    
+    private void notifyPathEditedListeners(int which, Path newPath, Path oldPath) {
+        for (PathOutputTypeEditedListener l : pathEditedListeners) {
+            l.pathOutputTypeEdited(which, newPath, oldPath);
+        }
+    }
+    
+    public interface PathOutputTypeEditedListener {
+        public void pathOutputTypeEdited(int which, Path newPath, Path oldPath);  
+    } 
 
 }

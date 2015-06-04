@@ -16,9 +16,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
+import wekimini.LearningManager;
 import wekimini.OutputManager;
 import wekimini.Path;
 import wekimini.Wekinator;
+import wekimini.osc.OSCOutput;
 
 /**
  *
@@ -64,8 +66,49 @@ public class SimpleLearningSet extends javax.swing.JPanel {
                 outputValuesReceived(vals);
             }
         });
+        
+       /* w.getOutputManager().addIndividualOutputEditListener(new OutputManager.OutputTypeEditListener() {
+
+            @Override
+            public void outputTypeEdited(OSCOutput newOutput, OSCOutput oldOutput, int which) {
+                outputTypeChanged(newOutput, oldOutput, which);
+            }
+        }); */
+        
+        w.getLearningManager().addPathEditedListener(new LearningManager.PathOutputTypeEditedListener() {
+
+            @Override
+            public void pathOutputTypeEdited(int which, Path newPath, Path oldPath) {
+                changePath(which, newPath, oldPath);
+            }
+        });
+        
+    
+        
         //setupThread(); //Was test for lower GUI update rate, didn't make too much difference
             //Also interfered with user setting of GUI
+    }
+    
+    
+    private void changePath(int which, Path newPath, Path oldPath) {
+        double[] currentValues = w.getOutputManager().getCurrentValues();
+        LearningRow r = new SimpleLearningRow(w, newPath);
+        r.setValue(currentValues[which]);
+        
+        //Replace in my panel array
+        pathPanels.remove(which);
+        pathPanels.add(which, r);
+        
+       // pathsPanel.c
+        pathsPanel.remove(2*which+1); //added in sequence (separator, row)
+        pathsPanel.add(r.getComponent(), 2*which+1);
+        
+         /*   pathsPanel.add(sep);
+            pathsPanel.add(r.getComponent()); */
+
+        pathsPanel.revalidate();
+        scrollPathsPanel.validate();
+        repaint();  
     }
     
     public SimpleLearningSet(Wekinator w, Path[] ps, String[] modelNames) {

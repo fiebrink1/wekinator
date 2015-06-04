@@ -5,6 +5,7 @@
  */
 package wekimini.gui.path;
 
+import weka.gui.experiment.ExperimenterDefaults;
 import wekimini.osc.OSCOutput;
 
 /**
@@ -111,8 +112,10 @@ public class OutputEditFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        receiver.outputReady(row.getOSCOutputFromForm());
-        this.dispose();
+        if (row.validateForm()) {
+            receiver.outputReady(row.getOSCOutputFromForm());
+            this.dispose();
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

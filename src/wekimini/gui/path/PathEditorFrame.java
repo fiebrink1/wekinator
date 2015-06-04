@@ -9,17 +9,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import wekimini.Path;
+import wekimini.Wekinator;
 import wekimini.gui.path.ModelEditorFrame.ModelBuilderReceiver;
 import wekimini.gui.path.OutputEditFrame.OutputEditReceiver;
 import wekimini.learning.ModelBuilder;
-import wekimini.learning.ModelBuilderEditorPanel;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
@@ -41,7 +40,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
     private boolean hasValidModelType = false;
     private JCheckBox inputs[] = null;
     private String[] inputNames = null;
-
+    private Wekinator w;
     /**
      * Creates new form PathEditorFrame
      */
@@ -50,10 +49,11 @@ public class PathEditorFrame extends javax.swing.JFrame {
         p = null;
     }
 
-    public PathEditorFrame(Path p, String[] inputNames) {
+    public PathEditorFrame(Path p, String[] inputNames, Wekinator w) {
         initComponents();
         this.p = p;
         initFormForPath();
+        this.w = w;
         /*p.addInputSelectionChangeListener(new ChangeListener() {
 
          @Override
@@ -114,7 +114,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         StringBuilder sb = new StringBuilder("<html>");
         if (o instanceof OSCNumericOutput) {
             OSCNumericOutput no = (OSCNumericOutput) o;
-            sb.append("Continous output, ");
+            sb.append("Numeric output, ");
             if (no.getOutputType() == OSCNumericOutput.NumericOutputType.REAL) {
                 sb.append("real values<br>");
             } else {
@@ -158,11 +158,11 @@ public class PathEditorFrame extends javax.swing.JFrame {
         return pathsBeingEdited.containsKey(p);
     }
 
-    public static PathEditorFrame getEditorForPath(Path p, String[] inputs) {
+    public static PathEditorFrame getEditorForPath(Path p, String[] inputs, Wekinator w) {
         if (pathEditorExists(p)) {
             return pathsBeingEdited.get(p);
         } else {
-            return new PathEditorFrame(p, inputs);
+            return new PathEditorFrame(p, inputs, w);
         }
     }
 
@@ -595,7 +595,13 @@ public class PathEditorFrame extends javax.swing.JFrame {
         } else {
             isClassifier = (p.getOSCOutput() instanceof OSCClassificationOutput);
         }
-        modelEditor = new ModelEditorFrame(p.getModelBuilder(), r, isClassifier);
+        ModelBuilder m;
+        if (newModelBuilder != null) {
+            m = newModelBuilder;
+        } else {
+            m = p.getModelBuilder();
+        }
+        modelEditor = new ModelEditorFrame(m, r, isClassifier);
         modelEditor.setVisible(true);
         /* } else {
          modelEditor.setVisible(true);
@@ -608,7 +614,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         labelModelType.setText(mb.getPrettyName());
         //Error check:
         if (newOutput == null) {
-            if (!mb.isCompatible(p.getOSCOutput()))  {
+            if (!mb.isCompatible(p.getOSCOutput())) {
                 logger.log(Level.WARNING, "Trying to set incompatible model and output");
             }
         } else if (!mb.isCompatible(newOutput)) {
@@ -625,7 +631,16 @@ public class PathEditorFrame extends javax.swing.JFrame {
 
         OSCOutput o;
         if (newOutput != null) {
-            o = newOutput;
+            o = newOutput; //TODO CHECK THE FOLLOWING:
+            if (! o.getName().equals(p.getOSCOutput().getName())) {
+                //Output name has changed
+                if (w.getOutputManager().containsOutputName(o.getName())) {
+                    Util.showPrettyErrorPane(this, "Output name " + o.getName() 
+                            + " is being used by a different output. Please choose a different name.");
+                    return false;
+                }
+            }
+            
         } else {
             o = p.getOSCOutput();
         }
@@ -641,6 +656,68 @@ public class PathEditorFrame extends javax.swing.JFrame {
                     + "). Please select a different model type.");
             return false;
         }
+
+        if (newOutput != null) {
+            boolean v = validateOutputChange();
+            if (!v) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    //Do we know how and whether to change this output?
+    private boolean validateOutputChange() {
+        OSCOutput oldOutput = p.getOSCOutput();
+        if (newOutput instanceof OSCClassificationOutput && oldOutput instanceof OSCClassificationOutput) {
+            //Check if # classes is different, and prompt if new numclasses < old num
+            int oldNum = ((OSCClassificationOutput) oldOutput).getNumClasses();
+            int newNum = ((OSCClassificationOutput) newOutput).getNumClasses();
+            if (oldNum > newNum) {
+
+                int proceed = Util.showPrettyOptionPane(this, "You are changing the number of classes from "
+                        + oldNum + " to " + newNum + ". This will result in all existing examples "
+                        + "with classes higher than " + newNum + " being deleted from this model's"
+                        + " training set. (No other models will be affected.) Do you wish to proceed?", "Warning");
+
+                if (proceed == Util.CANCEL_OPTION) {
+                    return false;
+                }
+            }
+        } else if (newOutput instanceof OSCClassificationOutput && oldOutput instanceof OSCNumericOutput) {
+            Util.showPrettyErrorPane(this, "Currently it is not possible to change numeric ouput into a classification output");
+            return false;
+            //Ask whether to
+            // delete all old instances
+            // round all to nearest class
+            // round to nearest class if valid, but discard otherwise
+        } else if (newOutput instanceof OSCNumericOutput && oldOutput instanceof OSCClassificationOutput) {
+            Util.showPrettyErrorPane(this, "Currently it is not possible to change classification ouput into a numeric output");
+            return false;
+            //Aks whether to delete or keep & treat as classifier
+            // If keep, ask about any out of bounds data
+        } else { //Numeric -> Numeric
+            //Check on ranges, limits
+            if (((OSCNumericOutput) newOutput).getLimitType() == OSCNumericOutput.LimitType.HARD) {
+                float newMin = ((OSCNumericOutput) newOutput).getMin();
+                float newMax = ((OSCNumericOutput) newOutput).getMax();
+                float oldMin = ((OSCNumericOutput) p.getOSCOutput()).getMin();
+                float oldMax = ((OSCNumericOutput) p.getOSCOutput()).getMax();
+                if (oldMin < newMin || oldMax > newMax) {
+                    //New limits are more restrictive
+                    int proceed = Util.showPrettyOptionPane(this, "You are using HARD limits and changing the limit values from "
+                            + "(" + oldMin + ", " + oldMax + ") to (" + newMin + ", " + newMax
+                            + "). This will result in all existing examples "
+                            + "with output values outside (" + newMin + ", " + newMax
+                            + ") being deleted from this model's"
+                            + " training set. (No other models will be affected.) Do you wish to proceed?", "Warning");
+                    if (proceed == Util.CANCEL_OPTION) {
+                        return false;
+                    }
+                }
+            }
+        } // end numeric -> numeric
         return true;
     }
 
@@ -653,9 +730,38 @@ public class PathEditorFrame extends javax.swing.JFrame {
         }
         return sum;
     }
+    
+    private String[] getSelectedInputNames() {
+        List<String> selected = new LinkedList<>();
+        for (int i = 0; i < inputs.length; i++) {
+            if (inputs[i].isSelected()) {
+                selected.add(inputNames[i]);
+            }
+        }
+        return selected.toArray(new String[0]);
+    }
 
     private void applyChanges() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      //  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+      //if (newOutput != null) {
+          w.getLearningManager().updatePath(p, newOutput, newModelBuilder, getSelectedInputNames());
+          
+         //w.getOutputManager().updateOutput(newOutput, p.getOSCOutput());
+       // w.getLearningManager().updateOutput()
+        //New P or existing p??
+        //Need to update model state, path output name, 
+    //  }
+  //TODO: also Update output info: XOutputManager, learning manager, data manager, sender?, path, all GUIs (through listeners)
+      
+     /* if (newModelBuilder != null) {
+          p.setModelBuilder(newModelBuilder);
+      }
+      
+      p.setSelectedInputs(getSelectedInputNames()); */
+      
+        //Update modelbuilder: path
+        //Update input list: Path, learning manager, data manager
     }
 
     private void loadModelFromFile() {

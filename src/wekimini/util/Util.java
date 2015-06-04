@@ -54,6 +54,19 @@ public class Util {
         }
         return ext;
     }
+    
+    public static int showPrettyOptionPane(Component caller, String msg, String title) {
+        Object[] options = { "OK", "CANCEL" };
+        return JOptionPane.showOptionDialog(caller,
+                "<html><body><p style='width: 200px;'>" + msg + "</p></body></html>",
+                title,
+                JOptionPane.OK_CANCEL_OPTION, 
+                JOptionPane.WARNING_MESSAGE,
+                null, options, options[0]);
+    }
+    
+    public static final int OK_OPTION = 0;
+    public static final int CANCEL_OPTION = 1;
 
     public static void showPrettyErrorPane(Component caller, String msg) {
         JOptionPane.showMessageDialog(caller,

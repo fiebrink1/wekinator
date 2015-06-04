@@ -31,8 +31,10 @@ import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Reorder;
+import weka.filters.unsupervised.instance.RemoveWithValues;
 import wekimini.gui.DatasetViewer;
 import wekimini.osc.OSCClassificationOutput;
+import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
 
@@ -152,6 +154,119 @@ public class DataManager {
 
     public DataManager(Wekinator w) {
         this.w = w;
+        w.getOutputManager().addIndividualOutputEditListener(new OutputManager.OutputTypeEditListener() {
+
+            @Override
+            public void outputTypeEdited(OSCOutput newOutput, OSCOutput oldOutput, int which) {
+                updateForOutputTypeEdit(newOutput, oldOutput, which);
+            }
+        });
+    }
+
+    public void updateForOutputTypeEdit(OSCOutput newOutput, OSCOutput oldOutput, int which) {
+        if (newOutput instanceof OSCClassificationOutput && oldOutput instanceof OSCClassificationOutput) {
+            OSCClassificationOutput newO = (OSCClassificationOutput) newOutput;
+            OSCClassificationOutput oldO = (OSCClassificationOutput) oldOutput;
+
+            if (newO.getNumClasses() != oldO.getNumClasses()) {
+                updateNumClasses(which, newO.getNumClasses(), oldO.getNumClasses());
+            }
+        } else if (newOutput instanceof OSCNumericOutput && oldOutput instanceof OSCNumericOutput) {
+            OSCNumericOutput newO = (OSCNumericOutput) newOutput;
+            OSCNumericOutput oldO = (OSCNumericOutput) oldOutput;
+            if (newO.getLimitType() == OSCNumericOutput.LimitType.HARD && newO.getMin() > oldO.getMin() || newO.getMax() < oldO.getMax()) {
+                updateMinMax(which, newO, oldO);
+            }
+        } else {
+            logger.log(Level.SEVERE, "Unsupported change between classifier and numeric output");
+        }
+
+    }
+
+    private void updateNumClasses(int index, int newNumClasses, int oldNumClasses) {
+        //Update output values for
+        if (newNumClasses < oldNumClasses) {
+            makeMissingClassesGreaterThan(index, newNumClasses);
+        }
+
+        //Update instances information
+        updateInstancesForNewMaxClass(index, newNumClasses);
+                //allInstances, dummyInstances
+
+        //Finally:
+        numClasses[index] = newNumClasses;
+    }
+
+    private void updateMinMax(int index, OSCNumericOutput newOutput, OSCNumericOutput oldOutput) {
+        //We know new output has hard limits and more restrictive limits
+        makeMissingOutputsLessThan(index, newOutput.getMin());
+        makeMissingOutputsGreaterThan(index, newOutput.getMax());
+    }
+
+    private void makeMissingClassesGreaterThan(int index, int maxClass) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (int i = 0; i < allInstances.numInstances(); i++) {
+            double o = getOutputValue(i, index);
+            if (o > maxClass) {
+                setOutputMissing(i, index);
+            }
+        }
+    }
+
+    //TODO: MAKE SURE THIS WORKS FOR CLASSIFIER!
+    private void makeMissingOutputsGreaterThan(int index, double max) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (int i = 0; i < allInstances.numInstances(); i++) {
+            double o = getOutputValue(i, index);
+            if (o > max) {
+                setOutputMissing(i, index);
+            }
+        }
+    }
+
+    private void makeMissingOutputsLessThan(int index, double min) {
+        for (int i = 0; i < allInstances.numInstances(); i++) {
+            double o = getOutputValue(i, index);
+            if (o < min) {
+                setOutputMissing(i, index);
+            }
+        }
+    }
+
+    //REQUIRES that no instances with this value still exist in dataset
+    private void updateInstancesForNewMaxClass(int index, int newNumClasses) {
+        //Change allInstances, dummyInstances
+        // dummyInstances.attribute(numMetaData + numInputs + index).
+
+        RemoveWithValues r = new RemoveWithValues();
+        String rangeList = "1-" + (newNumClasses+1); //String indices start at 1 in weka
+
+        Instances newAll;
+        try {
+            r.setNominalIndices(rangeList);
+            r.setInputFormat(allInstances);
+            r.setInvertSelection(true); //Keep all classes from 0 to newNumClasses
+            r.setModifyHeader(true);
+            r.setAttributeIndex(Integer.toString(numMetaData + numInputs + index));
+            newAll = Filter.useFilter(allInstances, r);
+        } catch (Exception ex) {
+            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
+        if (newAll.numInstances() != allInstances.numInstances()) {
+            logger.log(Level.SEVERE, "Problem: deleted instances when removing class attribute");
+        }
+        allInstances = newAll;
+
+        Instances newD;
+        try {
+            newD = Filter.useFilter(dummyInstances, r);
+        } catch (Exception ex) {
+            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
+
+        dummyInstances = newD;
     }
 
     public boolean isInitialized() {
@@ -275,7 +390,6 @@ public class DataManager {
     }
 
     //Problem: gets called when loading from file...
-
     private void updateOutputCounts() {
         int[] examplesSum = new int[numOutputs];
 
@@ -390,16 +504,16 @@ public class DataManager {
     private void updateFiltersForOutput(int output) throws Exception {
         Reorder r = new Reorder();
         Reorder s = new Reorder();
-        
+
         int[] inputList = inputListsForOutputs.get(output); //includes only "selected" inputs
         int[] reordering = new int[inputList.length + 1];
         int[] saving = new int[numMetaData + inputList.length + 1];
-        
+
         //Metadata
         for (int f = 0; f < numMetaData; f++) {
             saving[f] = f;
         }
-        
+
         //Features
         for (int f = 0; f < inputList.length; f++) {
             reordering[f] = inputList[f] + numMetaData;
@@ -409,10 +523,10 @@ public class DataManager {
         //The actual "class" output
         reordering[reordering.length - 1] = numMetaData + numInputs + output;
         saving[saving.length - 1] = numMetaData + numInputs + output;
-        
+
         r.setAttributeIndicesArray(reordering);
         r.setInputFormat(dummyInstances);
-        
+
         s.setAttributeIndicesArray(saving);
         s.setInputFormat(dummyInstances);
 
@@ -423,15 +537,15 @@ public class DataManager {
     private void setupFilters() throws Exception {
         outputFilters = new Reorder[numOutputs];
         savingFilters = new Reorder[numOutputs];
-        
+
         for (int i = 0; i < numOutputs; i++) {
             Reorder r = new Reorder();
             Reorder s = new Reorder();
-            
+
             int[] inputList = inputListsForOutputs.get(i);
             int[] reordering = new int[inputList.length + 1];
             int[] saving = new int[numMetaData + inputList.length + 1];
-            
+
             //Metadata
             for (int f = 0; f < numMetaData; f++) {
                 saving[f] = f;
@@ -446,13 +560,12 @@ public class DataManager {
             //The actual "class" output
             reordering[reordering.length - 1] = numMetaData + numInputs + i;
             saving[saving.length - 1] = numMetaData + numInputs + i;
-            
+
             r.setAttributeIndicesArray(reordering);
             r.setInputFormat(dummyInstances);
-            
+
             s.setAttributeIndicesArray(saving);
             s.setInputFormat(dummyInstances);
-            
 
             outputFilters[i] = r;
             savingFilters[i] = s;
@@ -915,4 +1028,5 @@ public class DataManager {
         });
 
     }
+
 }

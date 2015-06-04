@@ -22,6 +22,7 @@ import wekimini.gui.NewProjectSettingsFrame;
 import wekimini.gui.OSCInputStatusFrame;
 import wekimini.gui.OutputViewerTable;
 import wekimini.gui.path.PathEditorFrame;
+import wekimini.osc.OSCOutput;
 import wekimini.util.Util;
 
 /**
@@ -212,6 +213,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private void setGUIForWekinator() {
         this.setTitle(w.getProjectName());
         w.addPropertyChangeListener(this::wekinatorPropertyChanged);
+        
         //  w.getStatusUpdateCenter().addPropertyChangeListener(this::statusUpdated);
     }
 
@@ -593,7 +595,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }
 
     public void showPathEditor(Path p) {
-        PathEditorFrame f = PathEditorFrame.getEditorForPath(p, w.getInputManager().getInputNames());
+        PathEditorFrame f = PathEditorFrame.getEditorForPath(p, w.getInputManager().getInputNames(), w);
         f.setVisible(true);
         f.toFront();
     }

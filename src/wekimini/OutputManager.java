@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.EventListenerList;
+import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
 import wekimini.util.WeakListenerSupport;
 import wekimini.osc.OSCReceiver;
@@ -27,7 +28,7 @@ import wekimini.osc.OSCReceiver;
  * @author rebecca
  */
 public class OutputManager {
-
+    private static final Logger logger = Logger.getLogger(OutputManager.class.getName());
     private OSCOutputGroup outputGroup;
 
     private final Wekinator w;
@@ -38,6 +39,9 @@ public class OutputManager {
 
     //Listeners for output group vectors computed internally
     private final List<OutputManager.OutputValueListener> valueComputedListeners;
+    
+    //Listeners for individual output edits (e.g. change # classes)
+    private final List<OutputTypeEditListener> outputTypeEditListeners;
 
     //Listeners for single outputs computed internally
   //  private final List<OutputManager.SingleOutputValueListener> singleValueComputedListeners;
@@ -95,6 +99,7 @@ public class OutputManager {
         listeners = new EventListenerList();
         valueReceivedListeners = new LinkedList<>();
         valueComputedListeners = new LinkedList<>();
+        outputTypeEditListeners = new LinkedList<>();
         //singleValueComputedListeners = new LinkedList<>();
 
         //Currently have listeners for outputGroupChange (add, remove, modify)
@@ -106,6 +111,21 @@ public class OutputManager {
         addOSCOutputValueListener();
     }
 
+    public void updateOutput(OSCOutput newOutput, OSCOutput oldOutput) {
+        //Set current value
+        int which = outputGroup.getOutputNumber(oldOutput);
+        
+        if (which != -1) {
+            outputGroup.updateOutput(newOutput, which);
+            if (! newOutput.isLegalOutputValue(currentValues[which])) {
+                currentValues[which] = newOutput.getDefaultValue();
+            }
+            notifyOutputEditListeners(newOutput, oldOutput, which);
+        } else {
+            logger.log(Level.WARNING, "Old output group not found");
+        }
+    }
+    
     private void oscReceiverPropertyChanged(PropertyChangeEvent e) {
         if (e.getPropertyName() == OSCReceiver.PROP_CONNECTIONSTATE) {
             if (e.getNewValue() == OSCReceiver.ConnectionState.CONNECTED) {
@@ -274,7 +294,30 @@ public class OutputManager {
             return outputGroup.toString();
         }
     }
+    
+    public void addIndividualOutputEditListener(OutputTypeEditListener l) {
+        outputTypeEditListeners.add(l);
+    }
+    
+    public void removeIndividualOutputEditListener(OutputTypeEditListener l) {
+        outputTypeEditListeners.remove(l);
+    }
 
+    private void notifyOutputEditListeners(OSCOutput newOutput, OSCOutput oldOutput, int index) {
+        for (OutputTypeEditListener l : outputTypeEditListeners) {
+            l.outputTypeEdited(newOutput, oldOutput, index);
+        }
+    }
+
+    public boolean containsOutputName(String name) {
+        for (OSCOutput o : outputGroup.getOutputs()) {
+            if (o.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     // TODO: Not sure if we need this?
     public interface OutputValueListener extends EventListener {
 
@@ -305,4 +348,8 @@ public class OutputManager {
      return changeType;
      }
      } */
+    
+    public interface OutputTypeEditListener {
+        public void outputTypeEdited(OSCOutput newOutput, OSCOutput oldOutput, int which);   
+    }
 }

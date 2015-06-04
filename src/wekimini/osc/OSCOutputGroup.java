@@ -8,6 +8,8 @@ import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import wekimini.util.Util;
 
 /**
@@ -15,10 +17,11 @@ import wekimini.util.Util;
  * @author rebecca
  */
 public class OSCOutputGroup {
-    private final String oscMessage; //Does make sense to save this with OSC output group
-    private final String hostName;
-    private final int outputPort;
+    private String oscMessage; //Does make sense to save this with OSC output group
+    private String hostName;
+    private int outputPort;
     private final List<OSCOutput> outputs;
+    private static final Logger logger = Logger.getLogger(OSCOutputGroup.class.getName());
    // private float[] values;
     
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -98,6 +101,24 @@ public class OSCOutputGroup {
         this.oscMessage = groupFromFile.oscMessage; //will copy value
         this.hostName = groupFromFile.hostName;
         this.outputPort = groupFromFile.outputPort;
+    }
+    
+    public int getOutputNumber(OSCOutput o) {
+        for (int i= 0; i < outputs.size(); i++) {
+            if (outputs.get(i).equals(o)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    //Output changed by gui (e.g. change # of classes)
+    public void updateOutput(OSCOutput o, int index) {
+        if (index < outputs.size()) {
+            outputs.set(index, o); //replace it
+        } else {
+            logger.log(Level.WARNING, "Illegal output index value: {0}", index);
+        }
     }
     
     public List<OSCOutput> getOutputs() {

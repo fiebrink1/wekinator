@@ -8,9 +8,11 @@ package wekimini.gui.path;
 import java.awt.CardLayout;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import wekimini.gui.OutputConfigurationFrame;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
+import wekimini.util.Util;
 
 /**
  *
@@ -124,6 +126,35 @@ public class OutputEditRow extends javax.swing.JPanel {
         } else {
             return makeRegressionOutput();
         }
+    }
+    
+    public boolean validateForm() {
+        if (!Util.checkNotBlank(textName, "Output name", this)) {
+            return false;
+        }
+        
+        if (comboType.getSelectedIndex() == CLASSIFICATION_INDEX) {
+           try {
+               int c = Integer.parseInt(textNumClasses.getText());
+           } catch (NumberFormatException ex) {
+               Util.showPrettyErrorPane(this, "Number of classes must be an integer greater than 1");
+               return false;
+           }
+        } else {
+           double min, max;
+           try {
+               min = Double.parseDouble(textMin.getText());
+               max = Double.parseDouble(textMax.getText());
+               if (min >= max) {
+                   Util.showPrettyErrorPane(this, "Minimum must be less than maximum");
+                   return false;
+               }
+           } catch (NumberFormatException ex) {
+               Util.showPrettyErrorPane(this, "Min and max values must be numbers");
+               return false;
+           }
+        }
+        return true;
     }
 
     public String getOutputName() {
@@ -277,6 +308,7 @@ public class OutputEditRow extends javax.swing.JPanel {
         jLabel5.setText("Type:");
 
         comboType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Classification", "Numeric" }));
+        comboType.setEnabled(false);
         comboType.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboTypeActionPerformed(evt);
