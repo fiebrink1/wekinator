@@ -54,14 +54,8 @@ public class PathEditorFrame extends javax.swing.JFrame {
         this.p = p;
         initFormForPath();
         this.w = w;
-        /*p.addInputSelectionChangeListener(new ChangeListener() {
-
-         @Override
-         public void stateChanged(ChangeEvent e) {
-         initInputList();
-         }
-         }); */
         initInputsPanel(p, inputNames);
+        setTitle("Editing " + p.getOSCOutput().getName());
     }
 
     private void initInputsPanel(Path p, String[] inputNames) {
@@ -162,7 +156,9 @@ public class PathEditorFrame extends javax.swing.JFrame {
         if (pathEditorExists(p)) {
             return pathsBeingEdited.get(p);
         } else {
-            return new PathEditorFrame(p, inputs, w);
+            PathEditorFrame pef = new PathEditorFrame(p, inputs, w);
+            pathsBeingEdited.put(p, pef);
+            return pef;
         }
     }
 
