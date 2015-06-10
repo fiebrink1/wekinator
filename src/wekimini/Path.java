@@ -519,6 +519,9 @@ public class Path {
      } */
     public void setModelBuilder(ModelBuilder mb) {
         this.modelBuilder = mb;
+        if (modelState == ModelState.BUILT) {
+            setModelState(ModelState.NEEDS_REBUILDING);
+        }
     }
 
     public boolean shouldResetOnEmptyData() {
