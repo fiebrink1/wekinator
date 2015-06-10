@@ -30,6 +30,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.AddValues;
 import weka.filters.unsupervised.attribute.Reorder;
 import weka.filters.unsupervised.instance.RemoveWithValues;
 import wekimini.gui.DatasetViewer;
@@ -187,14 +188,18 @@ public class DataManager {
         //Update output values for
         if (newNumClasses < oldNumClasses) {
             makeMissingClassesGreaterThan(index, newNumClasses);
+            updateInstancesForNewLowerMaxClass(index, newNumClasses);
+        } else {
+            updateInstancesForNewHigherMaxClass(index, newNumClasses);
         }
-
-        //Update instances information
-        updateInstancesForNewMaxClass(index, newNumClasses);
-                //allInstances, dummyInstances
 
         //Finally:
         numClasses[index] = newNumClasses;
+        try {
+            updateFiltersForOutput(index);
+        } catch (Exception ex) {
+            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void updateMinMax(int index, OSCNumericOutput newOutput, OSCNumericOutput oldOutput) {
@@ -233,8 +238,47 @@ public class DataManager {
         }
     }
 
+       private void updateInstancesForNewHigherMaxClass(int index, int newNumClasses) {
+        //Change allInstances, dummyInstances
+        // dummyInstances.attribute(numMetaData + numInputs + index).
+        AddValues a = new AddValues();
+        int oldMaxClasses = numClasses[index];
+        StringBuilder sb = new StringBuilder();
+        for (int i = oldMaxClasses + 1; i < newNumClasses; i++) {
+            sb.append(Integer.toString(i)).append(",");
+        }
+        sb.append(Integer.toString(newNumClasses));
+        
+        Instances newAll;
+        try {
+            a.setAttributeIndex(Integer.toString(numMetaData + numInputs + index + 1)); //Weka indexing stupidity
+            a.setLabels(sb.toString());
+            a.setSort(false);
+            a.setInputFormat(allInstances);
+            newAll = Filter.useFilter(allInstances, a);
+        } catch (Exception ex) {
+            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
+        if (newAll.numInstances() != allInstances.numInstances()) {
+            logger.log(Level.SEVERE, "Problem: deleted instances when removing class attribute");
+        }
+        allInstances = newAll;
+
+        Instances newD;
+        try {
+            newD = Filter.useFilter(dummyInstances, a);
+        } catch (Exception ex) {
+            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
+
+        dummyInstances = newD;
+    }
+
+    
     //REQUIRES that no instances with this value still exist in dataset
-    private void updateInstancesForNewMaxClass(int index, int newNumClasses) {
+    private void updateInstancesForNewLowerMaxClass(int index, int newNumClasses) {
         //Change allInstances, dummyInstances
         // dummyInstances.attribute(numMetaData + numInputs + index).
 

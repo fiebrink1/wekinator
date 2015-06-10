@@ -69,6 +69,11 @@ public class Path {
     private final boolean outputNeedsCorrection;
     private final PathOutputCorrecter outputCorrector;
 
+    void inheritModel(Path p) {
+        setModel(p.model); //TODO: may have to make real copy later...
+        setModelState(p.modelState);
+    }
+
     public static enum ModelState {
 
         NOT_READY, READY_FOR_BUILDING, BUILDING, BUILT, NEEDS_REBUILDING

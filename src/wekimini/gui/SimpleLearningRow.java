@@ -159,7 +159,7 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     public void setValueOnlyForDisplay(double value) {
         this.value = value;
         if (isClassifier) {
-            if (comboClassifier.getSelectedIndex() != ((int)value) - 1) {
+            if (comboClassifier.getSelectedIndex() != ((int)value) - 1 && comboClassifier.getItemCount() >= value) {
                 comboClassifier.setSelectedIndex((int) value - 1 );
             }
         } else {
