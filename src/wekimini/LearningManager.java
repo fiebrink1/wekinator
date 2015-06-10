@@ -75,7 +75,7 @@ public class LearningManager {
     public static final String PROP_NUMEXAMPLESTHISROUND = "numExamplesThisRound";
     private static final Logger logger = Logger.getLogger(LearningManager.class.getName());
 
-    protected PropertyChangeListener trainingWorkerListener = this::trainingWorkerChanged;
+    protected PropertyChangeListener trainingWorkerListener;
 
     private boolean ableToRecord = false;
 
@@ -213,7 +213,25 @@ public class LearningManager {
         inputNamesToIndices = new HashMap<>();
         pathsToOutputIndices = new HashMap<>();
         //TODO listen for changes in input names, # outputs or inputs, etc.
-        w.getInputManager().addPropertyChangeListener(this::inputGroupChanged);
+        
+        trainingWorkerListener = new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                trainingWorkerChanged(evt);
+            }
+        };
+        
+        
+       // w.getInputManager().addPropertyChangeListener(this::inputGroupChanged);
+        w.getInputManager().addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                inputGroupChanged(evt);
+            }
+        });
+        
         w.getOutputManager().addPropertyChangeListener(new PropertyChangeListener() {
 
             @Override
@@ -224,9 +242,23 @@ public class LearningManager {
             }
         });
 
-        w.getDataManager().addPropertyChangeListener(this::dataManagerPropertyChange);
+       // w.getDataManager().addPropertyChangeListener(this::dataManagerPropertyChange);
+        w.getDataManager().addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                dataManagerPropertyChange(evt);
+            }
+        });
 
-        w.getOSCReceiver().addPropertyChangeListener(this::oscReceiverPropertyChanged);
+        // w.getOSCReceiver().addPropertyChangeListener(this::oscReceiverPropertyChanged);
+
+        w.getOSCReceiver().addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                oscReceiverPropertyChanged(evt);
+            }
+        });
+        
     }
 
     private void oscReceiverPropertyChanged(PropertyChangeEvent evt) {
@@ -314,7 +346,7 @@ public class LearningManager {
             pathRunningMask[i] = paths.get(i).isRunEnabled();
             //OSCOutput o = w.getOutputManager().getOutputGroup().getOutput(i);
             //Path p = new Path(o, inputNames, w);
-            Path p = paths.get(i);
+            final Path p = paths.get(i);
             PropertyChangeListener pChange = new PropertyChangeListener() {
                 @Override
                 public void propertyChange(PropertyChangeEvent evt) {
@@ -360,7 +392,15 @@ public class LearningManager {
             int[] indices = convertInputNamesToIndices(inputs);
             w.getDataManager().setInputIndicesForOutput(indices, i);
         }
-        w.getInputManager().addInputValueListener(this::updateInputs);
+       // w.getInputManager().addInputValueListener(this::updateInputs);
+        w.getInputManager().addInputValueListener(new InputManager.InputListener() {
+
+            @Override
+            public void update(double[] vals) {
+                updateInputs(vals);
+            }
+        });
+        
         updateAbleToRecord();
         updateAbleToRun();
     }
@@ -408,7 +448,7 @@ public class LearningManager {
             pathRunningMask[i] = true;
 
             OSCOutput o = w.getOutputManager().getOutputGroup().getOutput(i);
-            Path p = new Path(o, inputNames, w);
+            final Path p = new Path(o, inputNames, w);
             PropertyChangeListener pChange = new PropertyChangeListener() {
 
                 @Override
@@ -429,7 +469,14 @@ public class LearningManager {
         }
         setLearningState(LearningState.NOT_READY_TO_TRAIN);
 
-        w.getInputManager().addInputValueListener(this::updateInputs);
+        //w.getInputManager().addInputValueListener(this::updateInputs);
+        w.getInputManager().addInputValueListener(new InputManager.InputListener() {
+
+            @Override
+            public void update(double[] vals) {
+                updateInputs(vals);
+            }
+        });
     }
 
     private void pathInputsChanged(Path p) {

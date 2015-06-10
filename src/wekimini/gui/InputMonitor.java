@@ -26,7 +26,16 @@ public class InputMonitor extends javax.swing.JFrame {
 
     private final Wekinator w;
     private final WeakListenerSupport wls = new WeakListenerSupport();
-    private final InputManager.InputListener listener = this::update;
+//    private final InputManager.InputListener listener = this::update;
+        private final InputManager.InputListener listener = new InputManager.InputListener() {
+
+        @Override
+        public void update(double[] vals) {
+               updateValues(vals);
+        }
+    };
+
+    
     private final List<NameValueRow> rows = new ArrayList<>();
     private final ImageIcon onIcon = new ImageIcon(getClass().getResource("/wekimini/icons/greenlight2.png")); // NOI18N
     private final ImageIcon offIcon = new ImageIcon(getClass().getResource("/wekimini/icons/greylight2.png")); // NOI18N
@@ -41,7 +50,7 @@ public class InputMonitor extends javax.swing.JFrame {
         this.w = null;
     }
 
-    public InputMonitor(Wekinator w) {
+    public InputMonitor(final Wekinator w) {
         initComponents();
         this.w = w;
         String s1 = "Listening for " + w.getInputManager().getNumInputs() + " inputs "
@@ -82,7 +91,7 @@ public class InputMonitor extends javax.swing.JFrame {
         panelInputsParent.repaint();
     }
 
-    private void update(double[] vals) {
+    private void updateValues(double[] vals) {
         labelIndicator.setIcon(onIcon);
         for (int i = 0; i < vals.length; i++) {
             rows.get(i).setValue(vals[i]);

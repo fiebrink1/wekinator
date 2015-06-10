@@ -348,7 +348,7 @@ public class DatasetViewer extends javax.swing.JFrame {
         table.setRowSorter(sorter);
     }
 
-    private void updateRowFilter(int whichOutput) {
+    private void updateRowFilter(final int whichOutput) {
         RowFilter<DataTableModel, Integer> rf = null;
         //If current expression doesn't parse, don't update.
        // try {

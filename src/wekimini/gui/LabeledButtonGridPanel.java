@@ -147,8 +147,8 @@ public class LabeledButtonGridPanel extends JPanel {
         
             for (int j = 0; j < rowLabels.length; j++) {
                 for (int i = 0; i < colLabels.length; i++) {
-                int x = i;
-                int y = j;
+                final int x = i;
+                final int y = j;
                 MousableToggleButton b = new MousableToggleButton(i, j);
                 b.setSize(buttonWidth, buttonHeight);
                 b.addMouseListener(new java.awt.event.MouseAdapter() {

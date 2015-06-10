@@ -58,8 +58,8 @@ public class LabeledSelectionGrid_2 extends javax.swing.JFrame {
             for (int j = 0; j < numCols; j++) {
                 
                 
-                int x = i;
-                int y = j;
+                final int x = i;
+                final int y = j;
                 ButtonLocation bl = new ButtonLocation(x, y);
                 MyToggle mt = new MyToggle(bl);
                 mt.addMouseListener(new java.awt.event.MouseAdapter() {

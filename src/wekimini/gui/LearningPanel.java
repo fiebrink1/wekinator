@@ -42,7 +42,14 @@ public class LearningPanel extends javax.swing.JPanel {
         this.w = w;
 
         simpleLearningSet1.setup(w, ps, modelNames);
-        w.getLearningManager().addPropertyChangeListener(this::learningManagerPropertyChanged);
+       // w.getLearningManager().addPropertyChangeListener(this::learningManagerPropertyChanged);
+        w.getLearningManager().addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                learningManagerPropertyChanged(evt);
+            }
+        });
+        
 
         w.getTrainingRunner().addCancelledListener(new ChangeListener() {
 
@@ -63,7 +70,15 @@ public class LearningPanel extends javax.swing.JPanel {
             }
         });
 
-        w.getStatusUpdateCenter().addPropertyChangeListener(this::statusUpdated);
+       // w.getStatusUpdateCenter().addPropertyChangeListener(this::statusUpdated);
+        w.getStatusUpdateCenter().addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                statusUpdated(evt);
+            }
+        });
+        
         if (w.getStatusUpdateCenter().getLastUpdate() == null) {
             setStatus("Ready to go! Press \"Start Recording\" above to record some examples.");
         } else {

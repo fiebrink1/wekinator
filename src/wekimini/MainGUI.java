@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -212,7 +213,13 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     private void setGUIForWekinator() {
         this.setTitle(w.getProjectName());
-        w.addPropertyChangeListener(this::wekinatorPropertyChanged);
+       // w.addPropertyChangeListener(this::wekinatorPropertyChanged);
+        w.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                wekinatorPropertyChanged(evt);
+            }
+        });
         
         //  w.getStatusUpdateCenter().addPropertyChangeListener(this::statusUpdated);
     }
@@ -460,10 +467,18 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             outputTableWindow = new OutputViewerTable(w);
             outputTableWindow.setVisible(true);
 
-            Util.callOnClosed(outputTableWindow, (Callable) () -> {
+           /* Util.callOnClosed(outputTableWindow, (Callable) () -> {
                 outputTableWindow = null;
                 return null;
-            });
+            }); */
+            Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                @Override
+                public void callMe() {
+                    outputTableWindow = null;
+                }
+            };
+            Util.callOnClosed(outputTableWindow, callMe);
+            
         } else {
             outputTableWindow.toFront();
         }
@@ -474,11 +489,13 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             oscInputStatusFrame = new OSCInputStatusFrame(w);
             oscInputStatusFrame.setVisible(true);
 
-            Util.callOnClosed(oscInputStatusFrame, (Callable) () -> {
-               // System.out.println("WOAH HERE");
-                oscInputStatusFrame = null;
-                return null;
-            });
+            Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                @Override
+                public void callMe() {
+                    oscInputStatusFrame = null;
+                }
+            };
+            Util.callOnClosed(oscInputStatusFrame, callMe);
         } else {
             oscInputStatusFrame.toFront();
         }
@@ -489,10 +506,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             inputMonitorFrame = new InputMonitor(w);
             inputMonitorFrame.setVisible(true);
 
-            Util.callOnClosed(inputMonitorFrame, (Callable) () -> {
-                inputMonitorFrame = null;
-                return null;
-            });
+            
+            Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                @Override
+                public void callMe() {
+                    inputMonitorFrame = null;
+                }
+            };    
+            Util.callOnClosed(inputMonitorFrame, callMe);
         } else {
             inputMonitorFrame.toFront();
         }
@@ -504,10 +525,15 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             inputOutputConnectionsWindow.setVisible(true);
 
             //Problem: Won't call on button-triggered dispose...
-            Util.callOnClosed(inputOutputConnectionsWindow, (Callable) () -> {
-                inputOutputConnectionsWindow = null;
-                return null;
-            });
+            
+            Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                @Override
+                public void callMe() {
+                    inputOutputConnectionsWindow = null;
+                }
+            }; 
+            
+            Util.callOnClosed(inputOutputConnectionsWindow, callMe);
         } else {
             inputOutputConnectionsWindow.toFront();
         }

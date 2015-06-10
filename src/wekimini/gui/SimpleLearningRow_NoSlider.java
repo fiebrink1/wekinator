@@ -5,7 +5,7 @@
  */
 package wekimini.gui;
 
-import com.sun.glass.events.KeyEvent;
+import java.awt.event.KeyEvent;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;

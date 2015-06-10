@@ -106,7 +106,16 @@ public class OutputManager {
         //TODO: Add listeners for (1) new OSC output values received; (2) new output values computed
         //TODO: We will want to subscribe to Connections that tell us when new output values are available
         //For receiving new output values from Max/etc.
-        oscReceiverListener = this::oscReceiverPropertyChanged;
+        
+        //oscReceiverListener = this::oscReceiverPropertyChanged;
+        oscReceiverListener = new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                oscReceiverPropertyChanged(evt);
+            }
+        };
+        
         w.getOSCReceiver().addPropertyChangeListener(wls.propertyChange(oscReceiverListener));
         addOSCOutputValueListener();
     }

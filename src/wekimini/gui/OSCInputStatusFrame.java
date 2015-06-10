@@ -20,7 +20,14 @@ import wekimini.util.WeakListenerSupport;
  */
 public class OSCInputStatusFrame extends javax.swing.JFrame {
     private final Wekinator w;
-    private final PropertyChangeListener oscReceiverListener = this::oscReceiverPropertyChanged;
+   // private final PropertyChangeListener oscReceiverListener = this::oscReceiverPropertyChanged;
+        private final PropertyChangeListener oscReceiverListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            oscReceiverPropertyChanged(evt);
+        }
+    };
+
     private final WeakListenerSupport wls = new WeakListenerSupport();
 
     /**
@@ -31,7 +38,7 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
         this.w = null;
     }
 
-    public OSCInputStatusFrame(Wekinator w) {
+    public OSCInputStatusFrame(final Wekinator w) {
         initComponents();
         this.w = w;
         updateGUIForConnectionState(w.getOSCReceiver().getConnectionState());

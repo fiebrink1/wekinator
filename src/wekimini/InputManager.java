@@ -89,7 +89,14 @@ public class InputManager {
     public InputManager(Wekinator w) {
         //Make sure Wekinator initialises this after OSCReceiver 
         this.w = w;
-        oscReceiverListener = this::oscReceiverPropertyChanged;
+        oscReceiverListener = new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                oscReceiverPropertyChanged(evt);
+            }
+        };
+        //oscReceiverListener = this::oscReceiverPropertyChanged;
         w.getOSCReceiver().addPropertyChangeListener(wls.propertyChange(oscReceiverListener));
         inputValueListeners = new LinkedList<>();
         //For testing:
@@ -143,7 +150,7 @@ public class InputManager {
         return inputValueListeners.remove(l);
     }
 
-    private void addOSCInputListener(OSCInputGroup g) {
+    private void addOSCInputListener(final OSCInputGroup g) {
         OSCListener l = new OSCListener() {
             @Override
             public void acceptMessage(Date date, OSCMessage oscm) {

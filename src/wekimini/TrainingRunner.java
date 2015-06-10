@@ -119,7 +119,7 @@ public class TrainingRunner {
         p.trainingWasInterrupted();
     }
 
-    public void buildAll(List<Path> paths, List<Instances> data, PropertyChangeListener listener) {
+    public void buildAll(final List<Path> paths, final List<Instances> data, PropertyChangeListener listener) {
         if (trainingWorker != null && trainingWorker.getState() != SwingWorker.StateValue.DONE) {
             return;
         }

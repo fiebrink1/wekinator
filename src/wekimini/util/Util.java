@@ -256,12 +256,17 @@ public class Util {
         return file;
     }
 
-    public static void callOnClosed(JFrame f, Callable func) {
+    
+    public interface CallableOnClosed {
+        public void callMe();
+    }
+    
+    public static void callOnClosed(JFrame f, final CallableOnClosed func) {
         f.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
-                    func.call();
+                    func.callMe();
                 } catch (Exception ex) {
                     Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
                 }

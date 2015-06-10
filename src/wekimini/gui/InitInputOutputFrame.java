@@ -65,7 +65,15 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private final static int COMBO_J48_INDEX = 3;
 
     private OutputConfigurationFrame outputConfigViewer = null;
-    private final OutputConfigurationFrame.OutputGroupReceiver outputGroupReceiver = this::initFormForOutputGroup;
+    //private final OutputConfigurationFrame.OutputGroupReceiver outputGroupReceiver = this::initFormForOutputGroup;
+    private final OutputConfigurationFrame.OutputGroupReceiver outputGroupReceiver = new OutputConfigurationFrame.OutputGroupReceiver() {
+        @Override
+        public void outputGroupReady(OSCOutputGroup g) {
+            initFormForOutputGroup(g);
+        }
+    };
+
+    
     private OSCOutputGroup customConfiguredOutput = null;
     private static final Logger logger = Logger.getLogger(InitInputOutputFrame.class.getName());
 
@@ -116,7 +124,15 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     public void setWekinator(Wekinator w) {
         this.w = w;
         updateGUIForConnectionState(w.getOSCReceiver().getConnectionState());
-        oscReceiverListener = this::oscReceiverPropertyChanged;
+        //oscReceiverListener = this::oscReceiverPropertyChanged;
+        oscReceiverListener = new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                oscReceiverPropertyChanged(evt);
+            }
+        };
+        
         w.getOSCReceiver().addPropertyChangeListener(wls.propertyChange(oscReceiverListener));
     }
 

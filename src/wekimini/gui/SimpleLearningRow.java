@@ -5,7 +5,8 @@
  */
 package wekimini.gui;
 
-import com.sun.glass.events.KeyEvent;
+//import com.sun.glass.events.KeyEvent;
+import java.awt.event.KeyEvent;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -693,7 +694,7 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     }
     
     private void textModelValueKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textModelValueKeyReleased
-        //TODO: what to do if hard limits in place???
+        //TODO: what to do if hard limits in place???        
         if (evt.getKeyCode() == KeyEvent.VK_ENTER || evt.getKeyCode() == KeyEvent.VK_TAB) {
             try {
                 setValueFromText();
@@ -707,7 +708,7 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
         }
 
     }//GEN-LAST:event_textModelValueKeyReleased
-
+    
     private void colorDone() {
         hasChanged = false;
         textModelValue.setBackground(doneColor);
