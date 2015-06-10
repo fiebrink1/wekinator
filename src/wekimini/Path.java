@@ -27,6 +27,8 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 import weka.core.converters.ArffSaver;
+import wekimini.osc.OSCClassificationOutput;
+import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
 
 /**
@@ -64,6 +66,8 @@ public class Path {
     private transient final Wekinator w;
     private final List<String> inputNames;
     private transient final LearningManager learningManager;
+    private final boolean outputNeedsCorrection;
+    private final PathOutputCorrecter outputCorrector;
 
     public static enum ModelState {
 
@@ -146,6 +150,8 @@ public class Path {
         this.runEnabled = p.runEnabled;
         this.trainingCompleted = p.trainingCompleted;
         this.w = w; //Can't set from p: w is transient
+        this.outputNeedsCorrection = p.outputNeedsCorrection;
+        this.outputCorrector = new PathOutputCorrecter(this.output);
 
         //TODO: Add listener for output manager - change in output names will be important
         //TODO: Also add listener for input name changes! This will screw us up...
@@ -169,6 +175,8 @@ public class Path {
         this.outputName = output.getName();
         this.modelBuilder = output.getDefaultModelBuilder();
         setCurrentModelName(output.getName());
+        outputNeedsCorrection = PathOutputCorrecter.needsCorrecting(output);
+        outputCorrector = new PathOutputCorrecter(output);
         //updateSchedulerRegistration();
 
         /* w.getInputManager().addInputGroupChangeListener(new InputManager.InputGroupChangeListener() {
@@ -265,11 +273,14 @@ public class Path {
     }
 
     public double compute(Instance instance) throws Exception {
-        //Do something
-        // float[] inputs = {1.0f, 1.0f};
-        //setOutputValue(model.computeOutput(inputs));
-        return model.computeOutput(instance);
+        //TODO: replace with more principled & efficient solution: model output adapter
+        if (!outputNeedsCorrection) {
+            return model.computeOutput(instance);
+        } else {
+            return outputCorrector.correct(model.computeOutput(instance));
+        }
     }
+
 
     public boolean canCompute() {
         return (modelState != ModelState.NOT_READY && modelState != ModelState.READY_FOR_BUILDING);
@@ -629,5 +640,5 @@ public class Path {
             isLoaded = false;
         }
     }
-
+    
 }

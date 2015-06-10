@@ -5,7 +5,6 @@
  */
 package wekimini.learning;
 
-import java.awt.Component;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Instances;
