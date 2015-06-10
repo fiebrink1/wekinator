@@ -73,6 +73,20 @@ public class OSCOutputGroup {
     public int getOutputPort() {
         return outputPort;
     }
+
+    public void setOscMessage(String oscMessage) {
+        this.oscMessage = oscMessage;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
+    public void setOutputPort(int outputPort) {
+        this.outputPort = outputPort;
+    }
+    
+    
     
     /**
      * Remove PropertyChangeListener.

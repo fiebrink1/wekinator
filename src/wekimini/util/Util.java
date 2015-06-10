@@ -164,7 +164,7 @@ public class Util {
     }
 
     public static boolean checkNoSpace(JTextField textField, String name, Component caller) {
-        if (textField.getText().trim().length() == 0) {
+        if (textField.getText().trim().contains(" ")) {
             Util.showPrettyErrorPane(caller, name + " cannot contain a space");
             return false;
         }

@@ -27,8 +27,8 @@ public class OSCSender {
     private OSCPortOut sender = null;
     private InetAddress hostname = null;
     private int port = -1;
-    private String sendMessage;
-    private final String DEFAULT_SEND_MESSAGE = "/wek/outputs";
+   // private String sendMessage;
+  //  private final String DEFAULT_SEND_MESSAGE = "/wek/outputs";
     private final int DEFAULT_SEND_PORT = 6453;
     private boolean isValidState = false;
 
@@ -42,22 +42,23 @@ public class OSCSender {
     public OSCSender() throws UnknownHostException, SocketException {
 //        hostname = InetAddress.getByName("localhost");
 //        port = DEFAULT_SEND_PORT;
-        sendMessage = DEFAULT_SEND_MESSAGE;
+      //  sendMessage = DEFAULT_SEND_MESSAGE;
 //        sender = new OSCPortOut(hostname, port);
     }
 
-    public OSCSender(InetAddress hostname, int port) throws SocketException {
+   /* public OSCSender(InetAddress hostname, int port) throws SocketException {
         this.hostname = hostname;
         this.port = port;
         sendMessage = DEFAULT_SEND_MESSAGE;
         sender = new OSCPortOut(hostname, port);
         isValidState = true;
-    }
+    } */
 
     public void setDefaultHostAndPort() throws SocketException, UnknownHostException {
         setHostnameAndPort(InetAddress.getByName("localhost"), DEFAULT_SEND_PORT);
     }
 
+    /*
     public void setSendMessage(String sendMessage) throws SocketException {
         this.sendMessage = sendMessage;
         sender = new OSCPortOut(hostname, port);
@@ -65,7 +66,7 @@ public class OSCSender {
 
     public String getSendMessage() {
         return sendMessage;
-    }
+    } */
 
     public InetAddress getHostname() {
         return hostname;

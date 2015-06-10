@@ -12,6 +12,7 @@ package wekimini.gui;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.logging.Level;
@@ -37,6 +38,10 @@ public class OutputViewerTable extends javax.swing.JFrame {
     private static final Logger logger = Logger.getLogger(OutputViewerTable.class.getName());
     private final List<Path> paths;
     private final Wekinator w;
+    private OutputViewerTableSettingsEditor settingsChanger = null;
+    private int port = 0;
+    private String message = "";
+    private String host = "";
     
     
     public OutputViewerTable(Wekinator w) {
@@ -44,9 +49,19 @@ public class OutputViewerTable extends javax.swing.JFrame {
         this.w = w;
         this.outputGroup = w.getOutputManager().getOutputGroup();
         this.paths = w.getLearningManager().getPaths();
-        label1.setText("Sending " + outputGroup.getNumOutputs() + " outputs to port " + outputGroup.getOutputPort());
-        label2.setText("with message " + outputGroup.getOscMessage());
+        //this.port = outputGroup.getOutputPort();
+        this.message = outputGroup.getOscMessage();
+        //this.host = w.getOutputManager().getOutputGroup().getHostname();
+        this.port = w.getOSCSender().getPort();
+        this.host = w.getOSCSender().getHostname().getHostName();
+        updateLabel();
         populateTable();
+    }
+    
+    private void updateLabel() {
+        label1.setText("Sending " + outputGroup.getNumOutputs() + " outputs "
+                 + "with message " + message);
+        label2.setText("Sending to " + host + " at port " + port);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -57,13 +72,12 @@ public class OutputViewerTable extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         scrollTable = new javax.swing.JScrollPane();
         label1 = new javax.swing.JLabel();
-        label2 = new javax.swing.JLabel();
         buttonSendTest = new javax.swing.JButton();
-
-        jLabel1.setText("jLabel1");
+        jButton1 = new javax.swing.JButton();
+        label2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Current output information");
@@ -73,9 +87,9 @@ public class OutputViewerTable extends javax.swing.JFrame {
             }
         });
 
-        label1.setText("Sending 12 outputs to port 12000");
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        label2.setText("with message /wek/outputs");
+        label1.setText("Sending 12 outputs with message /wek/outputs");
 
         buttonSendTest.setText("Send test message");
         buttonSendTest.addActionListener(new java.awt.event.ActionListener() {
@@ -84,32 +98,60 @@ public class OutputViewerTable extends javax.swing.JFrame {
             }
         });
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(scrollTable, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
-            .add(layout.createSequentialGroup()
+        jButton1.setText("Change host, port, or message");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        label2.setText("Sending to localhost at port 12000");
+
+        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(label1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(label2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(layout.createSequentialGroup()
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(scrollTable, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
+                    .add(jPanel1Layout.createSequentialGroup()
+                        .add(jButton1)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(buttonSendTest)
-                        .add(0, 0, Short.MAX_VALUE)))
+                        .add(0, 0, Short.MAX_VALUE))
+                    .add(jPanel1Layout.createSequentialGroup()
+                        .add(6, 6, 6)
+                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(label1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(label2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .add(label1)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(label2)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(buttonSendTest)
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jButton1)
+                    .add(buttonSendTest))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(scrollTable, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE))
+                .add(scrollTable, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -120,20 +162,20 @@ public class OutputViewerTable extends javax.swing.JFrame {
 
     private void buttonSendTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSendTestActionPerformed
         try {                                               
-            String hostName = outputGroup.getHostname();
+            
             InetAddress address;
             try {
                 // try {
-                address = InetAddress.getByName(hostName);
+                address = InetAddress.getByName(host);
                 //  } catch
             } catch (UnknownHostException ex) {
-                Util.showPrettyErrorPane(this, "Unknown host " + hostName);
+                Util.showPrettyErrorPane(this, "Unknown host " + host);
                 return;
             }
             
-            w.getOSCSender().sendTestMessage(outputGroup.getOscMessage(),
+            w.getOSCSender().sendTestMessage(message,
                     address,
-                    outputGroup.getOutputPort(),
+                    port,
                     outputGroup.getNumOutputs());
             
         } catch (IOException ex) {
@@ -143,6 +185,44 @@ public class OutputViewerTable extends javax.swing.JFrame {
 
     }//GEN-LAST:event_buttonSendTestActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if (settingsChanger == null) {
+            settingsChanger = new OutputViewerTableSettingsEditor(port, message, host, new OutputViewerTableSettingsEditor.OutputOSCSettingsReceiver() {
+                @Override
+                public void receiveNewSettings(int port, String message, String host) {
+                    updateSettings(port, message, host);
+                }
+            });
+            settingsChanger.setVisible(true);
+            settingsChanger.toFront();
+        } else {
+            settingsChanger.setVisible(true);
+            settingsChanger.toFront();
+        } 
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void updateSettings(int port, String message, String hostname) {
+        this.port = port;
+        this.message = message;
+        this.host = hostname;
+        
+        outputGroup.setOutputPort(port);
+        outputGroup.setOscMessage(message);
+        outputGroup.setHostName(hostname);
+        
+        try {
+            //Problem: No clear responsibility for this: outputgroup vs outputmanager vs sender..
+            //Probably want these saved with output group (because specific to an output, e.g. max patch)
+            //HOWEVER output group current has these as final fields...
+            //So we have to do this at top level too:
+            w.getOSCSender().setHostnameAndPort(InetAddress.getByName(host), port);
+        } catch (SocketException ex) {
+            Logger.getLogger(OutputViewerTable.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(OutputViewerTable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        updateLabel();
+    }
    
     /*private File findArffFileToSave() throws IOException {
      return null;
@@ -173,7 +253,8 @@ public class OutputViewerTable extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonSendTest;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel label1;
     private javax.swing.JLabel label2;
     private javax.swing.JScrollPane scrollTable;
