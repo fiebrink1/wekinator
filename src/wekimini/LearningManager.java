@@ -341,7 +341,7 @@ public class LearningManager {
         
         boolean anyTrained = false;
         for (Path p : paths) {
-            if (!p.canCompute()) {
+            if (p.canCompute()) {
                 anyTrained = true;
                 break;
             }
