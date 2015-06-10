@@ -21,6 +21,7 @@ import org.jdesktop.swingworker.SwingWorker;
 import weka.core.Instances;
 import weka.core.Instance;
 import wekimini.learning.ModelBuilder;
+import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCReceiver;
 import wekimini.util.WeakListenerSupport;
@@ -692,14 +693,25 @@ public class LearningManager {
         
         Path newP;
         if (newOutput != null) {
-            w.getOutputManager().updateOutput(newOutput, p.getOSCOutput());
+            w.getOutputManager().updateOutput(newOutput, p.getOSCOutput()); //this triggers change in data manager
             newP = new Path(newOutput, selectedInputNames, w);
             newP.setNumExamples(p.getNumExamples());
-            newP.inheritModel(p);
             if (newModelBuilder != null) {
-                newP.setModelBuilder(newModelBuilder);
+                newP.inheritModel(p);
+                newP.setModelBuilder(newModelBuilder); //automatically indicates that re-training needed
             } else {
-                newP.setModelBuilder(p.getModelBuilder());
+                newP.inheritModelAndBuilder(p);
+                if (newP.getModelState() == Path.ModelState.BUILT) {
+                    if (newOutput instanceof OSCClassificationOutput && p.getOSCOutput() instanceof OSCClassificationOutput) {
+                        if (((OSCClassificationOutput)newOutput).getNumClasses() != ((OSCClassificationOutput)p.getOSCOutput()).getNumClasses()) {
+                            newP.setModelState(Path.ModelState.NEEDS_REBUILDING);
+                            //Don't currently have a good way of comparing Model itself with Output to see if rebuilding necessary
+                        }
+                    }
+                }
+                //If only output has changed, and not model builder, we may or may not need to update model state
+                //DO need update if # classes has changed (if not for model output safety, then at least for saving safety)
+                //DON'T need update if just NN doing int/real or hard/soft limits.
             }
            // updateDataForPathChange(which, newP, p); 
             //w.getDataManager().notifyOutputTypeChange(); //DataManager should listen to OutputManager for this

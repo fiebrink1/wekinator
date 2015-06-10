@@ -62,20 +62,24 @@ public class Path {
     private transient Model model = null;
     private ModelBuilder modelBuilder = null;
     private final OSCOutput output;
-    private String outputName;
     private transient final Wekinator w;
     private final List<String> inputNames;
     private transient final LearningManager learningManager;
     private final boolean outputNeedsCorrection;
     private final PathOutputCorrecter outputCorrector;
 
-    void inheritModel(Path p) {
+    public void inheritModel(Path p) {
         setModel(p.model); //TODO: may have to make real copy later...
+        setModelState(p.modelState);
+    }
+    
+    public void inheritModelAndBuilder(Path p) {
+        setModel(p.model); //TODO: may have to make real copy later...
+        setModelBuilder(p.modelBuilder);
         setModelState(p.modelState);
     }
 
     public static enum ModelState {
-
         NOT_READY, READY_FOR_BUILDING, BUILDING, BUILT, NEEDS_REBUILDING
     };
     //private boolean hasData = false;
@@ -150,7 +154,6 @@ public class Path {
         this.modelState = p.modelState;
         this.numExamples = p.numExamples;
         this.output = p.output;
-        this.outputName = output.getName();
         this.recordEnabled = p.recordEnabled;
         this.runEnabled = p.runEnabled;
         this.trainingCompleted = p.trainingCompleted;
@@ -177,7 +180,6 @@ public class Path {
             inputNames.add(input);
         }
         this.output = output;
-        this.outputName = output.getName();
         this.modelBuilder = output.getDefaultModelBuilder();
         setCurrentModelName(output.getName());
         outputNeedsCorrection = PathOutputCorrecter.needsCorrecting(output);
