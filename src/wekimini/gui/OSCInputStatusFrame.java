@@ -43,6 +43,9 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
                 w.getOSCReceiver().removePropertyChangeListener(oscReceiverListener);
             }
         });
+        
+        int p = w.getOSCReceiver().getReceivePort();
+        fieldOscPort.setText(Integer.toString(p));
     }
     
     private void oscReceiverPropertyChanged(PropertyChangeEvent evt) {
