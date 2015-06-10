@@ -339,15 +339,14 @@ public class LearningManager {
         w.getDataManager().initialize(inputNames, w.getOutputManager().getOutputGroup(), data);
         notifyPathsOfDatasetChange = true;
         
-        boolean allTrained = true;
+        boolean anyTrained = false;
         for (Path p : paths) {
             if (!p.canCompute()) {
-                allTrained = false;
+                anyTrained = true;
                 break;
             }
         }
-        
-        if (allTrained) {
+        if (anyTrained) {
             setLearningState(LearningState.DONE_TRAINING);
         } else if (w.getDataManager().getNumExamples() > 0) {
             setLearningState(LearningState.READY_TO_TRAIN);
