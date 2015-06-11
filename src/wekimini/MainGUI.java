@@ -25,6 +25,7 @@ import wekimini.gui.OutputViewerTable;
 import wekimini.gui.path.PathEditorFrame;
 import wekimini.osc.OSCOutput;
 import wekimini.util.Util;
+import wekimini.WekiMiniRunner;
 
 /**
  *
@@ -177,7 +178,9 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             @Override
             public void windowClosing(WindowEvent e) {
                 System.out.println("HERE, closeable=" + closeable);
-                int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
+                //int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
+                int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to close this project?", "Close project?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, WekiMiniRunner.getIcon());
+
                 if (option == JOptionPane.YES_OPTION) {
                     finishUp();
                 }

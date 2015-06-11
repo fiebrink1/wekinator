@@ -5,6 +5,7 @@
  */
 package wekimini;
 
+import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -15,10 +16,16 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import wekimini.gui.About;
 import wekimini.gui.InitInputOutputFrame;
+import wekimini.gui.Preferences;
 import wekimini.util.Util;
 
 /**
@@ -32,12 +39,20 @@ public final class WekiMiniRunner {
     private static WekiMiniRunner ref = null; //Singleton
     private HashMap<Wekinator, Closeable> wekinatorCurrentMainFrames = new HashMap<>();
     private final WindowListener wl;
-
+    private final static About aboutBox = new About();
+    private final static Preferences preferencesBox = new Preferences();
+    private final ImageIcon myIcon = new ImageIcon(getClass().getResource("/wekimini/icons/wekimini_small.png"));
+    
+    
     public static WekiMiniRunner getInstance() {
         if (ref == null) {
             ref = new WekiMiniRunner();
         }
         return ref;
+    }
+    
+    public static ImageIcon getIcon() {
+        return getInstance().myIcon;
     }
     
     private void loadProperties() throws FileNotFoundException, IOException {
@@ -214,16 +229,14 @@ public final class WekiMiniRunner {
     // General info dialog; fed to the OSXAdapter as the method to call when
     // "About OSXAdapter" is selected from the application menu
     public void about() {
-        // aboutBox.setLocation((int) this.getLocation().getX() + 22, (int) this.getLocation().getY() + 22);
-        // aboutBox.setVisible(true);
+         //aboutBox.setLocation((int) this.getLocation().getX() + 22, (int) this.getLocation().getY() + 22);
+         aboutBox.setVisible(true);
     }
 
     // General preferences dialog; fed to the OSXAdapter as the method to call when
     // "Preferences..." is selected from the application menu
     public void preferences() {
-        System.out.println("HI WEKINATOR");
-        //prefs.setLocation((int) this.getLocation().getX() + 22, (int) this.getLocation().getY() + 22);
-        //prefs.setVisible(true);
+        preferencesBox.setVisible(true);
     }
 
     public boolean quit() {
@@ -233,7 +246,7 @@ public final class WekiMiniRunner {
     // General quit handler; fed to the OSXAdapter as the method to call when a system quit event occurs
     // A quit event is triggered by Cmd-Q, selecting Quit from the application or Dock menu, or logging out
     public boolean quitNicely() {
-        int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
+        int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Quit Wekinator?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, myIcon);
         if (option == JOptionPane.YES_OPTION) {
             quitWithoutPrompt();
         }
