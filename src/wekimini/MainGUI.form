@@ -92,12 +92,6 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem7ActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem3">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Logging console"/>
-                <Property name="enabled" type="boolean" value="false"/>
-              </Properties>
-            </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="menuPerformanceCheck">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Performance mode view"/>
@@ -107,12 +101,6 @@
               </Events>
             </MenuItem>
           </SubComponents>
-        </Menu>
-        <Menu class="javax.swing.JMenu" name="jMenu3">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Actions"/>
-            <Property name="enabled" type="boolean" value="false"/>
-          </Properties>
         </Menu>
       </SubComponents>
     </Menu>

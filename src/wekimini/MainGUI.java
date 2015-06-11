@@ -261,9 +261,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
         menuPerformanceCheck = new javax.swing.JCheckBoxMenuItem();
-        jMenu3 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("New project");
@@ -366,10 +364,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         jMenu2.add(jMenuItem7);
 
-        jMenuItem3.setText("Logging console");
-        jMenuItem3.setEnabled(false);
-        jMenu2.add(jMenuItem3);
-
         menuPerformanceCheck.setText("Performance mode view");
         menuPerformanceCheck.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -379,10 +373,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         jMenu2.add(menuPerformanceCheck);
 
         jMenuBar1.add(jMenu2);
-
-        jMenu3.setText("Actions");
-        jMenu3.setEnabled(false);
-        jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
 
@@ -587,11 +577,9 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;

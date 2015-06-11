@@ -117,7 +117,8 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
 
     @Override
     public boolean isChecked() {
-        return checkbox1.isSelected();
+       // return checkbox1.isSelected();
+        return true; //TODO: replace when re-adding checkbox
     }
 
     /**
@@ -305,7 +306,8 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
 
     @Override
     public void setSelected(boolean s) {
-        checkbox1.setSelected(s);
+        //checkbox1.setSelected(s);
+        //TODO: replace when re-adding checkbox
     }
     
     @Override
@@ -332,7 +334,8 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     
     @Override
     public boolean isSelected() {
-        return checkbox1.isSelected();
+       // return checkbox1.isSelected();
+        return true; //TODO: replace when re-adding checkbox
     }
     
     public static void main(String[] args) {
@@ -370,7 +373,6 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        checkbox1 = new javax.swing.JCheckBox();
         panelMain = new javax.swing.JPanel();
         labelModelName = new javax.swing.JLabel();
         sliderModelValue = new javax.swing.JSlider();
@@ -397,20 +399,15 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setMaximumSize(new java.awt.Dimension(28, 74));
 
-        checkbox1.setBackground(new java.awt.Color(255, 255, 255));
-        checkbox1.setAlignmentY(0.0F);
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(checkbox1)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addGap(0, 28, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(checkbox1, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
+            .addGap(0, 74, Short.MAX_VALUE)
         );
 
         add(jPanel1);
@@ -797,7 +794,6 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     private javax.swing.JButton buttonLearnerRecord;
     private javax.swing.JPanel cardClassifier;
     private javax.swing.JPanel cardNumeric;
-    private javax.swing.JCheckBox checkbox1;
     private javax.swing.JComboBox comboClassifier;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;

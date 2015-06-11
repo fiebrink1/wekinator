@@ -51,6 +51,10 @@ public class PathEditorFrame extends javax.swing.JFrame {
 
     public PathEditorFrame(Path p, String[] inputNames, Wekinator w) {
         initComponents();
+        
+        jButton1.setVisible(false);
+        jButton2.setVisible(false);
+        
         this.p = p;
         initFormForPath();
         this.w = w;

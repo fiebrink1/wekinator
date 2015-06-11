@@ -44,6 +44,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
      */
     public SimpleLearningSet() {
         initComponents();
+        jButton3.setVisible(false);
     }
     
     public final void setup(Wekinator w, Path[] ps, String[] modelNames) {
@@ -114,6 +115,8 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     public SimpleLearningSet(Wekinator w, Path[] ps, String[] modelNames) {
         initComponents();
         setup(w, ps, modelNames);
+        jButton3.setVisible(false);
+
         
     }
     
@@ -171,9 +174,6 @@ public class SimpleLearningSet extends javax.swing.JPanel {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        selectAllCheckbox = new javax.swing.JCheckBox();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -204,41 +204,15 @@ public class SimpleLearningSet extends javax.swing.JPanel {
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
-        selectAllCheckbox.setAlignmentX(0.5F);
-        selectAllCheckbox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                selectAllCheckboxActionPerformed(evt);
-            }
-        });
-
-        jLabel5.setFont(new java.awt.Font("Lucida Grande", 0, 9)); // NOI18N
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("select");
-
-        jLabel6.setFont(new java.awt.Font("Lucida Grande", 0, 9)); // NOI18N
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("all");
-        jLabel6.setAlignmentX(0.5F);
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(selectAllCheckbox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+            .addGap(0, 38, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel5)
-                .addGap(0, 0, 0)
-                .addComponent(jLabel6)
-                .addGap(0, 0, 0)
-                .addComponent(selectAllCheckbox))
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
@@ -490,14 +464,6 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         }
     }
     
-    private void selectAllCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllCheckboxActionPerformed
-       boolean selected = selectAllCheckbox.isSelected();
-        for (LearningRow r : pathPanels) {
-           r.setSelected(selected);
-       }
-        
-    }//GEN-LAST:event_selectAllCheckboxActionPerformed
-
     private void buttonViewExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonViewExamplesActionPerformed
         w.getMainGUI().showExamplesViewer();
     }//GEN-LAST:event_buttonViewExamplesActionPerformed
@@ -538,8 +504,6 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -549,7 +513,6 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPanel pathsPanel;
     private javax.swing.JScrollPane scrollPathsPanel;
-    private javax.swing.JCheckBox selectAllCheckbox;
     private wekimini.gui.SimpleLearningRow simpleLearningRow10;
     private wekimini.gui.SimpleLearningRow simpleLearningRow11;
     private wekimini.gui.SimpleLearningRow simpleLearningRow3;
