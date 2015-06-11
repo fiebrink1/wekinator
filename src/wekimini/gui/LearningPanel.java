@@ -110,23 +110,27 @@ public class LearningPanel extends javax.swing.JPanel {
             indicatorOscIn.setToolTipText("Listening, but no data arriving");
 
             System.out.println("Connected no data");
-        } else {
+        } else if (rstate == OSCMonitor.OSCReceiveState.RECEIVING) {
             indicatorOscIn.setIcon(onIcon);
             indicatorOscIn.setToolTipText("Receiving inputs");
 
-            System.out.println("Receiving");
+            //System.out.println("Receiving");
+        } else {
+            //There's a problem!
+            indicatorOscIn.setIcon(problemIcon);
+            indicatorOscIn.setToolTipText("Wrong number of inputs received");
         }
     }
 
     private void setOutIcon(boolean isSending) {
         if (isSending) {
             indicatorOscOut.setIcon(onIcon);
-            indicatorOscIn.setToolTipText("Sending outputs");
+            indicatorOscOut.setToolTipText("Sending outputs");
 
             System.out.println("SENDING");
         } else {
             indicatorOscOut.setIcon(offIcon);
-            indicatorOscIn.setToolTipText("Not sending outputs");
+            indicatorOscOut.setToolTipText("Not sending outputs");
 
             System.out.println("NOT SENDING");
         }

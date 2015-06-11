@@ -23,7 +23,7 @@ public class OSCMonitor {
 
     public static enum OSCReceiveState {
 
-        NOT_CONNECTED, CONNECTED_NODATA, RECEIVING
+        NOT_CONNECTED, CONNECTED_NODATA, RECEIVING, RECEIVING_WRONG_NUMBER
     };
 
     private OSCReceiveState receiveState = OSCReceiveState.NOT_CONNECTED;
@@ -176,6 +176,11 @@ public class OSCMonitor {
         boolean oldIsSending = this.isSending;
         this.isSending = isSending;
         propertyChangeSupport.firePropertyChange(PROP_ISSENDING, oldIsSending, isSending);
+    }
+    
+    //TODO: Handle this more gracefully; return to just "listening" if don't receive wrong number for a while
+    public void notifyInputError() {
+        setReceiveState(OSCReceiveState.RECEIVING_WRONG_NUMBER);
     }
 
     /**

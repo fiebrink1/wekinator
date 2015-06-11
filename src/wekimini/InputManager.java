@@ -180,6 +180,7 @@ public class InputManager {
                     String msg = "Error: mismatch in input length: "
                             + "Expected " + currentValues.length + ", received " + o.length;
                     w.getStatusUpdateCenter().update(this, msg);
+                    w.getOSCMonitor().notifyInputError(); //TODO: Make more elegant.
                     logger.log(Level.WARNING, msg);
                     //TODO: might want to turn status on OSC Input to red here
                 }

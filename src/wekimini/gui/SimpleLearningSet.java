@@ -44,7 +44,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
      */
     public SimpleLearningSet() {
         initComponents();
-        jButton3.setVisible(false);
+      //  jButton3.setVisible(false);
     }
     
     public final void setup(Wekinator w, Path[] ps, String[] modelNames) {
@@ -115,7 +115,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     public SimpleLearningSet(Wekinator w, Path[] ps, String[] modelNames) {
         initComponents();
         setup(w, ps, modelNames);
-        jButton3.setVisible(false);
+        //jButton3.setVisible(false);
 
         
     }
@@ -184,9 +184,9 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         buttonViewExamples = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
         buttonRecord = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         scrollPathsPanel = new javax.swing.JScrollPane();
@@ -235,6 +235,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
 
         buttonRandomize.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         buttonRandomize.setText("randomize");
+        buttonRandomize.setToolTipText("Set outputs to random values");
         buttonRandomize.setSize(new java.awt.Dimension(97, 30));
         buttonRandomize.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -270,6 +271,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         jLabel3.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
         buttonDeleteAllExamples.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/x2.png"))); // NOI18N
+        buttonDeleteAllExamples.setToolTipText("Delete all examples");
         buttonDeleteAllExamples.setPreferredSize(new java.awt.Dimension(34, 34));
         buttonDeleteAllExamples.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -278,6 +280,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         });
 
         buttonViewExamples.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/mag2.png"))); // NOI18N
+        buttonViewExamples.setToolTipText("View examples");
         buttonViewExamples.setMaximumSize(new java.awt.Dimension(30, 34));
         buttonViewExamples.setName(""); // NOI18N
         buttonViewExamples.setPreferredSize(new java.awt.Dimension(34, 34));
@@ -316,18 +319,8 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         jLabel4.setText("Configure");
         jLabel4.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/save2.png"))); // NOI18N
-        jButton3.setEnabled(false);
-        jButton3.setMaximumSize(new java.awt.Dimension(30, 34));
-        jButton3.setName(""); // NOI18N
-        jButton3.setPreferredSize(new java.awt.Dimension(34, 34));
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-
         buttonRecord.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/record1.png"))); // NOI18N
+        buttonRecord.setToolTipText("Toggle example recording for all outputs");
         buttonRecord.setMaximumSize(new java.awt.Dimension(30, 30));
         buttonRecord.setMinimumSize(new java.awt.Dimension(30, 30));
         buttonRecord.setName(""); // NOI18N
@@ -339,6 +332,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         });
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/play1.png"))); // NOI18N
+        jButton5.setToolTipText("Toggle run-time computation for all outputs");
         jButton5.setMaximumSize(new java.awt.Dimension(30, 34));
         jButton5.setName(""); // NOI18N
         jButton5.setPreferredSize(new java.awt.Dimension(34, 34));
@@ -348,30 +342,36 @@ public class SimpleLearningSet extends javax.swing.JPanel {
             }
         });
 
+        jLabel5.setText("Edit  Status");
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(buttonRecord, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(19, 19, 19)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(56, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addComponent(jLabel4)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(buttonRecord, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addComponent(jLabel5)
+                .addContainerGap())
         );
 
         jLabel1.setText("Models");
@@ -480,10 +480,6 @@ public class SimpleLearningSet extends javax.swing.JPanel {
        }
     }
     
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        System.out.println("ERROR: Save not implemented yet!");
-    }//GEN-LAST:event_jButton3ActionPerformed
-
     private void buttonRecordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRecordActionPerformed
         recordClicked();
     }//GEN-LAST:event_buttonRecordActionPerformed
@@ -498,12 +494,12 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     private javax.swing.JButton buttonRandomize;
     private javax.swing.JButton buttonRecord;
     private javax.swing.JButton buttonViewExamples;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
