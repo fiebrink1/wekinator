@@ -257,9 +257,15 @@ public final class WekiMiniRunner {
         //This is where we save logs, shutdown any OSC if needed, etc.
         //Notice that each Wekinator must do its own shutdown of OSC, logging, etc. separately (this is universal shutdown)
         if (! wekinatorCurrentMainFrames.isEmpty()) {
-            for (Wekinator w : wekinatorCurrentMainFrames.keySet()) {
+            Wekinator[] stillOpen = wekinatorCurrentMainFrames.keySet().toArray(new Wekinator[0]);
+            for (int i = 0; i < stillOpen.length; i++) {
+                stillOpen[i].close();
+            }
+            
+            //This gives error: multiple threads accessing collection concurrently = bad !
+           /* for (Wekinator w : wekinatorCurrentMainFrames.keySet()) {
                 w.close();
-            } 
+            }  */
         }
         LoggingManager.closeUniversalLogs();
         

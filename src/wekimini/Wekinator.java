@@ -24,7 +24,9 @@ import wekimini.util.Util;
  * @author rebecca
  */
 public class Wekinator {
-    //TODO: Can make more efficient by initializing some of these on demand (e.g. gui, OSC Monitor)
+    public static final String version = "v2.0.0.0";
+
+//TODO: Can make more efficient by initializing some of these on demand (e.g. gui, OSC Monitor)
     
    // private final Settings settings;
   //  private File projectLocation;

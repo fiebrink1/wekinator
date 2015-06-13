@@ -5,6 +5,8 @@
  */
 package wekimini.gui;
 
+import wekimini.Wekinator;
+
 /**
  *
  * @author rebecca
@@ -16,6 +18,7 @@ public class About extends javax.swing.JFrame {
      */
     public About() {
         initComponents();
+        labelVersion.setText(Wekinator.version);
     }
 
     /**
@@ -31,6 +34,8 @@ public class About extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        labelVersion = new javax.swing.JLabel();
 
         setTitle("About Wekinator");
         setResizable(false);
@@ -45,10 +50,16 @@ public class About extends javax.swing.JFrame {
         });
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("<html><div align=\"center\"><b><h2>Wekinator (WekiMini version)</h2></b><br>Created by Rebecca Fiebrink, 2015<br><a href=\"http://www.wekinator.org\">www.wekinator.org</a><br><br>Instructions: <a href=\"www.wekinator.org/instructions.html\">www.wekinator.org/instructions.html</a><br>Help: post to the wekinator-users list at <a href=\"https://groups.google.com/forum/#!forum/wekinator-users\">https://groups.google.com/forum/#!forum/wekinator-users</a></div></html>");
+        jLabel1.setText("<html><div align=\"center\">Created by Rebecca Fiebrink, 2015<br><a href=\"http://www.wekinator.org\">www.wekinator.org</a><br><br>Instructions: <a href=\"www.wekinator.org/instructions.html\">www.wekinator.org/instructions.html</a><br>Help: post to the wekinator-users list at <a href=\"https://groups.google.com/forum/#!forum/wekinator-users\">https://groups.google.com/forum/#!forum/wekinator-users</a></div></html>");
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/weka1.png"))); // NOI18N
+
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setText("<html><div align=\"center\"><b><h2>Wekinator (WekiMini version)</h2></b></div></html>");
+
+        labelVersion.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelVersion.setText("v0.0.0.0");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -57,9 +68,14 @@ public class About extends javax.swing.JFrame {
             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(189, 189, 189)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(189, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(189, 189, 189)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 183, Short.MAX_VALUE))
+                    .addComponent(labelVersion, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+            .addComponent(jLabel3)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -67,7 +83,11 @@ public class About extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(labelVersion, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -130,6 +150,8 @@ public class About extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel labelVersion;
     // End of variables declaration//GEN-END:variables
 }
