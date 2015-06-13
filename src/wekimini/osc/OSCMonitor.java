@@ -82,7 +82,6 @@ public class OSCMonitor {
         } else {
            setReceiveState(OSCReceiveState.NOT_CONNECTED);
         }
-        
     }
 
     /**
@@ -104,7 +103,8 @@ public class OSCMonitor {
             scheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
-                    if (receiveState != OSCReceiveState.RECEIVING && hasReceivedRecently) {
+                    if (receiveState == OSCReceiveState.CONNECTED_NODATA
+                            && hasReceivedRecently) {
                         setReceiveState(OSCReceiveState.RECEIVING);
                     } else if ((receiveState == OSCReceiveState.RECEIVING 
                             || receiveState == OSCReceiveState.CONNECTED_NODATA)
