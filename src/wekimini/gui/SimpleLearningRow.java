@@ -56,9 +56,9 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     private boolean learnerRun = true;
     
     private final ImageIcon recordIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/record1.png"));
-    private final ImageIcon recordIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/record6.png"));
+    private final ImageIcon recordIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/norec3.png"));
     private final ImageIcon playIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/play1.png"));
-    private final ImageIcon playIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/play2.png"));
+    private final ImageIcon playIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noplay1.png"));
 
     
     //Colors for Path status

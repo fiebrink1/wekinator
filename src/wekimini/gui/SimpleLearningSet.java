@@ -33,9 +33,9 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     private boolean recordAll = true;
     private boolean runAll = true;
     private final ImageIcon recordIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/record1.png"));
-    private final ImageIcon recordIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/record6.png"));
+    private final ImageIcon recordIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/norec3.png"));
     private final ImageIcon playIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/play1.png"));
-    private final ImageIcon playIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/play2.png"));
+    private final ImageIcon playIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noplay1.png"));
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture scheduledFuture;
     
