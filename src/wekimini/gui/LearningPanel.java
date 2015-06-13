@@ -28,7 +28,10 @@ public class LearningPanel extends javax.swing.JPanel {
     private final ImageIcon onIcon = new ImageIcon(getClass().getResource("/wekimini/icons/green3.png")); // NOI18N
     private final ImageIcon offIcon = new ImageIcon(getClass().getResource("/wekimini/icons/yellow2.png")); // NOI18N
     private final ImageIcon problemIcon = new ImageIcon(getClass().getResource("/wekimini/icons/redx1.png")); // NOI18N
+    private final ImageIcon problemIcon2 = new ImageIcon(getClass().getResource("/wekimini/icons/red1.png")); // NOI18N
 
+    
+    
     int lastRoundAdvertised = 0;
 
     /**
@@ -117,7 +120,7 @@ public class LearningPanel extends javax.swing.JPanel {
             //System.out.println("Receiving");
         } else {
             //There's a problem!
-            indicatorOscIn.setIcon(problemIcon);
+            indicatorOscIn.setIcon(problemIcon2);
             indicatorOscIn.setToolTipText("Wrong number of inputs received");
         }
     }
