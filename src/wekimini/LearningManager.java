@@ -399,6 +399,11 @@ public class LearningManager {
             public void update(double[] vals) {
                 updateInputs(vals);
             }
+
+            @Override
+            public void notifyInputError() {
+
+            }
         });
         
         updateAbleToRecord();
@@ -475,6 +480,10 @@ public class LearningManager {
             @Override
             public void update(double[] vals) {
                 updateInputs(vals);
+            }
+
+            @Override
+            public void notifyInputError() {
             }
         });
     }

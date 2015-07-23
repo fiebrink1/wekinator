@@ -180,9 +180,8 @@ public class InputManager {
                     String msg = "Error: mismatch in input length: "
                             + "Expected " + currentValues.length + ", received " + o.length;
                     w.getStatusUpdateCenter().update(this, msg);
-                    w.getOSCMonitor().notifyInputError(); //TODO: Make more elegant.
+                    notifyListenersOfError();
                     logger.log(Level.WARNING, msg);
-                    //TODO: might want to turn status on OSC Input to red here
                 }
         }
         //Not sure if we need to store this array within this class, too
@@ -193,9 +192,16 @@ public class InputManager {
             l.update(data);
         }
     }
+    
+    private void notifyListenersOfError() {
+        for(InputListener l : inputValueListeners) {
+            l.notifyInputError();
+        }
+    }
 
     public interface InputListener extends EventListener {
         public void update(double[] vals);
+        public void notifyInputError();
     }
 
     /*public interface InputGroupChangeListener extends EventListener {

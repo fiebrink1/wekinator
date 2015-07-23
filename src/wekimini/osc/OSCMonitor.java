@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import wekimini.InputManager;
-import wekimini.gui.LearningRow;
 
 /**
  *
@@ -67,6 +66,11 @@ public class OSCMonitor {
             public void update(double[] vals) {
                 inputReceived();
             }
+
+            @Override
+            public void notifyInputError() {
+                inputError();
+            }
         });
 
         os.addSendEventListener(new ChangeListener() {
@@ -103,11 +107,13 @@ public class OSCMonitor {
             scheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
-                    if (receiveState == OSCReceiveState.CONNECTED_NODATA
+                    if ((receiveState == OSCReceiveState.CONNECTED_NODATA ||
+                            receiveState == OSCReceiveState.RECEIVING_WRONG_NUMBER)
                             && hasReceivedRecently) {
                         setReceiveState(OSCReceiveState.RECEIVING);
                     } else if ((receiveState == OSCReceiveState.RECEIVING 
-                            || receiveState == OSCReceiveState.CONNECTED_NODATA)
+                            || receiveState == OSCReceiveState.CONNECTED_NODATA
+                            || receiveState == OSCReceiveState.RECEIVING_WRONG_NUMBER)
                         && !hasReceivedRecently) {
                         setReceiveState(OSCReceiveState.CONNECTED_NODATA);
                     }
@@ -178,8 +184,7 @@ public class OSCMonitor {
         propertyChangeSupport.firePropertyChange(PROP_ISSENDING, oldIsSending, isSending);
     }
     
-    //TODO: Handle this more gracefully; return to just "listening" if don't receive wrong number for a while
-    public void notifyInputError() {
+    private void inputError() {
         setReceiveState(OSCReceiveState.RECEIVING_WRONG_NUMBER);
     }
 

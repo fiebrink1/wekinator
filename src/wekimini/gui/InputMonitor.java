@@ -33,6 +33,10 @@ public class InputMonitor extends javax.swing.JFrame {
         public void update(double[] vals) {
                updateValues(vals);
         }
+
+        @Override
+        public void notifyInputError() {
+        }
     };
 
     

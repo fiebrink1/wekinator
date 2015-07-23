@@ -47,6 +47,10 @@ public class GUIInputRow extends javax.swing.JPanel {
             public void update(double[] vals) {
                 updateLight();
             }
+
+            @Override
+            public void notifyInputError() {
+            }
         };
         
         inputManager.addInputValueListener(inputListener);
