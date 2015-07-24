@@ -847,6 +847,12 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             @Override
             public void setNames(String[] names) {
                 receivedNewInputNames(names);
+                inputCustomiser = null;
+            }
+
+            @Override
+            public void cancel() {
+                inputCustomiser = null;
             }
         };
 
@@ -859,12 +865,12 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                 GuiIONameCustomise.IOType.INPUT);
         inputCustomiser.setAlwaysOnTop(true);
         inputCustomiser.setVisible(true);
-        Util.callOnClosed(inputCustomiser, new Util.CallableOnClosed() {
+        /*Util.callOnClosed(inputCustomiser, new Util.CallableOnClosed() {
             @Override
             public void callMe() {
                 inputCustomiser = null;
             }
-        });
+        }); */
     }
 
     private void buttonInputOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonInputOptionsActionPerformed
@@ -968,6 +974,12 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             @Override
             public void setNames(String[] names) {
                 receivedNewOutputNames(names);
+                outputCustomiser = null;
+            }
+
+            @Override
+            public void cancel() {
+                outputCustomiser = null;
             }
         };
 
@@ -980,12 +992,12 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                 GuiIONameCustomise.IOType.OUTPUT);
         outputCustomiser.setAlwaysOnTop(true);
         outputCustomiser.setVisible(true);
-        Util.callOnClosed(outputCustomiser, new Util.CallableOnClosed() {
+        /*Util.callOnClosed(outputCustomiser, new Util.CallableOnClosed() {
             @Override
             public void callMe() {
                 outputCustomiser = null;
             }
-        });
+        }); */
     }
 
     private void buttonOutputOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOutputOptionsActionPerformed

@@ -183,6 +183,7 @@ public class GuiIONameCustomise extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonResetActionPerformed
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
+        namesListReceiver.cancel();
         this.dispose();
     }//GEN-LAST:event_buttonCancelActionPerformed
 
@@ -239,6 +240,10 @@ public class GuiIONameCustomise extends javax.swing.JFrame {
                     public void setNames(String[] names) {
                         System.out.println("HELLO!");
                     }
+
+                    @Override
+                    public void cancel() {
+                    }
                 };
                 new GuiIONameCustomise(5, baseName, currNames, r, IOType.OUTPUT).setVisible(true);
                 
@@ -248,6 +253,7 @@ public class GuiIONameCustomise extends javax.swing.JFrame {
     
     public interface NamesListReceiver {
         void setNames(String[] names);
+        void cancel();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
