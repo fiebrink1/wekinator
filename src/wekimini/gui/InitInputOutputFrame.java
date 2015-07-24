@@ -1006,21 +1006,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         int port = getSendPortFromForm();
         int numOutputs = Integer.parseInt(fieldNumOutputs.getText());
 
-        if (currentOutputNames.length != numOutputs) {
-            if (currentOutputNames.length > numOutputs) {
-                String[] newNames = new String[numOutputs];
-                System.arraycopy(currentOutputNames, 0, newNames, 0, numOutputs);
-                currentOutputNames = newNames;
-            } else { //We need to add some new names
-                String[] newNames = new String[numOutputs];
-                System.arraycopy(currentOutputNames, 0, newNames, 0, currentOutputNames.length);
-                String baseName = setBaseNameFromOscField(fieldOutputOSCMessage, "Output");
-                for (int i = currentOutputNames.length; i < numOutputs; i++) {
-                    newNames[i] = baseName + "-" + (i + 1);
-                }
-                currentOutputNames = newNames;
-            }
-        }
+        setCurrentOutputNames(numOutputs);
 
         if (comboOutputType.getSelectedIndex() == COMBO_CLASSIFICATION_INDEX) {
             List<OSCOutput> outputs = new LinkedList<>();
@@ -1051,11 +1037,34 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         }
     }
 
+    private void setCurrentOutputNames(int numOutputs) {
+        if (currentOutputNames.length != numOutputs) {
+            if (currentOutputNames.length > numOutputs) {
+                String[] newNames = new String[numOutputs];
+                System.arraycopy(currentOutputNames, 0, newNames, 0, numOutputs);
+                currentOutputNames = newNames;
+            } else { //We need to add some new names
+                String[] newNames = new String[numOutputs];
+                System.arraycopy(currentOutputNames, 0, newNames, 0, currentOutputNames.length);
+                String baseName = setBaseNameFromOscField(fieldOutputOSCMessage, "Output");
+                for (int i = currentOutputNames.length; i < numOutputs; i++) {
+                    newNames[i] = baseName + "-" + (i + 1);
+                }
+                currentOutputNames = newNames;
+            }
+        }
+    }
+    
     private OSCInputGroup getInputGroupFromForm() {
         String name = "Inputs";
         String oscMessage = fieldInputOSCMessage.getText().trim();
         int numInputs = Integer.parseInt(fieldNumInputs.getText());
+        setCurrentInputNames(numInputs);
+        OSCInputGroup ig = new OSCInputGroup(name, oscMessage, numInputs, currentInputNames);
+        return ig;
+    }
 
+    private void setCurrentInputNames(int numInputs) {
         if (currentInputNames.length != numInputs) {
             if (currentInputNames.length > numInputs) {
                 String[] newNames = new String[numInputs];
@@ -1071,10 +1080,8 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                 currentInputNames = newNames;
             }
         }
-        OSCInputGroup ig = new OSCInputGroup(name, oscMessage, numInputs, currentInputNames);
-        return ig;
     }
-
+    
     private String getHostnameFromForm() {
         return fieldHostName.getText().trim();
     }
@@ -1091,13 +1098,15 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
     private void buttonNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonNextActionPerformed
         //TODO: have to do more if configuringOSC on next screen...
-        if (checkOSCReady() && checkInputReady() && checkOutputReady() && customConfigMatchesGUI()) {
+        if (checkOSCReady() && checkInputReady() && checkOutputReady() && checkNamesUnique() && customConfigMatchesGUI()) {
             //System.out.println("READY TO GO");
             try {
                 configureOSCSenderFromForm();
 
                 OSCInputGroup inputGroup = getInputGroupFromForm();
                 OSCOutputGroup outputGroup = getOutputGroupFromForm();
+                
+                
                 w.getInputManager().setOSCInputGroup(inputGroup);
                 w.getOutputManager().setOSCOutputGroup(outputGroup);
                 w.getLearningManager().initializeInputsAndOutputs();
@@ -1413,6 +1422,22 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             return Util.checkIsPositiveNumber(fieldNumClasses, "Number of classes", this);
         }
         return true;
+    }
+    
+    /* Requires input and output fields are properly formatted as ints */
+    private boolean checkNamesUnique() {
+        int numInputs = Integer.parseInt(fieldNumInputs.getText());
+        int numOutputs = Integer.parseInt(fieldNumOutputs.getText());
+        setCurrentInputNames(numInputs);
+        setCurrentOutputNames(numOutputs);
+        String[] allNames = new String[numInputs + numOutputs];
+        System.arraycopy(currentInputNames, 0, allNames, 0, currentInputNames.length);
+        System.arraycopy(currentOutputNames, 0, allNames, currentInputNames.length, currentOutputNames.length);
+        boolean unique = Util.checkAllUnique(allNames);
+        if (! unique) {
+            Util.showPrettyErrorPane(this, "Input and output names must all be unique");
+        }
+        return unique;
     }
 
     public boolean isCloseable() {
