@@ -86,7 +86,8 @@ public class LearningManager {
     public static final String PROP_ABLE_TO_RUN = "ableToRun";
     private boolean notifyPathsOfDatasetChange = true;
     
-    private List<PathOutputTypeEditedListener> pathEditedListeners = new LinkedList<>();
+    private final List<PathOutputTypeEditedListener> pathEditedListeners = new LinkedList<>();
+    private final List<InputOutputConnectionsListener> inputOutputConnectionsListeners = new LinkedList<>();
     
     public void addPathEditedListener(PathOutputTypeEditedListener l) {
         pathEditedListeners.add(l);
@@ -293,7 +294,6 @@ public class LearningManager {
     }
 
     //newConnections[i][j] is true if input i is connected to output j
-
     public void updateInputOutputConnections(boolean[][] newConnections) {
         if (newConnections.length != w.getInputManager().getInputNames().length
                 || newConnections[0].length != w.getOutputManager().getOutputGroup().getNumOutputs()) {
@@ -318,6 +318,7 @@ public class LearningManager {
         for (int i = 0; i < paths.size(); i++) {
             paths.get(i).setSelectedInputs(newInputsForPaths.get(i).toArray(new String[0]));
         }
+        notifyNewInputOutputConnections(newConnections);
         w.getStatusUpdateCenter().update(this, "Input/Output connections updated.");
     }
 
@@ -801,5 +802,23 @@ public class LearningManager {
     public interface PathOutputTypeEditedListener {
         public void pathOutputTypeEdited(int which, Path newPath, Path oldPath);  
     } 
+    
+    public interface InputOutputConnectionsListener {
+        public void newConnectionMatrix(boolean[][] connections);
+    }
+    
+    private void notifyNewInputOutputConnections(boolean[][] connections) {
+        for (InputOutputConnectionsListener l: inputOutputConnectionsListeners) {
+            l.newConnectionMatrix(connections);
+        }
+    }
+    
+    public void addConnectionsListener(InputOutputConnectionsListener l) {
+        inputOutputConnectionsListeners.add(l);
+    }
+
+    public boolean removeConnectionsListener(InputOutputConnectionsListener l) {
+        return inputOutputConnectionsListeners.remove(l);
+    }
 
 }

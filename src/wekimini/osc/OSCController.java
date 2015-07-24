@@ -24,7 +24,7 @@ public class OSCController {
         return oscControlEnabled;
     }
     
-    private boolean checkEnabled() {
+    protected boolean checkEnabled() {
         if (getOscControlEnabled())  {
             return true;
         } else {
@@ -124,8 +124,9 @@ public class OSCController {
     }
     
     //Requires legal length of boolean array (same as num inputs); outputNum between 1 and numOutputs
-    public void setInputSelectionForOutput(boolean[] isInputSelected, int outputNum) {
-        
+    //Also requires inputs and outputs to already be set up
+    public void setInputSelectionForOutput(int[] whichInputs, int outputNum) {
+        w.getWekinatorController().setInputsForOutput(whichInputs, outputNum);
     }
 
 

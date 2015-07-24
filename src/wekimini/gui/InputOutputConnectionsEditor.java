@@ -16,6 +16,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import wekimini.LearningManager;
 import wekimini.Wekinator;
 
 /**
@@ -32,6 +33,13 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         setup(w.getInputManager().getInputNames(),
                 w.getOutputManager().getOutputGroup().getOutputNames(),
                 w.getLearningManager().getConnectionMatrix());
+        w.getLearningManager().addConnectionsListener(new LearningManager.InputOutputConnectionsListener() {
+
+            @Override
+            public void newConnectionMatrix(boolean[][] connections) {
+                gridPanel.setNewOriginal(connections);
+            }
+        });
 
     }
 

@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import wekimini.osc.OSCController;
-
+import wekimini.LearningManager.InputOutputConnectionsListener;
 
 /**
  *
@@ -18,7 +18,8 @@ public class WekinatorController {
     private final OSCController oscController;
     private final List<NamesListener> inputNamesListeners;
     private final List<NamesListener> outputNamesListeners;
-
+    //private final List<InputOutputConnectionsListener> inputOutputConnectionsListeners;
+    
     public WekinatorController(Wekinator w) {
         this.w = w;
         oscController = new OSCController(w);
@@ -164,6 +165,23 @@ public class WekinatorController {
         }
     }
     
+    //Requires whichInputs and outputNum are valid
+    //WhichInputs and outputNum are indexed from 1 here
+    public void setInputsForOutput(int[] whichInputs, int outputNum) {
+        boolean[][] currentConnections = w.getLearningManager().getConnectionMatrix();
+        boolean[][] newConnections = new boolean[currentConnections.length][currentConnections[0].length];
+        //currentConnections[i][j] is true if input i is connected to output j
+        for (int i = 0; i < currentConnections.length; i++) {
+            System.arraycopy(currentConnections[i], 0, newConnections[i], 0, currentConnections[i].length);
+            newConnections[i][outputNum-1] = false;
+        }
+        for (int i = 0; i < whichInputs.length; i++) {
+            newConnections[whichInputs[i]-1][outputNum-1] = true;
+        }
+        w.getLearningManager().updateInputOutputConnections(newConnections);
+    }
+
+    
     public void addInputNamesListener(NamesListener l) {
         inputNamesListeners.add(l);
     }
@@ -180,6 +198,14 @@ public class WekinatorController {
         return outputNamesListeners.remove(l);
     }
     
+    /* public void addConnectionsListener(InputOutputConnectionListener l) {
+        inputOutputConnectionsListeners.add(l);
+    }
+
+    public boolean removeConnectionsListener(InputOutputConnectionListener l) {
+        return inputOutputConnectionsListeners.remove(l);
+    } */
+    
     private void notifyNewInputNames(String[] newNames) {
         for (NamesListener nl: inputNamesListeners) {
             nl.newNamesReceived(newNames);
@@ -192,7 +218,17 @@ public class WekinatorController {
         }
     }
     
+   /* private void notifyNewInputOutputConnections(boolean[][] connections) {
+        for (InputOutputConnectionListener l: inputOutputConnectionsListeners) {
+            l.newConnectionMatrix(connections);
+        }
+    } */
+    
+    
     public interface NamesListener {
         public void newNamesReceived(String[] names);
     }
+    
+
+    
 }

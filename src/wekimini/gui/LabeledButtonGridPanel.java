@@ -297,6 +297,16 @@ public class LabeledButtonGridPanel extends JPanel {
         return c;
     }
 
+    //When true connection state set asynchronously (i.e. via OSC)
+    public void setNewOriginal(boolean[][] connections) {
+        for (int i= 0; i < connections.length; i++) {
+            for (int j = 0; j < connections[0].length; j++) {
+                originallyEnabled[i][j] = connections[i][j];
+            }
+        }
+        revert();
+    }
+    
     public void revert() {
         for (int i = 0; i < toggles.length; i++) {
             for (int j = 0; j < toggles[0].length; j++) {
