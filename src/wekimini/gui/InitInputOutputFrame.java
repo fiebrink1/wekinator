@@ -24,7 +24,6 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import wekimini.MainGUI;
 import wekimini.WekiMiniRunner;
 import wekimini.WekiMiniRunner.Closeable;
 import wekimini.Wekinator;

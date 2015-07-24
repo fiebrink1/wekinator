@@ -5,6 +5,7 @@
  */
 package wekimini;
 
+import wekimini.gui.MainGUI;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import wekimini.osc.OSCSender;
@@ -15,6 +16,7 @@ import java.util.logging.Logger;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import wekimini.osc.OSCController;
 import wekimini.osc.OSCMonitor;
 import wekimini.osc.OSCReceiver;
 import wekimini.util.Util;
@@ -43,7 +45,9 @@ public class Wekinator {
     private ChangeEvent changeEvent = null;
     private final OSCMonitor oscMonitor;
     private final LoggingManager loggingManager;
-
+    private final WekinatorController wekinatorController;
+    private final OSCController oscController;
+    
     private String projectName = "New Project";
 
     public static final String PROP_PROJECT_NAME = "projectName";
@@ -169,6 +173,10 @@ public class Wekinator {
     public OSCSender getOSCSender() {
         return oscSender;
     } 
+    
+    public WekinatorController getWekinatorController() {
+        return wekinatorController;
+    }
 
     public static String getDefaultDirectory() {
         return System.getProperty("user.home"); 
@@ -220,7 +228,9 @@ public class Wekinator {
         dataManager = new DataManager(this);
         trainingRunner = new TrainingRunner(this);
         learningManager = new LearningManager(this);
+        wekinatorController = new WekinatorController(this);
         oscMonitor = new OSCMonitor(oscReceiver, inputManager, oscSender);
+        oscController = new OSCController(this);
         
         //scheduler = new Scheduler(this);
       //  communicationManager = new CommunicationManager();

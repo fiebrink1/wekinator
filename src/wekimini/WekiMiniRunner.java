@@ -5,6 +5,7 @@
  */
 package wekimini;
 
+import wekimini.gui.MainGUI;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

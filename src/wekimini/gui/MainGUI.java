@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini;
+package wekimini.gui;
 
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
@@ -16,6 +16,7 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import wekimini.Path;
 import wekimini.WekiMiniRunner.Closeable;
 import wekimini.gui.InputMonitor;
 import wekimini.gui.InputOutputConnectionsEditor;
@@ -26,6 +27,9 @@ import wekimini.gui.path.PathEditorFrame;
 import wekimini.osc.OSCOutput;
 import wekimini.util.Util;
 import wekimini.WekiMiniRunner;
+import wekimini.WekiMiniRunner;
+import wekimini.Wekinator;
+import wekimini.WekinatorFileData;
 
 /**
  *
@@ -265,7 +269,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("New project");
-        setMaximumSize(new java.awt.Dimension(817, 2147483647));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);

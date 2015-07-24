@@ -16,7 +16,7 @@ import wekimini.util.Util;
  */
 public class OSCReceiver {
     private int receivePort = 6448;
-    private OSCPortIn receiver;
+    private OSCPortIn receiver;    
     
     private String oscOutputReceiveString = "/wekinator/control/outputs";
     

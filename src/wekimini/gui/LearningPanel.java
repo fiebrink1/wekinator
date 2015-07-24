@@ -536,33 +536,37 @@ public class LearningPanel extends javax.swing.JPanel {
 
     private void buttonRecordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRecordActionPerformed
 
-        if (w.getLearningManager().getRunningState() == LearningManager.RunningState.RUNNING) {
-            w.getLearningManager().setRunningState(LearningManager.RunningState.NOT_RUNNING);
-        }
+       /* if (w.getLearningManager().getRunningState() == LearningManager.RunningState.RUNNING) {
+           w.getWekinatorController().stopRun();
+            // w.getLearningManager().setRunningState(LearningManager.RunningState.NOT_RUNNING);
+        } */
 
         if (w.getLearningManager().getRecordingState() != LearningManager.RecordingState.RECORDING) {
-            w.getLearningManager().startRecording();
-             w.getStatusUpdateCenter().update(this, "Recording - waiting for inputs to arrive");
+           w.getWekinatorController().startRecord();
+            /* w.getLearningManager().startRecording();
+             w.getStatusUpdateCenter().update(this, "Recording - waiting for inputs to arrive"); */
         } else {
-            w.getLearningManager().stopRecording();
+            w.getWekinatorController().stopRecord();
+           /* w.getLearningManager().stopRecording();
            // setStatus("Examples recorded. Press \"Train\" to build models from data.");
-            w.getStatusUpdateCenter().update(this, w.getLearningManager().getNumExamplesThisRound() + " new examples recorded");
-
+            w.getStatusUpdateCenter().update(this, w.getLearningManager().getNumExamplesThisRound() + " new examples recorded");*/
         }
     }//GEN-LAST:event_buttonRecordActionPerformed
 
     private void buttonTrainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTrainActionPerformed
         if (w.getLearningManager().getLearningState() == LearningManager.LearningState.TRAINING) {
-            w.getLearningManager().cancelTraining();
+            w.getWekinatorController().cancelTrain();
+            //w.getLearningManager().cancelTraining();
         } else {
-            w.getLearningManager().buildAll();
+            w.getWekinatorController().train();     
+            //w.getLearningManager().buildAll();
         }
     }//GEN-LAST:event_buttonTrainActionPerformed
 
     private void buttonDeleteLastRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLastRecordingActionPerformed
         w.getDataManager().deleteTrainingRound(lastRoundAdvertised);
         int numDeleted = w.getDataManager().getNumDeletedTrainingRound();
-         w.getStatusUpdateCenter().update(this, "Recording set #" + lastRoundAdvertised + " (" + numDeleted + " examples) deleted.");
+        w.getStatusUpdateCenter().update(this, "Recording set #" + lastRoundAdvertised + " (" + numDeleted + " examples) deleted.");
         if (numDeleted > 0) {
             updateReAddButton(lastRoundAdvertised);
         }
@@ -584,14 +588,16 @@ public class LearningPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_buttonReAddLastRecordingActionPerformed
 
     private void buttonRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRunActionPerformed
-        if (w.getLearningManager().getRecordingState() == LearningManager.RecordingState.RECORDING) {
+        /*if (w.getLearningManager().getRecordingState() == LearningManager.RecordingState.RECORDING) {
             w.getLearningManager().stopRecording();
-        }
+        } */
 
         if (w.getLearningManager().getRunningState() == LearningManager.RunningState.NOT_RUNNING) {
-            w.getLearningManager().setRunningState(LearningManager.RunningState.RUNNING);
+            w.getWekinatorController().startRun();
+            //  w.getLearningManager().setRunningState(LearningManager.RunningState.RUNNING);
         } else {
-            w.getLearningManager().setRunningState(LearningManager.RunningState.NOT_RUNNING);
+            w.getWekinatorController().stopRun();
+            //w.getLearningManager().setRunningState(LearningManager.RunningState.NOT_RUNNING);
         }
     }//GEN-LAST:event_buttonRunActionPerformed
 

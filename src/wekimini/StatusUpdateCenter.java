@@ -49,6 +49,20 @@ public class StatusUpdateCenter {
         logger.log(Level.INFO, updateString);
         propertyChangeSupport.firePropertyChange(PROP_UPDATE, oldUpdate, update);
     }
+    
+        /**
+     * Set the value of update
+     *
+     * @param caller the caller of this function
+     * @param updateString the update string
+     */
+    public void update(Object caller, String updateString, Level logLevel) {
+        StatusUpdate newUpdate = new StatusUpdate(caller, updateString);
+        StatusUpdate oldUpdate = this.update;
+        this.update = newUpdate;
+        logger.log(logLevel, updateString);
+        propertyChangeSupport.firePropertyChange(PROP_UPDATE, oldUpdate, update);
+    }
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
