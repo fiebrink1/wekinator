@@ -3,6 +3,9 @@
  */
 package wekimini;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
 import wekimini.osc.OSCController;
 
 
@@ -13,10 +16,14 @@ import wekimini.osc.OSCController;
 public class WekinatorController {
     private final Wekinator w;
     private final OSCController oscController;
-    
+    private final List<NamesListener> inputNamesListeners;
+    private final List<NamesListener> outputNamesListeners;
+
     public WekinatorController(Wekinator w) {
         this.w = w;
         oscController = new OSCController(w);
+        inputNamesListeners = new LinkedList<NamesListener>();
+        outputNamesListeners = new LinkedList<NamesListener>();
     }
     
     public boolean isOscControlEnabled() {
@@ -87,12 +94,37 @@ public class WekinatorController {
         w.getLearningManager().deleteAllExamples();
     }
 
+    //Requires modelNum be a valid output (starting from 1)
     public void setModelRecordEnabled(int modelNum, boolean enableRecord) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            List<Path> ps = w.getLearningManager().getPaths();
+            Path p = ps.get(modelNum - 1);
+            p.setRecordEnabled(enableRecord);
+            if (enableRecord) {
+                w.getStatusUpdateCenter().update(this, "Enabled model recording");
+            } else {
+                w.getStatusUpdateCenter().update(this, "Disabled model recording");
+            }
+
+        } catch (Exception ex) {
+            w.getStatusUpdateCenter().update(this, "Error: Unable to change record state for output " + modelNum, Level.WARNING);
+        }
     }
 
-    public void setModelRunEnabled(int modelNum, boolean enableRecord) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    //Requires modelNum be a valid output (starting from 1)
+    public void setModelRunEnabled(int modelNum, boolean enableRun) {
+        try {
+            List<Path> ps = w.getLearningManager().getPaths();
+            Path p = ps.get(modelNum - 1);
+            p.setRunEnabled(enableRun);
+            if (enableRun) {
+                w.getStatusUpdateCenter().update(this, "Enabled model running");
+            } else {
+                w.getStatusUpdateCenter().update(this, "Disabled model running");
+            }
+        } catch (Exception ex) {
+            w.getStatusUpdateCenter().update(this, "Error: Unable to change record state for output " + modelNum, Level.WARNING);
+        }
     }
 
     public boolean canRecord() {
@@ -108,4 +140,59 @@ public class WekinatorController {
     public boolean canRun() {
         return w.getLearningManager().isAbleToRun();
     }  
+
+    //Requires either no input group set up yet, or length matches # inputs
+    //Listeners can register in case wekinator isn't set up yet (e.g. initial project config screen)
+    public void setInputNames(String[] inputNames) {
+        if (w.getInputManager().hasValidInputs()) {
+            //w.getInputManager().getOSCInputGroup().setInputNames(inputNames);
+            //TODO: Fix this, with attention to how Path, LearningManager use input names.
+            w.getStatusUpdateCenter().update(this, "Error: Input names cannot be changed after project is created (will be implemented in later version)");
+        } else {
+            notifyNewInputNames(inputNames);
+        }
+    }
+    
+    //Requires either no output group set up yet, or length matches # outputs
+    //Listeners can register in case wekinator isn't set up yet (e.g. initial project config screen)
+    public void setOutputNames(String[] outputNames) {
+        if (w.getOutputManager().hasValidOutputGroup()) {
+           // w.getOutputManager().getOutputGroup().setOutputNames(outputNames);
+           w.getStatusUpdateCenter().update(this, "Error: Output names cannot be changed after project is created (will be implemented in later version)");
+        } else {
+            notifyNewOutputNames(outputNames);
+        }
+    }
+    
+    public void addInputNamesListener(NamesListener l) {
+        inputNamesListeners.add(l);
+    }
+
+    public boolean removeInputNamesListener(NamesListener l) {
+        return inputNamesListeners.remove(l);
+    }
+    
+    public void addOutputNamesListener(NamesListener l) {
+        outputNamesListeners.add(l);
+    }
+
+    public boolean removeOutputNamesListener(NamesListener l) {
+        return outputNamesListeners.remove(l);
+    }
+    
+    private void notifyNewInputNames(String[] newNames) {
+        for (NamesListener nl: inputNamesListeners) {
+            nl.newNamesReceived(newNames);
+        }
+    }
+    
+    private void notifyNewOutputNames(String[] newNames) {
+        for (NamesListener nl: outputNamesListeners) {
+            nl.newNamesReceived(newNames);
+        }
+    }
+    
+    public interface NamesListener {
+        public void newNamesReceived(String[] names);
+    }
 }

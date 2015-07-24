@@ -29,7 +29,7 @@ import wekimini.osc.OSCReceiver;
  */
 public class OutputManager {
     private static final Logger logger = Logger.getLogger(OutputManager.class.getName());
-    private OSCOutputGroup outputGroup;
+    private OSCOutputGroup outputGroup = null;
 
     private final Wekinator w;
     private final WeakListenerSupport wls = new WeakListenerSupport();
@@ -142,6 +142,10 @@ public class OutputManager {
                 addOSCOutputValueListener();
             }
         }
+    }
+    
+    public boolean hasValidOutputGroup() {
+        return outputGroup != null;
     }
 
     //For now, no possibility to modify an output group: it's a totally new group.

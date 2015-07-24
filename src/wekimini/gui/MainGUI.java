@@ -474,7 +474,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }//GEN-LAST:event_menuPerformanceCheckActionPerformed
 
     private void checkEnableOSCControlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkEnableOSCControlActionPerformed
-        w.getWekinatorController().setOscControlEnabled(checkEnableOSCControl.isEnabled());
+        w.getWekinatorController().setOscControlEnabled(checkEnableOSCControl.isSelected());
     }//GEN-LAST:event_checkEnableOSCControlActionPerformed
 
     public void showOutputTable() {

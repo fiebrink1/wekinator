@@ -6,10 +6,9 @@ package wekimini.osc;
 import com.thoughtworks.xstream.XStream;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import wekimini.util.Util;
@@ -23,6 +22,8 @@ public class OSCInputGroup {
     private final int numInputs;
     private final String groupName;
     private final String[] inputNames;
+   // public final List<NameChangeListener> nameChangeListeners = new LinkedList<>();
+
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -83,6 +84,18 @@ public class OSCInputGroup {
         return inputNames;
     }
 
+    //Can't do this easily: Paths use names to keep track of input/output connections
+    //Need to have a changeInputName(oldName, newName) function
+    /*public void setInputNames(String[] newNames) {
+        if (newNames.length != inputNames.length) {
+            throw new IllegalArgumentException("Mismatch in length of names");
+        }
+        System.arraycopy(newNames, 0, inputNames, 0, newNames.length);
+        notifyNameChangeListeners(newNames);
+                //Notify all listeners: See all places where getInputNames is called
+
+    } */
+    
    public void writeToFile(String filename) throws IOException {
       Util.writeToXMLFile(this, "OSCInputGroup", OSCInputGroup.class, filename);
 
@@ -123,6 +136,25 @@ public class OSCInputGroup {
             return null; //TODO
         } */
     } 
+        
+   /* public void addNameChangeListener(NameChangeListener l) {
+        nameChangeListeners.add(l);
+    }
+    
+    public boolean removeNameChangeListener(NameChangeListener l) {
+        return nameChangeListeners.remove(l);
+    }
+          
+    public void notifyNameChangeListeners(String[] newNames) {
+        for (NameChangeListener l : nameChangeListeners) {
+            l.newNamesReceived(newNames);
+        }
+    }
+    
+    public interface NameChangeListener {
+        public void newNamesReceived(String[] names);
+    } */
+    
 
     @Override
     public String toString() {

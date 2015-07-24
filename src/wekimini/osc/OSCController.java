@@ -107,20 +107,20 @@ public class OSCController {
     }
     
     //modelNum between 1 and numOutputs
-    public void setModelRunEnabled(int modelNum, boolean enableRecord) {
+    public void setModelRunEnabled(int modelNum, boolean enableRun) {
         if (checkEnabled()) {
-            w.getWekinatorController().setModelRunEnabled(modelNum, enableRecord);
+            w.getWekinatorController().setModelRunEnabled(modelNum, enableRun);
         }
     }
     
     //Requires legal length of String array (same as num inputs)
     public void setInputNames(String[] inputNames) {
-        
+        w.getWekinatorController().setInputNames(inputNames);
     }
     
     //Requires legal length of String array (same as num outputs)
     public void setOutputNames(String[] outputNames) {
-        
+        w.getWekinatorController().setOutputNames(outputNames);
     }
     
     //Requires legal length of boolean array (same as num inputs); outputNum between 1 and numOutputs

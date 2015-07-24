@@ -27,6 +27,7 @@ import javax.swing.event.DocumentListener;
 import wekimini.WekiMiniRunner;
 import wekimini.WekiMiniRunner.Closeable;
 import wekimini.Wekinator;
+import wekimini.WekinatorController;
 import wekimini.WekinatorFileData;
 import wekimini.learning.AdaboostModelBuilder;
 import wekimini.learning.J48ModelBuilder;
@@ -62,8 +63,12 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private final static int COMBO_ADABOOST_INDEX = 2;
     private final static int COMBO_SVM_INDEX = 1;
     private final static int COMBO_J48_INDEX = 3;
+    private final WekinatorController.NamesListener inputNamesListener;
+    private final WekinatorController.NamesListener outputNamesListener;
 
     private OutputConfigurationFrame outputConfigViewer = null;
+    private GuiIONameCustomise inputCustomiser = null;
+    private GuiIONameCustomise outputCustomiser = null;
     //private final OutputConfigurationFrame.OutputGroupReceiver outputGroupReceiver = this::initFormForOutputGroup;
     private final OutputConfigurationFrame.OutputGroupReceiver outputGroupReceiver = new OutputConfigurationFrame.OutputGroupReceiver() {
         @Override
@@ -72,23 +77,44 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         }
     };
 
-    
     private OSCOutputGroup customConfiguredOutput = null;
     private static final Logger logger = Logger.getLogger(InitInputOutputFrame.class.getName());
 
     private boolean isCloseable = false;
 
     /**
-     * Creates new form initInputOutputFrame
+     * Not used: Just for GUI design Creates new form initInputOutputFrame
      */
     public InitInputOutputFrame() {
         initComponents();
+        inputNamesListener = null;
+        outputNamesListener = null;
     }
 
     public InitInputOutputFrame(Wekinator w) {
         initComponents();
         setWekinator(w);
         updateOutputCard();
+        inputNamesListener = new WekinatorController.NamesListener() {
+
+            @Override
+            public void newNamesReceived(String[] names) {
+                receivedInputNamesFromOSC(names);
+            }
+
+        };
+        
+        outputNamesListener = new WekinatorController.NamesListener() {
+
+            @Override
+            public void newNamesReceived(String[] names) {
+                receivedOutputNamesFromOSC(names);
+            }
+
+        };
+
+        w.getWekinatorController().addInputNamesListener(inputNamesListener);
+        w.getWekinatorController().addOutputNamesListener(outputNamesListener);
 
         /* fieldNumOutputs.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -107,6 +133,38 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
          updateCustomOutputPermissions();
          }
          }); */
+    }
+
+    private void receivedInputNamesFromOSC(String[] names) {
+        receivedNewInputNames(names);
+        fieldNumInputs.setText(Integer.toString(names.length));
+        //What if customisation box already open??
+        if (inputCustomiser != null) {
+            if (names.length == inputCustomiser.getNumNames()) {
+                inputCustomiser.setNames(names);
+            } else {
+                inputCustomiser.dispose();
+                //Make new one
+                customiseInputNames();
+            }
+        }
+    }
+    
+    private void receivedOutputNamesFromOSC(String[] names) {
+        receivedNewOutputNames(names);
+        fieldNumOutputs.setText(Integer.toString(names.length));
+        //What if customisation box already open??
+        if (outputConfigViewer != null) {
+            outputConfigViewer.adjustForNewNames(names);
+        }
+        if (outputCustomiser != null) {
+            if (names.length == outputCustomiser.getNumNames()) {
+                outputCustomiser.setNames(names);
+            } else {
+                outputCustomiser.dispose();
+                customiseOutputNames();
+            }
+        }
     }
 
     private void initFormForOutputGroup(OSCOutputGroup g) {
@@ -131,7 +189,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                 oscReceiverPropertyChanged(evt);
             }
         };
-        
+
         w.getOSCReceiver().addPropertyChangeListener(wls.propertyChange(oscReceiverListener));
     }
 
@@ -793,14 +851,20 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         };
 
         String baseName = setBaseNameFromOscField(fieldInputOSCMessage, "Input");
-        GuiIONameCustomise customiser = new GuiIONameCustomise(
+        inputCustomiser = new GuiIONameCustomise(
                 numNames,
                 baseName,
                 currentInputNames,
                 r,
                 GuiIONameCustomise.IOType.INPUT);
-        customiser.setAlwaysOnTop(true);
-        customiser.setVisible(true);
+        inputCustomiser.setAlwaysOnTop(true);
+        inputCustomiser.setVisible(true);
+        Util.callOnClosed(inputCustomiser, new Util.CallableOnClosed() {
+            @Override
+            public void callMe() {
+                inputCustomiser = null;
+            }
+        });
     }
 
     private void buttonInputOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonInputOptionsActionPerformed
@@ -908,14 +972,20 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         };
 
         String baseName = setBaseNameFromOscField(fieldOutputOSCMessage, "Output");
-        GuiIONameCustomise customiser = new GuiIONameCustomise(
+        outputCustomiser = new GuiIONameCustomise(
                 numNames,
                 baseName,
                 currentOutputNames,
                 r,
                 GuiIONameCustomise.IOType.OUTPUT);
-        customiser.setAlwaysOnTop(true);
-        customiser.setVisible(true);
+        outputCustomiser.setAlwaysOnTop(true);
+        outputCustomiser.setVisible(true);
+        Util.callOnClosed(outputCustomiser, new Util.CallableOnClosed() {
+            @Override
+            public void callMe() {
+                outputCustomiser = null;
+            }
+        });
     }
 
     private void buttonOutputOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOutputOptionsActionPerformed
@@ -1056,6 +1126,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                 w.getMainGUI().initializeInputsAndOutputs();
                 w.getMainGUI().setVisible(true);
                 WekiMiniRunner.getInstance().transferControl(w, this, w.getMainGUI());
+                removeListeners();
                 this.dispose();
             } catch (UnknownHostException ex) {
                 Util.showPrettyErrorPane(this, "Host name " + fieldHostName.getText() + " is invalid; please try a different host.");
@@ -1177,6 +1248,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                 //TODO: Check this isn't same wekinator as mine! (don't load from my same place, or from something already open...)
                 WekiMiniRunner.getInstance().runFromFile(f.getAbsolutePath());
                 w.close();
+                removeListeners();
                 this.dispose();
             } catch (Exception ex) {
                 logger.log(Level.SEVERE, null, ex);
@@ -1185,17 +1257,23 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     }//GEN-LAST:event_menuItemOpenProjectActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-       // if (isCloseable) {
-            if (w.getOSCReceiver().getConnectionState() == OSCReceiver.ConnectionState.CONNECTED) {
-                w.getOSCReceiver().stopListening();
-            }
-            w.close();
-            this.dispose();
+        // if (isCloseable) {
+        if (w.getOSCReceiver().getConnectionState() == OSCReceiver.ConnectionState.CONNECTED) {
+            w.getOSCReceiver().stopListening();
+        }
+        w.close();
+        removeListeners();
+        this.dispose();
         //} else {
-            //do nothing
+        //do nothing
         //}
 
     }//GEN-LAST:event_formWindowClosing
+
+    private void removeListeners() {
+        w.getWekinatorController().removeInputNamesListener(inputNamesListener);
+        w.getWekinatorController().removeOutputNamesListener(outputNamesListener);
+    }
 
     /**
      * @param args the command line arguments
@@ -1343,7 +1421,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
     public void setCloseable(boolean isCloseable) {
         if (isCloseable) {
-           // this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+            // this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         } else {
             //this.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -1424,7 +1502,5 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     public Wekinator getWekinator() {
         return w;
     }
-
-
 
 }

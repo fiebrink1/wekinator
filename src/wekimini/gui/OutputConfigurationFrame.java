@@ -31,6 +31,7 @@ import wekimini.util.Util;
  */
 //TODO: 
 public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDownDeleteNotifiable {
+
     private Wekinator w;
     private int numOutputs = 0;
     private ArrayList<JSeparator> separators = new ArrayList<>();
@@ -40,7 +41,7 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
     private int highestOutputNumber = 1;
     private String baseName = "output";
     private OutputGroupReceiver outputGroupReceiver = null;
-    
+
     /**
      * Creates new form GUIAddEditOutputGroup For GUI testing only
      */
@@ -61,7 +62,6 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
         addPanels(numOutputs, existingOutputs, currentNames);
     }
 
-    
     private void addPanels(int howMany, List<OSCOutput> existingOutputs, String[] names) {
         panelOutputsContainer.removeAll();
         for (int i = 0; i < howMany; i++) {
@@ -69,7 +69,7 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
             if (i < names.length) {
                 name = names[i];
             } else {
-                name = generateOutputName(i+1);
+                name = generateOutputName(i + 1);
             }
             if (existingOutputs == null || existingOutputs.size() < i) {
                 addOutputPanel(name, null);
@@ -78,9 +78,9 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
             }
         }
         JScrollBar vertical = scrollOutputsList.getVerticalScrollBar();
-        vertical.setValue( vertical.getMinimum());
+        vertical.setValue(vertical.getMinimum());
     }
-    
+
     //Adds a panel to the bottom
     private void addOutputPanel(String name, OSCOutput output) {
         numOutputs++;
@@ -88,23 +88,23 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
         p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
         UpDownDeleteGUI upDown = new UpDownDeleteGUI(numOutputs, this);
-        
+
         p.add(upDown);
         upDownDeletePanels.add(upDown);
-        
+
         OutputConfigRow oscp;
         if (output == null) {
             oscp = new OutputConfigRow(numOutputs, name);
         } else {
             oscp = new OutputConfigRow(numOutputs, name, output);
         }
-        
+
         p.add(oscp);
         outputPanels.add(oscp);
-        
+
         panelOutputsContainer.add(p);
         outputParentPanels.add(p);
-        
+
         JSeparator jsep = new JSeparator();
         jsep.setBackground(new java.awt.Color(255, 255, 255));
         jsep.setForeground(new java.awt.Color(0, 0, 0));
@@ -112,63 +112,60 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
         jsep.setPreferredSize(new java.awt.Dimension(50, 1));
         panelOutputsContainer.add(jsep);
         separators.add(jsep);
-        
-        
+
         //repaint and validate etc.
         panelOutputsContainer.revalidate(); //needed to update scrollpane slider
         scrollOutputsList.validate();
         JScrollBar vertical = scrollOutputsList.getVerticalScrollBar();
-        vertical.setValue( vertical.getMaximum() );
+        vertical.setValue(vertical.getMaximum());
         repaint();
-        
+
         resetButtonEnabledStates();
     }
 
     private void swap(int id1, int id2) {
         //Tell panels themselves their ids are changing
-        outputPanels.get(id1-1).setNum(id2);
-        outputPanels.get(id2-1).setNum(id1);
-        
+        outputPanels.get(id1 - 1).setNum(id2);
+        outputPanels.get(id2 - 1).setNum(id1);
 
-        
-        JPanel parent1 = outputParentPanels.get(id1-1);
-        JPanel parent2 = outputParentPanels.get(id2-1);
-        
-        parent1.remove(outputPanels.get(id1-1));
-        parent2.remove(outputPanels.get(id2-1));
+        JPanel parent1 = outputParentPanels.get(id1 - 1);
+        JPanel parent2 = outputParentPanels.get(id2 - 1);
 
-        parent2.add(outputPanels.get(id1-1));
-        parent1.add(outputPanels.get(id2-1));
-        
-        
-        OutputConfigRow opTemp = outputPanels.get(id1-1);  
-        outputPanels.set(id1-1, outputPanels.get(id2-1));
-        outputPanels.set(id2-1, opTemp);
-        
+        parent1.remove(outputPanels.get(id1 - 1));
+        parent2.remove(outputPanels.get(id2 - 1));
+
+        parent2.add(outputPanels.get(id1 - 1));
+        parent1.add(outputPanels.get(id2 - 1));
+
+        OutputConfigRow opTemp = outputPanels.get(id1 - 1);
+        outputPanels.set(id1 - 1, outputPanels.get(id2 - 1));
+        outputPanels.set(id2 - 1, opTemp);
+
         repaint();
 //        JPanel p = outputParentPanels.get(id1-1);
 //        Component[] cs = p.getComponents();
 //        for (int i = 0; i < cs.length; i++) {
 //            System.out.println(i + "," + cs[i].getClass().getName());
 //        }
-        
+
     }
-    
+
     @Override
     public void up(int id) {
-        swap(id, id-1);
+        swap(id, id - 1);
     }
 
     @Override
     public void down(int id) {
-        swap(id, id+1);
+        swap(id, id + 1);
     }
 
     @Override
     public void delete(int id) {
-        if (numOutputs == 1) 
+        if (numOutputs == 1) {
             return;
-        
+        }
+
         //Last output? If no, then update everyone's numbering
         if (id != numOutputs) {
             //Change numbering
@@ -177,45 +174,44 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
                 upDownDeletePanels.get(i).setID(i);
             }
         }
-        
+
         numOutputs--;
-        JPanel parentPanel = outputParentPanels.get(id-1);
+        JPanel parentPanel = outputParentPanels.get(id - 1);
         panelOutputsContainer.remove(parentPanel);
-        JSeparator jsep = separators.get(id-1);
+        JSeparator jsep = separators.get(id - 1);
         panelOutputsContainer.remove(jsep);
-        
+
         //Remove from arrays
-        outputParentPanels.remove(id-1);
-        separators.remove(id-1);
-        outputPanels.remove(id-1);
-        upDownDeletePanels.remove(id-1);
-        
+        outputParentPanels.remove(id - 1);
+        separators.remove(id - 1);
+        outputPanels.remove(id - 1);
+        upDownDeletePanels.remove(id - 1);
+
         //Repaint
         panelOutputsContainer.revalidate(); //needed to update scrollpane slider
         scrollOutputsList.validate();
         JScrollBar vertical = scrollOutputsList.getVerticalScrollBar();
         //vertical.setValue( vertical.getMaximum() );
         repaint();
-        
+
         resetButtonEnabledStates();
-    
+
     }
-    
+
     //TODO probably want a shortcut when # outputs is very high...?
-    
     //Inefficient, but who cares right now?
     private void resetButtonEnabledStates() {
-        if (numOutputs  == 1) {
+        if (numOutputs == 1) {
             upDownDeletePanels.get(0).setDeleteEnabled(false);
             upDownDeletePanels.get(0).setUpEnabled(false);
             upDownDeletePanels.get(0).setDownEnabled(false);
         } else {
-            for (int i = 0; i < upDownDeletePanels.size()-1; i++) {
+            for (int i = 0; i < upDownDeletePanels.size() - 1; i++) {
                 upDownDeletePanels.get(i).setDownEnabled(true);
                 upDownDeletePanels.get(i).setDeleteEnabled(true);
             }
-            upDownDeletePanels.get(upDownDeletePanels.size()-1).setDeleteEnabled(true);
-            upDownDeletePanels.get(upDownDeletePanels.size()-1).setDownEnabled(false);
+            upDownDeletePanels.get(upDownDeletePanels.size() - 1).setDeleteEnabled(true);
+            upDownDeletePanels.get(upDownDeletePanels.size() - 1).setDownEnabled(false);
 
             for (int i = 1; i < upDownDeletePanels.size(); i++) {
                 upDownDeletePanels.get(i).setUpEnabled(true);
@@ -226,6 +222,7 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
     private void updateIndividualOutputs(String name) {
         //todo
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -445,66 +442,61 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
                 throw ex;
             }
         }
-        
+
         String oscMessage = textOSCMessage.getText().trim();
         String hostName = textHost.getText().trim();
         String portString = textPort.getText().trim();
         int port = Integer.parseInt(portString);
-        
-        
-        
-        OSCOutputGroup group = new OSCOutputGroup(outputs, 
-                oscMessage, 
-                hostName, 
+
+        OSCOutputGroup group = new OSCOutputGroup(outputs,
+                oscMessage,
+                hostName,
                 port);
 
         return group;
     }
-    
+
     private boolean validateForm() {
 
-        if (! Util.checkNotBlank(textOSCMessage, "OSC message string", this)) {
+        if (!Util.checkNotBlank(textOSCMessage, "OSC message string", this)) {
             return false;
         }
-        if (! Util.checkNotBlank(textHost, "Host name", this)) {
+        if (!Util.checkNotBlank(textHost, "Host name", this)) {
             return false;
         }
-        if (! Util.checkNotBlank(textPort, "Port number", this)) {
+        if (!Util.checkNotBlank(textPort, "Port number", this)) {
             return false;
         }
-        if (! Util.checkNoSpace(textOSCMessage, "OSC message string", this)) {
+        if (!Util.checkNoSpace(textOSCMessage, "OSC message string", this)) {
             return false;
         }
-        if (! Util.checkNoSpace(textPort, "Port number", this)) {
+        if (!Util.checkNoSpace(textPort, "Port number", this)) {
             return false;
         }
-        if (! Util.checkIsPositiveNumber(textPort, "Port number", this)) {
+        if (!Util.checkIsPositiveNumber(textPort, "Port number", this)) {
             return false;
         }
-        
+
         if (textOSCMessage.getText().trim().contains(" ")) {
-            Util.showPrettyErrorPane(this, 
-                        "OSC message name must not contain spaces"); //TODO: check for tab, etc.
+            Util.showPrettyErrorPane(this,
+                    "OSC message name must not contain spaces"); //TODO: check for tab, etc.
         }
-        
-    
-        
+
         HashSet<String> outputNames = new HashSet<>();
         for (OutputConfigRow panel : outputPanels) {
             String nextName = panel.getOutputName();
             if (outputNames.contains(nextName)) {
-                Util.showPrettyErrorPane(this, 
-                        "Individual output names in a group must be unique. (" 
-                                + nextName + " is reused.)");
+                Util.showPrettyErrorPane(this,
+                        "Individual output names in a group must be unique. ("
+                        + nextName + " is reused.)");
                 return false;
             }
             outputNames.add(nextName);
         }
-        
-        
+
         return true;
     }
-    
+
     private void textPortKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textPortKeyTyped
         char enter = evt.getKeyChar();
         if (!(Character.isDigit(enter))) {
@@ -513,19 +505,19 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
     }//GEN-LAST:event_textPortKeyTyped
 
     private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddActionPerformed
-        addOutputPanel(generateOutputName(outputPanels.size()+1), null);
+        addOutputPanel(generateOutputName(outputPanels.size() + 1), null);
     }//GEN-LAST:event_buttonAddActionPerformed
 
     private String generateOutputName(int which) {
         return baseName + "-" + which;
     }
-    
+
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
         dispose();
     }//GEN-LAST:event_buttonCancelActionPerformed
 
     private void buttonSendTestMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSendTestMessageActionPerformed
-        
+
         String message = textOSCMessage.getText().trim();
         String hostName = textHost.getText().trim();
         InetAddress address;
@@ -537,10 +529,10 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
             Util.showPrettyErrorPane(this, "Unknown host " + hostName);
             return;
         }
-                
+
         String portString = textPort.getText().trim();
-        
-        if (! Util.checkIsPositiveNumber(textPort, "Port number", this)) {
+
+        if (!Util.checkIsPositiveNumber(textPort, "Port number", this)) {
             return;
         }
         int port = Integer.parseInt(textPort.getText());
@@ -565,8 +557,23 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
             }
         });
     }
-    
+
+    void adjustForNewNames(String[] names) {
+        while (names.length < numOutputs) {
+            delete(outputPanels.size() - 1);
+        }
+        while (names.length > numOutputs) {
+            addOutputPanel(generateOutputName(outputPanels.size() + 1), null);
+        }
+
+        for (int i = 0; i < names.length; i++) {
+            outputPanels.get(i).setOutputName(names[i]);
+        }
+
+    }
+
     public interface OutputGroupReceiver {
+
         void outputGroupReady(OSCOutputGroup g);
     }
 

@@ -20,6 +20,16 @@ public class GuiIONameCustomise extends javax.swing.JFrame {
     private String[] currentNames;
     private final List<IONameRow> rows = new ArrayList<>();
     private final NamesListReceiver namesListReceiver;
+
+    int getNumNames() {
+        return numNames;
+    }
+
+    void setNames(String[] names) {
+        for (int i = 0; i < rows.size(); i++) {
+            rows.get(i).setIOName(names[i]);
+        }
+    }
     public static enum IOType {INPUT, OUTPUT};
     private final IOType type;
     /**

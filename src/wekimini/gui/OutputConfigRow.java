@@ -616,4 +616,8 @@ public class OutputConfigRow extends javax.swing.JPanel {
     private javax.swing.JTextField textName;
     private javax.swing.JTextField textNumClasses;
     // End of variables declaration//GEN-END:variables
+
+    void setOutputName(String name) {
+        textName.setText(name);
+    }
 }
