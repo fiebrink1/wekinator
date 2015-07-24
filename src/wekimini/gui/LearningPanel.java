@@ -98,6 +98,7 @@ public class LearningPanel extends javax.swing.JPanel {
         });
         setButtonsForLearningState();
         updateDeleteLastRoundButton();
+        updateRecordingButton();
         setInIcon(w.getOSCMonitor().getReceiveState());
         setOutIcon(w.getOSCMonitor().isSending());
 
@@ -301,7 +302,6 @@ public class LearningPanel extends javax.swing.JPanel {
         }
     }
 
-    //TODO: Remove many listeners for this and replace them with update from Status Center
     private void setStatus(String s) {
         labelStatus.setText(s);
     }

@@ -424,7 +424,8 @@ public class LearningManager {
             setAbleToRun(false);
             return;
         }
-        if (learningState == LearningState.DONE_TRAINING) {
+        //if (learningState == LearningState.DONE_TRAINING ) {
+        if (learningState != LearningState.TRAINING) {
             for (Path p : paths) {
                 if (p.canCompute()) {
                     setAbleToRun(true);

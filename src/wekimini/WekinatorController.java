@@ -3,15 +3,28 @@
  */
 package wekimini;
 
+import wekimini.osc.OSCController;
+
+
 /**
  *
  * @author rebecca
  */
 public class WekinatorController {
     private final Wekinator w;
+    private final OSCController oscController;
     
     public WekinatorController(Wekinator w) {
         this.w = w;
+        oscController = new OSCController(w);
+    }
+    
+    public boolean isOscControlEnabled() {
+        return oscController.getOscControlEnabled();
+    }
+    
+    public void setOscControlEnabled(boolean enabled) {
+        oscController.setOscControlEnabled(enabled);
     }
 
     //REQUIRES that it is legal to move to record state at this time
@@ -71,7 +84,7 @@ public class WekinatorController {
     }
 
     public void deleteAllExamples() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        w.getLearningManager().deleteAllExamples();
     }
 
     public void setModelRecordEnabled(int modelNum, boolean enableRecord) {

@@ -46,7 +46,7 @@ public class Wekinator {
     private final OSCMonitor oscMonitor;
     private final LoggingManager loggingManager;
     private final WekinatorController wekinatorController;
-    private final OSCController oscController;
+    //private final OSCController oscController;
     
     private String projectName = "New Project";
 
@@ -230,7 +230,7 @@ public class Wekinator {
         learningManager = new LearningManager(this);
         wekinatorController = new WekinatorController(this);
         oscMonitor = new OSCMonitor(oscReceiver, inputManager, oscSender);
-        oscController = new OSCController(this);
+        //oscController = new OSCController(this);
         
         //scheduler = new Scheduler(this);
       //  communicationManager = new CommunicationManager();

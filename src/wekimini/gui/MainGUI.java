@@ -266,6 +266,8 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         menuPerformanceCheck = new javax.swing.JCheckBoxMenuItem();
+        menuActions = new javax.swing.JMenu();
+        checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("New project");
@@ -377,6 +379,19 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
         jMenuBar1.add(jMenu2);
 
+        menuActions.setText("Actions");
+
+        checkEnableOSCControl.setSelected(true);
+        checkEnableOSCControl.setText("Enable OSC control of GUI");
+        checkEnableOSCControl.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkEnableOSCControlActionPerformed(evt);
+            }
+        });
+        menuActions.add(checkEnableOSCControl);
+
+        jMenuBar1.add(menuActions);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -457,6 +472,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         //pack();
         //repaint();
     }//GEN-LAST:event_menuPerformanceCheckActionPerformed
+
+    private void checkEnableOSCControlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkEnableOSCControlActionPerformed
+        w.getWekinatorController().setOscControlEnabled(checkEnableOSCControl.isEnabled());
+    }//GEN-LAST:event_checkEnableOSCControlActionPerformed
 
     public void showOutputTable() {
         if (outputTableWindow == null) {
@@ -579,6 +598,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBoxMenuItem checkEnableOSCControl;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
@@ -589,6 +609,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JPanel jPanel1;
     private wekimini.gui.LearningPanel learningPanel1;
+    private javax.swing.JMenu menuActions;
     private javax.swing.JMenu menuFile;
     private javax.swing.JMenuItem menuItemSave;
     private javax.swing.JMenuItem menuItemSaveAs;

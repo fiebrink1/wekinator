@@ -4,7 +4,6 @@
  */
 package wekimini.osc;
 
-import wekimini.LearningManager;
 import wekimini.Wekinator;
 
 /**

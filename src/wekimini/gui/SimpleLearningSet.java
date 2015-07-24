@@ -469,7 +469,8 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     }//GEN-LAST:event_buttonViewExamplesActionPerformed
 
     private void buttonDeleteAllExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteAllExamplesActionPerformed
-        w.getLearningManager().deleteAllExamples();
+        //w.getLearningManager().deleteAllExamples();
+        w.getWekinatorController().deleteAllExamples();
     }//GEN-LAST:event_buttonDeleteAllExamplesActionPerformed
 
     private void recordClicked() {
