@@ -5,6 +5,8 @@
  */
 package wekimini.learning;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.LinearRegression;
 import weka.core.Instances;
@@ -23,6 +25,7 @@ public class LinearRegressionModelBuilder implements LearningModelBuilder {
     private transient Classifier classifier = null;
     public enum FeatureSelectionType {NONE, M5, GREEDY};
     private transient FeatureSelectionType featureSelectionType;
+    private static final Logger logger = Logger.getLogger(LinearRegressionModelBuilder.class.getName());
     
     public LinearRegressionModelBuilder() {
         classifier = new LinearRegression();
@@ -63,6 +66,8 @@ public class LinearRegressionModelBuilder implements LearningModelBuilder {
            throw new IllegalStateException("Must set training examples (to not null) before building model");
        }
        LinearRegression m = (LinearRegression)WekaModelBuilderHelper.build(classifier, trainingData);
+       //Remove: for testing:
+       logger.log(Level.WARNING, m.toString());
        return new LinearRegressionModel(name, m);
     }
 
@@ -74,7 +79,9 @@ public class LinearRegressionModelBuilder implements LearningModelBuilder {
     @Override
     public LinearRegressionModelBuilder fromTemplate(ModelBuilder b) {
         if (b instanceof LinearRegressionModelBuilder) {
-            return new LinearRegressionModelBuilder();
+            LinearRegressionModelBuilder mb = new LinearRegressionModelBuilder();
+            mb.setFeatureSelectionType(((LinearRegressionModelBuilder)b).getFeatureSelectionType());
+            return mb;
         }
         return null;
     }

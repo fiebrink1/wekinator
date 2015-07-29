@@ -5,8 +5,8 @@
  */
 package wekimini.gui;
 
+import java.awt.Button;
 import java.awt.CardLayout;
-import java.awt.MouseInfo;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
@@ -20,10 +20,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
+import javax.swing.ButtonGroup;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import wekimini.WekiMiniRunner;
 import wekimini.WekiMiniRunner.Closeable;
 import wekimini.Wekinator;
@@ -32,6 +31,7 @@ import wekimini.WekinatorFileData;
 import wekimini.learning.AdaboostModelBuilder;
 import wekimini.learning.J48ModelBuilder;
 import wekimini.learning.KNNModelBuilder;
+import wekimini.learning.LearningAlgorithmRegistry;
 import wekimini.learning.ModelBuilder;
 import wekimini.learning.SVMModelBuilder;
 import wekimini.osc.OSCClassificationOutput;
@@ -63,17 +63,30 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private final static int COMBO_ADABOOST_INDEX = 2;
     private final static int COMBO_SVM_INDEX = 1;
     private final static int COMBO_J48_INDEX = 3;
+    
+    private final ButtonGroup classificationRadioGroup = new ButtonGroup();
+    private ModelBuilder[] classificationModelBuilders;
+    private JRadioButtonMenuItem[] classificationRadios;
+    
+    private final ButtonGroup regressionRadioGroup = new ButtonGroup();
+    private ModelBuilder[] regressionModelBuilders;
+    private JRadioButtonMenuItem[] regressionRadios;
+    
     private final WekinatorController.NamesListener inputNamesListener;
     private final WekinatorController.NamesListener outputNamesListener;
 
     private OutputConfigurationFrame outputConfigViewer = null;
     private GuiIONameCustomise inputCustomiser = null;
     private GuiIONameCustomise outputCustomiser = null;
+    
+    private ModelBuilder[] customModelBuilders = null;
+    
     //private final OutputConfigurationFrame.OutputGroupReceiver outputGroupReceiver = this::initFormForOutputGroup;
-    private final OutputConfigurationFrame.OutputGroupReceiver outputGroupReceiver = new OutputConfigurationFrame.OutputGroupReceiver() {
+    private final OutputConfigurationFrame.OutputConfigurationReceiver outputGroupReceiver = new OutputConfigurationFrame.OutputConfigurationReceiver() {
         @Override
-        public void outputGroupReady(OSCOutputGroup g) {
+        public void outputConfigurationReady(OSCOutputGroup g, ModelBuilder[] mb) {
             initFormForOutputGroup(g);
+            customModelBuilders = mb;
         }
     };
 
@@ -94,7 +107,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     public InitInputOutputFrame(Wekinator w) {
         initComponents();
         setWekinator(w);
+        setupAlgorithmChoices();
         updateOutputCard();
+        updateOutputOptions();
         inputNamesListener = new WekinatorController.NamesListener() {
 
             @Override
@@ -135,6 +150,39 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
          }); */
     }
 
+    private void setupAlgorithmChoices() {
+        makeClassificationRadioGroup();
+        makeRegressionRadioGroup();  
+    }
+    
+    private void makeClassificationRadioGroup(){
+        classificationModelBuilders = LearningAlgorithmRegistry.getClassificationModelBuilders();
+        classificationRadios = new JRadioButtonMenuItem[classificationModelBuilders.length];
+        for (int i = 0; i < classificationModelBuilders.length; i++) {
+            JRadioButtonMenuItem button = new JRadioButtonMenuItem();
+            button.setText(classificationModelBuilders[i].getPrettyName());
+            classificationRadios[i] = button;
+            if (i == 0) {
+                classificationRadios[i].setSelected(true);
+            }
+            classificationRadioGroup.add(classificationRadios[i]);
+        }     
+    }
+    
+    private void makeRegressionRadioGroup() {
+        regressionModelBuilders = LearningAlgorithmRegistry.getNumericModelBuilders();
+        regressionRadios = new JRadioButtonMenuItem[regressionModelBuilders.length];
+        for (int i = 0; i < regressionModelBuilders.length; i++) {
+            JRadioButtonMenuItem button = new JRadioButtonMenuItem();
+            button.setText(regressionModelBuilders[i].getPrettyName());
+            regressionRadios[i] = button;
+            if (i == 0) {
+                regressionRadios[i].setSelected(true);
+            }
+            regressionRadioGroup.add(regressionRadios[i]);
+        } 
+    }
+    
     private void receivedInputNamesFromOSC(String[] names) {
         receivedNewInputNames(names);
         fieldNumInputs.setText(Integer.toString(names.length));
@@ -953,10 +1001,26 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private void updateOutputOptions() {
         int index = comboOutputType.getSelectedIndex();
         CardLayout layout = (CardLayout) panelOutputTypes.getLayout();
-        if (index == COMBO_REGRESSION_INDEX) {
+        /*if (index == COMBO_REGRESSION_INDEX) {
             menuChooseAlgorithm.setEnabled(false);
         } else if (index == COMBO_CLASSIFICATION_INDEX) {
             menuChooseAlgorithm.setEnabled(true);
+        } else {
+            menuChooseAlgorithm.setEnabled(false);
+        } */
+        
+        if (index == COMBO_REGRESSION_INDEX) {
+            menuChooseAlgorithm.setEnabled(true);
+            menuChooseAlgorithm.removeAll();
+            for (JRadioButtonMenuItem regressionRadio : regressionRadios) {
+                menuChooseAlgorithm.add(regressionRadio);
+            }
+        } else if (index == COMBO_CLASSIFICATION_INDEX) {
+            menuChooseAlgorithm.setEnabled(true);
+            menuChooseAlgorithm.removeAll();
+            for (JRadioButtonMenuItem classificationRadio : classificationRadios) {
+                menuChooseAlgorithm.add(classificationRadio);
+            }
         } else {
             menuChooseAlgorithm.setEnabled(false);
         }
@@ -1130,8 +1194,18 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                 if (comboOutputType.getSelectedIndex() == COMBO_CLASSIFICATION_INDEX) {
                     //
                     //int whichClassifier = comboClassifierType.getSelectedIndex();
-                    ModelBuilder mb;
-                    if (classifierRadioGroup.getSelection() == buttonKNN.getModel()) {
+                    ModelBuilder mb = null;
+                    for (int i = 0; i < classificationRadios.length; i++) {
+                        if (classificationRadios[i].isSelected()) {
+                            mb = classificationModelBuilders[i];
+                        }
+                    }
+                    if (mb == null) {
+                        logger.log(Level.WARNING, "No model type is selected in GUI! Choosing default");
+                        mb = classificationModelBuilders[0];
+                    }
+                    
+                    /*if (classifierRadioGroup.getSelection() == buttonKNN.getModel()) {
                         mb = new KNNModelBuilder();
                     } else if (classifierRadioGroup.getSelection() == buttonAdaboost.getModel()) {
                         mb = new AdaboostModelBuilder();
@@ -1142,12 +1216,35 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                     } else {
                         mb = new KNNModelBuilder();
                         logger.log(Level.WARNING, "Classifier choice button model not found");
-                    }
+                    } */
                     for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
                         ModelBuilder mbnew = mb.fromTemplate(mb);
+                        System.out.println("Setting model builder to " + mbnew.getPrettyName()); 
                         w.getLearningManager().setModelBuilderForPath(mbnew, i);
                     }
 
+                } else if (comboOutputType.getSelectedIndex() == COMBO_REGRESSION_INDEX) {
+                    ModelBuilder mb = null;
+                    for (int i = 0; i < regressionRadios.length; i++) {
+                        if (regressionRadios[i].isSelected()) {
+                            mb = regressionModelBuilders[i];
+                        }
+                    }
+                    if (mb == null) {
+                        logger.log(Level.WARNING, "No model type is selected in GUI! Choosing default");
+                        mb = regressionModelBuilders[0];
+                    }
+                    for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
+                        ModelBuilder mbnew = mb.fromTemplate(mb);
+                        logger.log(Level.INFO, "Setting model builder to {0}", mbnew.getPrettyName());
+                        w.getLearningManager().setModelBuilderForPath(mbnew, i);
+                    }
+                } else if (comboOutputType.getSelectedIndex() == COMBO_CUSTOM_INDEX) {
+                    for (int i = 0; i < customModelBuilders.length; i++) {
+                        ModelBuilder mb = customModelBuilders[i];
+                        logger.log(Level.INFO, "Setting model builder to {0}", mb.getPrettyName());
+                        w.getLearningManager().setModelBuilderForPath(mb, i);      
+                    }
                 }
                 w.getMainGUI().initializeInputsAndOutputs();
                 w.getMainGUI().setVisible(true);
@@ -1190,7 +1287,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             }
         }
 
-        outputConfigViewer = new OutputConfigurationFrame(w, sendMsg, hostname, port, numOutputs, existingOutputs, currentOutputNames, baseName, outputGroupReceiver);
+        outputConfigViewer = new OutputConfigurationFrame(w, sendMsg, hostname, port, numOutputs, existingOutputs, currentOutputNames, baseName, customModelBuilders, outputGroupReceiver);
 
         outputConfigViewer.setAlwaysOnTop(true);
         outputConfigViewer.setVisible(true);

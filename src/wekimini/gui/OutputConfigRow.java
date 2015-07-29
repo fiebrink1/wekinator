@@ -8,6 +8,8 @@ package wekimini.gui;
 import java.awt.CardLayout;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import wekimini.learning.LearningAlgorithmRegistry;
+import wekimini.learning.ModelBuilder;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
@@ -27,16 +29,25 @@ public class OutputConfigRow extends javax.swing.JPanel {
     private int number = 1;
     private static final Logger logger = Logger.getLogger(OutputConfigRow.class.getName());
 
+    private final ModelBuilder[] classificationModelBuilders;
+    private final ModelBuilder[] regressionModelBuilders;
+
     /**
      * Creates new form GUIOSCOutputPanel
      */
     public OutputConfigRow() {
         initComponents();
         // finishSetup();
+        classificationModelBuilders = null;
+        regressionModelBuilders = null;
     }
 
-    public OutputConfigRow(int num, String name) {
+    public OutputConfigRow(int num, String name, ModelBuilder mb) {
         initComponents();
+        classificationModelBuilders = LearningAlgorithmRegistry.getClassificationModelBuilders();
+        regressionModelBuilders = LearningAlgorithmRegistry.getNumericModelBuilders();
+        configureComboBoxes(mb);
+
         setNum(num);
         comboType.setSelectedIndex(REGRESSION_INDEX);
         setToRegression();
@@ -45,8 +56,48 @@ public class OutputConfigRow extends javax.swing.JPanel {
         // finishSetup();
     }
 
-    public OutputConfigRow(int num, String name, OSCOutput currentOutput) {
+    private void configureComboBoxes(ModelBuilder mb) {
+        configureClassificationComboBoxes(mb);
+        configureRegressionComboBoxes(mb);
+    }
+
+    private void configureClassificationComboBoxes(ModelBuilder mb) {
+        String[] names = new String[classificationModelBuilders.length];
+        int selectedIndex = -1;
+        for (int i = 0; i < classificationModelBuilders.length; i++) {
+            names[i] = classificationModelBuilders[i].getPrettyName();
+            if (mb != null && names[i].equals(mb.getPrettyName())) {
+                selectedIndex = i;
+            }
+        }
+        comboClassificationAlgorithm.setModel(new javax.swing.DefaultComboBoxModel(names));
+        if (selectedIndex != -1) {
+            comboClassificationAlgorithm.setSelectedIndex(selectedIndex);
+        }
+    }
+
+    private void configureRegressionComboBoxes(ModelBuilder mb) {
+        String[] names = new String[regressionModelBuilders.length];
+        int selectedIndex = -1;
+
+        for (int i = 0; i < regressionModelBuilders.length; i++) {
+            names[i] = regressionModelBuilders[i].getPrettyName();
+            if (mb != null && names[i].equals(mb.getPrettyName())) {
+                selectedIndex = i;
+            }
+        }
+        comboRegressionAlgorithm.setModel(new javax.swing.DefaultComboBoxModel(names));
+        if (selectedIndex != -1) {
+            comboRegressionAlgorithm.setSelectedIndex(selectedIndex);
+        }
+    }
+
+    public OutputConfigRow(int num, String name, OSCOutput currentOutput, ModelBuilder mb) {
         initComponents();
+        classificationModelBuilders = LearningAlgorithmRegistry.getClassificationModelBuilders();
+        regressionModelBuilders = LearningAlgorithmRegistry.getNumericModelBuilders();
+        configureComboBoxes(mb);
+
         setNum(num);
         textName.setText(name);
         if (currentOutput != null) {
@@ -67,16 +118,16 @@ public class OutputConfigRow extends javax.swing.JPanel {
             } else {
                 comboRegressionType.setSelectedIndex(REGRESSION_FLOAT);
             }
-            
+
             if (no.getLimitType() == OSCNumericOutput.LimitType.HARD) {
                 comboLimitType.setSelectedIndex(HARD_LIMIT_INDEX);
             } else {
                 comboLimitType.setSelectedIndex(SOFT_LIMIT_INDEX);
             }
-            
+
             textMax.setText(Float.toString(no.getMax()));
             textMin.setText(Float.toString(no.getMin()));
-            
+
         } else if (currentOutput instanceof OSCClassificationOutput) {
             //setToClassification();
             comboType.setSelectedIndex(CLASSIFICATION_INDEX);
@@ -93,11 +144,11 @@ public class OutputConfigRow extends javax.swing.JPanel {
         labelName.setText(number + ". Name:");
     }
 
-   /* public OutputConfigRow(OSCOutput o) {
-        initComponents();
-        initFromOSCOutput(o);
-        // finishSetup();
-    } */
+    /* public OutputConfigRow(OSCOutput o) {
+     initComponents();
+     initFromOSCOutput(o);
+     // finishSetup();
+     } */
 
     /* private void finishSetup() {
      textNumClasses.getDocument().addDocumentListener(new DocumentListener() {
@@ -123,6 +174,14 @@ public class OutputConfigRow extends javax.swing.JPanel {
             return makeClassificationOutput();
         } else {
             return makeRegressionOutput();
+        }
+    }
+
+    public ModelBuilder getModelBuilderFromForm() {
+        if (comboType.getSelectedIndex() == CLASSIFICATION_INDEX) {
+            return classificationModelBuilders[comboClassificationAlgorithm.getSelectedIndex()];
+        } else {
+            return regressionModelBuilders[comboRegressionAlgorithm.getSelectedIndex()];
         }
     }
 
@@ -179,31 +238,30 @@ public class OutputConfigRow extends javax.swing.JPanel {
      public String getOutputName() {
      return name;
      } */
-   /* private void initFromOSCOutput(OSCOutput o) {
-        textName.setText(o.getName());
-        if (o instanceof OSCNumericOutput) {
-            setToRegression();
-            OSCNumericOutput no = (OSCNumericOutput) o;
-            if (no.getOutputType() == OSCNumericOutput.NumericOutputType.INTEGER) {
-                comboRegressionType.setSelectedIndex(REGRESSION_INT);
-            } else if (no.getOutputType() == OSCNumericOutput.NumericOutputType.REAL) {
-                comboRegressionType.setSelectedIndex(REGRESSION_FLOAT);
-            }
-            textMin.setText(Float.toString(no.getMin()));
-            textMax.setText(Float.toString(no.getMax())); //TODO: might want to prettify these
-            if (no.getLimitType() == OSCNumericOutput.LimitType.HARD) {
-                comboLimitType.setSelectedIndex(HARD_LIMIT_INDEX);
-            } else if (no.getLimitType() == OSCNumericOutput.LimitType.SOFT) {
-                comboLimitType.setSelectedIndex(SOFT_LIMIT_INDEX);
-            }
-        } else if (o instanceof OSCClassificationOutput) {
-            setToClassification();
-            textNumClasses.setText(Integer.toString(((OSCClassificationOutput) o).getNumClasses()));
-        } else {
-            System.out.println("Error: Unknown output type " + o.getClass().getName());
-        }
-    } */
-
+    /* private void initFromOSCOutput(OSCOutput o) {
+     textName.setText(o.getName());
+     if (o instanceof OSCNumericOutput) {
+     setToRegression();
+     OSCNumericOutput no = (OSCNumericOutput) o;
+     if (no.getOutputType() == OSCNumericOutput.NumericOutputType.INTEGER) {
+     comboRegressionType.setSelectedIndex(REGRESSION_INT);
+     } else if (no.getOutputType() == OSCNumericOutput.NumericOutputType.REAL) {
+     comboRegressionType.setSelectedIndex(REGRESSION_FLOAT);
+     }
+     textMin.setText(Float.toString(no.getMin()));
+     textMax.setText(Float.toString(no.getMax())); //TODO: might want to prettify these
+     if (no.getLimitType() == OSCNumericOutput.LimitType.HARD) {
+     comboLimitType.setSelectedIndex(HARD_LIMIT_INDEX);
+     } else if (no.getLimitType() == OSCNumericOutput.LimitType.SOFT) {
+     comboLimitType.setSelectedIndex(SOFT_LIMIT_INDEX);
+     }
+     } else if (o instanceof OSCClassificationOutput) {
+     setToClassification();
+     textNumClasses.setText(Integer.toString(((OSCClassificationOutput) o).getNumClasses()));
+     } else {
+     System.out.println("Error: Unknown output type " + o.getClass().getName());
+     }
+     } */
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -225,7 +283,7 @@ public class OutputConfigRow extends javax.swing.JPanel {
         jLabel7 = new javax.swing.JLabel();
         textNumClasses = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
+        comboClassificationAlgorithm = new javax.swing.JComboBox();
         cardRegression = new javax.swing.JPanel();
         jPanel26 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
@@ -237,6 +295,8 @@ public class OutputConfigRow extends javax.swing.JPanel {
         textMax = new javax.swing.JTextField();
         comboLimitType = new javax.swing.JComboBox();
         textMin = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        comboRegressionAlgorithm = new javax.swing.JComboBox();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
@@ -332,7 +392,7 @@ public class OutputConfigRow extends javax.swing.JPanel {
 
         jLabel8.setText("classes, using");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "k-Nearest Neighbor", "AdaBoost", "Support Vector Machine", "Decision Tree" }));
+        comboClassificationAlgorithm.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "k-Nearest Neighbor", "AdaBoost", "Support Vector Machine", "Decision Tree" }));
 
         javax.swing.GroupLayout cardClassificationLayout = new javax.swing.GroupLayout(cardClassification);
         cardClassification.setLayout(cardClassificationLayout);
@@ -346,7 +406,7 @@ public class OutputConfigRow extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox1, 0, 1, Short.MAX_VALUE)
+                .addComponent(comboClassificationAlgorithm, 0, 1, Short.MAX_VALUE)
                 .addContainerGap())
         );
         cardClassificationLayout.setVerticalGroup(
@@ -355,7 +415,7 @@ public class OutputConfigRow extends javax.swing.JPanel {
                 .addComponent(jLabel7)
                 .addComponent(textNumClasses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jLabel8)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(comboClassificationAlgorithm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         panelClassificationRegression.add(cardClassification, "cardClassification");
@@ -439,33 +499,48 @@ public class OutputConfigRow extends javax.swing.JPanel {
             }
         });
 
+        jLabel1.setText("using");
+
+        comboRegressionAlgorithm.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
         jPanel9Layout.setHorizontalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel10)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(textMin, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel11)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(textMax, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(comboLimitType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addComponent(jLabel10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(textMin, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(textMax, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(comboLimitType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(comboRegressionAlgorithm, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(0, 9, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
                     .addComponent(textMin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel11)
                     .addComponent(textMax, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(comboLimitType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(comboLimitType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(comboRegressionAlgorithm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         cardRegression.add(jPanel9);
@@ -478,7 +553,6 @@ public class OutputConfigRow extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(0, 0, 0)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelClassificationRegression, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -593,10 +667,12 @@ public class OutputConfigRow extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel cardClassification;
     private javax.swing.JPanel cardRegression;
+    private javax.swing.JComboBox comboClassificationAlgorithm;
     private javax.swing.JComboBox comboLimitType;
+    private javax.swing.JComboBox comboRegressionAlgorithm;
     private javax.swing.JComboBox comboRegressionType;
     private javax.swing.JComboBox comboType;
-    private javax.swing.JComboBox jComboBox1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;

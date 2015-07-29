@@ -20,6 +20,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import wekimini.Wekinator;
 import wekimini.gui.UpDownDeleteGUI.UpDownDeleteNotifiable;
+import wekimini.learning.ModelBuilder;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
 import wekimini.osc.OSCSender;
@@ -40,7 +41,7 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
     private ArrayList<JPanel> outputParentPanels = new ArrayList<>();
     private int highestOutputNumber = 1;
     private String baseName = "output";
-    private OutputGroupReceiver outputGroupReceiver = null;
+    private OutputConfigurationReceiver outputGroupReceiver = null;
 
     /**
      * Creates new form GUIAddEditOutputGroup For GUI testing only
@@ -48,10 +49,10 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
     public OutputConfigurationFrame() {
         initComponents();
         panelOutputsContainer.removeAll();
-        addOutputPanel("output-1", null);
+        addOutputPanel("output-1", null, null);
     }
 
-    public OutputConfigurationFrame(Wekinator w, String msg, String host, int port, int numOutputs, List<OSCOutput> existingOutputs, String[] currentNames, String baseName, OutputGroupReceiver recv) {
+    public OutputConfigurationFrame(Wekinator w, String msg, String host, int port, int numOutputs, List<OSCOutput> existingOutputs, String[] currentNames, String baseName, ModelBuilder[] modelBuilders, OutputConfigurationReceiver recv) {
         initComponents();
         this.w = w;
         textHost.setText(host);
@@ -59,10 +60,10 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
         textOSCMessage.setText(msg);
         this.outputGroupReceiver = recv;
         this.baseName = baseName;
-        addPanels(numOutputs, existingOutputs, currentNames);
+        addPanels(numOutputs, existingOutputs, currentNames, modelBuilders);
     }
 
-    private void addPanels(int howMany, List<OSCOutput> existingOutputs, String[] names) {
+    private void addPanels(int howMany, List<OSCOutput> existingOutputs, String[] names, ModelBuilder[] modelBuilders) {
         panelOutputsContainer.removeAll();
         for (int i = 0; i < howMany; i++) {
             String name;
@@ -71,10 +72,15 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
             } else {
                 name = generateOutputName(i + 1);
             }
-            if (existingOutputs == null || existingOutputs.size() < i) {
-                addOutputPanel(name, null);
+            ModelBuilder mb = null;
+            if (modelBuilders != null && modelBuilders.length > i) {
+                mb = modelBuilders[i];
+            }
+            
+            if (existingOutputs == null || existingOutputs.size() < i+1) {
+                addOutputPanel(name, null, mb);
             } else {
-                addOutputPanel(name, existingOutputs.get(i));
+                addOutputPanel(name, existingOutputs.get(i), mb);
             }
         }
         JScrollBar vertical = scrollOutputsList.getVerticalScrollBar();
@@ -82,7 +88,8 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
     }
 
     //Adds a panel to the bottom
-    private void addOutputPanel(String name, OSCOutput output) {
+    //output and mb can both be null
+    private void addOutputPanel(String name, OSCOutput output, ModelBuilder mb) {
         numOutputs++;
         JPanel p;
         p = new JPanel();
@@ -94,9 +101,9 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
 
         OutputConfigRow oscp;
         if (output == null) {
-            oscp = new OutputConfigRow(numOutputs, name);
+            oscp = new OutputConfigRow(numOutputs, name, mb);
         } else {
-            oscp = new OutputConfigRow(numOutputs, name, output);
+            oscp = new OutputConfigRow(numOutputs, name, output, mb);
         }
 
         p.add(oscp);
@@ -421,7 +428,8 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
         if (validateForm()) {
             try {
                 OSCOutputGroup group = createGroupFromForm();
-                outputGroupReceiver.outputGroupReady(group);
+                ModelBuilder[] modelBuilders = getModelBuildersFromForm();
+                outputGroupReceiver.outputConfigurationReady(group, modelBuilders);
                 //System.out.println(Util.toXMLString(group, OSCOutputGroup.class.getName(), OSCOutputGroup.class));
                 dispose();
             } catch (Exception ex) {
@@ -456,6 +464,15 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
         return group;
     }
 
+    private ModelBuilder[] getModelBuildersFromForm() {
+        ModelBuilder[] modelBuilders = new ModelBuilder[outputPanels.size()];
+        for (int i = 0; i < modelBuilders.length; i++) {
+            modelBuilders[i] = outputPanels.get(i).getModelBuilderFromForm();
+        }
+        return modelBuilders;
+    }
+
+    
     private boolean validateForm() {
 
         if (!Util.checkNotBlank(textOSCMessage, "OSC message string", this)) {
@@ -505,7 +522,7 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
     }//GEN-LAST:event_textPortKeyTyped
 
     private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddActionPerformed
-        addOutputPanel(generateOutputName(outputPanels.size() + 1), null);
+        addOutputPanel(generateOutputName(outputPanels.size() + 1), null, null);
     }//GEN-LAST:event_buttonAddActionPerformed
 
     private String generateOutputName(int which) {
@@ -563,7 +580,7 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
             delete(outputPanels.size() - 1);
         }
         while (names.length > numOutputs) {
-            addOutputPanel(generateOutputName(outputPanels.size() + 1), null);
+            addOutputPanel(generateOutputName(outputPanels.size() + 1), null, null);
         }
 
         for (int i = 0; i < names.length; i++) {
@@ -572,9 +589,9 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
 
     }
 
-    public interface OutputGroupReceiver {
+    public interface OutputConfigurationReceiver {
 
-        void outputGroupReady(OSCOutputGroup g);
+        void outputConfigurationReady(OSCOutputGroup g, ModelBuilder[] modelBuilders);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
