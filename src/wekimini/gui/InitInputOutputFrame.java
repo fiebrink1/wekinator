@@ -234,7 +234,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         popupMenuOutputOptions = new javax.swing.JPopupMenu();
         menuCustomiseOutputNames = new javax.swing.JMenuItem();
         menuLoadOutputFromFile = new javax.swing.JMenuItem();
-        menuChooseClassifier = new javax.swing.JMenu();
+        menuChooseAlgorithm = new javax.swing.JMenu();
         buttonKNN = new javax.swing.JRadioButtonMenuItem();
         buttonAdaboost = new javax.swing.JRadioButtonMenuItem();
         buttonSVM = new javax.swing.JRadioButtonMenuItem();
@@ -311,27 +311,32 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         });
         popupMenuOutputOptions.add(menuLoadOutputFromFile);
 
-        menuChooseClassifier.setText("Choose classifier");
-        menuChooseClassifier.setEnabled(false);
+        menuChooseAlgorithm.setText("Choose algorithm");
+        menuChooseAlgorithm.setEnabled(false);
 
         classifierRadioGroup.add(buttonKNN);
         buttonKNN.setSelected(true);
         buttonKNN.setText("k-Nearest Neighbor");
-        menuChooseClassifier.add(buttonKNN);
+        buttonKNN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonKNNActionPerformed(evt);
+            }
+        });
+        menuChooseAlgorithm.add(buttonKNN);
 
         classifierRadioGroup.add(buttonAdaboost);
         buttonAdaboost.setText("AdaBoost");
-        menuChooseClassifier.add(buttonAdaboost);
+        menuChooseAlgorithm.add(buttonAdaboost);
 
         classifierRadioGroup.add(buttonSVM);
         buttonSVM.setText("Support Vector Machine");
-        menuChooseClassifier.add(buttonSVM);
+        menuChooseAlgorithm.add(buttonSVM);
 
         classifierRadioGroup.add(buttonJ48);
         buttonJ48.setText("Decision Tree");
-        menuChooseClassifier.add(buttonJ48);
+        menuChooseAlgorithm.add(buttonJ48);
 
-        popupMenuOutputOptions.add(menuChooseClassifier);
+        popupMenuOutputOptions.add(menuChooseAlgorithm);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Create new project");
@@ -949,11 +954,11 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         int index = comboOutputType.getSelectedIndex();
         CardLayout layout = (CardLayout) panelOutputTypes.getLayout();
         if (index == COMBO_REGRESSION_INDEX) {
-            menuChooseClassifier.setEnabled(false);
+            menuChooseAlgorithm.setEnabled(false);
         } else if (index == COMBO_CLASSIFICATION_INDEX) {
-            menuChooseClassifier.setEnabled(true);
+            menuChooseAlgorithm.setEnabled(true);
         } else {
-            menuChooseClassifier.setEnabled(false);
+            menuChooseAlgorithm.setEnabled(false);
         }
     }
 
@@ -1291,6 +1296,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
     }//GEN-LAST:event_formWindowClosing
 
+    private void buttonKNNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonKNNActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buttonKNNActionPerformed
+
     private void removeListeners() {
         w.getWekinatorController().removeInputNamesListener(inputNamesListener);
         w.getWekinatorController().removeOutputNamesListener(outputNamesListener);
@@ -1520,7 +1529,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel labelOscStatus;
-    private javax.swing.JMenu menuChooseClassifier;
+    private javax.swing.JMenu menuChooseAlgorithm;
     private javax.swing.JMenuItem menuCustomiseInputNames;
     private javax.swing.JMenuItem menuCustomiseOutputNames;
     private javax.swing.JMenuItem menuItemNewProject;

@@ -20,8 +20,9 @@ public class LearningAlgorithmRegistry {
     }
     
     public static ModelBuilder[] getNumericModelBuilders() {
-       ModelBuilder[] mbs = new ModelBuilder[1];
+       ModelBuilder[] mbs = new ModelBuilder[2];
        mbs[0] = new NeuralNetModelBuilder();
+       mbs[1] = new LinearRegressionModelBuilder();
        return mbs;         
     } 
     

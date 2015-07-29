@@ -48,9 +48,9 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuLoadOutputFromFileActionPerformed"/>
           </Events>
         </MenuItem>
-        <Menu class="javax.swing.JMenu" name="menuChooseClassifier">
+        <Menu class="javax.swing.JMenu" name="menuChooseAlgorithm">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Choose classifier"/>
+            <Property name="text" type="java.lang.String" value="Choose algorithm"/>
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <SubComponents>
@@ -62,6 +62,9 @@
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="k-Nearest Neighbor"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonKNNActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="buttonAdaboost">
               <Properties>
