@@ -32,5 +32,5 @@ public interface ModelBuilder {
     public String getPrettyName();
 
     public ModelBuilderEditorPanel getEditorPanel();
-
+    
 }

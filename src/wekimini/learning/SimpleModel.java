@@ -58,6 +58,9 @@ public class SimpleModel implements Model {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     } 
 
-   
+     @Override
+    public String getModelDescription() {
+        return "A simple model that does nothing";
+    }
     
 }

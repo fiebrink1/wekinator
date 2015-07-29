@@ -12,21 +12,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import wekimini.Path;
 import wekimini.WekiMiniRunner.Closeable;
-import wekimini.gui.InputMonitor;
-import wekimini.gui.InputOutputConnectionsEditor;
-import wekimini.gui.NewProjectSettingsFrame;
-import wekimini.gui.OSCInputStatusFrame;
-import wekimini.gui.OutputViewerTable;
 import wekimini.gui.path.PathEditorFrame;
-import wekimini.osc.OSCOutput;
 import wekimini.util.Util;
-import wekimini.WekiMiniRunner;
 import wekimini.WekiMiniRunner;
 import wekimini.Wekinator;
 import wekimini.WekinatorFileData;
@@ -37,16 +29,13 @@ import wekimini.WekinatorFileData;
  */
 public class MainGUI extends javax.swing.JFrame implements Closeable {
 
-    //private GUIAddNewInput addNewInputGUI;
-    private boolean isDisplayingReceiverWindow = false;
-    private boolean isDisplayingAddInput = false;
     private OSCInputStatusFrame oscInputStatusFrame = null;
     private InputMonitor inputMonitorFrame = null;
     private OutputViewerTable outputTableWindow = null;
     private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
-    private Wekinator w;
+    private final Wekinator w;
     private boolean closeable = true; //flaseif this is the last window open
-
+    
     /* public void displayEditInput(String name) {
      //Only show 1 of these at once
      if (! isDisplayingAddInput) {
@@ -266,6 +255,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         menuPerformanceCheck = new javax.swing.JCheckBoxMenuItem();
+        menuConsole = new javax.swing.JMenuItem();
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
 
@@ -377,6 +367,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         jMenu2.add(menuPerformanceCheck);
 
+        menuConsole.setText("Console");
+        menuConsole.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuConsoleActionPerformed(evt);
+            }
+        });
+        jMenu2.add(menuConsole);
+
         jMenuBar1.add(jMenu2);
 
         menuActions.setText("Actions");
@@ -476,6 +474,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private void checkEnableOSCControlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkEnableOSCControlActionPerformed
         w.getWekinatorController().setOscControlEnabled(checkEnableOSCControl.isSelected());
     }//GEN-LAST:event_checkEnableOSCControlActionPerformed
+
+    private void menuConsoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuConsoleActionPerformed
+        w.showConsole();
+    }//GEN-LAST:event_menuConsoleActionPerformed
 
     public void showOutputTable() {
         if (outputTableWindow == null) {
@@ -610,6 +612,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JPanel jPanel1;
     private wekimini.gui.LearningPanel learningPanel1;
     private javax.swing.JMenu menuActions;
+    private javax.swing.JMenuItem menuConsole;
     private javax.swing.JMenu menuFile;
     private javax.swing.JMenuItem menuItemSave;
     private javax.swing.JMenuItem menuItemSaveAs;

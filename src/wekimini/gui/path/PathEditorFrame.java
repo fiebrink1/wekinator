@@ -18,6 +18,7 @@ import wekimini.Path;
 import wekimini.Wekinator;
 import wekimini.gui.path.ModelEditorFrame.ModelBuilderReceiver;
 import wekimini.gui.path.OutputEditFrame.OutputEditReceiver;
+import wekimini.learning.Model;
 import wekimini.learning.ModelBuilder;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCNumericOutput;
@@ -188,6 +189,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         buttonEditModelType = new javax.swing.JButton();
         labelModelType = new javax.swing.JLabel();
+        buttonPrintToConsole = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         labelConnectedInputs = new javax.swing.JLabel();
         scrollPaneInputs = new javax.swing.JScrollPane();
@@ -294,6 +296,13 @@ public class PathEditorFrame extends javax.swing.JFrame {
 
         labelModelType.setText("Neural network");
 
+        buttonPrintToConsole.setText("Display in console");
+        buttonPrintToConsole.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonPrintToConsoleActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -305,7 +314,8 @@ public class PathEditorFrame extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(labelModelType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(193, 193, 193))
+                .addGap(96, 96, 96)
+                .addComponent(buttonPrintToConsole))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -313,10 +323,12 @@ public class PathEditorFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(labelModelType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(buttonEditModelType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(labelModelType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(buttonEditModelType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buttonPrintToConsole))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -512,6 +524,16 @@ public class PathEditorFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox1ActionPerformed
 
+    private void buttonPrintToConsoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPrintToConsoleActionPerformed
+        w.showConsole();
+        Model m = p.getModel();
+        if (m == null) {
+            logger.log(Level.INFO, "Model is not trained");
+        } else {
+            logger.log(Level.INFO, m.getModelDescription());
+        }
+    }//GEN-LAST:event_buttonPrintToConsoleActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -550,6 +572,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonEditModelType;
     private javax.swing.JButton buttonEditOutput;
+    private javax.swing.JButton buttonPrintToConsole;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;

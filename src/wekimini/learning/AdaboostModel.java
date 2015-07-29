@@ -74,5 +74,10 @@ public class AdaboostModel implements Model {
         model.wmodel = ada;
         return model;
     }
+
+    @Override
+    public String getModelDescription() {
+        return wmodel.toString();
+    }
     
 }

@@ -75,4 +75,8 @@ public class J48Model implements Model {
         return model;
     }
     
+    @Override
+    public String getModelDescription() {
+        return wmodel.toString();
+    }
 }

@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
-import wekimini.osc.OSCController;
+import wekimini.gui.Console;
 import wekimini.osc.OSCMonitor;
 import wekimini.osc.OSCReceiver;
 import wekimini.util.Util;
@@ -46,6 +46,7 @@ public class Wekinator {
     private final OSCMonitor oscMonitor;
     private final LoggingManager loggingManager;
     private final WekinatorController wekinatorController;
+    private Console myConsole = null;
     //private final OSCController oscController;
     
     private String projectName = "New Project";
@@ -201,6 +202,10 @@ public class Wekinator {
     //Use only for testing
     public static Wekinator TestingWekinator() throws IOException {
         return new Wekinator();
+    }
+    
+    public LoggingManager getLoggingManager() {
+        return loggingManager;
     }
     
     public Wekinator() throws IOException {
@@ -386,6 +391,21 @@ public class Wekinator {
         logger.log(Level.INFO, "Preparing to die");
         oscReceiver.stopListening();
         loggingManager.prepareToDie(); //Problem: getting here with X but not with close handler
+    }
+
+    public void showConsole() {
+        if (myConsole == null) {
+            myConsole = new Console(this);
+        }
+        myConsole.setVisible(true);
+        myConsole.toFront();
+        Util.callOnClosed(myConsole, new Util.CallableOnClosed() {
+
+            @Override
+            public void callMe() {
+                myConsole = null;
+            }
+        });
     }
 
 }

@@ -76,4 +76,9 @@ public class KNNModel implements Model {
         return model;
     }
     
+    @Override
+    public String getModelDescription() {
+        return wmodel.toString();
+    }
+    
 }

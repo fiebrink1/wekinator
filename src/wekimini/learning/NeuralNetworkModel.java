@@ -74,4 +74,9 @@ public class NeuralNetworkModel implements Model {
         return nn;
     }
     
+    @Override
+    public String getModelDescription() {
+        return wmodel.toString();
+    }
+    
 }

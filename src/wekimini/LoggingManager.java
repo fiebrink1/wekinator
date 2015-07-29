@@ -16,6 +16,8 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+import javax.swing.JTextArea;
+import wekimini.gui.Console;
 import wekimini.util.TeeStream;
 import wekimini.util.Util;
 
@@ -32,6 +34,7 @@ public class LoggingManager {
     private final String backupLogLocation;
     private static final Logger logger = Logger.getLogger(LoggingManager.class.getName());
     private FileHandler fileHandler = null;
+    private WekinatorConsoleHandler consoleHandler = null;
     private final LinkedList<Handler> handlers;
     private static PrintStream teeStdOut;
     private static PrintStream teeStdErr;
@@ -77,23 +80,28 @@ public class LoggingManager {
     
     public LoggingManager(Wekinator w) {
         this.w = w;
+        consoleHandler = new WekinatorConsoleHandler();
+        consoleHandler.setLevel(Level.INFO);
         handlers = new LinkedList<>();
         logFileLocation = getPrimaryLoggingFilename();
         backupLogLocation = "%h" + File.separator + "wekinator" + "%g.log"; //home dir / WekinatorN.log
     }
     
     public void startLoggingToFile() throws IOException {
+        String location;
         if (fileHandler != null) {
             logger.log(Level.WARNING, "Already logging to file; exiting without creating new log");
             return;
         }
         try {
             fileHandler = new FileHandler(logFileLocation, Integer.MAX_VALUE, 5);
+            location = logFileLocation;
         } catch (IOException ex) {
             logger.log(Level.WARNING, "Could not write to log at {0}", logFileLocation);
             logger.log(Level.WARNING, null, ex);
             try {
                 fileHandler = new FileHandler(backupLogLocation);
+                location = backupLogLocation;
                 logger.log(Level.INFO, "Logging instead to {0}", backupLogLocation);
             } catch (IOException ex1) {
                 logger.log(Level.SEVERE, "Could not write to log at {0}", backupLogLocation);
@@ -105,12 +113,13 @@ public class LoggingManager {
         fileHandler.setLevel(Level.ALL);
         handlers.add(fileHandler);
         Logger.getLogger(Wekinator.class.getPackage().getName()).addHandler(fileHandler);
-        logger.log(Level.INFO, "Set up file logging");
+        logger.log(Level.INFO, "Set up file logging; logging location {0}", location);
     }
     
     public void stopLoggingToFile() {
         if (fileHandler != null) {
             Logger.getLogger(Wekinator.class.getPackage().getName()).removeHandler(fileHandler);
+            handlers.remove(fileHandler);
         }
     }
     
@@ -118,19 +127,25 @@ public class LoggingManager {
         fileHandler.setLevel(newLevel);
     }
     
-    public void dumpLogToConsole() {
-        
+    public void dumpLogToConsoleGUI() {
+        System.out.println("NOT YET IMPLEMENTED TODO");
     }
     
-    public void startLoggingToConsole() {
-        
+    public void startLoggingToConsoleGUI(JTextArea a) {
+        consoleHandler.setTextArea(a);
+        dumpLogToConsoleGUI();
+        handlers.add(consoleHandler);
+        Logger.getLogger(Wekinator.class.getPackage().getName()).addHandler(consoleHandler);
     }
     
-    public void stopLoggingToConsole() {
-        
+    public void stopLoggingToConsoleGUI() {
+        if (consoleHandler != null) {
+            Logger.getLogger(Wekinator.class.getPackage().getName()).removeHandler(consoleHandler);
+            handlers.remove(consoleHandler);
+        }
     }
     
-    public void setConsoleLogLevel() {
+    public void setConsoleGUILogLevel(Level newLevel) {
         
     }
     
@@ -159,6 +174,7 @@ public class LoggingManager {
             System.setErr(teeStdErr);
             
             System.out.println("RUNNING WEKINATOR VERSION " + versionString);
+            logger.log(Level.INFO, "Universal log file at {0}", s);
         } catch (FileNotFoundException ex) {
             logger.log(Level.SEVERE, "Could not set up universal logs");
             logger.log(Level.SEVERE, null, ex);

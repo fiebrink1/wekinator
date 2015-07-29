@@ -78,4 +78,9 @@ public class LinearRegressionModel implements Model {
         return lrm;
     }
     
+    @Override
+    public String getModelDescription() {
+        return wmodel.toString();
+    }
+    
 }
