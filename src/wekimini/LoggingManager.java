@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.LinkedList;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -25,9 +26,12 @@ import wekimini.util.Util;
  * TODO: Make sure no problems when running mutliple wekinators at once
  * TODO: Test on Windows and linux
  *  
+ *  Useful info at http://stackoverflow.com/questions/28451374/extend-java-logging-for-another-log-level
  * @author rebecca
  */
 public class LoggingManager {
+    public static UserInfo USER_INFO = new UserInfo();
+    
     private final Wekinator w;
     //private File loggingFileLocation;
     private final String logFileLocation;
@@ -80,8 +84,20 @@ public class LoggingManager {
     
     public LoggingManager(Wekinator w) {
         this.w = w;
+        /*Logger globalLogger = java.util.logging.Logger.getLogger("");
+        Handler[] hs = globalLogger.getHandlers();
+        for(Handler handler : hs) {
+           // handler.setLevel(Level.FINEST);
+            globalLogger.removeHandler(handler);
+        }
+        ConsoleHandler ch = new ConsoleHandler();
+        ch.setFormatter(new SimpleFormatter());
+        ch.setLevel(Level.FINEST);
+        ch.setFilter(null);
+        globalLogger.addHandler(ch); */
+        
         consoleHandler = new WekinatorConsoleHandler();
-        consoleHandler.setLevel(Level.INFO);
+        consoleHandler.setLevel(LoggingManager.USER_INFO);
         handlers = new LinkedList<>();
         logFileLocation = getPrimaryLoggingFilename();
         backupLogLocation = "%h" + File.separator + "wekinator" + "%g.log"; //home dir / WekinatorN.log
@@ -200,4 +216,6 @@ public class LoggingManager {
             teeStdOut.close();
         }
     }
+    
+    
 }

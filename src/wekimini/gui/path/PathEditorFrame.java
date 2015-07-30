@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JCheckBox;
+import wekimini.LoggingManager;
 import wekimini.Path;
 import wekimini.Wekinator;
 import wekimini.gui.path.ModelEditorFrame.ModelBuilderReceiver;
@@ -528,9 +529,9 @@ public class PathEditorFrame extends javax.swing.JFrame {
         w.showConsole();
         Model m = p.getModel();
         if (m == null) {
-            logger.log(Level.INFO, "Model is not trained");
+            logger.log(LoggingManager.USER_INFO, "Model is not trained");
         } else {
-            logger.log(Level.INFO, m.getModelDescription());
+            logger.log(LoggingManager.USER_INFO, m.getModelDescription());
         }
     }//GEN-LAST:event_buttonPrintToConsoleActionPerformed
 

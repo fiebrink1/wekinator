@@ -243,7 +243,7 @@ public class Path {
             model = lastModel;
             setModelState(lastModelState);
             logger.log(Level.SEVERE, "Exception encountered in building : {0}", ex.getMessage());
-            logger.log(Level.FINE, "Setting model state to {0}", lastModelState);
+            logger.log(Level.INFO, "Setting model state to {0}", lastModelState);
             trainingCompleted = true;
             throw ex;
         }
@@ -329,7 +329,7 @@ public class Path {
      * @param modelState new value of modelState
      */
     public void setModelState(ModelState modelState) {
-        logger.log(Level.FINE, "Setting model state to {0}", modelState);
+        logger.log(Level.INFO, "Setting model state to {0}", modelState);
         ModelState oldModelState = this.modelState;
         this.modelState = modelState;
         propertyChangeSupport.firePropertyChange(PROP_MODELSTATE, oldModelState, modelState);
