@@ -4,6 +4,7 @@
 package wekimini.util;
 
 import java.io.PrintStream;
+import java.util.logging.Level;
 
 /**
  * Adapted from

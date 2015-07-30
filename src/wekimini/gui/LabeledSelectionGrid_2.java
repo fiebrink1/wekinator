@@ -103,7 +103,6 @@ public class LabeledSelectionGrid_2 extends javax.swing.JFrame {
     }
 
     private void mouseExit(int x, int y) {
-        System.out.println("exit " + x + y);
         if (isMouseDragging) {
             if (lastPressStart.x == x && lastPressStart.y == y) {
                 toggles[x][y].setSelected(isDraggingTurningOn);
@@ -144,11 +143,7 @@ public class LabeledSelectionGrid_2 extends javax.swing.JFrame {
     }
 
     private void mouseClick(int x, int y, java.awt.event.MouseEvent evt) {
-
-        System.out.println("Click " + x + y);
-
         if (evt.isShiftDown() && lastClickLocation.x != -1) {
-            System.out.println("A");
             int startx, starty, endx, endy;
             if (lastClickLocation.x < x) {
                 startx = lastClickLocation.x;
@@ -448,15 +443,15 @@ public class LabeledSelectionGrid_2 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jToggleButton2MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton2MouseDragged
-        System.out.println("DRAG");
+       // System.out.println("DRAG");
     }//GEN-LAST:event_jToggleButton2MouseDragged
 
     private void jToggleButton2MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton2MouseEntered
-        System.out.println("Mouse enter");
+       // System.out.println("Mouse enter");
     }//GEN-LAST:event_jToggleButton2MouseEntered
 
     private void jToggleButton2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton2MouseExited
-        System.out.println("Mouse exit");
+       // System.out.println("Mouse exit");
     }//GEN-LAST:event_jToggleButton2MouseExited
 
     private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
@@ -464,7 +459,7 @@ public class LabeledSelectionGrid_2 extends javax.swing.JFrame {
     }//GEN-LAST:event_jToggleButton2ActionPerformed
 
     private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
-        System.out.println("AC");
+        //System.out.println("AC");
     }//GEN-LAST:event_jToggleButton1ActionPerformed
 
     private void jToggleButton1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton1MousePressed
@@ -472,11 +467,11 @@ public class LabeledSelectionGrid_2 extends javax.swing.JFrame {
     }//GEN-LAST:event_jToggleButton1MousePressed
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
-        System.out.println("KEY PRESSED");
+       // System.out.println("KEY PRESSED");
     }//GEN-LAST:event_formKeyPressed
 
     private void jPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel1KeyPressed
-        System.out.println("KEY PRESSED");
+       // System.out.println("KEY PRESSED");
     }//GEN-LAST:event_jPanel1KeyPressed
 
     private void jToggleButton3MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton3MousePressed

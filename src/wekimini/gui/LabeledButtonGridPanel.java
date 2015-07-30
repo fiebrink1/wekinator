@@ -204,7 +204,6 @@ public class LabeledButtonGridPanel extends JPanel {
     }
 
     private void mousePress(int x, int y) {
-        System.out.println("X, y: " + x + "," + y);
         isMouseDragging = true;
         boolean selected = toggles[y][x].isSelected();
         isDraggingTurningOn = !selected;
@@ -317,7 +316,6 @@ public class LabeledButtonGridPanel extends JPanel {
     }
 
     private void toggleColumn(int which) {
-        System.out.println("Toggle " + which);
         for (int j = 0; j < toggles.length; j++) {
             toggles[j][which].setSelected(columnToggles[which]);
         }
@@ -326,7 +324,6 @@ public class LabeledButtonGridPanel extends JPanel {
     }
 
     private void toggleRow(int which) {
-        System.out.println("Toggle " + which);
         for (int i = 0; i < toggles[0].length; i++) {
             toggles[which][i].setSelected(rowToggles[which]);
         }

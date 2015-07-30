@@ -138,9 +138,9 @@ public class OSCControlReceiver {
                 
                 Object[] o = oscm.getArguments();
                 if (o.length == 0) {
-                    w.getStatusUpdateCenter().update(this,
-                            "Error: OSC message " + enableModelRecordMessage
-                            + " requires a list of model numbers", Level.WARNING);
+                    w.getStatusUpdateCenter().warn(this,
+                            "OSC message " + enableModelRecordMessage
+                            + " requires a list of model numbers");
                     return;
                 }
                 int[] modelNumbers = new int[o.length];
@@ -148,15 +148,15 @@ public class OSCControlReceiver {
                     if (o[i] instanceof Number) {
                         int whichModel = ((Number) o[i]).intValue();
                         if (whichModel < 1 || whichModel > w.getOutputManager().getOutputGroup().getNumOutputs()) {
-                            w.getStatusUpdateCenter().update(this,
-                                    "Error: Model numbers must be between 1 and # models for OSC message " + enableModelRecordMessage, Level.WARNING);
+                            w.getStatusUpdateCenter().warn(this,
+                                    "Model numbers must be between 1 and # models for OSC message " + enableModelRecordMessage);
                             return;
                         }
                         modelNumbers[i] = whichModel;
 
                     } else {
-                        w.getStatusUpdateCenter().update(this,
-                                "Error: Non-numeric model number given for OSC message " + enableModelRecordMessage, Level.WARNING);
+                        w.getStatusUpdateCenter().warn(this,
+                                "Non-numeric model number given for OSC message " + enableModelRecordMessage);
                         return;
                     }
                 }
@@ -183,18 +183,17 @@ public class OSCControlReceiver {
                 Object[] o = oscm.getArguments();
                 try {
                     if (w.getInputManager().hasValidInputs() && o.length != w.getInputManager().getNumInputs()) {
-                        w.getStatusUpdateCenter().update(this,
-                                "Error: Received wrong number of input names "
-                                + "(received " + o.length + ", expected " + w.getInputManager().getNumInputs() + ")",
-                                Level.WARNING);
+                        w.getStatusUpdateCenter().warn(this,
+                                "Received wrong number of input names "
+                                + "(received " + o.length + ", expected " + w.getInputManager().getNumInputs() + ")");
                         return;
                     }
 
                     String[] names = new String[o.length];
                     for (int i = 0; i < o.length; i++) {
                         if (!(o[i] instanceof String)) {
-                            w.getStatusUpdateCenter().update(this,
-                                    "Error: Received non-string argument(s) for OSC message " + oscm, Level.WARNING);
+                            w.getStatusUpdateCenter().warn(this,
+                                    "Received non-string argument(s) for OSC message " + oscm);
                             return;
                         }
                         names[i] = (String) o[i];
@@ -202,9 +201,9 @@ public class OSCControlReceiver {
                     if (Util.checkAllUnique(names)) {
                         controller.setInputNames(names);
                     } else {
-                        w.getStatusUpdateCenter().update(this,
-                                "Error: Input names not unique (received via OSC message " + setInputNamesMessage
-                                + ")", Level.WARNING);
+                        w.getStatusUpdateCenter().warn(this,
+                                "Input names not unique (received via OSC message " + setInputNamesMessage
+                                + ")");
                     }
                 } catch (IllegalArgumentException ex) {
                 }
@@ -225,18 +224,17 @@ public class OSCControlReceiver {
                 Object[] o = oscm.getArguments();
                 try {
                     if (w.getOutputManager().hasValidOutputGroup() && o.length != w.getOutputManager().getOutputGroup().getNumOutputs()) {
-                        w.getStatusUpdateCenter().update(this,
-                                "Error: Received wrong number of output names "
-                                + "(received " + o.length + ", expected " + w.getOutputManager().getOutputGroup().getNumOutputs() + ")",
-                                Level.WARNING);
+                        w.getStatusUpdateCenter().warn(this,
+                                "Received wrong number of output names "
+                                + "(received " + o.length + ", expected " + w.getOutputManager().getOutputGroup().getNumOutputs() + ")");
                         return;
                     }
 
                     String[] names = new String[o.length];
                     for (int i = 0; i < o.length; i++) {
                         if (!(o[i] instanceof String)) {
-                            w.getStatusUpdateCenter().update(this,
-                                    "Error: Received non-string argument(s) for OSC message " + oscm, Level.WARNING);
+                            w.getStatusUpdateCenter().warn(this,
+                                    "Received non-string argument(s) for OSC message " + oscm);
                             return;
                         }
                         names[i] = (String) o[i];
@@ -244,9 +242,9 @@ public class OSCControlReceiver {
                     if (Util.checkAllUnique(names)) {
                         controller.setOutputNames(names);
                     } else {
-                        w.getStatusUpdateCenter().update(this,
-                                "Error: Output names not unique (received via OSC message " + setOutputNamesMessage
-                                + ")", Level.WARNING);
+                        w.getStatusUpdateCenter().warn(this,
+                                "Output names not unique (received via OSC message " + setOutputNamesMessage
+                                + ")");
                     }
                 } catch (IllegalArgumentException ex) {
                 }
@@ -269,16 +267,14 @@ public class OSCControlReceiver {
                 try {
                     //Check if we can reasonably do something with this:
                     if (!w.getInputManager().hasValidInputs() || !w.getOutputManager().hasValidOutputGroup()) {
-                       w.getStatusUpdateCenter().update(this,
-                                "Error: Cannot create connections between inputs and outputs: these are not yet set up",
-                                Level.WARNING);
+                       w.getStatusUpdateCenter().warn(this,
+                                "Cannot create connections between inputs and outputs: these are not yet set up");
                         return; 
                     } 
                     
                     if (o.length < 2) {
-                        w.getStatusUpdateCenter().update(this,
-                                "Error: OSC message " + setInputSelectionForOutputMessage + " requires output ID followed by at least one selected input ID",
-                                Level.WARNING);
+                        w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + setInputSelectionForOutputMessage + " requires output ID followed by at least one selected input ID");
                         return; 
                     }
                     
@@ -286,11 +282,10 @@ public class OSCControlReceiver {
                     
                     int outputNum = vals[0];
                     if (outputNum < 1 || outputNum > w.getOutputManager().getOutputGroup().getNumOutputs()) {
-                        w.getStatusUpdateCenter().update(this,
-                                "Error: OSC message " + setInputSelectionForOutputMessage
+                        w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + setInputSelectionForOutputMessage
                                 + " requires first argument to be output ID (between 1 and "
-                                + w.getOutputManager().getOutputGroup().getNumOutputs() + ")",
-                                Level.WARNING);
+                                + w.getOutputManager().getOutputGroup().getNumOutputs() + ")");
                         return;
                     }
 
@@ -298,11 +293,10 @@ public class OSCControlReceiver {
                     for (int i = 0; i < vals.length - 1; i++) {
                         int nextInput = vals[i + 1];
                         if (nextInput < 1 || nextInput > w.getInputManager().getNumInputs()) {
-                            w.getStatusUpdateCenter().update(this,
-                                    "Error: OSC message " + setInputSelectionForOutputMessage
+                            w.getStatusUpdateCenter().warn(this,
+                                    "OSC message " + setInputSelectionForOutputMessage
                                     + " requires list of input IDs to be selected, with each ID between 1 and # inputs ("
-                                    + w.getInputManager().getNumInputs() + ")",
-                                    Level.WARNING);
+                                    + w.getInputManager().getNumInputs() + ")");
                             return;
                         }
                         whichInputs[i] = nextInput;
@@ -318,8 +312,8 @@ public class OSCControlReceiver {
 
     private int[] unpackToInts(Object[] o, int n, String msg) {
         if (o.length != n) {
-            w.getStatusUpdateCenter().update(this, "Received wrong number of arguments for OSC message " + msg
-                    + " (Expected " + n + ")", Level.WARNING);
+            w.getStatusUpdateCenter().warn(this, "Received wrong number of arguments for OSC message " + msg
+                    + " (Expected " + n + ")");
             throw new IllegalArgumentException();
         }
         int[] a = new int[n];
@@ -327,7 +321,7 @@ public class OSCControlReceiver {
             if (o[i] instanceof Number) {
                 a[i] = ((Number) o[i]).intValue();
             } else {
-                w.getStatusUpdateCenter().update(this, "Received non-numeric argument(s) for OSC message " + msg, Level.WARNING);
+                w.getStatusUpdateCenter().warn(this, "Received non-numeric argument(s) for OSC message " + msg);
             }
         }
         return a;
@@ -335,8 +329,8 @@ public class OSCControlReceiver {
 
     private String[] unpackToStrings(Object[] o, int n, String msg) {
         if (o.length != n) {
-            w.getStatusUpdateCenter().update(this, "Received wrong number of arguments for OSC message " + msg
-                    + " (Expected " + n + ")", Level.WARNING);
+            w.getStatusUpdateCenter().warn(this, "Received wrong number of arguments for OSC message " + msg
+                    + " (Expected " + n + ")");
             throw new IllegalArgumentException();
         }
         String[] a = new String[n];
@@ -344,7 +338,7 @@ public class OSCControlReceiver {
             if (o[i] instanceof String) {
                 a[i] = (String) o[i];
             } else {
-                w.getStatusUpdateCenter().update(this, "Received non-string argument(s) for OSC message " + msg, Level.WARNING);
+                w.getStatusUpdateCenter().warn(this, "Received non-string argument(s) for OSC message " + msg);
             }
         }
         return a;

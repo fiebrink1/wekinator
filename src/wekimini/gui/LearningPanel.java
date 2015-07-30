@@ -108,17 +108,12 @@ public class LearningPanel extends javax.swing.JPanel {
         if (rstate == OSCMonitor.OSCReceiveState.NOT_CONNECTED) {
             indicatorOscIn.setIcon(problemIcon);
             indicatorOscIn.setToolTipText("OSC receiver is not listening");
-            // System.out.println("OSC recv not connected");
         } else if (rstate == OSCMonitor.OSCReceiveState.CONNECTED_NODATA) {
             indicatorOscIn.setIcon(offIcon);
             indicatorOscIn.setToolTipText("Listening, but no data arriving");
-
-            System.out.println("Connected no data");
         } else if (rstate == OSCMonitor.OSCReceiveState.RECEIVING) {
             indicatorOscIn.setIcon(onIcon);
             indicatorOscIn.setToolTipText("Receiving inputs");
-
-            //System.out.println("Receiving");
         } else {
             //There's a problem!
             indicatorOscIn.setIcon(problemIcon2);
@@ -130,13 +125,9 @@ public class LearningPanel extends javax.swing.JPanel {
         if (isSending) {
             indicatorOscOut.setIcon(onIcon);
             indicatorOscOut.setToolTipText("Sending outputs");
-
-            System.out.println("SENDING");
         } else {
             indicatorOscOut.setIcon(offIcon);
             indicatorOscOut.setToolTipText("Not sending outputs");
-
-            System.out.println("NOT SENDING");
         }
     }
 

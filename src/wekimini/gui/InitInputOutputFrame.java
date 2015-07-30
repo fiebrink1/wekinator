@@ -1219,7 +1219,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                     } */
                     for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
                         ModelBuilder mbnew = mb.fromTemplate(mb);
-                        System.out.println("Setting model builder to " + mbnew.getPrettyName()); 
+                        logger.log(Level.INFO, "Setting model builder to" + mbnew.getPrettyName());
                         w.getLearningManager().setModelBuilderForPath(mbnew, i);
                     }
 
@@ -1258,7 +1258,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             }
 
         } else {
-            System.out.println("ERROR SOMEWHERE");
+            logger.log(Level.INFO, "Error encountered in setting up inputs/outputs");
         }
     }//GEN-LAST:event_buttonNextActionPerformed
 
@@ -1573,7 +1573,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     }
 
     private void updateOSCListener() {
-        System.out.println("ERROR: updateOSCListener is not implemented");
+        logger.log(Level.WARNING, "updateOSCListener is not implemented");
     }
 
     private void updateOutputCard() {

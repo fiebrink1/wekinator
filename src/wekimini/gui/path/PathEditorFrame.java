@@ -91,7 +91,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
     }
 
     private void mouseClick(int whichCheckbox) {
-        System.out.println("Click on " + whichCheckbox);
+        //System.out.println("Click on " + whichCheckbox);
     }
 
     private void initFormForPath() {

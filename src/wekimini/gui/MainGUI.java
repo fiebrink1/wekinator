@@ -170,7 +170,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.out.println("HERE, closeable=" + closeable);
                 //int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
                 int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to close this project?", "Close project?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, WekiMiniRunner.getIcon());
 
@@ -197,13 +196,13 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
          }
          }); */
 
-        System.out.println("IN FINISIH UP");
+        //System.out.println("IN FINISIH UP");
         w.close();
         /*  if (WekiMiniRunner.getInstance().numRunningProjects() == 0) {
          WekiMiniRunner.getInstance().runNewProject();
             
          } */
-        System.out.println("MADE IT HERE");
+        //System.out.println("MADE IT HERE");
         this.dispose();
     }
 

@@ -34,6 +34,7 @@ public class OSCSender {
 
     protected EventListenerList listenerList = new EventListenerList();
     private ChangeEvent changeEvent = null;
+    private static final Logger logger = Logger.getLogger(OSCSender.class.getName());
 
     public boolean hasValidHostAndPort() {
         return isValidState;
@@ -111,7 +112,7 @@ public class OSCSender {
                 throw ex;
             }
         } else {
-            System.out.println("Could not send OSC message: Invalid state");
+            logger.log(Level.WARNING, "Could not send OSC message: Invalid state");
         }
 
     }

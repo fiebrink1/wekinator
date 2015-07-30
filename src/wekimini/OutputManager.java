@@ -216,12 +216,10 @@ public class OutputManager {
             notifyValueReceivedListeners(d);
         } else if (currentValues.length != 0) { //Don't warn if we're not set up yet
             
-            String msg = "Error: Output values received but message is wrong length: "
+            String msg = "Output values received but message is wrong length: "
                     + "Expected " + currentValues.length + " values, received "
                     + d.length;
-            System.out.println(msg);
-            Logger.getLogger(OutputManager.class.getName()).log(Level.WARNING, msg);
-
+            w.getStatusUpdateCenter().warn(this, msg);
         }
     }
 
@@ -283,8 +281,8 @@ public class OutputManager {
         try {
             w.getOSCSender().sendOutputValuesMessage(outputGroup.getOscMessage(), values);
         } catch (IOException ex) {
-            System.out.println("Error: couldn't send message");
-            Logger.getLogger(OutputManager.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "Couldn't send message");
+            logger.log(Level.SEVERE, null, ex);
         }
     }
     
@@ -299,8 +297,7 @@ public class OutputManager {
         try {
             w.getOSCSender().sendOutputValuesMessage(outputGroup.getOscMessage(), currentValues);
         } catch (IOException ex) {
-            System.out.println("Error: couldn't send message");
-            Logger.getLogger(OutputManager.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "Couldn't send message", ex);
         }  
     }
 

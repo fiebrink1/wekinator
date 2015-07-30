@@ -493,7 +493,7 @@ public class LearningManager {
     private void pathInputsChanged(Path p) {
         Integer outputIndex = pathsToOutputIndices.get(p);
         if (outputIndex == null) {
-            System.out.println("ERROR: path not found in pathInputsChanged");
+            logger.log(Level.SEVERE, "Path not found in pathInputsChanged");
             return;
         }
         String[] inputs = p.getSelectedInputs();
@@ -507,7 +507,8 @@ public class LearningManager {
             Integer index = inputNamesToIndices.get(names[i]);
             if (index == null) {
                 indices[i] = 0;
-                System.out.println("ERROR name " + names[i] + " not found");
+                logger.log(Level.SEVERE, "name {0} not found", names[i]);
+               // System.out.println("ERROR name " + names[i] + " not found");
             } else {
                 indices[i] = index;
             }
@@ -520,7 +521,7 @@ public class LearningManager {
         if (index != null) {
             pathRecordingMask[index] = p.isRecordEnabled();
         } else {
-            System.out.println("ERROR : Null path in pathRecordChanged");
+            logger.log(Level.SEVERE, "Null path in pathRecordChanged");
         }
     }
 
@@ -529,7 +530,7 @@ public class LearningManager {
         if (index != null) {
             pathRunningMask[index] = p.isRunEnabled();
         } else {
-            System.out.println("ERROR : Null path in pathRunChanged");
+            logger.log(Level.SEVERE, "Null path in pathRunChanged");
         }
     }
 
@@ -633,18 +634,17 @@ public class LearningManager {
     }
 
     private void outputGroupChanged(PropertyChangeEvent evt) {
-        logger.log(Level.WARNING, "ERROR: LearningManager doesn't know how to handle this output group change");
-        System.out.println("ERROR: LearningManager doesn't know how to handle this output group change");
+        logger.log(Level.WARNING, "LearningManager doesn't know how to handle this output group change");
     }
 
     private void inputGroupChanged(PropertyChangeEvent evt) {
-        System.out.println("ERROR: LearningManager doesn't know how to handle this input group change");
+        logger.log(Level.WARNING, "LearningManager doesn't know how to handle this input group change");
     }
 
     public void deleteExamplesForPath(Path myPath) {
         Integer whichPath = pathsToOutputIndices.get(myPath);
         if (whichPath == null) {
-            System.out.println("ERROR: My Path not found in deleteDataForPath");
+            logger.log(Level.SEVERE, "My Path not found in deleteDataForPath");
             return;
         }
         w.getDataManager().setOutputMissingForAll(whichPath);

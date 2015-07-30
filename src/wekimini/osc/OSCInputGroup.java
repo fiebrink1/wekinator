@@ -170,7 +170,7 @@ public class OSCInputGroup {
        try {
             g.writeToFile("/Users/rebecca/test1.xml");
             OSCInputGroup g2 = OSCInputGroup.readFromFile("/Users/rebecca/test1.xml");
-            System.out.println(g2);      
+           // System.out.println(g2);      
         } catch (Exception ex) {
             Logger.getLogger(OSCInputGroup.class.getName()).log(Level.SEVERE, null, ex);
         } 

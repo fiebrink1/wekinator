@@ -6,6 +6,7 @@
 package wekimini.gui.path;
 
 import java.awt.CardLayout;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import wekimini.gui.OutputConfigurationFrame;
@@ -232,7 +233,7 @@ public class OutputEditRow extends javax.swing.JPanel {
             setToClassification();
             textNumClasses.setText(Integer.toString(((OSCClassificationOutput) o).getNumClasses()));
         } else {
-            System.out.println("Error: Unknown output type " + o.getClass().getName());
+            logger.log(Level.WARNING, "Error: Unknown output type " + o.getClass().getName());
         }
     }
 

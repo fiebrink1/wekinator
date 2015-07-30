@@ -179,7 +179,7 @@ public final class WekiMiniRunner {
     }
 
     private void handleClosingLast() {
-        System.out.println("Closing the last one now");
+        System.out.println("Closing the last window now");
         System.exit(0); //Too late to go back
     }
 
@@ -220,7 +220,6 @@ public final class WekiMiniRunner {
             OSXAdapter.setPreferencesHandler(this, getClass().getDeclaredMethod("preferences", (Class[]) null));
             //  OSXAdapter.setFileHandler(this, getClass().getDeclaredMethod("loadImageFile", new Class[] { String.class }));
         } catch (Exception e) {
-            System.err.println("Error while loading the OSXAdapter:");
             logger.log(Level.WARNING, "Error while loading OSXAdapter: {0}", e.getMessage());
             e.printStackTrace();
         }

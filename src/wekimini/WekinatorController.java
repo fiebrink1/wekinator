@@ -108,7 +108,7 @@ public class WekinatorController {
             }
 
         } catch (Exception ex) {
-            w.getStatusUpdateCenter().update(this, "Error: Unable to change record state for output " + modelNum, Level.WARNING);
+            w.getStatusUpdateCenter().warn(this, "Unable to change record state for output " + modelNum);
         }
     }
 
@@ -124,7 +124,7 @@ public class WekinatorController {
                 w.getStatusUpdateCenter().update(this, "Disabled model running");
             }
         } catch (Exception ex) {
-            w.getStatusUpdateCenter().update(this, "Error: Unable to change record state for output " + modelNum, Level.WARNING);
+            w.getStatusUpdateCenter().warn(this, "Unable to change record state for output " + modelNum);
         }
     }
 
@@ -148,7 +148,7 @@ public class WekinatorController {
         if (w.getInputManager().hasValidInputs()) {
             //w.getInputManager().getOSCInputGroup().setInputNames(inputNames);
             //TODO: Fix this, with attention to how Path, LearningManager use input names.
-            w.getStatusUpdateCenter().update(this, "Error: Input names cannot be changed after project is created (will be implemented in later version)");
+            w.getStatusUpdateCenter().warn(this, "Input names cannot be changed after project is created (will be implemented in later version)");
         } else {
             notifyNewInputNames(inputNames);
         }
@@ -159,7 +159,7 @@ public class WekinatorController {
     public void setOutputNames(String[] outputNames) {
         if (w.getOutputManager().hasValidOutputGroup()) {
            // w.getOutputManager().getOutputGroup().setOutputNames(outputNames);
-           w.getStatusUpdateCenter().update(this, "Error: Output names cannot be changed after project is created (will be implemented in later version)");
+           w.getStatusUpdateCenter().warn(this, "Output names cannot be changed after project is created (will be implemented in later version)");
         } else {
             notifyNewOutputNames(outputNames);
         }

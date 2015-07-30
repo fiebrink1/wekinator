@@ -106,16 +106,17 @@ public class TrainingRunner {
      */
     public void setTrainingProgress(TrainingStatus trainingProgress) {
         TrainingStatus oldTrainingProgress = this.trainingProgress;
-        System.out.println("updating training progress: " + trainingProgress);
+        //System.out.println("updating training progress: " + trainingProgress);
         this.trainingProgress = trainingProgress;
         propertyChangeSupport.firePropertyChange(PROP_TRAININGPROGRESS, oldTrainingProgress, trainingProgress);
     }
 
     private void cancelMe(Path p) {
-        logger.log(Level.WARNING, "TRAINING CANCELLED");
+        //logger.log(Level.INFO, "Training was cancelled");
+        w.getStatusUpdateCenter().update(this, "Training was cancelled");
         wasCancelled = true;
         fireCancelled();
-        System.out.println("Training was cancelled");
+       // System.out.println("Training was cancelled");
         p.trainingWasInterrupted();
     }
 
@@ -185,12 +186,12 @@ public class TrainingRunner {
             @Override
             public void done() {
                 //setProgress(numParams+1);
-                System.out.println("thread is done");
+                //System.out.println("thread is done");
                 if (isCancelled()) {
                     TrainingStatus t = new TrainingStatus(trainingProgress.numToTrain, trainingProgress.numTrained, trainingProgress.numErrorsEncountered, true);
                     // trainingProgress.wasCancelled = true;
                     setTrainingProgress(t);
-                    System.out.println("I was cancelled");
+                    //System.out.println("I was cancelled");
                 }
             }
         };

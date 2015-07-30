@@ -177,11 +177,10 @@ public class InputManager {
                     notifyListeners(d);
                     System.arraycopy(d, 0, currentValues, 0, d.length);
                 } else {
-                    String msg = "Error: mismatch in input length: "
+                    String msg = "Mismatch in input length: "
                             + "Expected " + currentValues.length + ", received " + o.length;
-                    w.getStatusUpdateCenter().update(this, msg);
+                    w.getStatusUpdateCenter().warn(this, msg);
                     notifyListenersOfError();
-                    logger.log(Level.WARNING, msg);
                 }
         }
         //Not sure if we need to store this array within this class, too

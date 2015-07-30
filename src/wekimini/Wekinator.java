@@ -273,7 +273,7 @@ public class Wekinator {
                 OSXAdapter.setPreferencesHandler(this, getClass().getDeclaredMethod("preferences", (Class[]) null));
                 //  OSXAdapter.setFileHandler(this, getClass().getDeclaredMethod("loadImageFile", new Class[] { String.class }));
             } catch (Exception e) {
-                System.err.println("Error while loading the OSXAdapter:");
+                logger.log(Level.WARNING, "Error while loading the OSXAdapter:", e);
                 e.printStackTrace();
             }
         //}
@@ -288,7 +288,8 @@ public class Wekinator {
     // General preferences dialog; fed to the OSXAdapter as the method to call when
     // "Preferences..." is selected from the application menu
     public void preferences() {
-        System.out.println("HI WEKINATOR");
+       // System.out.println("HI WEKINATOR");
+        //TODO: Some preferences!
         //prefs.setLocation((int) this.getLocation().getX() + 22, (int) this.getLocation().getY() + 22);
         //prefs.setVisible(true);
     }

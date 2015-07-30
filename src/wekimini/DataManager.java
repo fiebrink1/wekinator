@@ -659,7 +659,7 @@ public class DataManager {
             tmp.setClassIndex(tmp.numAttributes() - 1);
             instance = tmp.firstInstance();
         } catch (Exception ex) {
-            System.out.println("Error: could not filter");
+            logger.log(Level.SEVERE, "Could not filter");
             Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         tmp.setClassIndex(tmp.numAttributes() - 1);
@@ -698,7 +698,7 @@ public class DataManager {
                 tmp.setClassIndex(tmp.numAttributes() - 1);
                 is[i] = tmp.firstInstance();
             } catch (Exception ex) {
-                System.out.println("Error: could not filter");
+                logger.log(Level.SEVERE, "Could not filter");
                 Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
             }
             tmp.setClassIndex(tmp.numAttributes() - 1);
@@ -807,7 +807,7 @@ public class DataManager {
             if (a.isNominal() && v >= 0 && v <= numClasses[whichOutput]) {
                 i.setValue(numMetaData + numInputs + whichOutput, v);
             } else {
-                System.out.println("error: attribute value out of range");
+                logger.log(Level.SEVERE, "Attribute value out of range");
                 //TODO: CHeck this
             }
         } else {
