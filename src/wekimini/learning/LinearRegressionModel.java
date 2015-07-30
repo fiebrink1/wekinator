@@ -24,19 +24,29 @@ public class LinearRegressionModel implements Model {
     private final String timestamp;
     private final String myId;
     private transient LinearRegression wmodel;
+    //private int exponent;
+    //private int numInputs;
+    private final LinearRegressionAttributeTransformer transformer;
     
-    public LinearRegressionModel(String name, LinearRegression wmodel) { 
+    public LinearRegressionModel(String name, LinearRegression wmodel, LinearRegressionAttributeTransformer transformer) { 
         this.prettyName = name;
         Date d= new Date();
         timestamp = Long.toString(d.getTime());
         this.wmodel = wmodel;
         myId = this.prettyName + "_" + timestamp;
+        this.transformer = transformer;
     }
     
     @Override
     public double computeOutput(Instance instance) throws Exception {
-        //TODO: Where does instances come from?
-        return wmodel.classifyInstance(instance);
+        Instance i;
+        if (transformer != null ) {
+            i = transformer.convertInstance(instance);
+        } else {
+            i = instance;
+        }
+        
+        return wmodel.classifyInstance(i);
     }
     
     @Override
