@@ -5,30 +5,52 @@
  */
 package wekimini.learning;
 
+import java.awt.CardLayout;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import wekimini.learning.NeuralNetModelBuilder.HiddenLayerType;
+import wekimini.util.Util;
 
 /**
  *
  * @author rebecca
  */
 public class NeuralNetEditorPanel extends ModelBuilderEditorPanel {
+
     private static final Logger logger = Logger.getLogger(NeuralNetEditorPanel.class.getName());
+
     /**
-     * Creates new form 
+     * Creates new form
      */
     public NeuralNetEditorPanel() {
         initComponents();
     }
-    
+
     public NeuralNetEditorPanel(NeuralNetModelBuilder mb) {
         initComponents();
-        //In future, want to change number of hidden nodes
+        initForModelBuilder(mb);
     }
-    
+
     @Override
     public boolean validateForm() {
-        return true;
+        if (comboNumHidden.getSelectedIndex() == 0) {
+            return true;
+        }
+        if (comboNumPerLayer.getSelectedIndex() == 0) {
+            return true;
+        }
+        try {
+            int i = Integer.parseInt(textNumPerLayer.getText());
+            if (i > 0) {
+                return true;
+            } else {
+                Util.showPrettyErrorPane(this, "Number if nodes per layer must be an integer greater than 0");
+                return false;
+            }
+        } catch (NumberFormatException ex) {
+            Util.showPrettyErrorPane(this, "Number if nodes per layer must be an integer greater than 0");
+            return false;
+        }
     }
 
     /**
@@ -41,53 +63,208 @@ public class NeuralNetEditorPanel extends ModelBuilderEditorPanel {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        comboNumHidden = new javax.swing.JComboBox();
+        panelBottom = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        labelNumNodesPerLayer = new javax.swing.JLabel();
+        comboNumPerLayer = new javax.swing.JComboBox();
+        textNumPerLayer = new javax.swing.JTextField();
+        jPanel4 = new javax.swing.JPanel();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel1.setText("# hidden layers:");
+
+        comboNumHidden.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0", "1", "2", "3" }));
+        comboNumHidden.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboNumHiddenActionPerformed(evt);
+            }
+        });
+
+        panelBottom.setLayout(new java.awt.CardLayout());
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
+        labelNumNodesPerLayer.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        labelNumNodesPerLayer.setText("# nodes per hidden layer:");
+
+        comboNumPerLayer.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Same as number of inputs", "Custom number:" }));
+        comboNumPerLayer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboNumPerLayerActionPerformed(evt);
+            }
+        });
+
+        textNumPerLayer.setText("1");
+        textNumPerLayer.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                textNumPerLayerKeyTyped(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(labelNumNodesPerLayer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(comboNumPerLayer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(textNumPerLayer, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelNumNodesPerLayer)
+                    .addComponent(comboNumPerLayer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(textNumPerLayer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0))
+        );
+
+        panelBottom.add(jPanel2, "cardNodes");
+
+        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 470, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 29, Short.MAX_VALUE)
+        );
+
+        panelBottom.add(jPanel4, "cardBlank");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 311, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(comboNumHidden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panelBottom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 31, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(comboNumHidden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(panelBottom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 323, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 43, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void comboNumHiddenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboNumHiddenActionPerformed
+        updateForNum();
+    }//GEN-LAST:event_comboNumHiddenActionPerformed
+
+    private void comboNumPerLayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboNumPerLayerActionPerformed
+        updateForNumPerLayer();
+    }//GEN-LAST:event_comboNumPerLayerActionPerformed
+
+    private void textNumPerLayerKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textNumPerLayerKeyTyped
+        char enter = evt.getKeyChar();
+        if (!(Character.isDigit(enter))) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_textNumPerLayerKeyTyped
+
+    private void updateForNumPerLayer() {
+        textNumPerLayer.setEnabled(comboNumPerLayer.getSelectedIndex() == 1);
+    }
+    
+    private void updateForNum() {
+        if (comboNumHidden.getSelectedIndex() == 0) {
+            ((CardLayout) panelBottom.getLayout()).show(panelBottom, "cardBlank");
+        } else {
+            ((CardLayout) panelBottom.getLayout()).show(panelBottom, "cardNodes");
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox comboNumHidden;
+    private javax.swing.JComboBox comboNumPerLayer;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JLabel labelNumNodesPerLayer;
+    private javax.swing.JPanel panelBottom;
+    private javax.swing.JTextField textNumPerLayer;
     // End of variables declaration//GEN-END:variables
 
     //Assumes form is valid
     @Override
     public NeuralNetModelBuilder buildFromPanel() {
         logger.log(Level.INFO, "Creating new NeuralNet model builder");
-        return new NeuralNetModelBuilder();
+        NeuralNetModelBuilder mb = new NeuralNetModelBuilder();
+        int numHiddenLayers = comboNumHidden.getSelectedIndex();
+        if (numHiddenLayers == 0) {
+            mb.setHiddenLayers(0, HiddenLayerType.NUM_FEATURES, 0);
+        } else {
+            if (comboNumPerLayer.getSelectedIndex() == 0) {
+                mb.setHiddenLayers(numHiddenLayers, HiddenLayerType.NUM_FEATURES, 0);
+            } else {
+                int i = Integer.parseInt(textNumPerLayer.getText());
+                mb.setHiddenLayers(numHiddenLayers, HiddenLayerType.NUMBER, i);
+            }
+        }
+        return mb;
+    }
+
+    private void initForModelBuilder(NeuralNetModelBuilder mb) {
+        int i = mb.getNumHiddenLayers();
+        comboNumHidden.setSelectedIndex(i);
+        updateForNum();
+        
+        if (i == 0) 
+            return;
+        
+        if (mb.getHiddenLayerType() == HiddenLayerType.NUM_FEATURES) {
+            comboNumPerLayer.setSelectedIndex(0);
+            
+        } else {
+            comboNumPerLayer.setSelectedIndex(1);
+            textNumPerLayer.setText(Integer.toString(mb.getNumNodesPerHiddenLayer()));
+        }
+        updateForNumPerLayer();
     }
 }

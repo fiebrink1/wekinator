@@ -11,7 +11,6 @@ import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Instances;
 import wekimini.LearningModelBuilder;
-import wekimini.LoggingManager;
 import wekimini.WekaModelBuilderHelper;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
@@ -24,17 +23,18 @@ public class NeuralNetModelBuilder implements LearningModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
     
-    public enum LayerContents {NUM_FEATURES, NUMBER};
+    public enum HiddenLayerType {NUM_FEATURES, NUMBER};
     
     private int numHiddenLayers = 1;
-    private LayerContents[] layerContents = {LayerContents.NUM_FEATURES};
-    private int[] layerNumbers = {0};
+    private HiddenLayerType hiddenLayerType = HiddenLayerType.NUM_FEATURES;
+    private int numNodesPerHiddenLayer = 1;
+    
     private static final Logger logger = Logger.getLogger(NeuralNetModelBuilder.class.getName());
         
     
     public NeuralNetModelBuilder() {
         classifier = new MultilayerPerceptron();
-        setHiddenLayers(1, new LayerContents[] {LayerContents.NUM_FEATURES}, null);
+        setHiddenLayers(1, HiddenLayerType.NUM_FEATURES, 0);
         //((MultilayerPerceptron)classifier).setHiddenLayers("i");
     }
 
@@ -42,48 +42,40 @@ public class NeuralNetModelBuilder implements LearningModelBuilder {
         return numHiddenLayers;
     }
 
-    public LayerContents[] getLayerContents() {
-        return layerContents;
+    public HiddenLayerType getHiddenLayerType() {
+        return hiddenLayerType;
     }
 
-    public int[] getLayerNumbers() {
-        return layerNumbers;
+    public int getNumNodesPerHiddenLayer() {
+        return numNodesPerHiddenLayer;
     }
     
-    public final void setHiddenLayers(int numHidden, LayerContents[] layerContents, int[] layerNumbers) {
-        if (numHidden == 0) {
-            numHiddenLayers = 0;
-            this.layerContents = new LayerContents[0];
-            this.layerNumbers = new int[0];
+    public final void setHiddenLayers(int numHiddenLayers, HiddenLayerType hiddenLayerType, int numNodesPerHiddenLayer) {
+        if (numHiddenLayers < 0) {
+            throw new IllegalArgumentException("Must have 0 or more hidden layers");
+        }
+        if (numHiddenLayers == 0) {
+            this.numHiddenLayers = 0;
+            this.hiddenLayerType = HiddenLayerType.NUMBER;
+            this.numNodesPerHiddenLayer = 0;
+            ((MultilayerPerceptron)classifier).setHiddenLayers("0");
             return;
         }
-        if (layerContents == null || layerContents.length != numHidden) {
-            throw new IllegalArgumentException("Size of layerContents must be equal to numHidden");
-        }
-
-        int[] ln = new int[numHiddenLayers];
-        //Check legal numbers before committing to any changes:
-        for (int i = 0; i < numHiddenLayers; i++) {
-            if (this.layerContents[i] == LayerContents.NUMBER) {
-                if (layerNumbers == null || i > (layerNumbers.length-1)) {
-                    throw new IllegalArgumentException("If layer i is of type NUMBER, then number must be supplied in layerNumbers[i]");
-                }
-                ln[i] = layerNumbers[i];
-            }
-        }
-        //If we got here, then no errors.
-        this.numHiddenLayers = numHidden;
-        this.layerContents = new LayerContents[numHidden];
-        System.arraycopy(layerContents, 0, this.layerContents, 0, numHidden);
-
-        this.layerNumbers = new int[numHidden];
-        System.arraycopy(ln, 0, this.layerNumbers, 0, numHidden);
         
+        if (hiddenLayerType == HiddenLayerType.NUMBER && numNodesPerHiddenLayer < 1) {
+            throw new IllegalArgumentException("Must have 1 or more nodes per hidden layer");
+        }
+        
+        this.numHiddenLayers = numHiddenLayers;
+        this.hiddenLayerType = hiddenLayerType;
+        this.numNodesPerHiddenLayer = numNodesPerHiddenLayer;
+
         String s = createLayerString();
         logger.log(Level.INFO, "Creating neural network builder with string {0}", s);
         ((MultilayerPerceptron)classifier).setHiddenLayers(s);
-        
     }
+    
+    
     
     private String createLayerString() {
         StringBuilder sb = new StringBuilder();
@@ -96,8 +88,8 @@ public class NeuralNetModelBuilder implements LearningModelBuilder {
     }
     
     private String getStringForLayer(int i) {
-        if (layerContents[i] == LayerContents.NUMBER) {
-            return Integer.toString(layerNumbers[i]);
+        if (hiddenLayerType == HiddenLayerType.NUMBER) {
+            return Integer.toString(numNodesPerHiddenLayer);
         } else { //LayerContents.NUM_FEATURES
             return "i";
         }
@@ -122,12 +114,13 @@ public class NeuralNetModelBuilder implements LearningModelBuilder {
         return (o instanceof OSCNumericOutput);
     }
     
+    @Override
     public NeuralNetModelBuilder fromTemplate(ModelBuilder b) {
         if (b instanceof NeuralNetModelBuilder) {
             NeuralNetModelBuilder mb = new NeuralNetModelBuilder();
             NeuralNetModelBuilder old = ((NeuralNetModelBuilder)b);
-            mb.setHiddenLayers(old.getNumHiddenLayers(), old.getLayerContents(), old.getLayerNumbers());
-            return new NeuralNetModelBuilder();
+            mb.setHiddenLayers(old.getNumHiddenLayers(), old.getHiddenLayerType(), old.getNumNodesPerHiddenLayer());
+            return mb;
         }
         return null;
     }

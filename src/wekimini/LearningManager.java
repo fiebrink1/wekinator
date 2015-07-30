@@ -656,8 +656,10 @@ public class LearningManager {
     }
 
     public void deleteAllExamples() {
-        w.getDataManager().deleteAll();
-        setLearningState(LearningState.NOT_READY_TO_TRAIN);
+        if (w.getDataManager().isInitialized()) {
+            w.getDataManager().deleteAll();
+            setLearningState(LearningState.NOT_READY_TO_TRAIN);
+        }
     }
 
     public Instances getTrainingDataForPath(Path p, boolean includeMetadataFields) {
