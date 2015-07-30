@@ -14,6 +14,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
 import wekimini.LearningManager;
@@ -38,7 +40,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     private final ImageIcon playIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noplay1.png"));
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture scheduledFuture;
-    
+    private static final Logger logger = Logger.getLogger(SimpleLearningSet.class.getName());
     /**
      * Creates new form LearningSet1
      */
@@ -142,7 +144,12 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     //Called when new output values received via OSC (not via GUI, not computed)
     private void outputValuesReceived(double[] vals) {
         for (int i = 0; i < vals.length; i++) {
-            pathPanels.get(i).setValueOnlyForDisplay(vals[i]);
+            if (paths.get(i).getOSCOutput().isLegalTrainingValue(vals[i])) {
+                pathPanels.get(i).setValueOnlyForDisplay(vals[i]);
+            } else {
+                logger.log(Level.WARNING, "Received illegal value of {0} for model {1}; ignoring it"
+                        , new Object[]{vals[i], i});
+            }
         }
     }
 

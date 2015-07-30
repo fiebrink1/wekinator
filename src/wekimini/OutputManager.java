@@ -196,11 +196,22 @@ public class OutputManager {
         if (currentValues.length == d.length) {
             for (int i = 0; i < o.length; i++) {
                 if (o[i] instanceof Float) {
-                    d[i] = ((Float) o[i]);
+                    try {
+                        if (w.getLearningManager().getPaths().get(i).getOSCOutput().isLegalTrainingValue((Float)o[i])) {
+                            d[i] = ((Float) o[i]);
+                        } else {
+                            logger.log(Level.WARNING, "Illegal output value {0} received for output {1}; ignoring it", new Object[]{o[i], i});
+                            d[i] = currentValues[i];
+                        }
+                    } catch (Exception ex) {
+                        d[i] = currentValues[i];
+                    }  
                 } else {
                     Logger.getLogger(OutputManager.class.getName()).log(Level.WARNING, "Received output value is not a float");
                 }
             }
+            
+            
             System.arraycopy(d, 0, currentValues, 0, d.length);
             notifyValueReceivedListeners(d);
         } else if (currentValues.length != 0) { //Don't warn if we're not set up yet

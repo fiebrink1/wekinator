@@ -12,9 +12,9 @@ package wekimini.learning;
 public class LearningAlgorithmRegistry {
     public static ModelBuilder[] getClassificationModelBuilders() {
         ModelBuilder[] mbs = new ModelBuilder[4];
-        mbs[0] = new AdaboostModelBuilder();
-        mbs[1] = new J48ModelBuilder();
-        mbs[2] = new KNNModelBuilder();
+        mbs[0] = new KNNModelBuilder();
+        mbs[1] = new AdaboostModelBuilder();
+        mbs[2] = new J48ModelBuilder();
         mbs[3] = new SVMModelBuilder();
         return mbs;
     }
