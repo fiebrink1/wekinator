@@ -11,14 +11,13 @@
 package wekimini.gui;
 
 import java.awt.Color;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import wekimini.Wekinator;
-import wekimini.WekinatorConsoleHandler;
 
 //TODO: implement ability to see recent errors when window opened
 //Tie to log file: show last N lines of file in console window when window opened for 1st time
@@ -69,6 +68,7 @@ public class Console extends javax.swing.JFrame {
         if (isVisible()) {
             try {
                 textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), s+"\n", regular);
+                textPane.setCaretPosition(textPane.getStyledDocument().getLength());
             } catch (BadLocationException ex) {
             }
         }
@@ -78,6 +78,7 @@ public class Console extends javax.swing.JFrame {
         if (isVisible()) {
             try {
                 textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), s+"\n", warning);
+                textPane.setCaretPosition(textPane.getStyledDocument().getLength());
             } catch (BadLocationException ex) {
             }
         }
@@ -94,7 +95,7 @@ public class Console extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        textScrollPane = new javax.swing.JScrollPane();
         textPane = new javax.swing.JTextPane();
         buttonClear = new javax.swing.JButton();
 
@@ -110,7 +111,7 @@ public class Console extends javax.swing.JFrame {
 
         textPane.setEditable(false);
         textPane.setContentType("text/html"); // NOI18N
-        jScrollPane2.setViewportView(textPane);
+        textScrollPane.setViewportView(textPane);
 
         buttonClear.setText("Clear");
         buttonClear.addActionListener(new java.awt.event.ActionListener() {
@@ -126,12 +127,12 @@ public class Console extends javax.swing.JFrame {
             .add(jPanel1Layout.createSequentialGroup()
                 .add(0, 346, Short.MAX_VALUE)
                 .add(buttonClear))
-            .add(jScrollPane2)
+            .add(textScrollPane)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel1Layout.createSequentialGroup()
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
+                .add(textScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(buttonClear))
         );
@@ -179,8 +180,8 @@ public class Console extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonClear;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextPane textPane;
+    private javax.swing.JScrollPane textScrollPane;
     // End of variables declaration//GEN-END:variables
 
 
