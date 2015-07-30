@@ -28,7 +28,7 @@ public class OSCController {
         if (getOscControlEnabled())  {
             return true;
         } else {
-            w.getStatusUpdateCenter().update(this, "OSC control message received, but ignoring it because OSC control is not enabled");
+            w.getStatusUpdateCenter().warn(this, "OSC control message received, but ignoring it because OSC control is not enabled");
             return false;
         }   
     }
@@ -42,7 +42,7 @@ public class OSCController {
             if (w.getWekinatorController().canRecord()) {
                 w.getWekinatorController().startRecord();
             } else {
-                w.getStatusUpdateCenter().update(this, "Recieved OSC record command but cannot record in this state");
+                w.getStatusUpdateCenter().warn(this, "Recieved OSC record command but cannot record in this state");
             }
         }
     }
@@ -60,7 +60,7 @@ public class OSCController {
             if (w.getWekinatorController().canTrain()) {
                 w.getWekinatorController().train();
             } else {
-                w.getStatusUpdateCenter().update(this, "Recieved OSC train command but cannot train in this state");
+                w.getStatusUpdateCenter().warn(this, "Recieved OSC train command but cannot train in this state");
             }
         }
     }
@@ -70,7 +70,7 @@ public class OSCController {
             if (w.getWekinatorController().isTraining()) {
                 w.getWekinatorController().cancelTrain();
             } else {
-                w.getStatusUpdateCenter().update(this, "Recieved OSC cancel train command but Wekinator is not currently training");
+                w.getStatusUpdateCenter().warn(this, "Recieved OSC cancel train command but Wekinator is not currently training");
             }
         }
     }
@@ -80,7 +80,7 @@ public class OSCController {
             if (w.getWekinatorController().canRun()) {
                 w.getWekinatorController().startRun();
             } else {
-                w.getStatusUpdateCenter().update(this, "Recieved OSC run command but cannot run in this state");
+                w.getStatusUpdateCenter().warn(this, "Recieved OSC run command but cannot run in this state");
             }
         }
     }

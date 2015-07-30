@@ -50,6 +50,14 @@ public class StatusUpdateCenter {
         propertyChangeSupport.firePropertyChange(PROP_UPDATE, oldUpdate, update);
     }
     
+    public void warn(Object caller, String updateString) {
+        StatusUpdate newUpdate = new StatusUpdate(caller, updateString);
+        StatusUpdate oldUpdate = this.update;
+        this.update = newUpdate;
+        logger.log(Level.WARNING, updateString);
+        propertyChangeSupport.firePropertyChange(PROP_UPDATE, oldUpdate, update);
+    }
+    
         /**
      * Set the value of update
      *

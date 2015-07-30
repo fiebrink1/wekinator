@@ -6,12 +6,10 @@
 package wekimini;
 
 import java.util.logging.ErrorManager;
-import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import java.util.logging.SimpleFormatter;
-import javax.swing.JTextArea;
+import wekimini.gui.Console;
 
 /**
  *
@@ -20,42 +18,42 @@ import javax.swing.JTextArea;
 public class WekinatorConsoleHandler extends Handler {
 //  private Console tmp = null;
 
-    private JTextArea textArea = null;
-    private final Formatter formatter = null;
-    private Level level = null;
+    private Console console = null;
+    //private final Formatter formatter = null;
+    //private Level level = null;
 
     public WekinatorConsoleHandler() {
         setup();
     }
 
-    public void setTextArea(JTextArea textArea) {
-        this.textArea = textArea;
+    public void setConsole(Console c) {
+        this.console = c;
     }
 
     private void setup() {
         setLevel(Level.INFO);
         setFilter(null);
-        setFormatter(new SimpleFormatter());
+        //setFormatter(simpleformatter);
     }
 
     @Override
     public void publish(LogRecord record) {
-        String message = null;
+        String message;
         if (!isLoggable(record)) {
             return;
         }
         try {
-            message = getFormatter().format(record);
+            //message = getFormatter().format(record);
+            message = record.getMessage();
+            if (record.getLevel() == Level.WARNING || record.getLevel() == Level.SEVERE ) {
+                console.logWarning(message);
+            } else {
+                console.log(message);
+            }
         } catch (Exception e) {
-            reportError(null, e, ErrorManager.FORMAT_FAILURE);
+            //reportError(null, e, ErrorManager.FORMAT_FAILURE);
+            reportError(null, e, ErrorManager.WRITE_FAILURE);
         }
-
-        try {
-            textArea.append(message);
-        } catch (Exception ex) {
-            reportError(null, ex, ErrorManager.WRITE_FAILURE);
-        }
-
     }
 
     @Override

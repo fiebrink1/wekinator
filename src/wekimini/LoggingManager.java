@@ -131,8 +131,9 @@ public class LoggingManager {
         System.out.println("NOT YET IMPLEMENTED TODO");
     }
     
-    public void startLoggingToConsoleGUI(JTextArea a) {
-        consoleHandler.setTextArea(a);
+    public void startLoggingToConsoleGUI(Console c) {
+        //consoleHandler.setTextArea(a);
+        consoleHandler.setConsole(c);
         dumpLogToConsoleGUI();
         handlers.add(consoleHandler);
         Logger.getLogger(Wekinator.class.getPackage().getName()).addHandler(consoleHandler);

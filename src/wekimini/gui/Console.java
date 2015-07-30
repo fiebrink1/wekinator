@@ -10,8 +10,13 @@
  */
 package wekimini.gui;
 
+import java.awt.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import wekimini.Wekinator;
 import wekimini.WekinatorConsoleHandler;
 
@@ -27,28 +32,57 @@ public class Console extends javax.swing.JFrame {
     //private final WekinatorConsoleHandler h;
     private final Wekinator w;
     private static final Logger logger = Logger.getLogger(Console.class.getName());
-    
+    private final StyledDocument doc;
+    private final SimpleAttributeSet regular = new SimpleAttributeSet();
+    private final SimpleAttributeSet warning = new SimpleAttributeSet();
+
     /** Creates new form Console
       Just for testing GUI layout */
     public Console() {
        initComponents();
+       doc = textPane.getStyledDocument();
        w = null;
+       initStyles();
     }
 
     /** Creates new form Console */
     public Console(Wekinator w) {
        initComponents();
+       doc = textPane.getStyledDocument();
+
        this.w = w;
+       initStyles();
+       
       // h = new WekinatorConsoleHandler();
       // h.setTextArea(text1);
-       w.getLoggingManager().startLoggingToConsoleGUI(text1);
+       w.getLoggingManager().startLoggingToConsoleGUI(this);
+    }
+    
+    private void initStyles() {
+        StyleConstants.setFontFamily(regular, "SansSerif");
+        
+        StyleConstants.setFontFamily(warning, "SansSerif");
+        StyleConstants.setForeground(warning, Color.red);
     }
 
     public void log(String s) {
         if (isVisible()) {
-           text1.append(s);
+            try {
+                textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), s+"\n", regular);
+            } catch (BadLocationException ex) {
+            }
         }
     }
+    
+    public void logWarning(String s) {
+        if (isVisible()) {
+            try {
+                textPane.getStyledDocument().insertString(textPane.getStyledDocument().getLength(), s+"\n", warning);
+            } catch (BadLocationException ex) {
+            }
+        }
+    }
+    
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -59,29 +93,24 @@ public class Console extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        text1 = new javax.swing.JTextArea();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        textPane = new javax.swing.JTextPane();
         buttonClear = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Wekinator Console");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
         });
 
-        jButton1.setText("Log something");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        text1.setColumns(20);
-        text1.setEditable(false);
-        text1.setRows(5);
-        jScrollPane1.setViewportView(text1);
+        textPane.setEditable(false);
+        textPane.setContentType("text/html"); // NOI18N
+        jScrollPane2.setViewportView(textPane);
 
         buttonClear.setText("Clear");
         buttonClear.addActionListener(new java.awt.event.ActionListener() {
@@ -90,37 +119,42 @@ public class Console extends javax.swing.JFrame {
             }
         });
 
+        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .add(0, 346, Short.MAX_VALUE)
+                .add(buttonClear))
+            .add(jScrollPane2)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(buttonClear))
+        );
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jButton1)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 196, Short.MAX_VALUE)
-                .add(buttonClear)
-                .addContainerGap())
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
+            .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(buttonClear)
-                    .add(jButton1)))
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        logger.log(Level.WARNING, "LOGGING WARNING");
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     private void buttonClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearActionPerformed
-        text1.setText("");
+        try {
+            doc.remove(0, doc.getLength());
+        } catch (BadLocationException ex) {
+        }
     }//GEN-LAST:event_buttonClearActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -144,15 +178,11 @@ public class Console extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonClear;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea text1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextPane textPane;
     // End of variables declaration//GEN-END:variables
 
-    public void showInfo(String data) {
-        text1.append(data);
-        this.getContentPane().validate();
-    }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
