@@ -3,57 +3,107 @@
  */
 package wekimini.osc;
 
+import java.util.Random;
+import wekimini.learning.DtwModelBuilder;
 import wekimini.learning.ModelBuilder;
+import wekimini.util.Util;
 
 /**
- *
+ * XXX in future: need to know whne to send:
+ * - whenever new feature received
+ * - whenever new output gesture matched
+ * 
+ * - send all as bundle vs send individual messages (one per output), or both
  * @author rebecca
  */
 public class OSCDtwOutput implements OSCOutput {
+    
+    private final String name;
+    private final int numGestures;
+    private final String[] gestureNames;
+    private OSCOutputGroup outputGroup;
 
-    public OSCDtwOutput(String currentOutputName, int numGestures) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public OSCDtwOutput(String name, int numGestures) {
+        this.name = name;
+        this.numGestures = numGestures;
+        this.gestureNames = new String[numGestures];
+        populateNames();
+    }
+    
+    public OSCDtwOutput(String name, String[] gestureNames, int numGestures) {
+        this.name = name;
+        this.numGestures = numGestures;
+        if (gestureNames == null || gestureNames.length != numGestures) {
+            throw new IllegalArgumentException("Gesture names must be same length as numGestures");
+        }
+        this.gestureNames = new String[numGestures];
+        populateNames();
+    }
+    
+    private void populateNames() {
+        for (int i = 0; i < gestureNames.length; i++) {
+            gestureNames[i] = name + "_" + (i+1);
+        }
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public int getNumGestures() {
+        return numGestures;
     }
 
     @Override
-    public String getName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String toString() {
+        return Util.toXMLString(this, "OSCDtwOutput", OSCDtwOutput.class);
     }
-
+    
     @Override
     public double generateRandomValue() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Random r = new Random();
+        int i = r.nextInt(numGestures);
+        return i + 1;
     }
-
+    
     @Override
     public double getDefaultValue() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 1;
     }
-
+    
     @Override
     public ModelBuilder getDefaultModelBuilder() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new DtwModelBuilder();
     }
-
+    
     @Override
     public boolean isLegalTrainingValue(double value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return isLegalOutputValue(value);
     }
-
+    
     @Override
     public boolean isLegalOutputValue(double value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (value < 0 || value >= numGestures) { //out of range
+            return false;
+        }
+        return Util.isInteger(value); //is it really an int?
     }
-
+    
     @Override
     public double forceLegalTrainingValue(double value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return forceLegalOutputValue(value);
     }
-
+    
     @Override
     public double forceLegalOutputValue(double value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        int which = (int) value;
+        if (which < 1) {
+            which = 1;
+        }
+        if (which >numGestures) {
+            which = numGestures;
+        }
+        return which;
     }
-
-   
+    
 }
