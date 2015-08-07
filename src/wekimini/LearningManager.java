@@ -32,6 +32,14 @@ import wekimini.util.WeakListenerSupport;
  */
 public class LearningManager {    
 
+    public void setNonTemporal() {
+        //XXX
+    }
+
+    public void setTemporal() {
+        //XXX
+    }
+
     public static enum LearningState {
 
         DONE_TRAINING, TRAINING, READY_TO_TRAIN, NOT_READY_TO_TRAIN

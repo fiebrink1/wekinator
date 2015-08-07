@@ -29,12 +29,14 @@ import wekimini.Wekinator;
 import wekimini.WekinatorController;
 import wekimini.WekinatorFileData;
 import wekimini.learning.AdaboostModelBuilder;
+import wekimini.learning.DtwModelBuilder;
 import wekimini.learning.J48ModelBuilder;
 import wekimini.learning.KNNModelBuilder;
 import wekimini.learning.LearningAlgorithmRegistry;
 import wekimini.learning.ModelBuilder;
 import wekimini.learning.SVMModelBuilder;
 import wekimini.osc.OSCClassificationOutput;
+import wekimini.osc.OSCDtwOutput;
 import wekimini.osc.OSCInputGroup;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
@@ -57,30 +59,31 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
     private final static int COMBO_REGRESSION_INDEX = 0;
     private final static int COMBO_CLASSIFICATION_INDEX = 1;
-    private final static int COMBO_CUSTOM_INDEX = 2;
+    private final static int COMBO_DTW_INDEX = 2;
+    private final static int COMBO_CUSTOM_INDEX = 3;
 
     private final static int COMBO_KNN_INDEX = 0;
     private final static int COMBO_ADABOOST_INDEX = 2;
     private final static int COMBO_SVM_INDEX = 1;
     private final static int COMBO_J48_INDEX = 3;
-    
+
     private final ButtonGroup classificationRadioGroup = new ButtonGroup();
     private ModelBuilder[] classificationModelBuilders;
     private JRadioButtonMenuItem[] classificationRadios;
-    
+
     private final ButtonGroup regressionRadioGroup = new ButtonGroup();
     private ModelBuilder[] regressionModelBuilders;
     private JRadioButtonMenuItem[] regressionRadios;
-    
+
     private final WekinatorController.NamesListener inputNamesListener;
     private final WekinatorController.NamesListener outputNamesListener;
 
     private OutputConfigurationFrame outputConfigViewer = null;
     private GuiIONameCustomise inputCustomiser = null;
     private GuiIONameCustomise outputCustomiser = null;
-    
+
     private ModelBuilder[] customModelBuilders = null;
-    
+
     //private final OutputConfigurationFrame.OutputGroupReceiver outputGroupReceiver = this::initFormForOutputGroup;
     private final OutputConfigurationFrame.OutputConfigurationReceiver outputGroupReceiver = new OutputConfigurationFrame.OutputConfigurationReceiver() {
         @Override
@@ -118,7 +121,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             }
 
         };
-        
+
         outputNamesListener = new WekinatorController.NamesListener() {
 
             @Override
@@ -152,10 +155,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
     private void setupAlgorithmChoices() {
         makeClassificationRadioGroup();
-        makeRegressionRadioGroup();  
+        makeRegressionRadioGroup();
     }
-    
-    private void makeClassificationRadioGroup(){
+
+    private void makeClassificationRadioGroup() {
         classificationModelBuilders = LearningAlgorithmRegistry.getClassificationModelBuilders();
         classificationRadios = new JRadioButtonMenuItem[classificationModelBuilders.length];
         for (int i = 0; i < classificationModelBuilders.length; i++) {
@@ -166,9 +169,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                 classificationRadios[i].setSelected(true);
             }
             classificationRadioGroup.add(classificationRadios[i]);
-        }     
+        }
     }
-    
+
     private void makeRegressionRadioGroup() {
         regressionModelBuilders = LearningAlgorithmRegistry.getNumericModelBuilders();
         regressionRadios = new JRadioButtonMenuItem[regressionModelBuilders.length];
@@ -180,9 +183,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                 regressionRadios[i].setSelected(true);
             }
             regressionRadioGroup.add(regressionRadios[i]);
-        } 
+        }
     }
-    
+
     private void receivedInputNamesFromOSC(String[] names) {
         receivedNewInputNames(names);
         fieldNumInputs.setText(Integer.toString(names.length));
@@ -197,7 +200,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             }
         }
     }
-    
+
     private void receivedOutputNamesFromOSC(String[] names) {
         receivedNewOutputNames(names);
         fieldNumOutputs.setText(Integer.toString(names.length));
@@ -315,6 +318,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         jLabel10 = new javax.swing.JLabel();
         panelCustom = new javax.swing.JPanel();
         buttonConfigureOutputs = new javax.swing.JButton();
+        cardDTW = new javax.swing.JPanel();
+        jLabel11 = new javax.swing.JLabel();
+        fieldNumDtwTypes = new javax.swing.JTextField();
+        jLabel12 = new javax.swing.JLabel();
         buttonOutputOptions = new javax.swing.JButton();
         jLabel13 = new javax.swing.JLabel();
         fieldHostName = new javax.swing.JTextField();
@@ -553,7 +560,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             }
         });
 
-        comboOutputType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All continuous (default settings)", "All classifiers (default settings)", "Custom" }));
+        comboOutputType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All continuous (default settings)", "All classifiers (default settings)", "All dynamic time warping (default settings)", "Custom" }));
         comboOutputType.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboOutputTypeActionPerformed(evt);
@@ -641,6 +648,44 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         );
 
         panelOutputTypes.add(panelCustom, "cardCustom");
+
+        cardDTW.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel11.setText("with");
+
+        fieldNumDtwTypes.setText("5");
+        fieldNumDtwTypes.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                fieldNumDtwTypesKeyTyped(evt);
+            }
+        });
+
+        jLabel12.setText("gesture types");
+
+        javax.swing.GroupLayout cardDTWLayout = new javax.swing.GroupLayout(cardDTW);
+        cardDTW.setLayout(cardDTWLayout);
+        cardDTWLayout.setHorizontalGroup(
+            cardDTWLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(cardDTWLayout.createSequentialGroup()
+                .addGap(47, 47, 47)
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fieldNumDtwTypes, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel12)
+                .addContainerGap(314, Short.MAX_VALUE))
+        );
+        cardDTWLayout.setVerticalGroup(
+            cardDTWLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(cardDTWLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(cardDTWLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(fieldNumDtwTypes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel12)))
+        );
+
+        panelOutputTypes.add(cardDTW, "cardDTW");
 
         buttonOutputOptions.setText("Options");
         buttonOutputOptions.addActionListener(new java.awt.event.ActionListener() {
@@ -919,11 +964,11 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         inputCustomiser.setAlwaysOnTop(true);
         inputCustomiser.setVisible(true);
         /*Util.callOnClosed(inputCustomiser, new Util.CallableOnClosed() {
-            @Override
-            public void callMe() {
-                inputCustomiser = null;
-            }
-        }); */
+         @Override
+         public void callMe() {
+         inputCustomiser = null;
+         }
+         }); */
     }
 
     private void buttonInputOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonInputOptionsActionPerformed
@@ -1002,13 +1047,13 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         int index = comboOutputType.getSelectedIndex();
         CardLayout layout = (CardLayout) panelOutputTypes.getLayout();
         /*if (index == COMBO_REGRESSION_INDEX) {
-            menuChooseAlgorithm.setEnabled(false);
-        } else if (index == COMBO_CLASSIFICATION_INDEX) {
-            menuChooseAlgorithm.setEnabled(true);
-        } else {
-            menuChooseAlgorithm.setEnabled(false);
-        } */
-        
+         menuChooseAlgorithm.setEnabled(false);
+         } else if (index == COMBO_CLASSIFICATION_INDEX) {
+         menuChooseAlgorithm.setEnabled(true);
+         } else {
+         menuChooseAlgorithm.setEnabled(false);
+         } */
+
         if (index == COMBO_REGRESSION_INDEX) {
             menuChooseAlgorithm.setEnabled(true);
             menuChooseAlgorithm.removeAll();
@@ -1062,11 +1107,11 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         outputCustomiser.setAlwaysOnTop(true);
         outputCustomiser.setVisible(true);
         /*Util.callOnClosed(outputCustomiser, new Util.CallableOnClosed() {
-            @Override
-            public void callMe() {
-                outputCustomiser = null;
-            }
-        }); */
+         @Override
+         public void callMe() {
+         outputCustomiser = null;
+         }
+         }); */
     }
 
     private void buttonOutputOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOutputOptionsActionPerformed
@@ -1111,6 +1156,17 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             }
             OSCOutputGroup og = new OSCOutputGroup(outputs, oscMessage, hostname, port);
             return og;
+        } else if (comboOutputType.getSelectedIndex() == COMBO_DTW_INDEX) {
+            List<OSCOutput> outputs = new LinkedList<>();
+            int numGestures = Integer.parseInt(fieldNumDtwTypes.getText());
+            for (int i = 0; i < numOutputs; i++) {
+                OSCDtwOutput o = new OSCDtwOutput(
+                        currentOutputNames[i],
+                        numGestures);
+                outputs.add(o);
+            }
+            OSCOutputGroup og = new OSCOutputGroup(outputs, oscMessage, hostname, port);
+            return og;
         } else {
             List<OSCOutput> outputs = customConfiguredOutput.getOutputs();
             OSCOutputGroup og = new OSCOutputGroup(outputs, oscMessage, hostname, port);
@@ -1135,7 +1191,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             }
         }
     }
-    
+
     private OSCInputGroup getInputGroupFromForm() {
         String name = "Inputs";
         String oscMessage = fieldInputOSCMessage.getText().trim();
@@ -1162,7 +1218,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             }
         }
     }
-    
+
     private String getHostnameFromForm() {
         return fieldHostName.getText().trim();
     }
@@ -1186,71 +1242,38 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
                 OSCInputGroup inputGroup = getInputGroupFromForm();
                 OSCOutputGroup outputGroup = getOutputGroupFromForm();
-                
-                
-                w.getInputManager().setOSCInputGroup(inputGroup);
-                w.getOutputManager().setOSCOutputGroup(outputGroup);
-                w.getLearningManager().initializeInputsAndOutputs();
-                if (comboOutputType.getSelectedIndex() == COMBO_CLASSIFICATION_INDEX) {
-                    //
-                    //int whichClassifier = comboClassifierType.getSelectedIndex();
-                    ModelBuilder mb = null;
-                    for (int i = 0; i < classificationRadios.length; i++) {
-                        if (classificationRadios[i].isSelected()) {
-                            mb = classificationModelBuilders[i];
-                        }
-                    }
-                    if (mb == null) {
-                        logger.log(Level.WARNING, "No model type is selected in GUI! Choosing default");
-                        mb = classificationModelBuilders[0];
-                    }
-                    
-                    /*if (classifierRadioGroup.getSelection() == buttonKNN.getModel()) {
-                        mb = new KNNModelBuilder();
-                    } else if (classifierRadioGroup.getSelection() == buttonAdaboost.getModel()) {
-                        mb = new AdaboostModelBuilder();
-                    } else if (classifierRadioGroup.getSelection() == buttonSVM.getModel()) {
-                        mb = new SVMModelBuilder();
-                    } else if (classifierRadioGroup.getSelection() == buttonJ48.getModel()) {
-                        mb = new J48ModelBuilder();
-                    } else {
-                        mb = new KNNModelBuilder();
-                        logger.log(Level.WARNING, "Classifier choice button model not found");
-                    } */
-                    for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
-                        ModelBuilder mbnew = mb.fromTemplate(mb);
-                        logger.log(Level.INFO, "Setting model builder to" + mbnew.getPrettyName());
-                        w.getLearningManager().setModelBuilderForPath(mbnew, i);
-                    }
 
-                } else if (comboOutputType.getSelectedIndex() == COMBO_REGRESSION_INDEX) {
-                    ModelBuilder mb = null;
-                    for (int i = 0; i < regressionRadios.length; i++) {
-                        if (regressionRadios[i].isSelected()) {
-                            mb = regressionModelBuilders[i];
-                        }
+                int selectedIndex = comboOutputType.getSelectedIndex();
+                if (selectedIndex == COMBO_CLASSIFICATION_INDEX || selectedIndex == COMBO_REGRESSION_INDEX
+                        || (selectedIndex == COMBO_CLASSIFICATION_INDEX && !(customModelBuilders[0] instanceof DtwModelBuilder))) {
+                    //Doing classification and/or regression 
+                    w.getInputManager().setOSCInputGroup(inputGroup);
+                    w.getOutputManager().setOSCOutputGroup(outputGroup);
+                    w.getLearningManager().setNonTemporal();
+                    w.getLearningManager().initializeInputsAndOutputs();
+
+                    if (selectedIndex == COMBO_CLASSIFICATION_INDEX) {
+                        initClassificationModelBuilders(outputGroup);
+                    } else if (selectedIndex == COMBO_REGRESSION_INDEX) {
+                        initRegressionModelBuilders(outputGroup);
+                    } else {
+                        //Custom
+                        initCustomNonTemporalModelBuilders();
                     }
-                    if (mb == null) {
-                        logger.log(Level.WARNING, "No model type is selected in GUI! Choosing default");
-                        mb = regressionModelBuilders[0];
+                    finalizeNonTemporalSetup();
+                } else {
+                    w.getInputManager().setOSCInputGroup(inputGroup);
+                    w.getOutputManager().setOSCOutputGroup(outputGroup);
+                    w.getLearningManager().setTemporal();
+                    if (selectedIndex == COMBO_DTW_INDEX) {
+                        initDtwModelBuilders(outputGroup);
+                    } else {
+                        //Custom
+                        initCustomTemporalModelBuilders();
                     }
-                    for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
-                        ModelBuilder mbnew = mb.fromTemplate(mb);
-                        logger.log(Level.INFO, "Setting model builder to {0}", mbnew.getPrettyName());
-                        w.getLearningManager().setModelBuilderForPath(mbnew, i);
-                    }
-                } else if (comboOutputType.getSelectedIndex() == COMBO_CUSTOM_INDEX) {
-                    for (int i = 0; i < customModelBuilders.length; i++) {
-                        ModelBuilder mb = customModelBuilders[i];
-                        logger.log(Level.INFO, "Setting model builder to {0}", mb.getPrettyName());
-                        w.getLearningManager().setModelBuilderForPath(mb, i);      
-                    }
+                    finalizeTemporalSetup();
                 }
-                w.getMainGUI().initializeInputsAndOutputs();
-                w.getMainGUI().setVisible(true);
-                WekiMiniRunner.getInstance().transferControl(w, this, w.getMainGUI());
-                removeListeners();
-                this.dispose();
+
             } catch (UnknownHostException ex) {
                 Util.showPrettyErrorPane(this, "Host name " + fieldHostName.getText() + " is invalid; please try a different host.");
             } catch (SocketException ex) {
@@ -1261,6 +1284,61 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             logger.log(Level.INFO, "Error encountered in setting up inputs/outputs");
         }
     }//GEN-LAST:event_buttonNextActionPerformed
+
+    private void finalizeNonTemporalSetup() {
+        w.getMainGUI().setNonTemporal();
+        w.getMainGUI().initializeInputsAndOutputs();
+        w.getMainGUI().setVisible(true);
+        WekiMiniRunner.getInstance().transferControl(w, this, w.getMainGUI());
+        removeListeners();
+        this.dispose();
+    }
+
+    private void initClassificationModelBuilders(OSCOutputGroup outputGroup) {
+        ModelBuilder mb = null;
+        for (int i = 0; i < classificationRadios.length; i++) {
+            if (classificationRadios[i].isSelected()) {
+                mb = classificationModelBuilders[i];
+            }
+        }
+        if (mb == null) {
+            logger.log(Level.WARNING, "No model type is selected in GUI! Choosing default");
+            mb = classificationModelBuilders[0];
+        }
+
+        for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
+            ModelBuilder mbnew = mb.fromTemplate(mb);
+            logger.log(Level.INFO, "Setting model builder to" + mbnew.getPrettyName());
+            w.getLearningManager().setModelBuilderForPath(mbnew, i);
+        }
+    }
+
+    private void initRegressionModelBuilders(OSCOutputGroup outputGroup) {
+        ModelBuilder mb = null;
+        for (int i = 0; i < regressionRadios.length; i++) {
+            if (regressionRadios[i].isSelected()) {
+                mb = regressionModelBuilders[i];
+            }
+        }
+        if (mb == null) {
+            logger.log(Level.WARNING, "No model type is selected in GUI! Choosing default");
+            mb = regressionModelBuilders[0];
+        }
+        for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
+            ModelBuilder mbnew = mb.fromTemplate(mb);
+            logger.log(Level.INFO, "Setting model builder to {0}", mbnew.getPrettyName());
+            w.getLearningManager().setModelBuilderForPath(mbnew, i);
+        }
+    }
+
+    private void initCustomNonTemporalModelBuilders() {
+        for (int i = 0; i < customModelBuilders.length; i++) {
+            ModelBuilder mb = customModelBuilders[i];
+            logger.log(Level.INFO, "Setting model builder to {0}", mb.getPrettyName());
+            w.getLearningManager().setModelBuilderForPath(mb, i);
+        }
+    }
+
 
     private void buttonConfigureOutputsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonConfigureOutputsActionPerformed
         if (outputConfigViewer != null) {
@@ -1396,6 +1474,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private void buttonKNNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonKNNActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_buttonKNNActionPerformed
+
+    private void fieldNumDtwTypesKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumDtwTypesKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fieldNumDtwTypesKeyTyped
 
     private void removeListeners() {
         w.getWekinatorController().removeInputNamesListener(inputNamesListener);
@@ -1539,9 +1621,13 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         if (index == COMBO_CLASSIFICATION_INDEX) {
             return Util.checkIsPositiveNumber(fieldNumClasses, "Number of classes", this);
         }
+        if (index == COMBO_DTW_INDEX) {
+            return Util.checkIsPositiveNumber(fieldNumDtwTypes, "Number of DTW gesture types", this);
+
+        }
         return true;
     }
-    
+
     /* Requires input and output fields are properly formatted as ints */
     private boolean checkNamesUnique() {
         int numInputs = Integer.parseInt(fieldNumInputs.getText());
@@ -1552,7 +1638,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         System.arraycopy(currentInputNames, 0, allNames, 0, currentInputNames.length);
         System.arraycopy(currentOutputNames, 0, allNames, currentInputNames.length, currentOutputNames.length);
         boolean unique = Util.checkAllUnique(allNames);
-        if (! unique) {
+        if (!unique) {
             Util.showPrettyErrorPane(this, "Input and output names must all be unique");
         }
         return unique;
@@ -1583,7 +1669,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             layout.show(panelOutputTypes, "cardBlank");
         } else if (index == COMBO_CLASSIFICATION_INDEX) {
             layout.show(panelOutputTypes, "cardClassification");
-        } else {
+        } else if (index == COMBO_DTW_INDEX) {
+            layout.show(panelOutputTypes, "cardDTW");
+        } else if (index == COMBO_CUSTOM_INDEX) {
             layout.show(panelOutputTypes, "cardCustom");
         }
     }
@@ -1599,12 +1687,14 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private javax.swing.JButton buttonOutputOptions;
     private javax.swing.JRadioButtonMenuItem buttonSVM;
     private javax.swing.JPanel cardBlank;
+    private javax.swing.JPanel cardDTW;
     private javax.swing.JPanel cardNumClasses;
     private javax.swing.ButtonGroup classifierRadioGroup;
     private javax.swing.JComboBox comboOutputType;
     private javax.swing.JTextField fieldHostName;
     private javax.swing.JTextField fieldInputOSCMessage;
     private javax.swing.JTextField fieldNumClasses;
+    private javax.swing.JTextField fieldNumDtwTypes;
     private javax.swing.JTextField fieldNumInputs;
     private javax.swing.JTextField fieldNumOutputs;
     private javax.swing.JTextField fieldOscPort;
@@ -1612,6 +1702,8 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private javax.swing.JTextField fieldSendPort;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
@@ -1644,6 +1736,18 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     @Override
     public Wekinator getWekinator() {
         return w;
+    }
+
+    private void initDtwModelBuilders(OSCOutputGroup outputGroup) {
+        //XXX
+    }
+
+    private void initCustomTemporalModelBuilders() {
+        //XXX
+    }
+
+    private void finalizeTemporalSetup() {
+        //XXX
     }
 
 }

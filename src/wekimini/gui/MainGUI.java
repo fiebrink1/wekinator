@@ -652,4 +652,8 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     public Wekinator getWekinator() {
         return w;
     }
+
+    void setNonTemporal() {
+        //XXX
+    }
 }
