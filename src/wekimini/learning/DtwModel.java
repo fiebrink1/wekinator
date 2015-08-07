@@ -7,7 +7,6 @@ package wekimini.learning;
 
 import com.dtw.TimeWarpInfo;
 import com.timeseries.TimeSeries;
-import com.timeseries.TimeSeriesPoint;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
@@ -55,7 +54,6 @@ public class DtwModel implements Model {
     private final boolean[] isGestureActive;
     private final OSCDtwOutput myOutput;
     private final DtwData data;
-    private transient long currentTime = 0;
     private transient TimeSeries currentTs;
     private int numGestures = 0;
     private final transient double[] closestDistances;
