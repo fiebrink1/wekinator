@@ -28,7 +28,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author fiebrink
  */
-public class SimpleLearningSet extends javax.swing.JPanel {
+public class SupervisedLearningSetGUI extends javax.swing.JPanel {
     private Wekinator w;
     private List<Path> paths;
     private List<LearningRow> pathPanels;
@@ -40,11 +40,11 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     private final ImageIcon playIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noplay1.png"));
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture scheduledFuture;
-    private static final Logger logger = Logger.getLogger(SimpleLearningSet.class.getName());
+    private static final Logger logger = Logger.getLogger(SupervisedLearningSetGUI.class.getName());
     /**
      * Creates new form LearningSet1
      */
-    public SimpleLearningSet() {
+    public SupervisedLearningSetGUI() {
         initComponents();
       //  jButton3.setVisible(false);
     }
@@ -114,7 +114,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
         repaint();  
     }
     
-    public SimpleLearningSet(Wekinator w, Path[] ps, String[] modelNames) {
+    public SupervisedLearningSetGUI(Wekinator w, Path[] ps, String[] modelNames) {
         initComponents();
         setup(w, ps, modelNames);
         //jButton3.setVisible(false);
@@ -472,7 +472,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     }
     
     private void buttonViewExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonViewExamplesActionPerformed
-        w.getMainSupervisedGUI().showExamplesViewer();
+        w.getMainGUI().showExamplesViewer();
     }//GEN-LAST:event_buttonViewExamplesActionPerformed
 
     private void buttonDeleteAllExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteAllExamplesActionPerformed

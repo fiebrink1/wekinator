@@ -6,7 +6,7 @@
 package wekimini;
 
 import java.beans.PropertyChangeEvent;
-import wekimini.gui.MainSupervisedGUI;
+import wekimini.gui.MainGUI;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import wekimini.osc.OSCSender;
@@ -18,8 +18,8 @@ import javax.swing.JFrame;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import wekimini.LearningManager.LearningType;
 import wekimini.gui.Console;
-import wekimini.gui.MainDtwGUI;
 import wekimini.osc.OSCMonitor;
 import wekimini.osc.OSCReceiver;
 import wekimini.util.Util;
@@ -39,9 +39,7 @@ public class Wekinator {
     private final OSCSender oscSender;
     private final InputManager inputManager;
     private final OutputManager outputManager;
-    private MainSupervisedGUI mainSupervisedGUI;
-    private MainDtwGUI mainDtwGUI;
-    private JFrame mainGUI;
+    private MainGUI mainGUI;
     
     //private final SupervisedLearningManager supervisedLearningManager;
     private final DataManager dataManager;
@@ -158,14 +156,9 @@ public class Wekinator {
         return outputManager;
     }
 
-    public MainSupervisedGUI getMainSupervisedGUI() {
-        return mainSupervisedGUI;
+    public MainGUI getMainGUI() {
+        return mainGUI;
     }
-    
-    public MainDtwGUI getMainDtwGUI() {
-        return mainDtwGUI;
-    }
-
     
     
     public OSCMonitor getOSCMonitor() {
@@ -235,7 +228,7 @@ public class Wekinator {
         oscReceiver = new OSCReceiver();
         oscSender = new OSCSender();
         oscSender.setDefaultHostAndPort();
-        //mainSupervisedGUI = new MainSupervisedGUI(this);
+        //mainSupervisedGUI = new MainGUI(this);
 
         inputManager = new InputManager(this);
         outputManager = new OutputManager(this);
@@ -262,11 +255,9 @@ public class Wekinator {
 
     private void learningTypeChanged(LearningManager.LearningType learningType) {
         if (learningType == LearningManager.LearningType.SUPERVISED_LEARNING) {
-            mainSupervisedGUI = new MainSupervisedGUI(this);
-            mainGUI = mainSupervisedGUI;
+            mainGUI = new MainGUI(this, LearningType.SUPERVISED_LEARNING);
         } else if (learningType == LearningManager.LearningType.TEMPORAL_MODELING) {
-            mainDtwGUI = new MainDtwGUI(this);
-            mainGUI = mainSupervisedGUI;
+            mainGUI = new MainGUI(this, LearningType.TEMPORAL_MODELING);
         }
     }
 

@@ -7,6 +7,8 @@ package wekimini.learning;
 
 import com.timeseries.TimeSeries;
 import com.timeseries.TimeSeriesPoint;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -20,7 +22,7 @@ import wekimini.Wekinator;
  * @author rebecca
  */
 public class DtwData {
-
+    
     private final transient List<DtwDataListener> dataListeners = new LinkedList<>();
     private transient long currentTime = 0;
     private transient TimeSeries currentTimeSeries;
@@ -34,6 +36,51 @@ public class DtwData {
     private int maxSizeInExamples = 0;
     private int maxLengthToRetainDuringRun = Integer.MAX_VALUE;
     private static final Logger logger = Logger.getLogger(DtwData.class.getName());
+    //private int numTotalExamples = 0;
+    
+    private int numTotalExamples = 0;
+    
+    public static final String PROP_NUMTOTALEXAMPLES = "numTotalExamples";
+
+    /**
+     * Get the value of numTotalExamples
+     *
+     * @return the value of numTotalExamples
+     */
+    public int getNumTotalExamples() {
+        return numTotalExamples;
+    }
+
+    /**
+     * Set the value of numTotalExamples
+     *
+     * @param numTotalExamples new value of numTotalExamples
+     */
+    public void setNumTotalExamples(int numTotalExamples) {
+        int oldNumTotalExamples = this.numTotalExamples;
+        this.numTotalExamples = numTotalExamples;
+        propertyChangeSupport.firePropertyChange(PROP_NUMTOTALEXAMPLES, oldNumTotalExamples, numTotalExamples);
+    }
+    
+    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+    /**
+     * Add PropertyChangeListener.
+     *
+     * @param listener
+     */
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    /**
+     * Remove PropertyChangeListener.
+     *
+     * @param listener
+     */
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
+    }
     
     public DtwData(int numGestures, Wekinator w) {
         this.numGestures = numGestures;
@@ -45,11 +92,11 @@ public class DtwData {
         exampleListForIds = new HashMap<>();
         examplesForIds = new HashMap<>();
     }
-
+    
     public int getMaxLengthToRetainDuringRun() {
         return maxLengthToRetainDuringRun;
     }
-
+    
     public void setMaxLengthToRetainDuringRun(int maxLengthToRetainDuringRun) {
         this.maxLengthToRetainDuringRun = maxLengthToRetainDuringRun;
     }
@@ -71,7 +118,7 @@ public class DtwData {
             return;
         }
         
-        if (matchingExample.getTimeSeries().size()== minSizeInExamples) {
+        if (matchingExample.getTimeSeries().size() == minSizeInExamples) {
             updateMinSize();
         }
         if (matchingExample.getTimeSeries().size() == maxSizeInExamples) {
@@ -82,8 +129,11 @@ public class DtwData {
         examplesForIds.remove(id);
         
         int whichClass = allExamples.indexOf(matchingList);
-
-        notifyDataListeners(whichClass, matchingList.size());
+        
+        setNumTotalExamples(numTotalExamples - 1);
+        
+        notifyExamplesChangedListeners(whichClass, matchingList.size());
+        notifyExampleDeletedListeners(whichClass);
     }
     
     public void deleteAll() {
@@ -95,10 +145,12 @@ public class DtwData {
         }
         minSizeInExamples = Integer.MAX_VALUE;
         maxSizeInExamples = 0;
+        setNumTotalExamples(0);
         
-        for (int i= 0; i < numGestures; i++) {
-            notifyDataListeners(i, 0);
+        for (int i = 0; i < numGestures; i++) {
+            notifyExamplesChangedListeners(i, 0);
         }
+        notifyAllExamplesDeletedListeners();
     }
     
     protected void startRecording(int currentClass) {
@@ -110,12 +162,12 @@ public class DtwData {
     protected void stopRecording() {
         addTrainingExample();
     }
-
+    
     protected void addTrainingVector(double[] d) {
         TimeSeriesPoint p = new TimeSeriesPoint(d);
         currentTimeSeries.addLast(currentTime, p);
         currentTime++;
-    } 
+    }    
     
     protected void addRunningVector(double[] d) {
         TimeSeriesPoint p = new TimeSeriesPoint(d);
@@ -145,9 +197,15 @@ public class DtwData {
         }
         exampleListForIds.put(id, list);
         examplesForIds.put(id, ex);
-        notifyDataListeners(currentClass, list.size());
+        setNumTotalExamples(numTotalExamples + 1);
+        notifyExamplesChangedListeners(currentClass, list.size());
+        notifyExampleAddedListeners(currentClass);
     }
-
+    
+    public int getNumExamplesForGesture(int gesture) {
+        return allExamples.get(gesture).size();
+    }
+    
     public List<LinkedList<DtwExample>> getAllExamples() {
         return allExamples;
     }
@@ -160,10 +218,9 @@ public class DtwData {
         currentTime = 0;
         currentTimeSeries = new TimeSeries(numGestures);
     }
-
+    
     public void stopRunning() {
         
-    
     }
     
     public int getMinSizeInExamples() {
@@ -173,13 +230,13 @@ public class DtwData {
     public int getMaxSizeInExamples() {
         return maxSizeInExamples;
     }
-   
+    
     public void addDataListener(DtwDataListener listener) {
         if (listener != null) {
             dataListeners.add(listener);
         }
     }
-
+    
     public void removeDataListener(DtwDataListener listener) {
         if (listener != null) {
             dataListeners.remove(listener);
@@ -193,7 +250,7 @@ public class DtwData {
                 if (ex.getTimeSeries().size() < min) {
                     min = ex.getTimeSeries().size();
                 }
-            } 
+            }            
         }
         minSizeInExamples = min;
     }
@@ -205,11 +262,11 @@ public class DtwData {
                 if (ex.getTimeSeries().size() > max) {
                     max = ex.getTimeSeries().size();
                 }
-            } 
+            }            
         }
         maxSizeInExamples = max;
     }
-    
+
     //Finds time series between minSize and MaxSize in most recent set of examples
     public List<TimeSeries> getCandidateSeriesFromCurrentRun(int minSize, int maxSize, int hopSize) {
         List<TimeSeries> l = new LinkedList<>();
@@ -220,7 +277,7 @@ public class DtwData {
             //  System.out.println("T too small: " + t.size());
             return l;
         }
-
+        
         int shortestStartPos = currentTimeSeries.size() - minSize;
         int longestStartPos;
         if (currentTimeSeries.size() > maxSize) {
@@ -240,11 +297,28 @@ public class DtwData {
         }
         return l;
     }
-
     
-    public void notifyDataListeners(int whichClass, int currentNumExamples) {
+    public void notifyExampleAddedListeners(int whichClass) {
+        for (DtwDataListener l : dataListeners) {
+            l.exampleAdded(whichClass);
+        }
+    }
+    
+    public void notifyExampleDeletedListeners(int whichClass) {
+        for (DtwDataListener l : dataListeners) {
+            l.exampleDeleted(whichClass);
+        }
+    }
+    
+    public void notifyExamplesChangedListeners(int whichClass, int currentNumExamples) {
         for (DtwDataListener l : dataListeners) {
             l.numExamplesChanged(whichClass, currentNumExamples);
+        }
+    }
+    
+    public void notifyAllExamplesDeletedListeners() {
+        for (DtwDataListener l : dataListeners) {
+            l.allExamplesDeleted();
         }
     }
     
@@ -253,16 +327,23 @@ public class DtwData {
             System.out.println("CLASS " + i + ": + "
                     + allExamples.get(i).size()
                     + "points:");
-            for (DtwExample ts : allExamples.get(i)) {    
+            for (DtwExample ts : allExamples.get(i)) {                
                 System.out.println(ts.getId() + ": " + ts.getTimeSeries());
             }
         }
-
+        
         System.out.println("CURRENT Timeseries:");
         System.out.println(currentTimeSeries);
     }
-
+    
     public interface DtwDataListener {
+
+        public void exampleAdded(int whichClass);
+
+        public void exampleDeleted(int whichClass);
+
         public void numExamplesChanged(int whichClass, int currentNumExamples);
+
+        public void allExamplesDeleted();
     }
 }

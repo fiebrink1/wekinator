@@ -5,7 +5,7 @@
  */
 package wekimini;
 
-import wekimini.gui.MainSupervisedGUI;
+import wekimini.gui.MainGUI;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -185,7 +185,7 @@ public final class WekiMiniRunner {
 
     public void runFromFile(String fileLocation) throws Exception {
         Wekinator w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
-        MainSupervisedGUI mg = w.getMainSupervisedGUI();
+        MainGUI mg = w.getMainGUI();
         mg.setVisible(true);
         mg.showOSCReceiverWindow();
         wekinatorCurrentMainFrames.put(w, mg);

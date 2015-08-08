@@ -175,6 +175,7 @@ public class WekinatorSaver {
         return paths;
     }
 
+    //TODO: XXX WON"T WORK ANYMORE: NEED TO SET LEARNING TYPE HERE!
     private static Wekinator instantiateWekinator(WekinatorFileData wfd, OSCInputGroup ig, OSCOutputGroup og, Instances data, List<Path> tempPaths, String projectDir) throws IOException {
         Wekinator w = new Wekinator();
         w.setProjectLocation(projectDir);
@@ -190,7 +191,6 @@ public class WekinatorSaver {
         w.getOSCSender().setHostnameAndPort(InetAddress.getByName(og.getHostname()), og.getOutputPort());
         w.getSupervisedLearningManager().initializeInputsAndOutputsWithExisting(data, paths);
         // the above calls w.getDataManager().initialize(...) with data
-        w.getMainSupervisedGUI().initializeInputsAndOutputs();
         w.getStatusUpdateCenter().update(null, "Successfully loaded Wekinator project from file.");
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         return w;

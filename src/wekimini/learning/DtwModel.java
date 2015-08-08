@@ -7,6 +7,7 @@ package wekimini.learning;
 
 import com.dtw.TimeWarpInfo;
 import com.timeseries.TimeSeries;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
@@ -19,7 +20,6 @@ import wekimini.Wekinator;
 import static wekimini.learning.DtwModel.RecordingState.NOT_RECORDING;
 import static wekimini.learning.DtwModel.RunningState.NOT_RUNNING;
 import wekimini.learning.DtwSettings.RunningType;
-import wekimini.osc.OSCDtwOutput;
 import wekimini.osc.OSCOutput;
 
 /*
@@ -63,7 +63,9 @@ public class DtwModel implements Model {
     private transient final Wekinator w;
     private String modelName;
     private String myID;
+    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
+    
     public static enum RecordingState {
 
         RECORDING, NOT_RECORDING
@@ -73,6 +75,10 @@ public class DtwModel implements Model {
 
         RUNNING, NOT_RUNNING
     };
+    
+
+
+
 
     private RecordingState recordingState = NOT_RECORDING;
     private RunningState runningState = NOT_RUNNING;
@@ -121,8 +127,19 @@ public class DtwModel implements Model {
             public void numExamplesChanged(int whichClass, int currentNumExamples) {
                 updateMaxDistance();
             }
-        });
 
+            @Override
+            public void exampleAdded(int whichClass) {
+            }
+
+            @Override
+            public void exampleDeleted(int whichClass) {
+            }
+
+            @Override
+            public void allExamplesDeleted() {
+            }
+        });
         updateIdentifier();
     }
 
@@ -182,7 +199,6 @@ public class DtwModel implements Model {
         propertyChangeSupport.firePropertyChange(PROP_CURRENT_MATCH, oldCurrentMatch, currentMatch);
     }
 
-    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     /**
      * Add PropertyChangeListener.
@@ -488,6 +504,10 @@ public class DtwModel implements Model {
         for (DtwUpdateListener l : updateListeners) {
             l.dtwUpdateReceived(closest);
         }
+    }
+    
+    public DtwData getData() {
+        return data;
     }
 
     public interface DtwUpdateListener {

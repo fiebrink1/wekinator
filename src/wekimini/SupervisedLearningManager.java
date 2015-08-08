@@ -254,15 +254,16 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             }
         });
 
-        // w.getOSCReceiver().addPropertyChangeListener(this::oscReceiverPropertyChanged);
-
         w.getOSCReceiver().addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 oscReceiverPropertyChanged(evt);
             }
         });
+        //updateAbleToRecord();
+        initializeInputsAndOutputs();
         updateAbleToRecord();
+        updateAbleToRun();
         
     }
 
@@ -465,7 +466,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             pathRunningMask[i] = true;
 
             OSCOutput o = w.getOutputManager().getOutputGroup().getOutput(i);
-            final Path p = new Path(o, inputNames, w);
+            final Path p = new Path(o, inputNames, w, this);
             PropertyChangeListener pChange = new PropertyChangeListener() {
 
                 @Override
@@ -763,7 +764,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         Path newP;
         if (newOutput != null) {
             w.getOutputManager().updateOutput(newOutput, p.getOSCOutput()); //this triggers change in data manager
-            newP = new Path(newOutput, selectedInputNames, w);
+            newP = new Path(newOutput, selectedInputNames, w, this);
             newP.setNumExamples(p.getNumExamples());
             if (newModelBuilder != null) {
                 newP.inheritModel(p);

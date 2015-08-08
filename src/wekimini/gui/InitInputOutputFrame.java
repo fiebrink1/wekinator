@@ -1250,7 +1250,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                     w.getInputManager().setOSCInputGroup(inputGroup);
                     w.getOutputManager().setOSCOutputGroup(outputGroup);
                     w.getLearningManager().setSupervisedLearning();
-                    w.getSupervisedLearningManager().initializeInputsAndOutputs();
+                   // w.getSupervisedLearningManager().initializeInputsAndOutputs();
 
                     if (selectedIndex == COMBO_CLASSIFICATION_INDEX) {
                         initClassificationModelBuilders(outputGroup);
@@ -1260,7 +1260,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                         //Custom
                         initCustomNonTemporalModelBuilders();
                     }
-                    finalizeSupervisedLearningSetup();
+                    finalizeSetup();
                 } else {
                     w.getInputManager().setOSCInputGroup(inputGroup);
                     w.getOutputManager().setOSCOutputGroup(outputGroup);
@@ -1269,7 +1269,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                         //Custom
                         initForCustomDtw();
                     }
-                    finalizeTemporalSetup();
+                    finalizeSetup();
                 }
 
             } catch (UnknownHostException ex) {
@@ -1283,10 +1283,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         }
     }//GEN-LAST:event_buttonNextActionPerformed
 
-    private void finalizeSupervisedLearningSetup() {
-        w.getMainSupervisedGUI().initializeInputsAndOutputs();
-        w.getMainSupervisedGUI().setVisible(true);
-        WekiMiniRunner.getInstance().transferControl(w, this, w.getMainSupervisedGUI());
+    private void finalizeSetup() {
+        w.getMainGUI().setVisible(true);
+        WekiMiniRunner.getInstance().transferControl(w, this, w.getMainGUI());
         removeListeners();
         this.dispose();
     }
@@ -1740,13 +1739,4 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private void initForCustomDtw() {
         //XXX
     }
-
-    private void finalizeTemporalSetup() {
-        w.getMainDtwGUI().initializeInputsAndOutputs();
-        w.getMainDtwGUI().setVisible(true);
-        WekiMiniRunner.getInstance().transferControl(w, this, w.getMainDtwGUI());
-        removeListeners();
-        this.dispose();
-    }
-
 }

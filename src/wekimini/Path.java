@@ -171,9 +171,9 @@ public class Path {
     }
 
     //TODO XXX Make this OSCSupervisedLearning output
-    public Path(OSCOutput output, String[] inputs, Wekinator w) {
+    public Path(OSCOutput output, String[] inputs, Wekinator w, SupervisedLearningManager lm) {
         this.w = w;
-        this.learningManager = w.getSupervisedLearningManager();
+        this.learningManager = lm;
         //TODO want a better model name, unique-ish identifier (e.g. output name + version number)
         //this.model = new SimpleModel("model1");
         //this.modelBuilder = new ModelBuilder();

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import wekimini.LearningManager;
 import wekimini.Path;
 import wekimini.WekiMiniRunner.Closeable;
 import wekimini.gui.path.PathEditorFrame;
@@ -27,7 +28,7 @@ import wekimini.WekinatorFileData;
  *
  * @author rebecca
  */
-public class MainSupervisedGUI extends javax.swing.JFrame implements Closeable {
+public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     private OSCInputStatusFrame oscInputStatusFrame = null;
     private InputMonitor inputMonitorFrame = null;
@@ -36,137 +37,19 @@ public class MainSupervisedGUI extends javax.swing.JFrame implements Closeable {
     private final Wekinator w;
     private boolean closeable = true; //flaseif this is the last window open
     
-    /* public void displayEditInput(String name) {
-     //Only show 1 of these at once
-     if (! isDisplayingAddInput) {
-     isDisplayingAddInput = true;
-     GUIAddEditInput g = new GUIAddEditInput(w, name);
-     g.setAlwaysOnTop(true);
-     g.setVisible(true);
-     g.addWindowListener(new WindowListener() {
-
-     @Override
-     public void windowOpened(WindowEvent e) {
-     }
-
-     @Override
-     public void windowClosing(WindowEvent e) {
-     }
-
-     @Override
-     public void windowClosed(WindowEvent e) {
-     isDisplayingAddInput = false;
-     }
-
-     @Override
-     public void windowIconified(WindowEvent e) {
-     }
-
-     @Override
-     public void windowDeiconified(WindowEvent e) {
-     }
-
-     @Override
-     public void windowActivated(WindowEvent e) {
-     }
-
-     @Override
-     public void windowDeactivated(WindowEvent e) {
-     }
-     });
-     }
-     }
     
-     public void displayAddInput() {
-     //Only show 1 of these at once
-     if (! isDisplayingAddInput) {
-     isDisplayingAddInput = true;
-     GUIAddEditInput g = new GUIAddEditInput(w);
-     g.setAlwaysOnTop(true);
-     g.setVisible(true);
-     g.addWindowListener(new WindowListener() {
-
-     @Override
-     public void windowOpened(WindowEvent e) {
-     }
-
-     @Override
-     public void windowClosing(WindowEvent e) {
-     }
-
-     @Override
-     public void windowClosed(WindowEvent e) {
-     isDisplayingAddInput = false;
-     }
-
-     @Override
-     public void windowIconified(WindowEvent e) {
-     }
-
-     @Override
-     public void windowDeiconified(WindowEvent e) {
-     }
-
-     @Override
-     public void windowActivated(WindowEvent e) {
-     }
-
-     @Override
-     public void windowDeactivated(WindowEvent e) {
-     }
-     });
-     }
-     }
-
-     public void displayAddOutput() {
-     //Only show 1 of these at once
-     if (! isDisplayingAddOutput) {
-     isDisplayingAddOutput = true;
-     GUIAddEditOutputGroup g = new GUIAddEditOutputGroup(w);
-     g.setAlwaysOnTop(true);
-     g.setVisible(true);
-     g.addWindowListener(new WindowListener() {
-
-     @Override
-     public void windowOpened(WindowEvent e) {
-     }
-
-     @Override
-     public void windowClosing(WindowEvent e) {
-     }
-
-     @Override
-     public void windowClosed(WindowEvent e) {
-     isDisplayingAddOutput = false;
-     }
-
-     @Override
-     public void windowIconified(WindowEvent e) {
-     }
-
-     @Override
-     public void windowDeiconified(WindowEvent e) {
-     }
-
-     @Override
-     public void windowActivated(WindowEvent e) {
-     }
-
-     @Override
-     public void windowDeactivated(WindowEvent e) {
-     }
-     });
-     }
-     }
     
-     */
     /**
      * Creates new form MainGUI
      */
-    public MainSupervisedGUI(Wekinator w) {
+    public MainGUI(Wekinator w, LearningManager.LearningType type) {
         initComponents();
+        if (type == LearningManager.LearningType.INITIALIZATION) {
+            throw new IllegalStateException("GUI can only be created for Wekinator whose learning type is known");
+        }
+        
         this.w = w;
-        setGUIForWekinator();
+        setGUIForWekinator(type);
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -179,36 +62,15 @@ public class MainSupervisedGUI extends javax.swing.JFrame implements Closeable {
                 
             }
         });
-
     }
 
     private void finishUp() {
-        /* Wekinator w2 = new Wekinator();
-         InitInputOutputFrame f = new InitInputOutputFrame(w);
-         f.setVisible(true);
-                    
-         runningWekinators.add(w2);
-         w2.addCloseListener(new ChangeListener() {
-
-         @Override
-         public void stateChanged(ChangeEvent e) {
-         logger.log(Level.INFO, "Wekinator project closed");
-         }
-         }); */
-
-        //System.out.println("IN FINISIH UP");
         w.close();
-        /*  if (WekiMiniRunner.getInstance().numRunningProjects() == 0) {
-         WekiMiniRunner.getInstance().runNewProject();
-            
-         } */
-        //System.out.println("MADE IT HERE");
         this.dispose();
     }
 
-    private void setGUIForWekinator() {
+    private void setGUIForWekinator(LearningManager.LearningType type) {
         this.setTitle(w.getProjectName());
-       // w.addPropertyChangeListener(this::wekinatorPropertyChanged);
         w.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -216,13 +78,13 @@ public class MainSupervisedGUI extends javax.swing.JFrame implements Closeable {
             }
         });
         
-        //  w.getStatusUpdateCenter().addPropertyChangeListener(this::statusUpdated);
+        if (type == LearningManager.LearningType.SUPERVISED_LEARNING) {
+            initializeForSupervisedLearning();
+        } else if (type == LearningManager.LearningType.TEMPORAL_MODELING) {
+            initializeForTemporalModeling();
+        }
     }
 
-    /* private void statusUpdated(PropertyChangeEvent evt) {
-     StatusUpdateCenter.StatusUpdate u = (StatusUpdateCenter.StatusUpdate)evt.getNewValue();
-        
-     }*/
     private void wekinatorPropertyChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == Wekinator.PROP_PROJECT_NAME) {
             this.setTitle(w.getProjectName());
@@ -241,7 +103,7 @@ public class MainSupervisedGUI extends javax.swing.JFrame implements Closeable {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        learningPanel1 = new wekimini.gui.LearningPanel();
+        learningPanel1 = new wekimini.gui.SupervisedLearningPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         jMenuItem6 = new javax.swing.JMenuItem();
@@ -421,7 +283,7 @@ public class MainSupervisedGUI extends javax.swing.JFrame implements Closeable {
                 //TODO: Check this isn't same wekinator as mine! (don't load from my same place, or from something already open...)
                 WekiMiniRunner.getInstance().runFromFile(f.getAbsolutePath());
             } catch (Exception ex) {
-                Logger.getLogger(MainSupervisedGUI.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_jMenuItem4ActionPerformed
@@ -572,13 +434,13 @@ public class MainSupervisedGUI extends javax.swing.JFrame implements Closeable {
          }
          }
          } catch (ClassNotFoundException ex) {
-         java.util.logging.Logger.getLogger(MainSupervisedGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+         java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
          } catch (InstantiationException ex) {
-         java.util.logging.Logger.getLogger(MainSupervisedGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+         java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
          } catch (IllegalAccessException ex) {
-         java.util.logging.Logger.getLogger(MainSupervisedGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+         java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
          } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-         java.util.logging.Logger.getLogger(MainSupervisedGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+         java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
          }
          //</editor-fold>
          */
@@ -589,9 +451,9 @@ public class MainSupervisedGUI extends javax.swing.JFrame implements Closeable {
 
                 try {
                     Wekinator w = Wekinator.TestingWekinator();
-                    new MainSupervisedGUI(w).setVisible(true);
+                    new MainGUI(w, LearningManager.LearningType.SUPERVISED_LEARNING).setVisible(true);
                 } catch (IOException ex) {
-                    Logger.getLogger(MainSupervisedGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
             }
@@ -609,7 +471,7 @@ public class MainSupervisedGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JPanel jPanel1;
-    private wekimini.gui.LearningPanel learningPanel1;
+    private wekimini.gui.SupervisedLearningPanel learningPanel1;
     private javax.swing.JMenu menuActions;
     private javax.swing.JMenuItem menuConsole;
     private javax.swing.JMenu menuFile;
@@ -628,13 +490,17 @@ public class MainSupervisedGUI extends javax.swing.JFrame implements Closeable {
         w.getDataManager().showViewer();
     }
 
-    public void initializeInputsAndOutputs() {
+    private void initializeForSupervisedLearning() {
         Path[] paths = w.getSupervisedLearningManager().getPaths().toArray(new Path[0]);
         String[] modelNames = new String[paths.length];
         for (int i = 0; i < paths.length; i++) {
             modelNames[i] = paths[i].getCurrentModelName();
         }
         learningPanel1.setup(w, paths, modelNames);
+    }
+    
+    private void initializeForTemporalModeling() {
+
     }
 
     public void showPathEditor(Path p) {

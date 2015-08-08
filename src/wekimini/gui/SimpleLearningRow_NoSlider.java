@@ -331,7 +331,7 @@ public class SimpleLearningRow_NoSlider extends javax.swing.JPanel implements Le
 
                     OSCNumericOutput no = new OSCNumericOutput("model1", 5, 10, OSCNumericOutput.NumericOutputType.REAL, OSCNumericOutput.LimitType.HARD);
                     String[] names = new String[]{"abc", "def"};
-                    Path p = new Path(no, names, w);
+                    Path p = new Path(no, names, w, null);
                     SimpleLearningRow_NoSlider r = new SimpleLearningRow_NoSlider(w, p);
                     f.add(r);
                     f.setVisible(true);
@@ -692,7 +692,7 @@ public class SimpleLearningRow_NoSlider extends javax.swing.JPanel implements Le
 
     private void buttonEditLearnerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditLearnerActionPerformed
         //w.getSupervisedLearningManager().
-        w.getMainSupervisedGUI().showPathEditor(myPath);
+        w.getMainGUI().showPathEditor(myPath);
     }//GEN-LAST:event_buttonEditLearnerActionPerformed
 
     private void textModelValueKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textModelValueKeyPressed

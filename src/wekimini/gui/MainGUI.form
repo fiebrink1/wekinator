@@ -185,7 +185,7 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="wekimini.gui.LearningPanel" name="learningPanel1">
+        <Component class="wekimini.gui.SupervisedLearningPanel" name="learningPanel1">
         </Component>
       </SubComponents>
     </Container>

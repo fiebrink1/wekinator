@@ -124,6 +124,7 @@ public class LearningManager implements ConnectsInputsToOutputs {
         setLearningType(LearningType.TEMPORAL_MODELING);
         dtwLearningManager = new DtwLearningManager(w, outputGroup);
         connector = dtwLearningManager;
+        //initialize inputs and outputs etc?
     }
     
     public SupervisedLearningManager getSupervisedLearningManager() {

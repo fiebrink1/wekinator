@@ -465,7 +465,7 @@ public class SimpleLearningSet1_TEMP extends javax.swing.JPanel {
     }
     
     private void buttonViewExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonViewExamplesActionPerformed
-        w.getMainSupervisedGUI().showExamplesViewer();
+        w.getMainGUI().showExamplesViewer();
     }//GEN-LAST:event_buttonViewExamplesActionPerformed
 
     private void buttonDeleteAllExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteAllExamplesActionPerformed
