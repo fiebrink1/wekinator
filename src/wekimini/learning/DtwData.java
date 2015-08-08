@@ -57,17 +57,17 @@ public class DtwData {
     public void delete(int id) {
         List<DtwExample> matchingList = exampleListForIds.get(id);
         if (matchingList == null) {
-            logger.log(Level.WARNING, "ID " + id + " not found in exampleListForIds!");
+            logger.log(Level.WARNING, "ID {0} not found in exampleListForIds!", id);
             return;
         }
         DtwExample matchingExample = examplesForIds.get(id);
         if (matchingExample == null) {
-            logger.log(Level.WARNING, "ID " + id + " not found in examplesForIds");
+            logger.log(Level.WARNING, "ID {0} not found in examplesForIds", id);
             return;
         }
         boolean removed = matchingList.remove(matchingExample);
         if (!removed) {
-            logger.log(Level.WARNING, "ID " + id + " not found in examplesForIds");
+            logger.log(Level.WARNING, "ID {0} not found in examplesForIds", id);
             return;
         }
         

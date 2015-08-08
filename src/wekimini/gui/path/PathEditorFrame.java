@@ -769,10 +769,10 @@ public class PathEditorFrame extends javax.swing.JFrame {
       //  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 
       //if (newOutput != null) {
-          w.getLearningManager().updatePath(p, newOutput, newModelBuilder, getSelectedInputNames());
+          w.getSupervisedLearningManager().updatePath(p, newOutput, newModelBuilder, getSelectedInputNames());
           
          //w.getOutputManager().updateOutput(newOutput, p.getOSCOutput());
-       // w.getLearningManager().updateOutput()
+       // w.getSupervisedLearningManager().updateOutput()
         //New P or existing p??
         //Need to update model state, path output name, 
     //  }

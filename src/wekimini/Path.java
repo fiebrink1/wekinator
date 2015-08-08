@@ -30,6 +30,7 @@ import weka.core.converters.ArffSaver;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
+import wekimini.osc.OSCSupervisedLearningOutput;
 
 /**
  * Listens for appropriate changes at InputManager, sends inputs to Model,
@@ -64,7 +65,7 @@ public class Path {
     private final OSCOutput output;
     private transient final Wekinator w;
     private final List<String> inputNames;
-    private transient final LearningManager learningManager;
+    private transient final SupervisedLearningManager learningManager;
     private final boolean outputNeedsCorrection;
     private final PathOutputCorrecter outputCorrector;
 
@@ -169,9 +170,10 @@ public class Path {
         return (inputNames.contains(input)); //Not the most efficient, but who cares right now
     }
 
+    //TODO XXX Make this OSCSupervisedLearning output
     public Path(OSCOutput output, String[] inputs, Wekinator w) {
         this.w = w;
-        this.learningManager = w.getLearningManager();
+        this.learningManager = w.getSupervisedLearningManager();
         //TODO want a better model name, unique-ish identifier (e.g. output name + version number)
         //this.model = new SimpleModel("model1");
         //this.modelBuilder = new ModelBuilder();
@@ -180,7 +182,7 @@ public class Path {
             inputNames.add(input);
         }
         this.output = output;
-        this.modelBuilder = output.getDefaultModelBuilder();
+        this.modelBuilder = ((OSCSupervisedLearningOutput)output).getDefaultModelBuilder();
         setCurrentModelName(output.getName());
         outputNeedsCorrection = PathOutputCorrecter.needsCorrecting(output);
         outputCorrector = new PathOutputCorrecter(output);
@@ -477,8 +479,8 @@ public class Path {
             } else {
                 objout.writeObject("null");
             }
-            Instances i = w.getLearningManager().getTrainingDataForPath(this, true);
-                    //w.getLearningManager().getTrainingDataForPath(this);
+            Instances i = w.getSupervisedLearningManager().getTrainingDataForPath(this, true);
+                    //w.getSupervisedLearningManager().getTrainingDataForPath(this);
             
             
             if (i != null) {

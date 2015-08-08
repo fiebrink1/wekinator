@@ -21,7 +21,7 @@ import wekimini.osc.OSCOutput;
 public class KNNModelBuilder implements LearningModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
-    private static final int defaultNumNeighbors = 10;
+    private static final int defaultNumNeighbors = 1;
     private int numNeighbors = defaultNumNeighbors;
     
     public KNNModelBuilder() {

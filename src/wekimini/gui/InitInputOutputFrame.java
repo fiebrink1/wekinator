@@ -1245,12 +1245,12 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
                 int selectedIndex = comboOutputType.getSelectedIndex();
                 if (selectedIndex == COMBO_CLASSIFICATION_INDEX || selectedIndex == COMBO_REGRESSION_INDEX
-                        || (selectedIndex == COMBO_CLASSIFICATION_INDEX && !(customModelBuilders[0] instanceof DtwModelBuilder))) {
+                        || (selectedIndex == COMBO_CUSTOM_INDEX && !(customModelBuilders[0] instanceof DtwModelBuilder))) {
                     //Doing classification and/or regression 
                     w.getInputManager().setOSCInputGroup(inputGroup);
                     w.getOutputManager().setOSCOutputGroup(outputGroup);
-                    w.getLearningManager().setNonTemporal();
-                    w.getLearningManager().initializeInputsAndOutputs();
+                    w.getLearningManager().setSupervisedLearning();
+                    w.getSupervisedLearningManager().initializeInputsAndOutputs();
 
                     if (selectedIndex == COMBO_CLASSIFICATION_INDEX) {
                         initClassificationModelBuilders(outputGroup);
@@ -1260,16 +1260,14 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                         //Custom
                         initCustomNonTemporalModelBuilders();
                     }
-                    finalizeNonTemporalSetup();
+                    finalizeSupervisedLearningSetup();
                 } else {
                     w.getInputManager().setOSCInputGroup(inputGroup);
                     w.getOutputManager().setOSCOutputGroup(outputGroup);
-                    w.getLearningManager().setTemporal();
-                    if (selectedIndex == COMBO_DTW_INDEX) {
-                        initDtwModelBuilders(outputGroup);
-                    } else {
+                    w.getLearningManager().setDtw(outputGroup);
+                    if (selectedIndex == COMBO_CUSTOM_INDEX) {
                         //Custom
-                        initCustomTemporalModelBuilders();
+                        initForCustomDtw();
                     }
                     finalizeTemporalSetup();
                 }
@@ -1285,11 +1283,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         }
     }//GEN-LAST:event_buttonNextActionPerformed
 
-    private void finalizeNonTemporalSetup() {
-        w.getMainGUI().setNonTemporal();
-        w.getMainGUI().initializeInputsAndOutputs();
-        w.getMainGUI().setVisible(true);
-        WekiMiniRunner.getInstance().transferControl(w, this, w.getMainGUI());
+    private void finalizeSupervisedLearningSetup() {
+        w.getMainSupervisedGUI().initializeInputsAndOutputs();
+        w.getMainSupervisedGUI().setVisible(true);
+        WekiMiniRunner.getInstance().transferControl(w, this, w.getMainSupervisedGUI());
         removeListeners();
         this.dispose();
     }
@@ -1309,7 +1306,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
             ModelBuilder mbnew = mb.fromTemplate(mb);
             logger.log(Level.INFO, "Setting model builder to" + mbnew.getPrettyName());
-            w.getLearningManager().setModelBuilderForPath(mbnew, i);
+            w.getSupervisedLearningManager().setModelBuilderForPath(mbnew, i);
         }
     }
 
@@ -1327,16 +1324,18 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
             ModelBuilder mbnew = mb.fromTemplate(mb);
             logger.log(Level.INFO, "Setting model builder to {0}", mbnew.getPrettyName());
-            w.getLearningManager().setModelBuilderForPath(mbnew, i);
+            w.getSupervisedLearningManager().setModelBuilderForPath(mbnew, i);
         }
     }
 
     private void initCustomNonTemporalModelBuilders() {
-        for (int i = 0; i < customModelBuilders.length; i++) {
+        //TODO: Replace with custom setup object
+        // XXX
+        /*for (int i = 0; i < customModelBuilders.length; i++) {
             ModelBuilder mb = customModelBuilders[i];
             logger.log(Level.INFO, "Setting model builder to {0}", mb.getPrettyName());
-            w.getLearningManager().setModelBuilderForPath(mb, i);
-        }
+            w.getDtwLearningManager().setModelBuilderForPath(mb, i);
+        } */
     }
 
 
@@ -1738,16 +1737,16 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         return w;
     }
 
-    private void initDtwModelBuilders(OSCOutputGroup outputGroup) {
-        //XXX
-    }
-
-    private void initCustomTemporalModelBuilders() {
+    private void initForCustomDtw() {
         //XXX
     }
 
     private void finalizeTemporalSetup() {
-        //XXX
+        w.getMainDtwGUI().initializeInputsAndOutputs();
+        w.getMainDtwGUI().setVisible(true);
+        WekiMiniRunner.getInstance().transferControl(w, this, w.getMainDtwGUI());
+        removeListeners();
+        this.dispose();
     }
 
 }

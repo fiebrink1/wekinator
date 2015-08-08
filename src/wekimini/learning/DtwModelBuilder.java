@@ -5,44 +5,40 @@
  */
 package wekimini.learning;
 
-import weka.core.Instances;
-import wekimini.LearningModelBuilder;
+import wekimini.osc.OSCDtwOutput;
 import wekimini.osc.OSCOutput;
 
 /**
  *
  * @author rebecca
  */
-public class DtwModelBuilder implements LearningModelBuilder {
-
-    @Override
-    public void setTrainingExamples(Instances examples) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+public class DtwModelBuilder {
+    DtwSettings settings;
+    
+    public DtwModelBuilder() {
+        settings = new DtwSettings();
     }
-
-    @Override
-    public Model build(String name) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    public DtwModelBuilder(DtwSettings s) {
+        settings = new DtwSettings();
     }
-
-    @Override
+    
     public boolean isCompatible(OSCOutput o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return (o instanceof OSCDtwOutput);
+    }
+    
+    public DtwModelBuilder fromTemplate(ModelBuilder b) {
+        if (b instanceof DtwModelBuilder) {
+            return new DtwModelBuilder(((DtwModelBuilder)b).settings);
+        }
+        return null;
     }
 
-    @Override
-    public ModelBuilder fromTemplate(ModelBuilder template) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public String getPrettyName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Dynamic time warping";
     }
 
-    @Override
-    public ModelBuilderEditorPanel getEditorPanel() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public DtwEditorPanel getEditorPanel() {
+        return new DtwEditorPanel(settings);
     }
- 
 }

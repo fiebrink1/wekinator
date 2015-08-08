@@ -11,13 +11,14 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import weka.core.Instance;
 import wekimini.Wekinator;
 import static wekimini.learning.DtwModel.RecordingState.NOT_RECORDING;
 import static wekimini.learning.DtwModel.RunningState.NOT_RUNNING;
-import static wekimini.learning.DtwModel.RunningType.LABEL_CONTINUOUSLY;
+import wekimini.learning.DtwSettings.RunningType;
 import wekimini.osc.OSCDtwOutput;
 import wekimini.osc.OSCOutput;
 
@@ -44,23 +45,24 @@ import wekimini.osc.OSCOutput;
  */
 public class DtwModel implements Model {
 
+    public static final String PROP_RUNNING_TYPE = "runningType";
+    public static final String PROP_CURRENT_MATCH = "currentMatch";
+    public static final String PROP_MAX_DISTANCE = "maxDistance";
+
     private final transient List<DtwUpdateListener> updateListeners = new LinkedList<>();
-
-    private double matchThreshold = 0.3;
-    private int minAllowedGestureLength = 5;
-   // private int maxAllowedGestureLength = 10;
-
     private transient int currentMatch = -1;
     private final boolean[] isGestureActive;
-    private final OSCDtwOutput myOutput;
     private final DtwData data;
     private transient TimeSeries currentTs;
     private int numGestures = 0;
     private final transient double[] closestDistances;
     private transient int minSizeInExamples = 0;
     private transient int maxSizeInExamples = 0;
-
-    public static final String PROP_CURRENT_MATCH = "currentMatch";
+    private DtwSettings settings;
+    private double maxDistance = 0;
+    private transient final Wekinator w;
+    private String modelName;
+    private String myID;
 
     public static enum RecordingState {
 
@@ -72,75 +74,40 @@ public class DtwModel implements Model {
         RUNNING, NOT_RUNNING
     };
 
-    public static enum RunningType {
-
-        LABEL_CONTINUOUSLY, LABEL_ONCE_PER_RECORD
-    }
-
     private RecordingState recordingState = NOT_RECORDING;
     private RunningState runningState = NOT_RUNNING;
 
-    private double maxDistance = 0;
-    public static final String PROP_MAX_DISTANCE = "maxDistance";
-
-    public transient final Wekinator w;
-
-    private RunningType runningType = LABEL_CONTINUOUSLY;
-
-    public static final String PROP_RUNNING_TYPE = "runningType";
-
-    private int hopSizeForContinuousSearch = 1;
-
-    /**
-     * Get the value of hopSizeForContinuousSearch
-     *
-     * @return the value of hopSizeForContinuousSearch
-     */
-    public int getHopSizeForContinuousSearch() {
-        return hopSizeForContinuousSearch;
+    public DtwSettings getSettings() {
+        return settings;
     }
 
-    /**
-     * Set the value of hopSizeForContinuousSearch
-     *
-     * @param hopSizeForContinuousSearch new value of hopSizeForContinuousSearch
-     */
-    public void setHopSizeForContinuousSearch(int hopSizeForContinuousSearch) {
-        this.hopSizeForContinuousSearch = hopSizeForContinuousSearch;
-    }
-
-    /**
-     * Get the value of runningType
-     *
-     * @return the value of runningType
-     */
-    public RunningType getRunningType() {
-        return runningType;
-    }
-
-    /**
-     * Set the value of runningType
-     *
-     * @param runningType new value of runningType
-     */
-    public void setRunningType(RunningType runningType) {
+    public void setSettings(DtwSettings settings) {
         boolean isRunning = (getRunningState() == RunningState.RUNNING);
         if (isRunning) {
             stopRunning();
         }
-        RunningType oldRunningType = this.runningType;
-        this.runningType = runningType;
-        propertyChangeSupport.firePropertyChange(PROP_RUNNING_TYPE, oldRunningType, runningType);
+        RunningType oldRunningType = this.getSettings().getRunningType();
+        RunningType newRunningType = settings.getRunningType();
+        this.settings = settings;
+        updateIdentifier();
+        propertyChangeSupport.firePropertyChange(PROP_RUNNING_TYPE, oldRunningType, newRunningType);
         if (isRunning) {
             startRunning();
         }
-
     }
 
-    public DtwModel(OSCDtwOutput o, Wekinator w) {
-        this.myOutput = o;
+    //Settings can optionally be null
+    public DtwModel(String name, int numGestures, Wekinator w, DtwSettings settings) {
+        this.modelName = name;
+        if (settings != null) {
+            this.settings = settings;
+        } else {
+            this.settings = new DtwSettings();
+        }
+
+        this.numGestures = numGestures;
         this.w = w;
-        this.numGestures = o.getNumGestures();
+
         closestDistances = new double[numGestures];
         isGestureActive = new boolean[numGestures];
         for (int i = 0; i < isGestureActive.length; i++) {
@@ -155,6 +122,8 @@ public class DtwModel implements Model {
                 updateMaxDistance();
             }
         });
+
+        updateIdentifier();
     }
 
     /**
@@ -239,18 +208,16 @@ public class DtwModel implements Model {
      * @return the value of maxAllowedGestureLength
      */
     /*public int getMaxAllowedGestureLength() {
-        return maxAllowedGestureLength;
-    }*/
-
+     return maxAllowedGestureLength;
+     }*/
     /**
      * Set the value of maxAllowedGestureLength
      *
      * @param maxAllowedGestureLength new value of maxAllowedGestureLength
      */
-   /* public void setMaxAllowedGestureLength(int maxAllowedGestureLength) {
-        this.maxAllowedGestureLength = maxAllowedGestureLength;
-    } */
-
+    /* public void setMaxAllowedGestureLength(int maxAllowedGestureLength) {
+     this.maxAllowedGestureLength = maxAllowedGestureLength;
+     } */
     public boolean isGestureActive(int i) {
         return isGestureActive[i];
     }
@@ -259,65 +226,9 @@ public class DtwModel implements Model {
         isGestureActive[i] = active;
     }
 
-    private int matchWidth = 5;
-
-    /**
-     * Get the value of matchWidth
-     *
-     * @return the value of matchWidth
-     */
-    public int getMatchWidth() {
-        return matchWidth;
-    }
-
-    /**
-     * Set the value of matchWidth
-     *
-     * @param matchWidth new value of matchWidth
-     */
-    public void setMatchWidth(int matchWidth) {
-        this.matchWidth = matchWidth;
-    }
-
-    /**
-     * Get the value of minAllowedGestureLength
-     *
-     * @return the value of minAllowedGestureLength
-     */
-    public int getMinAllowedGestureLength() {
-        return minAllowedGestureLength;
-    }
-
-    /**
-     * Set the value of minAllowedGestureLength
-     *
-     * @param minAllowedGestureLength new value of minAllowedGestureLength
-     */
-    public void setMinAllowedGestureLength(int minAllowedGestureLength) {
-        this.minAllowedGestureLength = minAllowedGestureLength;
-    }
-
-    /**
-     * Get the value of matchThreshold
-     *
-     * @return the value of matchThreshold
-     */
-    public double getMatchThreshold() {
-        return matchThreshold;
-    }
-
-    /**
-     * Set the value of matchThreshold
-     *
-     * @param matchThreshold new value of matchThreshold
-     */
-    public void setMatchThreshold(double matchThreshold) {
-        this.matchThreshold = matchThreshold;
-    }
-
     @Override
     public String getPrettyName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return modelName;
     }
 
     @Override
@@ -328,6 +239,12 @@ public class DtwModel implements Model {
     @Override
     public double computeOutput(Instance inputs) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void updateIdentifier() {
+        Date d = new Date();
+        String timestamp = Long.toString(d.getTime());
+        myID = this.modelName + "_" + timestamp;
     }
 
     @Override
@@ -361,12 +278,27 @@ public class DtwModel implements Model {
             setRecordingState(RecordingState.NOT_RECORDING);
             data.stopRecording();
         }
+        updateIdentifier();
+    }
+
+    public List<DtwExample> getExamplesForGesture(int which) {
+        return data.getExamplesForGesture(which);
+    }
+
+    public void deleteExample(int id) {
+        data.delete(id);
+        updateIdentifier();
+    }
+
+    public void deleteAllExamples() {
+        data.deleteAll();
+        updateIdentifier();
     }
 
     public void startRunning() {
         if (runningState != RunningState.RUNNING) {
             data.startRunning();
-            if (runningType == RunningType.LABEL_CONTINUOUSLY) {
+            if (settings.getRunningType() == RunningType.LABEL_CONTINUOUSLY) {
                 updateExampleSizeStats();
             } else {
                 data.setMaxLengthToRetainDuringRun(Integer.MAX_VALUE); //hang onto everything
@@ -377,7 +309,7 @@ public class DtwModel implements Model {
 
     public void stopRunning() {
         if (runningState == RunningState.RUNNING) {
-            if (runningType == RunningType.LABEL_ONCE_PER_RECORD) {
+            if (settings.getRunningType() == RunningType.LABEL_ONCE_PER_RECORD) {
                 classifyLast();
             }
             setRunningState(RunningState.NOT_RUNNING);
@@ -386,7 +318,7 @@ public class DtwModel implements Model {
 
     public void addRunningVector(double[] inputs) {
         data.addRunningVector(inputs);
-        if (runningType == LABEL_CONTINUOUSLY) {
+        if (settings.getRunningType() == RunningType.LABEL_CONTINUOUSLY) {
             classifyContinuous();
         }
     }
@@ -413,9 +345,9 @@ public class DtwModel implements Model {
         for (int whichClass = 0; whichClass < numGestures; whichClass++) {
             if (isGestureActive[whichClass]) {
                 for (DtwExample ex : data.getExamplesForGesture(whichClass)) {
-                //for (TimeSeries ts : allseries.get(whichClass)) {
+                    //for (TimeSeries ts : allseries.get(whichClass)) {
                     TimeSeries ts = ex.getTimeSeries();
-                    TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, currentTs, matchWidth);
+                    TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, currentTs, settings.getMatchWidth());
                     if (closestDistances[whichClass] > info.getDistance()) {
                         closestDistances[whichClass] = info.getDistance();
                     }
@@ -426,17 +358,16 @@ public class DtwModel implements Model {
                 }
             }
         }
-        
+
         //Doesn't use threshold
         //if (closestDist < matchThreshold) {
-            setCurrentMatch(closestClass);
+        setCurrentMatch(closestClass);
         //} else {
         //    setCurrentMatch(0);
         //}
-        notifyUpdateListeners(closestDistances); 
+        notifyUpdateListeners(closestDistances);
     }
 
-    
     /**
      * Get the value of maxDistance
      *
@@ -477,7 +408,7 @@ public class DtwModel implements Model {
                 //Find max distance between list1 and list2
                 for (DtwExample ts1 : list1) {
                     for (DtwExample ts2 : list2) {
-                        TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts1.getTimeSeries(), ts2.getTimeSeries(), matchWidth);
+                        TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts1.getTimeSeries(), ts2.getTimeSeries(), settings.getMatchWidth());
                         if (info.getDistance() > maxDist) {
                             maxDist = info.getDistance();
                         }
@@ -492,7 +423,7 @@ public class DtwModel implements Model {
                 TimeSeries ts1 = list.get(i).getTimeSeries();
                 for (int j = i + 1; j < list.size(); j++) {
                     TimeSeries ts2 = list.get(j).getTimeSeries();
-                    TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts1, ts2, matchWidth);
+                    TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts1, ts2, settings.getMatchWidth());
                     if (info.getDistance() > maxDist) {
                         maxDist = info.getDistance();
                     }
@@ -513,12 +444,12 @@ public class DtwModel implements Model {
         //Chop to sizes between minSizeInExamples, min(current ts size, maxSizeInExamples)
         // and look for best match.
 
-        int min = minAllowedGestureLength;
+        int min = settings.getMinAllowedGestureLength();
         if (min > minSizeInExamples) {
             min = minSizeInExamples;
         }
 
-        List<TimeSeries> l = data.getCandidateSeriesFromCurrentRun(min, maxSizeInExamples, hopSizeForContinuousSearch);
+        List<TimeSeries> l = data.getCandidateSeriesFromCurrentRun(min, maxSizeInExamples, settings.getHopSizeForContinuousSearch());
 
         double closestDist = Double.MAX_VALUE;
         int closestClass = -1;
@@ -533,7 +464,7 @@ public class DtwModel implements Model {
                     for (DtwExample ex : data.getExamplesForGesture(whichClass)) {
                         TimeSeries ts = ex.getTimeSeries();
                         //for (TimeSeries ts : allseries.get(whichClass)) {
-                        TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, candidate, matchWidth); //used to be 5 instead of matchWidth
+                        TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, candidate, settings.getMatchWidth()); //used to be 5 instead of matchWidth
                         if (closestDistances[whichClass] > info.getDistance()) {
                             closestDistances[whichClass] = info.getDistance();
                         }
@@ -545,7 +476,7 @@ public class DtwModel implements Model {
                 }
             }
         }
-        if (closestDist < matchThreshold) {
+        if (closestDist < settings.getMatchThreshold()) {
             setCurrentMatch(closestClass);
         } else {
             setCurrentMatch(0);
@@ -560,6 +491,7 @@ public class DtwModel implements Model {
     }
 
     public interface DtwUpdateListener {
+
         public void dtwUpdateReceived(double[] currentDistances);
     }
 

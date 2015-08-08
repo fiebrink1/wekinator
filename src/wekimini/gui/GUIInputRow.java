@@ -136,7 +136,7 @@ public class GUIInputRow extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditActionPerformed
-       // TODO: w.getMainGUI().displayEditInput();
+       // TODO: w.getMainSupervisedGUI().displayEditInput();
     }//GEN-LAST:event_buttonEditActionPerformed
 
     private void buttonLookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLookActionPerformed

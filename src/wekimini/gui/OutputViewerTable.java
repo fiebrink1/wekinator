@@ -48,7 +48,7 @@ public class OutputViewerTable extends javax.swing.JFrame {
         initComponents();
         this.w = w;
         this.outputGroup = w.getOutputManager().getOutputGroup();
-        this.paths = w.getLearningManager().getPaths();
+        this.paths = w.getSupervisedLearningManager().getPaths();
         //this.port = outputGroup.getOutputPort();
         this.message = outputGroup.getOscMessage();
         //this.host = w.getOutputManager().getOutputGroup().getHostname();

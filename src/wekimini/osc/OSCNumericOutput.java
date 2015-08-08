@@ -12,7 +12,7 @@ import wekimini.util.Util;
  *
  * @author rebecca
  */
-public class OSCNumericOutput implements OSCOutput {
+public class OSCNumericOutput implements OSCSupervisedLearningOutput {
 
     private final String name;
 

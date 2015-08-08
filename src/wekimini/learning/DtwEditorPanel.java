@@ -5,15 +5,80 @@
  */
 package wekimini.learning;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import wekimini.learning.DtwSettings.RunningType;
+import wekimini.util.Util;
 
 /**
  *
  * @author rebecca
  */
-public class DtwEditorPanel extends ModelBuilderEditorPanel {
-    
+public class DtwEditorPanel extends javax.swing.JPanel {
+
+    /**
+     * Creates new form DtwEditorPanel
+     */
+    public DtwEditorPanel() {
+        initComponents();
+    }
+
+    public DtwEditorPanel(DtwSettings s) {
+        initComponents();
+        initFormForSettings(s);
+    }
+
+    private void initFormForSettings(DtwSettings s) {
+        s.getHopSizeForContinuousSearch();
+        s.getMatchThreshold();
+        s.getMatchWidth();
+        s.getMinAllowedGestureLength();
+        s.getRunningType();
+    }
+
+    public DtwSettings buildFromPanel() {
+        int hopSize = Integer.parseInt(textHopSize.getText());
+        int matchWidth = Integer.parseInt(textHopSize.getText());
+        double matchThreshold = Double.parseDouble(textMatchThreshold.getText());
+        int minGestureSize = Integer.parseInt(textMinGestureLength.getText());
+        RunningType rt;
+        if (comboRunningType.getSelectedIndex() == 0) {
+            rt = RunningType.LABEL_CONTINUOUSLY;
+        } else {
+            rt = RunningType.LABEL_ONCE_PER_RECORD;
+        }
+        return new DtwSettings(matchThreshold, matchWidth, minGestureSize, hopSize, rt);
+    }
+
+    public boolean validateForm() {
+        if (!Util.checkIsPositiveNumber(textHopSize, "hop size", this)) {
+            return false;
+        }
+        if (!Util.checkIsPositiveNumber(textMatchWidth, "match width", this)) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(textMatchThreshold.getText());
+            if (d <= 0) {
+                Util.showPrettyErrorPane(this, "Match threshold must be greater than 0");
+                return false;
+            }
+        } catch (NumberFormatException ex) {
+            Util.showPrettyErrorPane(this, "Match threshold must be greater than 0");
+            return false;
+        }
+
+        try {
+            int i = Integer.parseInt(textMinGestureLength.getText());
+            if (i <= 0) {
+                Util.showPrettyErrorPane(this, "Minimum gesture length must be 0 or greater");
+                return false;
+            }
+        } catch (NumberFormatException ex) {
+            Util.showPrettyErrorPane(this, "Minimum gesture length must be 0 or greater");
+            return false;
+        }
+        return true;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -23,58 +88,236 @@ public class DtwEditorPanel extends ModelBuilderEditorPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        textMatchWidth = new javax.swing.JTextField();
+        comboRunningType = new javax.swing.JComboBox();
+        textHopSize = new javax.swing.JTextField();
+        textMatchThreshold = new javax.swing.JTextField();
+        textMinGestureLength = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        buttonReset = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        textMatchWidth.setText("100");
+        textMatchWidth.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                textMatchWidthKeyTyped(evt);
+            }
+        });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 329, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 33, Short.MAX_VALUE)
-        );
+        comboRunningType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Matches computed continuously while running", "Matches computed only once running stops" }));
+        comboRunningType.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboRunningTypeActionPerformed(evt);
+            }
+        });
+
+        textHopSize.setText("1");
+        textHopSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textHopSizeActionPerformed(evt);
+            }
+        });
+        textHopSize.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                textHopSizeKeyTyped(evt);
+            }
+        });
+
+        textMatchThreshold.setText("1");
+        textMatchThreshold.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textMatchThresholdActionPerformed(evt);
+            }
+        });
+        textMatchThreshold.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                textMatchThresholdKeyTyped(evt);
+            }
+        });
+
+        textMinGestureLength.setText("1");
+        textMinGestureLength.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textMinGestureLengthActionPerformed(evt);
+            }
+        });
+        textMinGestureLength.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                textMinGestureLengthKeyTyped(evt);
+            }
+        });
+
+        jLabel1.setText("Match width");
+
+        jLabel2.setText("Match hop size");
+
+        jLabel3.setText("Minimum gesture length");
+
+        jLabel4.setText("Match threshold");
+
+        buttonReset.setText("Reset to defaults");
+        buttonReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonResetActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setFont(new java.awt.Font("Lucida Grande", 2, 10)); // NOI18N
+        jLabel5.setText("lower = more selective");
+
+        jLabel6.setFont(new java.awt.Font("Lucida Grande", 2, 10)); // NOI18N
+        jLabel6.setText("lower = possibly more likely to match, but longer match time");
+
+        jLabel7.setFont(new java.awt.Font("Lucida Grande", 2, 10)); // NOI18N
+        jLabel7.setText("lower = faster, more selective");
+
+        jLabel8.setFont(new java.awt.Font("Lucida Grande", 2, 10)); // NOI18N
+        jLabel8.setText("lower = faster, more selective");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 341, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(comboRunningType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(textMatchThreshold, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(textMinGestureLength, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(textHopSize, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(textMatchWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel5))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(buttonReset)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 45, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(comboRunningType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(textMatchThreshold, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(textMinGestureLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(textMatchWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(textHopSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(buttonReset))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void comboRunningTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboRunningTypeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboRunningTypeActionPerformed
+
+    private void textMatchWidthKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textMatchWidthKeyTyped
+        char enter = evt.getKeyChar();
+        if (!(Character.isDigit(enter))) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_textMatchWidthKeyTyped
+
+    private void textHopSizeKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textHopSizeKeyTyped
+        char enter = evt.getKeyChar();
+        if (!(Character.isDigit(enter))) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_textHopSizeKeyTyped
+
+    private void textHopSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textHopSizeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_textHopSizeActionPerformed
+
+    private void textMatchThresholdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textMatchThresholdActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_textMatchThresholdActionPerformed
+
+    private void textMatchThresholdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textMatchThresholdKeyTyped
+        char enter = evt.getKeyChar();
+        if (!(Character.isDigit(enter) || enter == '.')) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_textMatchThresholdKeyTyped
+
+    private void textMinGestureLengthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textMinGestureLengthActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_textMinGestureLengthActionPerformed
+
+    private void textMinGestureLengthKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textMinGestureLengthKeyTyped
+        char enter = evt.getKeyChar();
+        if (!(Character.isDigit(enter))) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_textMinGestureLengthKeyTyped
+
+    private void buttonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetActionPerformed
+        comboRunningType.setSelectedIndex(0);
+        textHopSize.setText(Integer.toString(DtwSettings.DEFAULT_HOP_SIZE_FOR_CONTINUOUS_SEARCH));
+        textMatchThreshold.setText(Double.toString(DtwSettings.DEFAULT_MATCH_THRESHOLD));
+        textMinGestureLength.setText(Integer.toString(DtwSettings.DEFAULT_MIN_ALLOWED_GESTURE_LENGTH));
+        textMatchWidth.setText(Integer.toString(DtwSettings.DEFAULT_MATCH_WIDTH));
+    }//GEN-LAST:event_buttonResetActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton buttonReset;
+    private javax.swing.JComboBox comboRunningType;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JTextField textHopSize;
+    private javax.swing.JTextField textMatchThreshold;
+    private javax.swing.JTextField textMatchWidth;
+    private javax.swing.JTextField textMinGestureLength;
     // End of variables declaration//GEN-END:variables
-
-    @Override
-    public ModelBuilder buildFromPanel() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean validateForm() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-  
 }

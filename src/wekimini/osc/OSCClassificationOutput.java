@@ -14,7 +14,7 @@ import wekimini.util.Util;
  *
  * @author rebecca
  */
-public class OSCClassificationOutput implements OSCOutput {
+public class OSCClassificationOutput implements OSCSupervisedLearningOutput {
     
     private final String name;
     private final int numClasses;

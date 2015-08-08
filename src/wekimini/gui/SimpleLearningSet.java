@@ -18,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
-import wekimini.LearningManager;
+import wekimini.SupervisedLearningManager;
 import wekimini.OutputManager;
 import wekimini.Path;
 import wekimini.Wekinator;
@@ -78,7 +78,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
             }
         }); */
         
-        w.getLearningManager().addPathEditedListener(new LearningManager.PathOutputTypeEditedListener() {
+        w.getSupervisedLearningManager().addPathEditedListener(new SupervisedLearningManager.PathOutputTypeEditedListener() {
 
             @Override
             public void pathOutputTypeEdited(int which, Path newPath, Path oldPath) {
@@ -134,7 +134,7 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     } */
     
     //TODO: check if this setValue here is resulting in duplicate call to learning manager value change
-    //Assumes that ordering of outputs is never going to change; don't have to look up anything or refer to LearningManager.
+    //Assumes that ordering of outputs is never going to change; don't have to look up anything or refer to SupervisedLearningManager.
     private void outputValuesComputed(double[] vals) {
         for (int i = 0; i < vals.length; i++) {
             pathPanels.get(i).setComputedValue(vals[i]);
@@ -472,11 +472,11 @@ public class SimpleLearningSet extends javax.swing.JPanel {
     }
     
     private void buttonViewExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonViewExamplesActionPerformed
-        w.getMainGUI().showExamplesViewer();
+        w.getMainSupervisedGUI().showExamplesViewer();
     }//GEN-LAST:event_buttonViewExamplesActionPerformed
 
     private void buttonDeleteAllExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteAllExamplesActionPerformed
-        //w.getLearningManager().deleteAllExamples();
+        //w.getSupervisedLearningManager().deleteAllExamples();
         w.getWekinatorController().deleteAllExamples();
     }//GEN-LAST:event_buttonDeleteAllExamplesActionPerformed
 

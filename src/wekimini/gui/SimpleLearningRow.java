@@ -154,7 +154,7 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     @Override
     public void setValueQuietly(double value) {
         setValueOnlyForDisplay(value);
-        w.getLearningManager().setOutputValueForPath(value, myPath);
+        w.getSupervisedLearningManager().setOutputValueForPath(value, myPath);
     }
     
     @Override
@@ -734,12 +734,12 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     }
     
     private void buttonDeleteLearnerExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLearnerExamplesActionPerformed
-        w.getLearningManager().deleteExamplesForPath(myPath);
+        w.getSupervisedLearningManager().deleteExamplesForPath(myPath);
     }//GEN-LAST:event_buttonDeleteLearnerExamplesActionPerformed
 
     private void buttonEditLearnerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditLearnerActionPerformed
-        //w.getLearningManager().
-        w.getMainGUI().showPathEditor(myPath);
+        //w.getSupervisedLearningManager().
+        w.getMainSupervisedGUI().showPathEditor(myPath);
     }//GEN-LAST:event_buttonEditLearnerActionPerformed
 
     private void textModelValueKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textModelValueKeyPressed

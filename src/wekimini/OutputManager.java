@@ -197,7 +197,8 @@ public class OutputManager {
             for (int i = 0; i < o.length; i++) {
                 if (o[i] instanceof Float) {
                     try {
-                        if (w.getLearningManager().getPaths().get(i).getOSCOutput().isLegalTrainingValue((Float)o[i])) {
+                        if (w.getLearningManager().isLegalTrainingValue(i, (Float)o[i])) {
+                        //if (w.getSupervisedLearningManager().getPaths().get(i).getOSCOutput().isLegalTrainingValue((Float)o[i])) {
                             d[i] = ((Float) o[i]);
                         } else {
                             logger.log(Level.WARNING, "Illegal output value {0} received for output {1}; ignoring it", new Object[]{o[i], i});

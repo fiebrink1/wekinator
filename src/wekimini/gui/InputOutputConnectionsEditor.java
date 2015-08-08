@@ -11,12 +11,9 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-import wekimini.LearningManager;
+import wekimini.ConnectsInputsToOutputs.InputOutputConnectionsListener;
 import wekimini.Wekinator;
 
 /**
@@ -33,7 +30,7 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         setup(w.getInputManager().getInputNames(),
                 w.getOutputManager().getOutputGroup().getOutputNames(),
                 w.getLearningManager().getConnectionMatrix());
-        w.getLearningManager().addConnectionsListener(new LearningManager.InputOutputConnectionsListener() {
+                w.getLearningManager().addConnectionsListener(new InputOutputConnectionsListener() {
 
             @Override
             public void newConnectionMatrix(boolean[][] connections) {

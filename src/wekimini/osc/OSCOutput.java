@@ -20,9 +20,7 @@ public interface OSCOutput {
     public double generateRandomValue();
 
     public double getDefaultValue();
-    
-    public ModelBuilder getDefaultModelBuilder();
-    
+        
     public boolean isLegalTrainingValue(double value);
     
     public boolean isLegalOutputValue(double value);

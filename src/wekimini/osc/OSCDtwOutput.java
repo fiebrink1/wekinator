@@ -72,11 +72,6 @@ public class OSCDtwOutput implements OSCOutput {
     }
     
     @Override
-    public ModelBuilder getDefaultModelBuilder() {
-        return new DtwModelBuilder();
-    }
-    
-    @Override
     public boolean isLegalTrainingValue(double value) {
         return isLegalOutputValue(value);
     }

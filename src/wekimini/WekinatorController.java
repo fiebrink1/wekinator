@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import wekimini.osc.OSCController;
-import wekimini.LearningManager.InputOutputConnectionsListener;
 
 /**
  *
@@ -18,13 +17,12 @@ public class WekinatorController {
     private final OSCController oscController;
     private final List<NamesListener> inputNamesListeners;
     private final List<NamesListener> outputNamesListeners;
-    //private final List<InputOutputConnectionsListener> inputOutputConnectionsListeners;
     
     public WekinatorController(Wekinator w) {
         this.w = w;
         oscController = new OSCController(w);
-        inputNamesListeners = new LinkedList<NamesListener>();
-        outputNamesListeners = new LinkedList<NamesListener>();
+        inputNamesListeners = new LinkedList<>();
+        outputNamesListeners = new LinkedList<>();
     }
     
     public boolean isOscControlEnabled() {
@@ -35,70 +33,54 @@ public class WekinatorController {
         oscController.setOscControlEnabled(enabled);
     }
 
-    //REQUIRES that it is legal to move to record state at this time
-    public void startRecord() {
-        if (w.getLearningManager().getRunningState() == LearningManager.RunningState.RUNNING) {
-            stopRun();
-        }
-        w.getLearningManager().startRecording();
-        w.getStatusUpdateCenter().update(this, "Recording - waiting for inputs to arrive");
-    }
-    
-    public void stopRecord() {
-        w.getLearningManager().stopRecording();
-        // setStatus("Examples recorded. Press \"Train\" to build models from data.");
-        w.getStatusUpdateCenter().update(this, 
-                w.getLearningManager().getNumExamplesThisRound() + " new examples recorded");
 
-    }
-
-    public boolean isTraining() {
-        return w.getLearningManager().getLearningState() == LearningManager.LearningState.TRAINING;
+    /*public boolean isTraining() {
+        return w.getSupervisedLearningManager().getLearningState() == SupervisedLearningManager.LearningState.TRAINING;
     }
     
     public boolean isRunning() {
-        return (w.getLearningManager().getRunningState() == LearningManager.RunningState.RUNNING);
+        return (w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.RUNNING);
     }
     
     public boolean isRecording() {
-        return (w.getLearningManager().getRecordingState() == LearningManager.RecordingState.RECORDING);
+        return (w.getSupervisedLearningManager().getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING);
     }
     
     public void train() {
-        if (w.getLearningManager().getLearningState() != LearningManager.LearningState.TRAINING) {
-            w.getLearningManager().buildAll();
+        if (w.getSupervisedLearningManager().getLearningState() != SupervisedLearningManager.LearningState.TRAINING) {
+            w.getSupervisedLearningManager().buildAll();
             w.getStatusUpdateCenter().update(this, "Training");
         }
     }
 
     public void cancelTrain() {
-        w.getLearningManager().cancelTraining();
+        w.getSupervisedLearningManager().cancelTraining();
         w.getStatusUpdateCenter().update(this, "Cancelling training");
     }
 
     public void startRun() {
-        if (w.getLearningManager().getRecordingState() == LearningManager.RecordingState.RECORDING) {
-            w.getLearningManager().stopRecording();
+        if (w.getSupervisedLearningManager().getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING) {
+            w.getSupervisedLearningManager().stopRecording();
         }
-        if (w.getLearningManager().getRunningState() == LearningManager.RunningState.NOT_RUNNING) {
-           w.getLearningManager().setRunningState(LearningManager.RunningState.RUNNING);
+        if (w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING) {
+           w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
            w.getStatusUpdateCenter().update(this, "Running - waiting for inputs to arrive");
         }
     }
 
     public void stopRun() {
-        w.getLearningManager().setRunningState(LearningManager.RunningState.NOT_RUNNING);
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getStatusUpdateCenter().update(this, "Running stopped");
-    }
+    }*/
 
     public void deleteAllExamples() {
         w.getLearningManager().deleteAllExamples();
     }
 
     //Requires modelNum be a valid output (starting from 1)
-    public void setModelRecordEnabled(int modelNum, boolean enableRecord) {
+   /* public void setModelRecordEnabled(int modelNum, boolean enableRecord) {
         try {
-            List<Path> ps = w.getLearningManager().getPaths();
+            List<Path> ps = w.getSupervisedLearningManager().getPaths();
             Path p = ps.get(modelNum - 1);
             p.setRecordEnabled(enableRecord);
             if (enableRecord) {
@@ -115,7 +97,7 @@ public class WekinatorController {
     //Requires modelNum be a valid output (starting from 1)
     public void setModelRunEnabled(int modelNum, boolean enableRun) {
         try {
-            List<Path> ps = w.getLearningManager().getPaths();
+            List<Path> ps = w.getSupervisedLearningManager().getPaths();
             Path p = ps.get(modelNum - 1);
             p.setRunEnabled(enableRun);
             if (enableRun) {
@@ -129,25 +111,25 @@ public class WekinatorController {
     }
 
     public boolean canRecord() {
-        return w.getLearningManager().isAbleToRecord();
+        return w.getSupervisedLearningManager().isAbleToRecord();
     }
 
     public boolean canTrain() {
-        LearningManager.LearningState ls = w.getLearningManager().getLearningState();
-        return (ls == LearningManager.LearningState.DONE_TRAINING ||
-                ls == LearningManager.LearningState.READY_TO_TRAIN);
+        SupervisedLearningManager.LearningState ls = w.getSupervisedLearningManager().getLearningState();
+        return (ls == SupervisedLearningManager.LearningState.DONE_TRAINING ||
+                ls == SupervisedLearningManager.LearningState.READY_TO_TRAIN);
     }
     
     public boolean canRun() {
-        return w.getLearningManager().isAbleToRun();
-    }  
+        return w.getSupervisedLearningManager().isAbleToRun();
+    }  */
 
     //Requires either no input group set up yet, or length matches # inputs
     //Listeners can register in case wekinator isn't set up yet (e.g. initial project config screen)
     public void setInputNames(String[] inputNames) {
         if (w.getInputManager().hasValidInputs()) {
             //w.getInputManager().getOSCInputGroup().setInputNames(inputNames);
-            //TODO: Fix this, with attention to how Path, LearningManager use input names.
+            //TODO: Fix this, with attention to how Path, SupervisedLearningManager use input names.
             w.getStatusUpdateCenter().warn(this, "Input names cannot be changed after project is created (will be implemented in later version)");
         } else {
             notifyNewInputNames(inputNames);

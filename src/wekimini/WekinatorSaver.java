@@ -92,8 +92,9 @@ public class WekinatorSaver {
         }
     }
 
+    //XXX Fix saving for DTW
     private static void saveModels(File projectDir, Wekinator w) throws IOException {
-        List<Path> paths = w.getLearningManager().getPaths();
+        List<Path> paths = w.getSupervisedLearningManager().getPaths();
         String location = projectDir + modelsAppend + File.separator;
         for (int i = 0; i < paths.size(); i++) {
             String filename = location + "model" + i + ".xml";
@@ -187,9 +188,9 @@ public class WekinatorSaver {
             paths.add(p);
         }
         w.getOSCSender().setHostnameAndPort(InetAddress.getByName(og.getHostname()), og.getOutputPort());
-        w.getLearningManager().initializeInputsAndOutputsWithExisting(data, paths);
+        w.getSupervisedLearningManager().initializeInputsAndOutputsWithExisting(data, paths);
         // the above calls w.getDataManager().initialize(...) with data
-        w.getMainGUI().initializeInputsAndOutputs();
+        w.getMainSupervisedGUI().initializeInputsAndOutputs();
         w.getStatusUpdateCenter().update(null, "Successfully loaded Wekinator project from file.");
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         return w;

@@ -27,7 +27,7 @@ import wekimini.WekinatorFileData;
  *
  * @author rebecca
  */
-public class MainGUI extends javax.swing.JFrame implements Closeable {
+public class MainSupervisedGUI extends javax.swing.JFrame implements Closeable {
 
     private OSCInputStatusFrame oscInputStatusFrame = null;
     private InputMonitor inputMonitorFrame = null;
@@ -163,7 +163,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     /**
      * Creates new form MainGUI
      */
-    public MainGUI(Wekinator w) {
+    public MainSupervisedGUI(Wekinator w) {
         initComponents();
         this.w = w;
         setGUIForWekinator();
@@ -421,7 +421,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                 //TODO: Check this isn't same wekinator as mine! (don't load from my same place, or from something already open...)
                 WekiMiniRunner.getInstance().runFromFile(f.getAbsolutePath());
             } catch (Exception ex) {
-                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(MainSupervisedGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_jMenuItem4ActionPerformed
@@ -572,13 +572,13 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
          }
          }
          } catch (ClassNotFoundException ex) {
-         java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+         java.util.logging.Logger.getLogger(MainSupervisedGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
          } catch (InstantiationException ex) {
-         java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+         java.util.logging.Logger.getLogger(MainSupervisedGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
          } catch (IllegalAccessException ex) {
-         java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+         java.util.logging.Logger.getLogger(MainSupervisedGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
          } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-         java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+         java.util.logging.Logger.getLogger(MainSupervisedGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
          }
          //</editor-fold>
          */
@@ -589,9 +589,9 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
                 try {
                     Wekinator w = Wekinator.TestingWekinator();
-                    new MainGUI(w).setVisible(true);
+                    new MainSupervisedGUI(w).setVisible(true);
                 } catch (IOException ex) {
-                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(MainSupervisedGUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
             }
@@ -629,7 +629,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }
 
     public void initializeInputsAndOutputs() {
-        Path[] paths = w.getLearningManager().getPaths().toArray(new Path[0]);
+        Path[] paths = w.getSupervisedLearningManager().getPaths().toArray(new Path[0]);
         String[] modelNames = new String[paths.length];
         for (int i = 0; i < paths.length; i++) {
             modelNames[i] = paths[i].getCurrentModelName();
@@ -651,9 +651,5 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     @Override
     public Wekinator getWekinator() {
         return w;
-    }
-
-    void setNonTemporal() {
-        //XXX
     }
 }
