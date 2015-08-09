@@ -269,6 +269,15 @@ public class OutputManager {
         return valueComputedListeners.remove(l);
     }
 
+    public void sendMessage(String msgName) {
+        try {
+            w.getOSCSender().sendOutputMessage(msgName);
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, "Couldn't send message");
+            logger.log(Level.SEVERE, null, ex);        
+        }
+    }
+    
     //Call this when new values available
     public void setNewComputedValues(double[] values) {
        // System.out.println("IN SETTING NEW COMPUTED");

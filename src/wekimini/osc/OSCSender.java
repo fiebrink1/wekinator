@@ -96,6 +96,39 @@ public class OSCSender {
         s.send(msg);
     }
 
+    public void sendOutputMessage(String msgName) throws IOException {
+        if (isValidState) {
+            try {
+                OSCMessage msg = new OSCMessage(msgName);
+                sender.send(msg);
+                fireSendEvent();
+            } catch (IOException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
+            }
+        } else {
+            logger.log(Level.WARNING, "Could not send OSC message: Invalid state");
+        }
+    }
+
+      public void sendOutputValueMessage(String msgName, double data) throws IOException {
+        if (isValidState) {
+            Object[] o = new Object[1];
+            try {
+                o[0] = (float) data;
+                OSCMessage msg = new OSCMessage(msgName, o);
+                sender.send(msg);
+                fireSendEvent();
+            } catch (IOException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
+            }
+        } else {
+            logger.log(Level.WARNING, "Could not send OSC message: Invalid state");
+        }
+
+    }
+
     public void sendOutputValuesMessage(String msgName, double[] data) throws IOException {
         if (isValidState) {
             Object[] o = new Object[data.length];

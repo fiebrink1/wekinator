@@ -8,6 +8,9 @@ package wekimini;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static wekimini.DtwLearningManager.RunningState.NOT_RUNNING;
 import wekimini.learning.dtw.DtwData;
 import wekimini.learning.dtw.DtwModel;
@@ -31,7 +34,6 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
     public static final String PROP_HAS_EXAMPLES = "hasExamples";
     private boolean hasExamples = false;
 
-
     public DtwLearningManager(Wekinator w, OSCOutputGroup group) {
         this.w = w;
         if (group.getNumOutputs() != 1) {
@@ -41,6 +43,25 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         OSCDtwOutput out = (OSCDtwOutput) group.getOutput(0);
         int numGestures = out.getNumGestures();
         model = new DtwModel(out.getName(), numGestures, w, this, new DtwSettings());
+        
+        model.addDtwUpdateListener(new DtwModel.DtwUpdateListener() {
+
+            @Override
+            public void dtwUpdateReceived(double[] currentDistances) {
+                sendModelUpdates(currentDistances);
+            }
+
+        });
+        model.addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName().equals(DtwModel.PROP_CURRENT_MATCH)) {
+                    sendModelMatchValue((Integer) evt.getNewValue());
+                }
+            }
+        });
+
         final DtwData data = model.getData();
         setHasExamples(data.getNumTotalExamples() > 0);
         data.addPropertyChangeListener(new PropertyChangeListener() {
@@ -121,8 +142,8 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
     public RunningState getRunningState() {
         return runningState;
     }
-    
-        /**
+
+    /**
      * Set the value of runningState
      *
      * @param runningState new value of runningState
@@ -252,4 +273,22 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         w.getStatusUpdateCenter().update(this, "All examples deleted");
     }
 
+    private void sendModelUpdates(double[] currentDistances) {
+        try {
+            // w.getOutputManager().setNewComputedValues(currentDistances); //TODO XXX put back into output manager
+            w.getOSCSender().sendOutputValuesMessage(w.getOutputManager().getOutputGroup().getOscMessage(), currentDistances);
+        } catch (IOException ex) {
+            Logger.getLogger(DtwLearningManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void sendModelMatchValue(int newMatch) {
+        if (newMatch != -1) {
+            try {
+                w.getOSCSender().sendOutputMessage(model.getGestureName(newMatch));
+            } catch (IOException ex) {
+                Logger.getLogger(DtwLearningManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 }
