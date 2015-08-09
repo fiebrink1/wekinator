@@ -29,7 +29,7 @@ import wekimini.Wekinator;
 import wekimini.WekinatorController;
 import wekimini.WekinatorFileData;
 import wekimini.learning.AdaboostModelBuilder;
-import wekimini.learning.DtwModelBuilder;
+import wekimini.learning.dtw.DtwModelBuilder;
 import wekimini.learning.J48ModelBuilder;
 import wekimini.learning.KNNModelBuilder;
 import wekimini.learning.LearningAlgorithmRegistry;

@@ -32,7 +32,7 @@ import wekimini.util.Util;
  *
  * @author fiebrink
  */
-public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow {
+public class SupervisedLearningRow extends javax.swing.JPanel implements LearningRow {
 
     private Wekinator w;
     private Path myPath;
@@ -76,7 +76,7 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     private final ImageIcon trainedIcon = new ImageIcon(getClass().getResource("/wekimini/icons/greenlight.png")); // NOI18N
     private final ImageIcon needsRetrainingIcon = new ImageIcon(getClass().getResource("/wekimini/icons/yellowlight.png")); // NOI18N
     private final ImageIcon trainingIcon = new ImageIcon(getClass().getResource("/wekimini/icons/pinklight.png")); // NOI18N
-    private static final Logger logger = Logger.getLogger(SimpleLearningRow.class.getName());
+    private static final Logger logger = Logger.getLogger(SupervisedLearningRow.class.getName());
     
     
     /**
@@ -102,11 +102,11 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
     /**
      * Creates new form TestLearningRow1
      */
-    public SimpleLearningRow() {
+    public SupervisedLearningRow() {
         initComponents();
     }
 
-    public SimpleLearningRow(Wekinator w, Path p) {
+    public SupervisedLearningRow(Wekinator w, Path p) {
         initComponents();
         this.w = w;
         myPath = p;
@@ -350,7 +350,7 @@ public class SimpleLearningRow extends javax.swing.JPanel implements LearningRow
                     OSCNumericOutput no = new OSCNumericOutput("model1", 5, 10, OSCNumericOutput.NumericOutputType.REAL, OSCNumericOutput.LimitType.HARD);
                     String[] names = new String[]{"abc", "def"};
                     Path p = new Path(no, names, w, null);
-                    SimpleLearningRow r = new SimpleLearningRow(w, p);
+                    SupervisedLearningRow r = new SupervisedLearningRow(w, p);
                     f.add(r);
                     f.setVisible(true);
                 } catch (IOException ex) {

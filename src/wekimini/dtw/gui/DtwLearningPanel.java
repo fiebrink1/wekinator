@@ -1,4 +1,4 @@
-package wekimini.gui;
+package wekimini.dtw.gui;
 
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
@@ -12,7 +12,7 @@ import wekimini.Path;
 import wekimini.StatusUpdateCenter;
 import wekimini.TrainingRunner;
 import wekimini.Wekinator;
-import wekimini.learning.DtwData;
+import wekimini.learning.dtw.DtwData;
 import wekimini.osc.OSCMonitor;
 
 /*
@@ -40,13 +40,17 @@ public class DtwLearningPanel extends javax.swing.JPanel {
     public DtwLearningPanel() {
         initComponents();
     }
+    
+    public DtwLearningPanel(Wekinator w) {
+        initComponents();
+        setup(w);
+    }
 
     //FIX LATER
-    public void setup(Wekinator w, Path[] ps, String[] modelNames) {
+    private void setup(Wekinator w) {
         this.w = w;
-
-        simpleLearningSet1.setup(w, ps, modelNames);
-        // w.getSupervisedLearningManager().addPropertyChangeListener(this::learningManagerPropertyChanged);
+        dtwLearningSetGUI1.setup(w);
+        // w.getDtwLearningManager().addPropertyChangeListener(this::learningManagerPropertyChanged);
         w.getDtwLearningManager().addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -163,12 +167,12 @@ public class DtwLearningPanel extends javax.swing.JPanel {
     }
 
     private void updateDeleteLastRoundButton() {
-        int lastRound = w.getSupervisedLearningManager().getRecordingRound();
-        int numLastRound = w.getDataManager().getNumExamplesInRound(lastRound);
+        int lastRound = w.getDtwLearningManager().getRecordingRound();
+        int numLastRound = w.getDtwLearningManager().getNumExamplesInRound(lastRound);
         //Look for most recent round with >0 examples recorded.
         while (lastRound > 0 && numLastRound == 0) {
             lastRound--;
-            numLastRound = w.getDataManager().getNumExamplesInRound(lastRound);
+            numLastRound = w.getDtwLearningManager().getNumExamplesInRound(lastRound);
         }
         if (numLastRound > 0) {
             lastRoundAdvertised = lastRound;
@@ -190,7 +194,7 @@ public class DtwLearningPanel extends javax.swing.JPanel {
    }
 
     private void updateRunButtonAndText() {
-        if (w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.RUNNING) {
+        if (w.getDtwLearningManager().getRunningState() == DtwLearningManager.RunningState.RUNNING) {
             buttonRun.setText("Stop running");
             buttonRun.setForeground(Color.RED);
             //  setStatus("Running.");
@@ -204,7 +208,7 @@ public class DtwLearningPanel extends javax.swing.JPanel {
     }
 
     private void setButtonsForLearningState() {
-        buttonRun.setEnabled(w.getSupervisedLearningManager().isAbleToRun());
+        buttonRun.setEnabled(w.getDtwLearningManager().canRun());
     }
 
     private void setStatus(String s) {
@@ -230,7 +234,7 @@ public class DtwLearningPanel extends javax.swing.JPanel {
         indicatorOscIn = new javax.swing.JLabel();
         indicatorOscOut = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        simpleLearningSet1 = new wekimini.gui.SupervisedLearningSetGUI();
+        dtwLearningSetGUI1 = new wekimini.dtw.gui.DtwLearningSetGUI();
         panelStatus = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         labelStatus = new javax.swing.JLabel();
@@ -339,15 +343,16 @@ public class DtwLearningPanel extends javax.swing.JPanel {
                 .addGap(0, 0, 0)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(simpleLearningSet1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(dtwLearningSetGUI1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jSeparator1)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(17, Short.MAX_VALUE))
-            .addComponent(simpleLearningSet1, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap(100, Short.MAX_VALUE))
+            .addComponent(dtwLearningSetGUI1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         panelStatus.setBackground(new java.awt.Color(255, 255, 255));
@@ -401,11 +406,11 @@ public class DtwLearningPanel extends javax.swing.JPanel {
     private void updateButtonStates() {
         // if ()
 
-        /*if (w.getSupervisedLearningManager().getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING) {
+        /*if (w.getDtwLearningManager().getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING) {
          buttonRecord.setEnabled(true);
          buttonTrain.setEnabled(false);
          buttonRun.setEnabled(false);
-         } else if (w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.RUNNING) {
+         } else if (w.getDtwLearningManager().getRunningState() == SupervisedLearningManager.RunningState.RUNNING) {
          buttonRecord.setEnabled(true);
          buttonTrain.setEnabled(false);
          buttonRun.setEnabled(false);
@@ -413,8 +418,8 @@ public class DtwLearningPanel extends javax.swing.JPanel {
     }
 
     private void buttonDeleteLastRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLastRecordingActionPerformed
-        w.getDataManager().deleteTrainingRound(lastRoundAdvertised);
-        int numDeleted = w.getDataManager().getNumDeletedTrainingRound();
+        w.getDtwLearningManager().deleteTrainingRound(lastRoundAdvertised);
+        int numDeleted = w.getDtwLearningManager().getNumDeletedTrainingRound();
         w.getStatusUpdateCenter().update(this, "Recording set #" + lastRoundAdvertised + " (" + numDeleted + " examples) deleted.");
         if (numDeleted > 0) {
             updateReAddButton(lastRoundAdvertised);
@@ -428,8 +433,8 @@ public class DtwLearningPanel extends javax.swing.JPanel {
     }
 
     private void buttonReAddLastRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonReAddLastRecordingActionPerformed
-        int num = w.getDataManager().getNumDeletedTrainingRound();
-        w.getDataManager().reAddDeletedTrainingRound();
+        int num = w.getDtwLearningManager().getNumDeletedTrainingRound();
+        w.getDtwLearningManager().reAddDeletedTrainingRound();
         w.getStatusUpdateCenter().update(this, "Last recording set restored: undeleted " + num + " examples");
         updateDeleteLastRoundButton();
         buttonReAddLastRecording.setText("Re-add last recording");
@@ -437,16 +442,12 @@ public class DtwLearningPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_buttonReAddLastRecordingActionPerformed
 
     private void buttonRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRunActionPerformed
-        /*if (w.getSupervisedLearningManager().getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING) {
-         w.getSupervisedLearningManager().stopRecording();
-         } */
-
-        if (w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING) {
-            w.getSupervisedLearningManager().getSupervisedLearningController().startRun();
-            //  w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+        if (w.getDtwLearningManager().getRunningState() == DtwLearningManager.RunningState.NOT_RUNNING) {
+            w.getDtwLearningManager().startRunning();
+            //  w.getDtwLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
         } else {
-            w.getSupervisedLearningManager().getSupervisedLearningController().stopRun();
-            //w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+            w.getDtwLearningManager().stopRunning();
+            //w.getDtwLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         }
     }//GEN-LAST:event_buttonRunActionPerformed
 
@@ -478,6 +479,7 @@ public class DtwLearningPanel extends javax.swing.JPanel {
     private javax.swing.JButton buttonDeleteLastRecording;
     private javax.swing.JButton buttonReAddLastRecording;
     private javax.swing.JButton buttonRun;
+    private wekimini.dtw.gui.DtwLearningSetGUI dtwLearningSetGUI1;
     private javax.swing.JLabel indicatorOscIn;
     private javax.swing.JLabel indicatorOscOut;
     private javax.swing.JLabel jLabel2;
@@ -489,16 +491,15 @@ public class DtwLearningPanel extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JLabel labelStatus;
     private javax.swing.JPanel panelStatus;
-    private wekimini.gui.SupervisedLearningSetGUI simpleLearningSet1;
     // End of variables declaration//GEN-END:variables
 
     public void setPerfomanceMode(boolean selected) {
         if (selected) {
-            simpleLearningSet1.setVisible(false);
+            dtwLearningSetGUI1.setVisible(false);
             panelStatus.setVisible(false);
             this.setSize(jPanel2.getPreferredSize());
         } else {
-            simpleLearningSet1.setVisible(true);
+            dtwLearningSetGUI1.setVisible(true);
             panelStatus.setVisible(true);
             this.setSize(getPreferredSize());
         }

@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.learning;
+package wekimini.learning.dtw;
 
+import wekimini.learning.ModelBuilder;
 import wekimini.osc.OSCDtwOutput;
 import wekimini.osc.OSCOutput;
 

@@ -101,13 +101,11 @@ public class LearningManager implements ConnectsInputsToOutputs {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
-
     
     public LearningManager(Wekinator w) {
         this. w = w;
     }
     
-
     public void setSupervisedLearning() {
         if (learningType != LearningType.INITIALIZATION) {
             throw new IllegalStateException("Learning type cannot be changed after initialization is complete");
@@ -121,9 +119,9 @@ public class LearningManager implements ConnectsInputsToOutputs {
         if (learningType != LearningType.INITIALIZATION) {
             throw new IllegalStateException("Learning type cannot be changed after initialization is complete");
         }   
-        setLearningType(LearningType.TEMPORAL_MODELING);
         dtwLearningManager = new DtwLearningManager(w, outputGroup);
         connector = dtwLearningManager;
+        setLearningType(LearningType.TEMPORAL_MODELING);
         //initialize inputs and outputs etc?
     }
     

@@ -23,6 +23,7 @@ import wekimini.util.Util;
 import wekimini.WekiMiniRunner;
 import wekimini.Wekinator;
 import wekimini.WekinatorFileData;
+import wekimini.dtw.gui.DtwLearningPanel;
 
 /**
  *
@@ -102,8 +103,9 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
         learningPanel1 = new wekimini.gui.SupervisedLearningPanel();
+        panelParent = new javax.swing.JPanel();
+        dtwLearningPanel1 = new wekimini.dtw.gui.DtwLearningPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         jMenuItem6 = new javax.swing.JMenuItem();
@@ -131,18 +133,8 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(learningPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(learningPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
-        );
+        panelParent.setLayout(new javax.swing.BoxLayout(panelParent, javax.swing.BoxLayout.LINE_AXIS));
+        panelParent.add(dtwLearningPanel1);
 
         menuFile.setMnemonic('F');
         menuFile.setText("File");
@@ -257,11 +249,11 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(panelParent, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(panelParent, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -462,6 +454,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem checkEnableOSCControl;
+    private wekimini.dtw.gui.DtwLearningPanel dtwLearningPanel1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
@@ -470,7 +463,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JPanel jPanel1;
     private wekimini.gui.SupervisedLearningPanel learningPanel1;
     private javax.swing.JMenu menuActions;
     private javax.swing.JMenuItem menuConsole;
@@ -478,6 +470,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuItem menuItemSave;
     private javax.swing.JMenuItem menuItemSaveAs;
     private javax.swing.JCheckBoxMenuItem menuPerformanceCheck;
+    private javax.swing.JPanel panelParent;
     // End of variables declaration//GEN-END:variables
 
     void displayEditOutput(String name) {
@@ -491,16 +484,25 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }
 
     private void initializeForSupervisedLearning() {
+        learningPanel1 = new SupervisedLearningPanel();
         Path[] paths = w.getSupervisedLearningManager().getPaths().toArray(new Path[0]);
         String[] modelNames = new String[paths.length];
         for (int i = 0; i < paths.length; i++) {
             modelNames[i] = paths[i].getCurrentModelName();
         }
         learningPanel1.setup(w, paths, modelNames);
+        panelParent.removeAll();
+        panelParent.add(learningPanel1);
     }
     
     private void initializeForTemporalModeling() {
-
+        
+        panelParent.removeAll();
+        dtwLearningPanel1 = new DtwLearningPanel(w);
+        panelParent.add(dtwLearningPanel1);
+        //dtwLearningPanel1.setup(w);
+        revalidate();
+        repaint();
     }
 
     public void showPathEditor(Path p) {
@@ -517,5 +519,26 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     @Override
     public Wekinator getWekinator() {
         return w;
+    }
+
+    public void showDtwEditor(int gestureNum) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void showDtwData(int gestureNum) {
+        //XXX
+        System.out.println("XXXXXXXXXXXXXXX\n\n");
+
+        w.getDtwLearningManager().getModel().dumpToConsole();
+        w.getDtwLearningManager().getModel().getData().dumpExamplesForGesture(gestureNum);
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void showDtwExamplesViewer() {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //XXX
+        System.out.println("XXXXXXXXXXXXXXX\n\n");
+        w.getDtwLearningManager().getModel().dumpToConsole();
+        w.getDtwLearningManager().getModel().getData().dumpAllExamples();
     }
 }

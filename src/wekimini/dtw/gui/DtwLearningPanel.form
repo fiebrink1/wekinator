@@ -54,7 +54,8 @@
                   <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                   <Component id="jSeparator1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                  <Component id="simpleLearningSet1" max="-2" attributes="0"/>
+                  <Component id="dtwLearningSetGUI1" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -63,9 +64,9 @@
               <Component id="jSeparator1" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="17" max="32767" attributes="0"/>
+                  <EmptySpace pref="100" max="32767" attributes="0"/>
               </Group>
-              <Component id="simpleLearningSet1" alignment="0" pref="0" max="32767" attributes="0"/>
+              <Component id="dtwLearningSetGUI1" alignment="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -206,7 +207,7 @@
             <Property name="orientation" type="int" value="1"/>
           </Properties>
         </Component>
-        <Component class="wekimini.gui.SupervisedLearningSetGUI" name="simpleLearningSet1">
+        <Component class="wekimini.dtw.gui.DtwLearningSetGUI" name="dtwLearningSetGUI1">
         </Component>
       </SubComponents>
     </Container>

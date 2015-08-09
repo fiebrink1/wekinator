@@ -403,15 +403,15 @@
             <Property name="axis" type="int" value="1"/>
           </Layout>
           <SubComponents>
-            <Component class="wekimini.gui.SimpleLearningRow" name="simpleLearningRow3">
+            <Component class="wekimini.gui.SupervisedLearningRow" name="simpleLearningRow3">
             </Component>
-            <Component class="wekimini.gui.SimpleLearningRow" name="simpleLearningRow4">
+            <Component class="wekimini.gui.SupervisedLearningRow" name="simpleLearningRow4">
             </Component>
-            <Component class="wekimini.gui.SimpleLearningRow" name="simpleLearningRow9">
+            <Component class="wekimini.gui.SupervisedLearningRow" name="simpleLearningRow9">
             </Component>
-            <Component class="wekimini.gui.SimpleLearningRow" name="simpleLearningRow10">
+            <Component class="wekimini.gui.SupervisedLearningRow" name="simpleLearningRow10">
             </Component>
-            <Component class="wekimini.gui.SimpleLearningRow" name="simpleLearningRow11">
+            <Component class="wekimini.gui.SupervisedLearningRow" name="simpleLearningRow11">
             </Component>
           </SubComponents>
         </Container>

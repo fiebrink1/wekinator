@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.learning;
+package wekimini.learning.dtw;
 
 import com.dtw.TimeWarpInfo;
 import com.timeseries.TimeSeries;
@@ -15,11 +15,15 @@ import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import weka.core.Instance;
+import wekimini.DtwLearningManager;
 import wekimini.Wekinator;
-import static wekimini.learning.DtwModel.RecordingState.NOT_RECORDING;
-import static wekimini.learning.DtwModel.RunningState.NOT_RUNNING;
-import wekimini.learning.DtwSettings.RunningType;
+import static wekimini.learning.dtw.DtwModel.RecordingState.NOT_RECORDING;
+import static wekimini.learning.dtw.DtwModel.RunningState.NOT_RUNNING;
+import wekimini.learning.dtw.DtwSettings.RunningType;
+import wekimini.learning.Model;
 import wekimini.osc.OSCOutput;
 
 /*
@@ -50,12 +54,14 @@ public class DtwModel implements Model {
     public static final String PROP_MAX_DISTANCE = "maxDistance";
 
     private final transient List<DtwUpdateListener> updateListeners = new LinkedList<>();
+    private final transient List<DtwUpdateListener> normalizedUpdateListeners = new LinkedList<>();
     private transient int currentMatch = -1;
     private final boolean[] isGestureActive;
     private final DtwData data;
     private transient TimeSeries currentTs;
     private int numGestures = 0;
     private final transient double[] closestDistances;
+    private final transient double[] normalizedDistances;
     private transient int minSizeInExamples = 0;
     private transient int maxSizeInExamples = 0;
     private DtwSettings settings;
@@ -64,7 +70,71 @@ public class DtwModel implements Model {
     private String modelName;
     private String myID;
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private static final Logger logger = Logger.getLogger(DtwModel.class.getName());
 
+        private int maxSliderValue;
+
+    public static final String PROP_MAXSLIDERVALUE = "maxSliderValue";
+
+        private double matchThreshold = 5;
+
+    public static final String PROP_MATCHTHRESHOLD = "matchThreshold";
+
+    /**
+     * Get the value of matchThreshold
+     *
+     * @return the value of matchThreshold
+     */
+    public double getMatchThreshold() {
+        return matchThreshold;
+    }
+
+    /**
+     * Set the value of matchThreshold
+     *
+     * @param matchThreshold new value of matchThreshold
+     */
+    public void setMatchThreshold(double matchThreshold) {
+        System.out.println("SETTING MATCH THRESHOLD TO " + matchThreshold);
+        double oldMatchThreshold = this.matchThreshold;
+        this.matchThreshold = matchThreshold;
+        propertyChangeSupport.firePropertyChange(PROP_MATCHTHRESHOLD, oldMatchThreshold, matchThreshold);
+    }
+
+    
+    /**
+     * Get the value of maxSliderValue
+     *
+     * @return the value of maxSliderValue
+     */
+    public int getMaxSliderValue() {
+        return maxSliderValue;
+    }
+
+    /**
+     * Set the value of maxSliderValue
+     *
+     * @param maxSliderValue new value of maxSliderValue
+     */
+    public void setMaxSliderValue(int maxSliderValue) {
+        int oldMaxSliderValue = this.maxSliderValue;
+        this.maxSliderValue = maxSliderValue;
+        propertyChangeSupport.firePropertyChange(PROP_MAXSLIDERVALUE, oldMaxSliderValue, maxSliderValue);
+    }
+
+    
+    
+    public void deleteExamplesForGesture(int gestureNum) {
+        data.deleteExamplesForGesture(gestureNum);
+    }
+
+    public void deleteMostRecentExample(int gestureNum) {
+        data.deleteMostRecentExample(gestureNum);
+    }
+
+    public int getNumGestures() {
+        return numGestures;
+    }
     
     public static enum RecordingState {
 
@@ -77,6 +147,11 @@ public class DtwModel implements Model {
     };
     
 
+    public void dumpToConsole() {
+        System.out.println("DTW MODEL:");
+        System.out.println("Threshold: "+ matchThreshold); 
+        settings.dumpToConsole();
+    }
 
 
 
@@ -103,7 +178,7 @@ public class DtwModel implements Model {
     }
 
     //Settings can optionally be null
-    public DtwModel(String name, int numGestures, Wekinator w, DtwSettings settings) {
+    public DtwModel(String name, int numGestures, Wekinator w, DtwLearningManager m, DtwSettings settings) {
         this.modelName = name;
         if (settings != null) {
             this.settings = settings;
@@ -115,12 +190,14 @@ public class DtwModel implements Model {
         this.w = w;
 
         closestDistances = new double[numGestures];
+        normalizedDistances = new double[numGestures];
         isGestureActive = new boolean[numGestures];
         for (int i = 0; i < isGestureActive.length; i++) {
             isGestureActive[i] = true;
             closestDistances[i] = Double.MAX_VALUE;
+            normalizedDistances[i] = 0;
         }
-        data = new DtwData(numGestures, w);
+        data = new DtwData(numGestures, m, w);
         data.addDataListener(new DtwData.DtwDataListener() {
 
             @Override
@@ -284,8 +361,10 @@ public class DtwModel implements Model {
 
     public void startRecording(int currentClass) {
         if (recordingState == RecordingState.NOT_RECORDING) {
-            setRecordingState(RecordingState.RECORDING);
             data.startRecording(currentClass);
+            setRecordingState(RecordingState.RECORDING);
+        } else {
+            logger.log(Level.WARNING, "Already recording for gesture " + currentClass);
         }
     }
 
@@ -344,10 +423,22 @@ public class DtwModel implements Model {
             updateListeners.add(listener);
         }
     }
+    
+    public void addNormalizedDtwUpdateListener(DtwUpdateListener listener) {
+        if (listener != null) {
+            normalizedUpdateListeners.add(listener);
+        }
+    }
 
     public void removeDtwUpdateListener(DtwUpdateListener listener) {
         if (listener != null) {
             updateListeners.remove(listener);
+        }
+    }
+    
+    public void removeNormalizedDtwUpdateListener(DtwUpdateListener listener) {
+        if (listener != null) {
+            normalizedUpdateListeners.remove(listener);
         }
     }
 
@@ -382,6 +473,7 @@ public class DtwModel implements Model {
         //    setCurrentMatch(0);
         //}
         notifyUpdateListeners(closestDistances);
+        computeAndNotifyNormalizedDistances();
     }
 
     /**
@@ -402,6 +494,18 @@ public class DtwModel implements Model {
         double oldMaxDistance = this.maxDistance;
         this.maxDistance = maxDistance;
         propertyChangeSupport.firePropertyChange(PROP_MAX_DISTANCE, oldMaxDistance, maxDistance);
+        updateMaxSliderValue();
+    }
+    
+    private void updateMaxSliderValue() {
+        double newDist = maxDistance;
+        if (newDist > matchThreshold) {
+            setMaxSliderValue((int) (100 * newDist) + 1);
+        } else {
+            setMaxSliderValue((int) (100 * matchThreshold) + 1);
+        }
+        System.out.println("Slider max set to " + getMaxSliderValue() * .01);
+
     }
 
     protected void updateMaxDistance() {
@@ -424,6 +528,12 @@ public class DtwModel implements Model {
                 //Find max distance between list1 and list2
                 for (DtwExample ts1 : list1) {
                     for (DtwExample ts2 : list2) {
+                        //TODO: Sometimes error here: XXX
+                        /* Exception in thread "AWT-EventQueue-0" java.lang.ArrayIndexOutOfBoundsException: -1
+	at com.dtw.SearchWindow.markVisited(SearchWindow.java:288)
+	at com.dtw.SearchWindow.expandSearchWindow(SearchWindow.java:197)
+	at com.dtw.SearchWindow.expandWindow(SearchWindow.java:132)
+                                */
                         TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts1.getTimeSeries(), ts2.getTimeSeries(), settings.getMatchWidth());
                         if (info.getDistance() > maxDist) {
                             maxDist = info.getDistance();
@@ -447,6 +557,7 @@ public class DtwModel implements Model {
             }
             maxDist = maxDist * 10; // just in case
         }
+        System.out.println("MAX DIST updated to " + maxDist);
         setMaxDistance(maxDist);
     }
 
@@ -492,16 +603,40 @@ public class DtwModel implements Model {
                 }
             }
         }
-        if (closestDist < settings.getMatchThreshold()) {
+        if (closestDist < matchThreshold) {
             setCurrentMatch(closestClass);
         } else {
             setCurrentMatch(0);
         }
         notifyUpdateListeners(closestDistances);
+        computeAndNotifyNormalizedDistances();
     }
 
+    private void computeAndNotifyNormalizedDistances() {
+        double max = getMaxSliderValue() * .01;
+        int min = 0;
+        for (int i = 0; i < closestDistances.length; i++) {
+
+            //distance is scale from 0 --> maxSlider*.01
+            //mapped to 100 -> 0 (i.e., left is furthest)
+            double thisDist = (1 - (closestDistances[i] / max)) * 100;
+            if (thisDist < 0) {
+                thisDist = 0;
+            }
+
+            normalizedDistances[i] = thisDist;
+        }
+        notifyNormalizedUpdateListeners(normalizedDistances);
+    }
+    
     private void notifyUpdateListeners(double[] closest) {
         for (DtwUpdateListener l : updateListeners) {
+            l.dtwUpdateReceived(closest);
+        }
+    }
+    
+    private void notifyNormalizedUpdateListeners(double[] closest) {
+        for (DtwUpdateListener l : normalizedUpdateListeners) {
             l.dtwUpdateReceived(closest);
         }
     }

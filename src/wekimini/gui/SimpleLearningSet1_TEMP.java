@@ -93,7 +93,7 @@ public class SimpleLearningSet1_TEMP extends javax.swing.JPanel {
     
     private void changePath(int which, Path newPath, Path oldPath) {
         double[] currentValues = w.getOutputManager().getCurrentValues();
-        LearningRow r = new SimpleLearningRow(w, newPath);
+        LearningRow r = new SupervisedLearningRow(w, newPath);
         r.setValue(currentValues[which]);
         
         //Replace in my panel array
@@ -150,7 +150,7 @@ public class SimpleLearningSet1_TEMP extends javax.swing.JPanel {
         pathsPanel.removeAll();
         double[] currentValues = w.getOutputManager().getCurrentValues();
         for (int i = 0; i < paths.size(); i++) {
-            LearningRow r = new SimpleLearningRow(w, paths.get(i));
+            LearningRow r = new SupervisedLearningRow(w, paths.get(i));
             r.setValue(currentValues[i]);
             pathPanels.add(r);
             JSeparator sep = new JSeparator();
@@ -191,11 +191,11 @@ public class SimpleLearningSet1_TEMP extends javax.swing.JPanel {
         jSeparator1 = new javax.swing.JSeparator();
         scrollPathsPanel = new javax.swing.JScrollPane();
         pathsPanel = new javax.swing.JPanel();
-        simpleLearningRow3 = new wekimini.gui.SimpleLearningRow();
-        simpleLearningRow4 = new wekimini.gui.SimpleLearningRow();
-        simpleLearningRow9 = new wekimini.gui.SimpleLearningRow();
-        simpleLearningRow10 = new wekimini.gui.SimpleLearningRow();
-        simpleLearningRow11 = new wekimini.gui.SimpleLearningRow();
+        simpleLearningRow3 = new wekimini.gui.SupervisedLearningRow();
+        simpleLearningRow4 = new wekimini.gui.SupervisedLearningRow();
+        simpleLearningRow9 = new wekimini.gui.SupervisedLearningRow();
+        simpleLearningRow10 = new wekimini.gui.SupervisedLearningRow();
+        simpleLearningRow11 = new wekimini.gui.SupervisedLearningRow();
 
         setMinimumSize(new java.awt.Dimension(580, 0));
         setPreferredSize(new java.awt.Dimension(580, 348));
@@ -509,11 +509,11 @@ public class SimpleLearningSet1_TEMP extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPanel pathsPanel;
     private javax.swing.JScrollPane scrollPathsPanel;
-    private wekimini.gui.SimpleLearningRow simpleLearningRow10;
-    private wekimini.gui.SimpleLearningRow simpleLearningRow11;
-    private wekimini.gui.SimpleLearningRow simpleLearningRow3;
-    private wekimini.gui.SimpleLearningRow simpleLearningRow4;
-    private wekimini.gui.SimpleLearningRow simpleLearningRow9;
+    private wekimini.gui.SupervisedLearningRow simpleLearningRow10;
+    private wekimini.gui.SupervisedLearningRow simpleLearningRow11;
+    private wekimini.gui.SupervisedLearningRow simpleLearningRow3;
+    private wekimini.gui.SupervisedLearningRow simpleLearningRow4;
+    private wekimini.gui.SupervisedLearningRow simpleLearningRow9;
     // End of variables declaration//GEN-END:variables
 
     private void updateRecordButton() {

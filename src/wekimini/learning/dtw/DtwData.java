@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.learning;
+package wekimini.learning.dtw;
 
 import com.timeseries.TimeSeries;
 import com.timeseries.TimeSeriesPoint;
@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import wekimini.ConnectsInputsToOutputs;
+import wekimini.DtwLearningManager;
 import wekimini.Wekinator;
 
 /**
@@ -39,6 +41,7 @@ public class DtwData {
     //private int numTotalExamples = 0;
     
     private int numTotalExamples = 0;
+    private int numActiveInputs;
     
     public static final String PROP_NUMTOTALEXAMPLES = "numTotalExamples";
 
@@ -82,15 +85,30 @@ public class DtwData {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
     
-    public DtwData(int numGestures, Wekinator w) {
+    public DtwData(int numGestures, DtwLearningManager learningManager, Wekinator w) {
         this.numGestures = numGestures;
         this.w = w;
+        this.numActiveInputs = learningManager.getNumActiveInputs(); //XXX if learning manager has connection info here, need to use it now
         allExamples = new ArrayList<>();
         for (int i = 0; i < numGestures; i++) {
             allExamples.add(new LinkedList<DtwExample>());
         }
         exampleListForIds = new HashMap<>();
         examplesForIds = new HashMap<>();
+        learningManager.addConnectionsListener(new ConnectsInputsToOutputs.InputOutputConnectionsListener() {
+
+            @Override
+            public void newConnectionMatrix(boolean[][] connections) {
+                connectionsChanged();
+            }
+        });
+    }
+    
+    private void connectionsChanged() {
+        //XXX TODO feature selection
+        //Change numActiveInputs
+        //Continue putting all inputs into timeseires, but modify timeseires before distance calculation
+        // (or change distance function)
     }
     
     public int getMaxLengthToRetainDuringRun() {
@@ -154,7 +172,7 @@ public class DtwData {
     }
     
     protected void startRecording(int currentClass) {
-        currentTimeSeries = new TimeSeries(numGestures);
+        currentTimeSeries = new TimeSeries(numActiveInputs);
         currentTime = 0;
         this.currentClass = currentClass;
     }
@@ -216,11 +234,26 @@ public class DtwData {
     
     public void startRunning() {
         currentTime = 0;
-        currentTimeSeries = new TimeSeries(numGestures);
+        currentTimeSeries = new TimeSeries(numActiveInputs);
     }
     
     public void stopRunning() {
         
+    }
+    
+    public void dumpExamplesForGesture(int whichGesture) {
+        List<DtwExample> examples = allExamples.get(whichGesture);
+        System.out.println(examples.size()  + " EXAMPLES FOR GESTURE " + whichGesture +":");
+        int i = 0;
+        for (DtwExample ex : examples) {
+            System.out.println("   " + i++ + " - length: " + ex.getTimeSeries().numOfPts());
+        }
+    }
+    
+    public void dumpAllExamples() {
+        for (int i = 0; i < numGestures; i++) {
+            dumpExamplesForGesture(i);
+        }
     }
     
     public int getMinSizeInExamples() {
@@ -334,6 +367,19 @@ public class DtwData {
         
         System.out.println("CURRENT Timeseries:");
         System.out.println(currentTimeSeries);
+    }
+
+    void deleteExamplesForGesture(int gestureNum) {
+        allExamples.get(gestureNum).clear();
+        notifyExamplesChangedListeners(gestureNum, 0);
+    }
+
+    void deleteMostRecentExample(int gestureNum) {
+        DtwExample removed = allExamples.get(gestureNum).removeLast();
+        if (removed != null) {
+            notifyExampleDeletedListeners(gestureNum);
+            notifyExamplesChangedListeners(gestureNum, allExamples.get(gestureNum).size());
+        }
     }
     
     public interface DtwDataListener {

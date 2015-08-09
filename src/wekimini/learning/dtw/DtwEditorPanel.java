@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.learning;
+package wekimini.learning.dtw;
 
-import wekimini.learning.DtwSettings.RunningType;
+import wekimini.learning.dtw.DtwSettings.RunningType;
 import wekimini.util.Util;
 
 /**
@@ -27,8 +27,9 @@ public class DtwEditorPanel extends javax.swing.JPanel {
     }
 
     private void initFormForSettings(DtwSettings s) {
+        //XXX TODO
         s.getHopSizeForContinuousSearch();
-        s.getMatchThreshold();
+       // s.getMatchThreshold();
         s.getMatchWidth();
         s.getMinAllowedGestureLength();
         s.getRunningType();
@@ -37,7 +38,7 @@ public class DtwEditorPanel extends javax.swing.JPanel {
     public DtwSettings buildFromPanel() {
         int hopSize = Integer.parseInt(textHopSize.getText());
         int matchWidth = Integer.parseInt(textHopSize.getText());
-        double matchThreshold = Double.parseDouble(textMatchThreshold.getText());
+      //  double matchThreshold = Double.parseDouble(textMatchThreshold.getText());
         int minGestureSize = Integer.parseInt(textMinGestureLength.getText());
         RunningType rt;
         if (comboRunningType.getSelectedIndex() == 0) {
@@ -45,7 +46,7 @@ public class DtwEditorPanel extends javax.swing.JPanel {
         } else {
             rt = RunningType.LABEL_ONCE_PER_RECORD;
         }
-        return new DtwSettings(matchThreshold, matchWidth, minGestureSize, hopSize, rt);
+        return new DtwSettings(matchWidth, minGestureSize, hopSize, rt);
     }
 
     public boolean validateForm() {
@@ -132,6 +133,7 @@ public class DtwEditorPanel extends javax.swing.JPanel {
         });
 
         textMatchThreshold.setText("1");
+        textMatchThreshold.setEnabled(false);
         textMatchThreshold.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 textMatchThresholdActionPerformed(evt);
