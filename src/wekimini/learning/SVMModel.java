@@ -20,7 +20,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class SVMModel implements Model {
+public class SVMModel implements SupervisedLearningModel {
     
     private final String prettyName;
     private final String timestamp;

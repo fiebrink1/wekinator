@@ -4,6 +4,7 @@
 package wekimini.osc;
 
 import java.util.Random;
+import wekimini.LearningModelBuilder;
 import wekimini.learning.KNNModel;
 import wekimini.learning.KNNModelBuilder;
 import wekimini.learning.ModelBuilder;
@@ -62,7 +63,7 @@ public class OSCClassificationOutput implements OSCSupervisedLearningOutput {
     }
     
     @Override
-    public ModelBuilder getDefaultModelBuilder() {
+    public LearningModelBuilder getDefaultModelBuilder() {
         return new KNNModelBuilder();
     }
     

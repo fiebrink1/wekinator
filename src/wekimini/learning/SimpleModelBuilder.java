@@ -23,7 +23,7 @@ public class SimpleModelBuilder implements LearningModelBuilder {
     }
 
     @Override
-    public Model build(String name) throws Exception {
+    public SimpleModel build(String name) throws Exception {
         //For testing
        // double d = Math.random();
         Thread.sleep(2000); //Not a great example of how other code will function, since sleep() does throw Interrupted exception.
@@ -40,7 +40,7 @@ public class SimpleModelBuilder implements LearningModelBuilder {
     }
 
     @Override
-    public ModelBuilder fromTemplate(ModelBuilder template) {
+    public LearningModelBuilder fromTemplate(ModelBuilder template) {
         if (template instanceof SimpleModelBuilder) {
             return new SimpleModelBuilder();
         }
@@ -53,7 +53,7 @@ public class SimpleModelBuilder implements LearningModelBuilder {
     }
 
     @Override
-    public ModelBuilderEditorPanel getEditorPanel() {
+    public LearningModelBuilderEditorPanel getEditorPanel() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

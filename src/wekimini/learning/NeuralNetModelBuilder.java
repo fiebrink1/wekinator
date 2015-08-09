@@ -101,7 +101,7 @@ public class NeuralNetModelBuilder implements LearningModelBuilder {
     }
 
     @Override
-    public Model build(String name) throws Exception {
+    public NeuralNetworkModel build(String name) throws Exception {
        if (trainingData == null) {
            throw new IllegalStateException("Must set training examples (to not null) before building model");
        }

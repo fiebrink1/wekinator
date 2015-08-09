@@ -58,29 +58,6 @@ public class DtwLearningPanel extends javax.swing.JPanel {
             }
         });
 
-        w.getDtwLearningManager().getData().addDataListener(new DtwData.DtwDataListener() {
-
-            @Override
-            public void exampleAdded(int whichClass) {
-                dataExampleAdded(whichClass);
-            }
-
-            @Override
-            public void exampleDeleted(int whichClass) {
-                dataExampleDeleted(whichClass);
-            }
-
-            @Override
-            public void numExamplesChanged(int whichClass, int currentNumExamples) {
-                dataNumExamplesChanged(whichClass, currentNumExamples);
-            }
-
-            @Override
-            public void allExamplesDeleted() {
-                dataAllExamplesDeleted();
-            }
-        });
-
         w.getStatusUpdateCenter().addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -167,22 +144,8 @@ public class DtwLearningPanel extends javax.swing.JPanel {
     }
 
     private void updateDeleteLastRoundButton() {
-        int lastRound = w.getDtwLearningManager().getRecordingRound();
-        int numLastRound = w.getDtwLearningManager().getNumExamplesInRound(lastRound);
-        //Look for most recent round with >0 examples recorded.
-        while (lastRound > 0 && numLastRound == 0) {
-            lastRound--;
-            numLastRound = w.getDtwLearningManager().getNumExamplesInRound(lastRound);
-        }
-        if (numLastRound > 0) {
-            lastRoundAdvertised = lastRound;
-            buttonDeleteLastRecording.setText("Delete last recording (#"
-                    + lastRoundAdvertised + ")");
-            buttonDeleteLastRecording.setEnabled(true);
-        } else {
-            buttonDeleteLastRecording.setText("Delete last recording");
-            buttonDeleteLastRecording.setEnabled(false);
-        }
+        boolean hasExamples = w.getDtwLearningManager().hasExamples();
+        buttonDeleteLastExample.setEnabled(hasExamples);
     }
 
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
@@ -190,6 +153,8 @@ public class DtwLearningPanel extends javax.swing.JPanel {
             updateRunButtonAndText();
         } else if (evt.getPropertyName() == DtwLearningManager.PROP_CANRUN) {
             setButtonsForLearningState();
+        } else if (evt.getPropertyName() == DtwLearningManager.PROP_HAS_EXAMPLES) {
+            updateDeleteLastRoundButton();
         }
    }
 
@@ -228,8 +193,8 @@ public class DtwLearningPanel extends javax.swing.JPanel {
         jPanel2 = new javax.swing.JPanel();
         buttonRun = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JSeparator();
-        buttonDeleteLastRecording = new javax.swing.JButton();
-        buttonReAddLastRecording = new javax.swing.JButton();
+        buttonDeleteLastExample = new javax.swing.JButton();
+        buttonReAddLastExample = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
         indicatorOscIn = new javax.swing.JLabel();
         indicatorOscOut = new javax.swing.JLabel();
@@ -256,22 +221,22 @@ public class DtwLearningPanel extends javax.swing.JPanel {
             }
         });
 
-        buttonDeleteLastRecording.setEnabled(false);
-        buttonDeleteLastRecording.setLabel("Delete last recording ");
-        buttonDeleteLastRecording.setMaximumSize(new java.awt.Dimension(225, 29));
-        buttonDeleteLastRecording.setMinimumSize(new java.awt.Dimension(225, 29));
-        buttonDeleteLastRecording.setPreferredSize(new java.awt.Dimension(225, 29));
-        buttonDeleteLastRecording.addActionListener(new java.awt.event.ActionListener() {
+        buttonDeleteLastExample.setText("Delete last example ");
+        buttonDeleteLastExample.setEnabled(false);
+        buttonDeleteLastExample.setMaximumSize(new java.awt.Dimension(225, 29));
+        buttonDeleteLastExample.setMinimumSize(new java.awt.Dimension(225, 29));
+        buttonDeleteLastExample.setPreferredSize(new java.awt.Dimension(225, 29));
+        buttonDeleteLastExample.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonDeleteLastRecordingActionPerformed(evt);
+                buttonDeleteLastExampleActionPerformed(evt);
             }
         });
 
-        buttonReAddLastRecording.setEnabled(false);
-        buttonReAddLastRecording.setLabel("Re-add last recording");
-        buttonReAddLastRecording.addActionListener(new java.awt.event.ActionListener() {
+        buttonReAddLastExample.setText("Re-add last example");
+        buttonReAddLastExample.setEnabled(false);
+        buttonReAddLastExample.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonReAddLastRecordingActionPerformed(evt);
+                buttonReAddLastExampleActionPerformed(evt);
             }
         });
 
@@ -299,8 +264,8 @@ public class DtwLearningPanel extends javax.swing.JPanel {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(buttonDeleteLastRecording, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(buttonReAddLastRecording, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(buttonDeleteLastExample, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(buttonReAddLastExample, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -327,9 +292,9 @@ public class DtwLearningPanel extends javax.swing.JPanel {
                 .addGap(96, 96, 96)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonDeleteLastRecording, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(buttonDeleteLastExample, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(buttonReAddLastRecording))
+                .addComponent(buttonReAddLastExample))
         );
 
         jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
@@ -403,43 +368,21 @@ public class DtwLearningPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void updateButtonStates() {
-        // if ()
+    private void buttonDeleteLastExampleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLastExampleActionPerformed
+        w.getDtwLearningManager().deleteLastExample();
+        w.getStatusUpdateCenter().update(this, "Deleted last example");
+        updateReAddButton(true);
+    }//GEN-LAST:event_buttonDeleteLastExampleActionPerformed
 
-        /*if (w.getDtwLearningManager().getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING) {
-         buttonRecord.setEnabled(true);
-         buttonTrain.setEnabled(false);
-         buttonRun.setEnabled(false);
-         } else if (w.getDtwLearningManager().getRunningState() == SupervisedLearningManager.RunningState.RUNNING) {
-         buttonRecord.setEnabled(true);
-         buttonTrain.setEnabled(false);
-         buttonRun.setEnabled(false);
-         } */
+    private void updateReAddButton(boolean canReAdd) {
+        buttonReAddLastExample.setEnabled(canReAdd);
     }
 
-    private void buttonDeleteLastRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLastRecordingActionPerformed
-        w.getDtwLearningManager().deleteTrainingRound(lastRoundAdvertised);
-        int numDeleted = w.getDtwLearningManager().getNumDeletedTrainingRound();
-        w.getStatusUpdateCenter().update(this, "Recording set #" + lastRoundAdvertised + " (" + numDeleted + " examples) deleted.");
-        if (numDeleted > 0) {
-            updateReAddButton(lastRoundAdvertised);
-        }
-        updateDeleteLastRoundButton();
-    }//GEN-LAST:event_buttonDeleteLastRecordingActionPerformed
-
-    private void updateReAddButton(int whichRound) {
-        buttonReAddLastRecording.setText("Re-add last recording (#" + whichRound + ")");
-        buttonReAddLastRecording.setEnabled(true);
-    }
-
-    private void buttonReAddLastRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonReAddLastRecordingActionPerformed
-        int num = w.getDtwLearningManager().getNumDeletedTrainingRound();
-        w.getDtwLearningManager().reAddDeletedTrainingRound();
-        w.getStatusUpdateCenter().update(this, "Last recording set restored: undeleted " + num + " examples");
-        updateDeleteLastRoundButton();
-        buttonReAddLastRecording.setText("Re-add last recording");
-        buttonReAddLastRecording.setEnabled(false);
-    }//GEN-LAST:event_buttonReAddLastRecordingActionPerformed
+    private void buttonReAddLastExampleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonReAddLastExampleActionPerformed
+        w.getDtwLearningManager().reAddLastExample();
+        w.getStatusUpdateCenter().update(this, "Last example re-added");
+        updateReAddButton(false);
+    }//GEN-LAST:event_buttonReAddLastExampleActionPerformed
 
     private void buttonRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRunActionPerformed
         if (w.getDtwLearningManager().getRunningState() == DtwLearningManager.RunningState.NOT_RUNNING) {
@@ -459,25 +402,10 @@ public class DtwLearningPanel extends javax.swing.JPanel {
         w.getMainGUI().showOutputTable();
     }//GEN-LAST:event_indicatorOscOutMouseClicked
 
-    private void dataExampleAdded(int whichClass) {
-        w.getStatusUpdateCenter().update(this, "Example of gesture " + whichClass + " added.");
-    }
-
-    private void dataExampleDeleted(int whichClass) {
-        w.getStatusUpdateCenter().update(this, "Example of gesture " + whichClass + " deleted.");
-    }
-
-    private void dataNumExamplesChanged(int whichClass, int currentNumExamples) {
-        w.getStatusUpdateCenter().update(this, "Gesture type " + whichClass + " now has " + currentNumExamples + " examples");
-    }
-
-    private void dataAllExamplesDeleted() {
-        w.getStatusUpdateCenter().update(this, "All gesture examples deleted");
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonDeleteLastRecording;
-    private javax.swing.JButton buttonReAddLastRecording;
+    private javax.swing.JButton buttonDeleteLastExample;
+    private javax.swing.JButton buttonReAddLastExample;
     private javax.swing.JButton buttonRun;
     private wekimini.dtw.gui.DtwLearningSetGUI dtwLearningSetGUI1;
     private javax.swing.JLabel indicatorOscIn;

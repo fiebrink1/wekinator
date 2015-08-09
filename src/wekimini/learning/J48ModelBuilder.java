@@ -32,7 +32,7 @@ public class J48ModelBuilder implements LearningModelBuilder {
     }
 
     @Override
-    public Model build(String name) throws Exception {
+    public J48Model build(String name) throws Exception {
        if (trainingData == null) {
            throw new IllegalStateException("Must set training examples (to not null) before building model");
        }
@@ -45,6 +45,7 @@ public class J48ModelBuilder implements LearningModelBuilder {
         return (o instanceof OSCClassificationOutput);
     }
     
+    @Override
     public J48ModelBuilder fromTemplate(ModelBuilder b) {
         if (b instanceof J48ModelBuilder) {
             return new J48ModelBuilder();

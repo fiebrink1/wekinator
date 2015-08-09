@@ -15,7 +15,7 @@ import wekimini.util.Util;
  *
  * @author rebecca
  */
-public class NeuralNetEditorPanel extends ModelBuilderEditorPanel {
+public class NeuralNetEditorPanel extends LearningModelBuilderEditorPanel {
 
     private static final Logger logger = Logger.getLogger(NeuralNetEditorPanel.class.getName());
 

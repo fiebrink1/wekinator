@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextField;
+import wekimini.LearningModelBuilder;
 import wekimini.WekiMiniRunner;
 import wekimini.WekiMiniRunner.Closeable;
 import wekimini.Wekinator;
@@ -68,11 +69,11 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private final static int COMBO_J48_INDEX = 3;
 
     private final ButtonGroup classificationRadioGroup = new ButtonGroup();
-    private ModelBuilder[] classificationModelBuilders;
+    private LearningModelBuilder[] classificationModelBuilders;
     private JRadioButtonMenuItem[] classificationRadios;
 
     private final ButtonGroup regressionRadioGroup = new ButtonGroup();
-    private ModelBuilder[] regressionModelBuilders;
+    private LearningModelBuilder[] regressionModelBuilders;
     private JRadioButtonMenuItem[] regressionRadios;
 
     private final WekinatorController.NamesListener inputNamesListener;
@@ -1291,7 +1292,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     }
 
     private void initClassificationModelBuilders(OSCOutputGroup outputGroup) {
-        ModelBuilder mb = null;
+        LearningModelBuilder mb = null;
         for (int i = 0; i < classificationRadios.length; i++) {
             if (classificationRadios[i].isSelected()) {
                 mb = classificationModelBuilders[i];
@@ -1303,14 +1304,14 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         }
 
         for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
-            ModelBuilder mbnew = mb.fromTemplate(mb);
+            LearningModelBuilder mbnew = mb.fromTemplate(mb);
             logger.log(Level.INFO, "Setting model builder to" + mbnew.getPrettyName());
             w.getSupervisedLearningManager().setModelBuilderForPath(mbnew, i);
         }
     }
 
     private void initRegressionModelBuilders(OSCOutputGroup outputGroup) {
-        ModelBuilder mb = null;
+        LearningModelBuilder mb = null;
         for (int i = 0; i < regressionRadios.length; i++) {
             if (regressionRadios[i].isSelected()) {
                 mb = regressionModelBuilders[i];
@@ -1321,7 +1322,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             mb = regressionModelBuilders[0];
         }
         for (int i = 0; i < outputGroup.getNumOutputs(); i++) {
-            ModelBuilder mbnew = mb.fromTemplate(mb);
+            LearningModelBuilder mbnew = mb.fromTemplate(mb);
             logger.log(Level.INFO, "Setting model builder to {0}", mbnew.getPrettyName());
             w.getSupervisedLearningManager().setModelBuilderForPath(mbnew, i);
         }

@@ -23,6 +23,7 @@ import wekimini.learning.dtw.DtwModel;
 public class DtwLearningSetGUI extends javax.swing.JPanel {
 
     private Wekinator w;
+    private DtwModel model;
     private List<DtwLearningRow> learningRows;
     private boolean runAll = true;
     private final ImageIcon playIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/play1.png"));
@@ -39,6 +40,7 @@ public class DtwLearningSetGUI extends javax.swing.JPanel {
 
     public final void setup(Wekinator w) {
         this.w = w;
+        this.model = w.getDtwLearningManager().getModel();
         learningRows = new LinkedList<>();
         addRowsToGUI();
         w.getDtwLearningManager().getModel().addPropertyChangeListener(new PropertyChangeListener() {
@@ -55,7 +57,7 @@ public class DtwLearningSetGUI extends javax.swing.JPanel {
 
     private void addRowsToGUI() {
         rowsPanel.removeAll();
-        int numGestures = w.getDtwLearningManager().getNumGestures();
+        int numGestures = model.getNumGestures();
         for (int i = 0; i < numGestures; i++) {
             DtwLearningRow r = new DtwLearningRow(w, i);
             learningRows.add(r); // add to my list

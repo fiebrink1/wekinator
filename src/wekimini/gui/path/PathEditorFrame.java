@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JCheckBox;
+import wekimini.LearningModelBuilder;
 import wekimini.LoggingManager;
 import wekimini.Path;
 import wekimini.Wekinator;
 import wekimini.gui.path.ModelEditorFrame.ModelBuilderReceiver;
 import wekimini.gui.path.OutputEditFrame.OutputEditReceiver;
 import wekimini.learning.Model;
-import wekimini.learning.ModelBuilder;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
@@ -38,7 +38,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
     private OutputEditFrame outputEditor = null;
     private OSCOutput newOutput = null;
     private ModelEditorFrame modelEditor = null;
-    private ModelBuilder newModelBuilder = null;
+    private LearningModelBuilder newModelBuilder = null;
     private boolean hasValidModelType = false;
     private JCheckBox inputs[] = null;
     private String[] inputNames = null;
@@ -603,7 +603,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         // if (modelEditor == null) {
         ModelBuilderReceiver r = new ModelBuilderReceiver() {
             @Override
-            public void modelBuilderReady(ModelBuilder mb) {
+            public void modelBuilderReady(LearningModelBuilder mb) {
                 newModelBuilderReady(mb);
             }
 
@@ -619,7 +619,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         } else {
             isClassifier = (p.getOSCOutput() instanceof OSCClassificationOutput);
         }
-        ModelBuilder m;
+        LearningModelBuilder m;
         if (newModelBuilder != null) {
             m = newModelBuilder;
         } else {
@@ -633,7 +633,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
          } */
     }
 
-    private void newModelBuilderReady(ModelBuilder mb) {
+    private void newModelBuilderReady(LearningModelBuilder mb) {
         newModelBuilder = mb;
         labelModelType.setText(mb.getPrettyName());
         //Error check:
@@ -669,7 +669,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
             o = p.getOSCOutput();
         }
 
-        ModelBuilder mb;
+        LearningModelBuilder mb;
         if (newModelBuilder != null) {
             mb = newModelBuilder;
         } else {

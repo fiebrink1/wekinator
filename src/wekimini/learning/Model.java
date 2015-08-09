@@ -20,8 +20,6 @@ public interface Model {
     public String getPrettyName();
     
     public String getModelDescription();
-
-    public double computeOutput(Instance inputs) throws Exception;
     
     public String getUniqueIdentifier();
     

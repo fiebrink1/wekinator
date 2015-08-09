@@ -7,9 +7,10 @@ package wekimini.gui.path;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import wekimini.LearningModelBuilder;
 import wekimini.learning.LearningAlgorithmRegistry;
 import wekimini.learning.ModelBuilder;
-import wekimini.learning.ModelBuilderEditorPanel;
+import wekimini.learning.LearningModelBuilderEditorPanel;
 
 /**
  *
@@ -21,7 +22,7 @@ public class ModelEditorFrame extends javax.swing.JFrame {
     private int originalModelComboIndex = 0;
     private ModelBuilder[] candidateModelBuilders = null;
     private static final Logger logger = Logger.getLogger(ModelEditorFrame.class.getName());
-    private ModelBuilderEditorPanel currentEditorPanel = null;
+    private LearningModelBuilderEditorPanel currentEditorPanel = null;
     
     /**
      * Creates new form ModelEditorFrame
@@ -173,7 +174,7 @@ public class ModelEditorFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if (currentEditorPanel.validateForm()) {
-            ModelBuilder mb = currentEditorPanel.buildFromPanel();
+            LearningModelBuilder mb = currentEditorPanel.buildFromPanel();
             receiver.modelBuilderReady(mb);
             this.dispose();
         }
@@ -251,7 +252,7 @@ public class ModelEditorFrame extends javax.swing.JFrame {
     }
 
     private void showModelEditor(int selectedIndex) {
-        ModelBuilderEditorPanel newPanel = candidateModelBuilders[selectedIndex].getEditorPanel();
+        LearningModelBuilderEditorPanel newPanel = candidateModelBuilders[selectedIndex].getEditorPanel();
         //panelModelEditor.removeAll();
         //panelModelEditor.add(newPanel);
         parentPanel.remove(1);
@@ -262,7 +263,7 @@ public class ModelEditorFrame extends javax.swing.JFrame {
     }
 
     public interface ModelBuilderReceiver {
-        void modelBuilderReady(ModelBuilder mb);
+        void modelBuilderReady(LearningModelBuilder mb);
         void modelBuilderCancelled();
     }
     

@@ -19,7 +19,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class KNNModel implements Model {
+public class KNNModel implements SupervisedLearningModel {
     
     private final String prettyName;
     private final String timestamp;

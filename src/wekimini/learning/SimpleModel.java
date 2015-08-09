@@ -16,7 +16,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class SimpleModel implements Model {
+public class SimpleModel implements SupervisedLearningModel {
     
     private final String prettyName;
     private final String timestamp;

@@ -14,7 +14,7 @@ import wekimini.util.Util;
  *
  * @author rebecca
  */
-public class SVMEditorPanel extends ModelBuilderEditorPanel {
+public class SVMEditorPanel extends LearningModelBuilderEditorPanel {
 
     private static final Logger logger = Logger.getLogger(SVMEditorPanel.class.getName());
     private static final DecimalFormat dFormat = new DecimalFormat("#.###");

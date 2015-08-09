@@ -41,6 +41,7 @@ public class DtwData {
     //private int numTotalExamples = 0;
     
     private int numTotalExamples = 0;
+    private final int numInputs;
     private int numActiveInputs;
     
     public static final String PROP_NUMTOTALEXAMPLES = "numTotalExamples";
@@ -88,7 +89,8 @@ public class DtwData {
     public DtwData(int numGestures, DtwLearningManager learningManager, Wekinator w) {
         this.numGestures = numGestures;
         this.w = w;
-        this.numActiveInputs = learningManager.getNumActiveInputs(); //XXX if learning manager has connection info here, need to use it now
+        this.numInputs = w.getInputManager().getNumInputs();
+        this.numActiveInputs = numInputs; //XXX if learning manager has connection info here, need to use it now
         allExamples = new ArrayList<>();
         for (int i = 0; i < numGestures; i++) {
             allExamples.add(new LinkedList<DtwExample>());
@@ -181,13 +183,13 @@ public class DtwData {
         addTrainingExample();
     }
     
-    protected void addTrainingVector(double[] d) {
+    public void addTrainingVector(double[] d) {
         TimeSeriesPoint p = new TimeSeriesPoint(d);
         currentTimeSeries.addLast(currentTime, p);
         currentTime++;
     }    
     
-    protected void addRunningVector(double[] d) {
+    public void addRunningVector(double[] d) {
         TimeSeriesPoint p = new TimeSeriesPoint(d);
         currentTimeSeries.addLast(currentTime, p);
         
@@ -248,6 +250,17 @@ public class DtwData {
         for (DtwExample ex : examples) {
             System.out.println("   " + i++ + " - length: " + ex.getTimeSeries().numOfPts());
         }
+    }
+    
+    public String getSummaryStringForGesture(int whichGesture) {
+        List<DtwExample> examples = allExamples.get(whichGesture);
+        StringBuilder sb = new StringBuilder();
+        sb.append(examples.size()).append(" examples:\n");
+        int i = 0;
+        for (DtwExample ex : examples) {
+            sb.append("Example ").append(i++).append(": length=").append(ex.getTimeSeries().numOfPts());
+        }
+        return sb.toString();
     }
     
     public void dumpAllExamples() {
@@ -369,16 +382,40 @@ public class DtwData {
         System.out.println(currentTimeSeries);
     }
 
-    void deleteExamplesForGesture(int gestureNum) {
+    public void deleteExamplesForGesture(int gestureNum) {
         allExamples.get(gestureNum).clear();
         notifyExamplesChangedListeners(gestureNum, 0);
     }
 
-    void deleteMostRecentExample(int gestureNum) {
+    public void deleteMostRecentExample(int gestureNum) {
         DtwExample removed = allExamples.get(gestureNum).removeLast();
         if (removed != null) {
             notifyExampleDeletedListeners(gestureNum);
             notifyExamplesChangedListeners(gestureNum, allExamples.get(gestureNum).size());
+        }
+    }
+
+    public String getSummaryString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getNumTotalExamples()).append(" examples in ");
+        sb.append(numGestures).append(" gesture categories\n");
+        sb.append("Max example length is ").append(getMaxSizeInExamples());
+        sb.append("\nMin example length is ").append(getMinSizeInExamples()).append("\n");
+        
+        for (int i = 0; i < numGestures; i++) {
+            sb.append("Examples for gesture ").append(i).append(":\n");
+            sb.append(getSummaryStringForGesture(i));
+        }
+        sb.append("\n");
+        return sb.toString();
+    }
+
+    public void deleteAllExamples() {
+        /* for (DtwModel m : models) {
+         m.deleteAllExamples();
+         } */
+        for (int i = 0; i < numGestures; i++) {
+            deleteExamplesForGesture(numGestures);
         }
     }
     

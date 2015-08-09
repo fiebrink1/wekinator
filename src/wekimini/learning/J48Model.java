@@ -19,7 +19,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class J48Model implements Model {
+public class J48Model implements SupervisedLearningModel {
     
     private final String prettyName;
     private final String timestamp;

@@ -79,7 +79,7 @@ public class LinearRegressionModelBuilder implements LearningModelBuilder {
     }
 
     @Override
-    public Model build(String name) throws Exception {
+    public LinearRegressionModel build(String name) throws Exception {
        if (trainingData == null) {
            throw new IllegalStateException("Must set training examples (to not null) before building model");
        }

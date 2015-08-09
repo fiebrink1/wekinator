@@ -7,6 +7,8 @@ package wekimini;
 
 import wekimini.learning.ModelBuilder;
 import weka.core.Instances;
+import wekimini.learning.Model;
+import wekimini.learning.SupervisedLearningModel;
 
 /**
  *
@@ -17,5 +19,10 @@ public interface LearningModelBuilder extends ModelBuilder {
     
     public void setTrainingExamples(Instances examples);
     
-    
+    @Override
+    public SupervisedLearningModel build(String name) throws Exception;
+
+    @Override
+    public LearningModelBuilder fromTemplate(ModelBuilder template);
+
 }

@@ -6,13 +6,14 @@
 package wekimini.learning;
 
 import javax.swing.JPanel;
+import wekimini.LearningModelBuilder;
 
 /**
  *
  * @author rebecca
  */
-public abstract class ModelBuilderEditorPanel extends JPanel {
-    public abstract ModelBuilder buildFromPanel();
+public abstract class LearningModelBuilderEditorPanel extends JPanel {
+    public abstract LearningModelBuilder buildFromPanel();
     
     public abstract boolean validateForm();
 }

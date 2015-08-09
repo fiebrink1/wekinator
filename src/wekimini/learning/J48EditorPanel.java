@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  *
  * @author rebecca
  */
-public class J48EditorPanel extends ModelBuilderEditorPanel {
+public class J48EditorPanel extends LearningModelBuilderEditorPanel {
     private static final Logger logger = Logger.getLogger(J48EditorPanel.class.getName());
     /**
      * Creates new form

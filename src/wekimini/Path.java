@@ -5,12 +5,10 @@
  */
 package wekimini;
 
-import wekimini.learning.ModelBuilder;
 import wekimini.learning.Model;
 import com.thoughtworks.xstream.XStream;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,8 +25,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 import weka.core.converters.ArffSaver;
-import wekimini.osc.OSCClassificationOutput;
-import wekimini.osc.OSCNumericOutput;
+import wekimini.learning.SupervisedLearningModel;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCSupervisedLearningOutput;
 
@@ -60,8 +57,8 @@ public class Path {
     protected transient EventListenerList listenerList = new EventListenerList();
     private transient ChangeEvent changeEvent = null;
 
-    private transient Model model = null;
-    private ModelBuilder modelBuilder = null;
+    private transient SupervisedLearningModel model = null;
+    private LearningModelBuilder modelBuilder = null;
     private final OSCOutput output;
     private transient final Wekinator w;
     private final List<String> inputNames;
@@ -105,7 +102,7 @@ public class Path {
 
     public static final String PROP_CURRENTMODELNAME = "currentModelName";
 
-    private Model lastModel = null;
+    private SupervisedLearningModel lastModel = null;
     private ModelState lastModelState = ModelState.NOT_READY;
     private boolean trainingCompleted = false;
     private static final Logger logger = Logger.getLogger(Path.class.getName());
@@ -299,11 +296,11 @@ public class Path {
         return model;
     }
 
-    public ModelBuilder getModelBuilder() {
+    public LearningModelBuilder getModelBuilder() {
         return modelBuilder;
     }
 
-    public void setModel(Model model) {
+    public void setModel(SupervisedLearningModel model) {
         this.model = model;
     }
 
@@ -526,7 +523,7 @@ public class Path {
      //Path g = (Path) Util.readFromXMLFile("Path", Path.class, filename);
      //return g;
      } */
-    public void setModelBuilder(ModelBuilder mb) {
+    public void setModelBuilder(LearningModelBuilder mb) {
         this.modelBuilder = mb;
         if (modelState == ModelState.BUILT) {
             setModelState(ModelState.NEEDS_REBUILDING);
@@ -575,7 +572,7 @@ public class Path {
                     Class c = Class.forName(modelClassName);
                     m = ModelLoader.loadModel(c, objin);
                 }
-                p.setModel(m);
+                p.setModel((SupervisedLearningModel)m);
                 
                 try {
                     String instancesString = (String) objin.readObject();

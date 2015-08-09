@@ -18,7 +18,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class LinearRegressionModel implements Model {
+public class LinearRegressionModel implements SupervisedLearningModel {
     
     private final String prettyName;
     private final String timestamp;

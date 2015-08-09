@@ -5,12 +5,12 @@
  */
 package wekimini.osc;
 
-import wekimini.learning.ModelBuilder;
+import wekimini.LearningModelBuilder;
 
 /**
  *
  * @author rebecca
  */
 public interface OSCSupervisedLearningOutput extends OSCOutput {
-    public ModelBuilder getDefaultModelBuilder();
+    public LearningModelBuilder getDefaultModelBuilder();
 }

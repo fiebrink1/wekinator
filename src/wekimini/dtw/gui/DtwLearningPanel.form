@@ -81,8 +81,8 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="buttonDeleteLastRecording" max="32767" attributes="0"/>
-                  <Component id="buttonReAddLastRecording" alignment="0" max="32767" attributes="0"/>
+                  <Component id="buttonDeleteLastExample" max="32767" attributes="0"/>
+                  <Component id="buttonReAddLastExample" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -114,9 +114,9 @@
                       <EmptySpace min="-2" pref="96" max="-2" attributes="0"/>
                       <Component id="jSeparator2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="buttonDeleteLastRecording" min="-2" max="-2" attributes="0"/>
+                      <Component id="buttonDeleteLastExample" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                      <Component id="buttonReAddLastRecording" min="-2" max="-2" attributes="0"/>
+                      <Component id="buttonReAddLastExample" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -139,10 +139,10 @@
             </Component>
             <Component class="javax.swing.JSeparator" name="jSeparator2">
             </Component>
-            <Component class="javax.swing.JButton" name="buttonDeleteLastRecording">
+            <Component class="javax.swing.JButton" name="buttonDeleteLastExample">
               <Properties>
+                <Property name="text" type="java.lang.String" value="Delete last example "/>
                 <Property name="enabled" type="boolean" value="false"/>
-                <Property name="label" type="java.lang.String" value="Delete last recording "/>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[225, 29]"/>
                 </Property>
@@ -154,16 +154,16 @@
                 </Property>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonDeleteLastRecordingActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonDeleteLastExampleActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="buttonReAddLastRecording">
+            <Component class="javax.swing.JButton" name="buttonReAddLastExample">
               <Properties>
+                <Property name="text" type="java.lang.String" value="Re-add last example"/>
                 <Property name="enabled" type="boolean" value="false"/>
-                <Property name="label" type="java.lang.String" value="Re-add last recording"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonReAddLastRecordingActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonReAddLastExampleActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JSeparator" name="jSeparator4">

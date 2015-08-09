@@ -18,7 +18,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class NeuralNetworkModel implements Model {
+public class NeuralNetworkModel implements SupervisedLearningModel {
     
     private final String prettyName;
     private final String timestamp;

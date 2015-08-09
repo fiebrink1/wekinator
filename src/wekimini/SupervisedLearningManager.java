@@ -749,11 +749,11 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         propertyChangeSupport.firePropertyChange(PROP_ABLE_TO_RECORD, oldAbleToRecord, ableToRecord);
     }
 
-    public void setModelBuilderForPath(ModelBuilder mb, int i) {
+    public void setModelBuilderForPath(LearningModelBuilder mb, int i) {
         paths.get(i).setModelBuilder(mb);
     }
     
-    public void updatePath(Path p, OSCOutput newOutput, ModelBuilder newModelBuilder, String[] selectedInputNames) {
+    public void updatePath(Path p, OSCOutput newOutput, LearningModelBuilder newModelBuilder, String[] selectedInputNames) {
         //Which path?
         int which = paths.indexOf(p);
         if (which == -1) {

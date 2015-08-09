@@ -13,7 +13,7 @@ import wekimini.util.Util;
  *
  * @author rebecca
  */
-public class LinearRegressionEditorPanel extends ModelBuilderEditorPanel {
+public class LinearRegressionEditorPanel extends LearningModelBuilderEditorPanel {
 
     private static final Logger logger = Logger.getLogger(LinearRegressionEditorPanel.class.getName());
 

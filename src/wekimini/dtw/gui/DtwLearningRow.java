@@ -6,6 +6,7 @@
 package wekimini.dtw.gui;
 
 //import com.sun.glass.events.KeyEvent;
+import java.beans.IndexedPropertyChangeEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -79,8 +80,8 @@ public class DtwLearningRow extends javax.swing.JPanel {
         this.w = w;
         this.myModel = w.getDtwLearningManager().getModel();
         this.gestureNum = whichGesture;
-        this.gestureName = w.getDtwLearningManager().getGestureName(whichGesture);
-        this.versionNumber = w.getDtwLearningManager().getVersionNumber(whichGesture);
+        this.gestureName = myModel.getGestureName(whichGesture);
+        this.versionNumber = myModel.getVersionNumber(whichGesture);
         myModel.getData().addDataListener(new DtwData.DtwDataListener() {
 
             @Override
@@ -117,23 +118,17 @@ public class DtwLearningRow extends javax.swing.JPanel {
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals(DtwModel.PROP_CURRENT_MATCH)) {
                     updateIcon(myModel.getCurrentMatch() == gestureNum);
+                } else if (evt.getPropertyName().equals(DtwModel.PROP_VERSIONNUMBERS)) {
+                    if (((IndexedPropertyChangeEvent)evt).getIndex() == gestureNum) {
+                        setVersionNumber(myModel.getVersionNumber(gestureNum));
+                    }
+                } else if (evt.getPropertyName().equals(DtwModel.PROP_GESTURE_NAMES)) {
+                    if (((IndexedPropertyChangeEvent)evt).getIndex() == gestureNum) {
+                        setGestureName(myModel.getGestureName(gestureNum));
+                    }
                 }
             }
         });
-
-        w.getDtwLearningManager().addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals(DtwLearningManager.PROP_GESTURE_NAMES)) {
-                    checkNameChange();
-                } else if (evt.getPropertyName().equals(DtwLearningManager.PROP_VERSIONNUMBERS)) {
-                    checkVersionChange();
-                }
-
-            }
-        });
-
         initForGesture();
     }
 
@@ -199,7 +194,8 @@ public class DtwLearningRow extends javax.swing.JPanel {
             distanceBar.setValue(0);
             distanceBar.setEnabled(true);
         }
-        w.getDtwLearningManager().setGestureEnabled(gestureNum, e);
+        
+        myModel.setGestureActive(gestureNum, e); //XXX make property change
     }
 
     public static void main(String[] args) {
@@ -468,7 +464,7 @@ public class DtwLearningRow extends javax.swing.JPanel {
     }
 
     private void buttonDeleteLearnerExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLearnerExamplesActionPerformed
-        w.getDtwLearningManager().deleteExamplesForGesture(gestureNum);
+        myModel.getData().deleteExamplesForGesture(gestureNum);
     }//GEN-LAST:event_buttonDeleteLearnerExamplesActionPerformed
 
     private void buttonEditLearnerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditLearnerActionPerformed
@@ -506,7 +502,7 @@ public class DtwLearningRow extends javax.swing.JPanel {
     }//GEN-LAST:event_buttonAddMouseReleased
 
     private void buttonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteActionPerformed
-        myModel.deleteMostRecentExample(gestureNum);
+        myModel.getData().deleteMostRecentExample(gestureNum);
     }//GEN-LAST:event_buttonDeleteActionPerformed
 
 
@@ -533,15 +529,9 @@ public class DtwLearningRow extends javax.swing.JPanel {
         distanceBar.setValue((int)currentDistance);
     }
 
-    private void checkNameChange() {
-        if (!gestureName.equals(w.getDtwLearningManager().getGestureName(gestureNum))) {
-            setGestureName(w.getDtwLearningManager().getGestureName(gestureNum));
-        }
-    }
-
-    private void checkVersionChange() {
+   /* private void checkVersionChange() {
         if (versionNumber != w.getDtwLearningManager().getVersionNumber(gestureNum)) {
             setVersionNumber(w.getDtwLearningManager().getVersionNumber(gestureNum));
         }
-    }
+    } */
 }

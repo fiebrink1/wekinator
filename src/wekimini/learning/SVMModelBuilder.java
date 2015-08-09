@@ -149,7 +149,7 @@ public class SVMModelBuilder implements LearningModelBuilder {
     }
 
     @Override
-    public Model build(String name) throws Exception {
+    public SVMModel build(String name) throws Exception {
         if (trainingData == null) {
             throw new IllegalStateException("Must set training examples (to not null) before building model");
         }
@@ -185,7 +185,7 @@ public class SVMModelBuilder implements LearningModelBuilder {
     }
 
     @Override
-    public ModelBuilderEditorPanel getEditorPanel() {
+    public LearningModelBuilderEditorPanel getEditorPanel() {
         return new SVMEditorPanel(this);
     }
 }

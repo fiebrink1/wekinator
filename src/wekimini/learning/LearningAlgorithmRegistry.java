@@ -5,13 +5,15 @@
  */
 package wekimini.learning;
 
+import wekimini.LearningModelBuilder;
+
 /**
  *
  * @author rebecca
  */
 public class LearningAlgorithmRegistry {
-    public static ModelBuilder[] getClassificationModelBuilders() {
-        ModelBuilder[] mbs = new ModelBuilder[4];
+    public static LearningModelBuilder[] getClassificationModelBuilders() {
+        LearningModelBuilder[] mbs = new LearningModelBuilder[4];
         mbs[0] = new KNNModelBuilder();
         mbs[1] = new AdaboostModelBuilder();
         mbs[2] = new J48ModelBuilder();
@@ -19,8 +21,8 @@ public class LearningAlgorithmRegistry {
         return mbs;
     }
     
-    public static ModelBuilder[] getNumericModelBuilders() {
-       ModelBuilder[] mbs = new ModelBuilder[2];
+    public static LearningModelBuilder[] getNumericModelBuilders() {
+       LearningModelBuilder[] mbs = new LearningModelBuilder[2];
        mbs[0] = new NeuralNetModelBuilder();
        mbs[1] = new LinearRegressionModelBuilder();
        return mbs;         

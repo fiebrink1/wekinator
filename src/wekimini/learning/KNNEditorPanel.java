@@ -13,7 +13,7 @@ import wekimini.util.Util;
  *
  * @author rebecca
  */
-public class KNNEditorPanel extends ModelBuilderEditorPanel {
+public class KNNEditorPanel extends LearningModelBuilderEditorPanel {
     private static final Logger logger = Logger.getLogger(KNNEditorPanel.class.getName());
     /**
      * Creates new form AdaBoostEditorPanel
