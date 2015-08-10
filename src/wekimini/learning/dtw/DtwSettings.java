@@ -5,6 +5,7 @@
  */
 package wekimini.learning.dtw;
 
+import static wekimini.learning.dtw.DtwSettings.MinimumLengthRestriction.SET_FROM_EXAMPLES;
 import static wekimini.learning.dtw.DtwSettings.RunningType.LABEL_CONTINUOUSLY;
 
 /**
@@ -17,16 +18,26 @@ public class DtwSettings {
     public static final int DEFAULT_HOP_SIZE_FOR_CONTINUOUS_SEARCH = 1;
     public static final RunningType DEFAULT_RUNNING_TYPE = LABEL_CONTINUOUSLY;
     public static final int DEFAULT_MATCH_WIDTH = 5;
+    public static final MinimumLengthRestriction DEFAULT_MIN_LENGTH_RESTRICTION = SET_FROM_EXAMPLES;
+    public static final DownsamplePolicy DEFAULT_DOWN_SAMPLE_POLICY = DownsamplePolicy.DOWNSAMPLE_TO_MAX_LENGTH;
+    public static final int DEFAULT_DOWNSAMPLE_MAX_LENGTH = 10;
+    public static final int DEFAULT_DOWNSAMPLE_FACTOR = 5;
     
    // private final double matchThreshold;
     private final int minAllowedGestureLength;
     private final int hopSizeForContinuousSearch;
     private final int matchWidth;
-
+    private final int downsampleFactor;
+    
     public void dumpToConsole() {
-        System.out.println("Min allowed length: " + minAllowedGestureLength   );
         System.out.println("Hop size: " + hopSizeForContinuousSearch);
         System.out.println("Match width: " + matchWidth);
+        System.out.println("Running type: " + runningType);
+        System.out.println("Minimum length restriction: " + minimumLengthRestriction);
+        System.out.println("Min allowed length: " + minAllowedGestureLength   );
+        System.out.println("Downsample policy: " + downsamplePolicy);
+        System.out.println("Downsample constant factor: " + downsampleFactor);
+        System.out.println("DOwnsample example length: " + downsampleMaxLength);
     }
     
     public static enum RunningType {
@@ -35,20 +46,49 @@ public class DtwSettings {
     }
     private final RunningType runningType;
     
+    public static enum MinimumLengthRestriction {
+        SET_FROM_EXAMPLES, SET_CONSTANT
+    };
+    private final MinimumLengthRestriction minimumLengthRestriction;
+    
+    public static enum DownsamplePolicy {
+        DOWNSAMPLE_TO_MAX_LENGTH,
+        DOWNSAMPLE_BY_CONSTANT_FACTOR,
+        NO_DOWNSAMPLING
+    } ;
+    
+    private final DownsamplePolicy downsamplePolicy;
+    private final int downsampleMaxLength;
+    
     public DtwSettings() {
       //  matchThreshold = DEFAULT_MATCH_THRESHOLD;
         minAllowedGestureLength = DEFAULT_MIN_ALLOWED_GESTURE_LENGTH;
         hopSizeForContinuousSearch = DEFAULT_HOP_SIZE_FOR_CONTINUOUS_SEARCH;
         runningType = DEFAULT_RUNNING_TYPE;
         matchWidth = DEFAULT_MATCH_WIDTH;
+        minimumLengthRestriction = DEFAULT_MIN_LENGTH_RESTRICTION;
+        downsampleMaxLength = DEFAULT_DOWNSAMPLE_MAX_LENGTH;
+        downsamplePolicy = DEFAULT_DOWN_SAMPLE_POLICY;
+        downsampleFactor = DEFAULT_DOWNSAMPLE_FACTOR;
     }
     
-    public DtwSettings(int matchWidth, int minAllowedGestureLength, int hopSizeForContinuousSearch, RunningType runningType) {
+    public DtwSettings(int matchWidth, 
+            int minAllowedGestureLength, 
+            int hopSizeForContinuousSearch, 
+            RunningType runningType, 
+            MinimumLengthRestriction minLengthRestriction,
+            DownsamplePolicy downsamplePolicy,
+            int downsampleMaxLength, 
+            int downsampleFactor) {
        // this.matchThreshold = matchThreshold;
         this.minAllowedGestureLength = minAllowedGestureLength;
         this.hopSizeForContinuousSearch = hopSizeForContinuousSearch;
         this.runningType = runningType;
         this.matchWidth = matchWidth;
+        this.minimumLengthRestriction = minLengthRestriction;
+        this.downsamplePolicy = downsamplePolicy;
+        this.downsampleMaxLength = downsampleMaxLength;
+        this.downsampleFactor = downsampleFactor;
     }
     
     public DtwSettings(DtwSettings existing) {
@@ -57,6 +97,10 @@ public class DtwSettings {
         this.hopSizeForContinuousSearch = existing.hopSizeForContinuousSearch;
         this.runningType = existing.runningType;
         this.matchWidth = existing.matchWidth;
+        this.minimumLengthRestriction = existing.minimumLengthRestriction;
+        this.downsamplePolicy = existing.downsamplePolicy;
+        this.downsampleMaxLength = existing.downsampleMaxLength;
+        this.downsampleFactor = existing.downsampleFactor;
     }
 
    /* public double getMatchThreshold() {
@@ -82,5 +126,23 @@ public class DtwSettings {
     public DtwEditorPanel getEditorPanel() {
         return new DtwEditorPanel(this);
     }
+
+    public MinimumLengthRestriction getMinimumLengthRestriction() {
+        return minimumLengthRestriction;
+    }
+
+    public DownsamplePolicy getDownsamplePolicy() {
+        return downsamplePolicy;
+    }
+
+    public int getDownsampleMaxLength() {
+        return downsampleMaxLength;
+    }
+
+    public int getDownsampleFactor() {
+        return downsampleFactor;
+    }
+    
+    
     
 }

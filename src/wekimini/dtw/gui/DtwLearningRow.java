@@ -239,7 +239,6 @@ public class DtwLearningRow extends javax.swing.JPanel {
         jSeparator1 = new javax.swing.JSeparator();
         buttonDeleteLearnerExamples = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JSeparator();
-        buttonEditLearner = new javax.swing.JButton();
         warningPanel = new javax.swing.JPanel();
         buttonLearnerPlay = new javax.swing.JButton();
         buttonAdd = new javax.swing.JButton();
@@ -300,18 +299,6 @@ public class DtwLearningRow extends javax.swing.JPanel {
         });
 
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
-
-        buttonEditLearner.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        buttonEditLearner.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/pencil2.png"))); // NOI18N
-        buttonEditLearner.setToolTipText("Edit this model");
-        buttonEditLearner.setMaximumSize(new java.awt.Dimension(30, 30));
-        buttonEditLearner.setMinimumSize(new java.awt.Dimension(30, 30));
-        buttonEditLearner.setPreferredSize(new java.awt.Dimension(30, 30));
-        buttonEditLearner.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonEditLearnerActionPerformed(evt);
-            }
-        });
 
         warningPanel.setBackground(new java.awt.Color(255, 255, 255));
         warningPanel.setOpaque(false);
@@ -420,9 +407,7 @@ public class DtwLearningRow extends javax.swing.JPanel {
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonLearnerPlay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buttonEditLearner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(37, 37, 37)))
+                        .addGap(73, 73, 73)))
                 .addGap(0, 0, 0)
                 .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(8, 8, 8))
@@ -436,7 +421,6 @@ public class DtwLearningRow extends javax.swing.JPanel {
                     .addComponent(jSeparator2)
                     .addGroup(panelMainLayout.createSequentialGroup()
                         .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(buttonEditLearner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(buttonDeleteLearnerExamples, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(labelNumExamples, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -466,11 +450,6 @@ public class DtwLearningRow extends javax.swing.JPanel {
     private void buttonDeleteLearnerExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLearnerExamplesActionPerformed
         myModel.getData().deleteExamplesForGesture(gestureNum);
     }//GEN-LAST:event_buttonDeleteLearnerExamplesActionPerformed
-
-    private void buttonEditLearnerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditLearnerActionPerformed
-        //w.getSupervisedLearningManager().
-        w.getMainGUI().showDtwEditor(gestureNum);
-    }//GEN-LAST:event_buttonEditLearnerActionPerformed
 
 
     private void buttonLearnerPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLearnerPlayActionPerformed
@@ -510,7 +489,6 @@ public class DtwLearningRow extends javax.swing.JPanel {
     private javax.swing.JButton buttonAdd;
     private javax.swing.JButton buttonDelete;
     private javax.swing.JButton buttonDeleteLearnerExamples;
-    private javax.swing.JButton buttonEditLearner;
     private javax.swing.JButton buttonLearnerPlay;
     private javax.swing.JButton buttonViewExamples;
     private javax.swing.JProgressBar distanceBar;

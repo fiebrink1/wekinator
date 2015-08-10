@@ -42,7 +42,7 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
 
         OSCDtwOutput out = (OSCDtwOutput) group.getOutput(0);
         int numGestures = out.getNumGestures();
-        model = new DtwModel(out.getName(), numGestures, w, this, new DtwSettings());
+        model = new DtwModel(out.getName(), out, numGestures, w, this, new DtwSettings());
         
         model.addDtwUpdateListener(new DtwModel.DtwUpdateListener() {
 
@@ -127,6 +127,13 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
 
     public void deleteLastExample() {
         //XXX
+    }
+
+    public void updateModel(DtwModel m, DtwSettings newDtwSettings, String[] selectedInputNames) {
+        m.setSettings(newDtwSettings);
+        System.out.println("SEtting settings to: ");
+        newDtwSettings.dumpToConsole();
+        //XXX feature selection: do feature change here
     }
 
     public static enum RunningState {

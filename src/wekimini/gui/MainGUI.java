@@ -23,7 +23,9 @@ import wekimini.util.Util;
 import wekimini.WekiMiniRunner;
 import wekimini.Wekinator;
 import wekimini.WekinatorFileData;
+import wekimini.dtw.gui.DtwEditorFrame;
 import wekimini.dtw.gui.DtwLearningPanel;
+import wekimini.learning.dtw.DtwModel;
 
 /**
  *
@@ -521,10 +523,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         return w;
     }
 
-    public void showDtwEditor(int gestureNum) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     public void showDtwData(int gestureNum) {
         //XXX
         System.out.println("XXXXXXXXXXXXXXX\n\n");
@@ -540,5 +538,11 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         System.out.println("XXXXXXXXXXXXXXX\n\n");
         w.getDtwLearningManager().getModel().dumpToConsole();
         w.getDtwLearningManager().getModel().getData().dumpAllExamples();
+    }
+
+    public void showDtwEditor(DtwModel model) {
+        DtwEditorFrame f = DtwEditorFrame.getEditorForModel(model, w.getInputManager().getInputNames(), w);
+        f.setVisible(true);
+        f.toFront();
     }
 }

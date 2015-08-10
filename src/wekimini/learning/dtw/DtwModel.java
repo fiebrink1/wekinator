@@ -5,8 +5,11 @@
  */
 package wekimini.learning.dtw;
 
+import com.dtw.FastDTW;
 import com.dtw.TimeWarpInfo;
 import com.timeseries.TimeSeries;
+import com.util.DistanceFunctionFactory;
+import com.util.EuclideanDistance;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
@@ -82,11 +85,13 @@ public class DtwModel implements Model {
     public static final String PROP_VERSIONNUMBERS = "versionNumbers";
     private final String[] gestureNames;
     public static final String PROP_GESTURE_NAMES = "gestureNames";
+    private final OSCDtwOutput myOutput;
 
 
-    public DtwModel(String name, int numGestures, Wekinator w, DtwLearningManager m, DtwSettings settings) {
+    public DtwModel(String name, OSCDtwOutput output, int numGestures, Wekinator w, DtwLearningManager m, DtwSettings settings) {
         this.modelName = name;
         this.settings = settings;
+        this.myOutput = output;
         this.numGestures = numGestures;
         this.w = w;
 
@@ -173,6 +178,14 @@ public class DtwModel implements Model {
     public int getNumGestures() {
         return numGestures;
     }
+
+    public boolean isUsingInput(String inputName) {
+        return true; //XXX feature selection
+    }
+
+    public OSCDtwOutput getOSCOutput() {
+        return myOutput;
+    }
     
     public static enum RecordingState {
         RECORDING, NOT_RECORDING
@@ -230,6 +243,17 @@ public class DtwModel implements Model {
         //Apply settings 
         RunningType oldRunningType = this.getSettings().getRunningType();
         RunningType newRunningType = settings.getRunningType();
+        DtwSettings.DownsamplePolicy dp = settings.getDownsamplePolicy();
+        if (dp == DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING) {
+            data.setNoDownsample();
+        } else if (dp == DtwSettings.DownsamplePolicy.DOWNSAMPLE_BY_CONSTANT_FACTOR) {
+            data.setDownsampleByConstantFactor(settings.getDownsampleFactor());
+        } else {
+            //Downsample to max example length
+            data.setDownsampleToMaxLength(settings.getDownsampleMaxLength());
+        }
+        
+        
         this.settings = settings;
         updateID();
         
@@ -442,12 +466,14 @@ public class DtwModel implements Model {
                 for (DtwExample ex : data.getExamplesForGesture(whichClass)) {
                     //for (TimeSeries ts : allseries.get(whichClass)) {
                     TimeSeries ts = ex.getTimeSeries();
-                    TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, currentTs, settings.getMatchWidth());
-                    if (closestDistances[whichClass] > info.getDistance()) {
-                        closestDistances[whichClass] = info.getDistance();
+                    //TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, currentTs, settings.getMatchWidth());
+                    double dist = FastDTW.getWarpDistBetween(ts, currentTs, settings.getMatchWidth(), DistanceFunctionFactory.EUCLIDEAN_DIST_FN);
+                    
+                    if (closestDistances[whichClass] > dist) {
+                        closestDistances[whichClass] = dist;
                     }
-                    if (info.getDistance() < closestDist) {
-                        closestDist = info.getDistance();
+                    if (dist < closestDist) {
+                        closestDist = dist;
                         closestClass = whichClass;
                     }
                 }
@@ -521,9 +547,11 @@ public class DtwModel implements Model {
 	at com.dtw.SearchWindow.expandSearchWindow(SearchWindow.java:197)
 	at com.dtw.SearchWindow.expandWindow(SearchWindow.java:132)
                                 */
-                        TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts1.getTimeSeries(), ts2.getTimeSeries(), settings.getMatchWidth());
-                        if (info.getDistance() > maxDist) {
-                            maxDist = info.getDistance();
+                      //  TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts1.getTimeSeries(), ts2.getTimeSeries(), settings.getMatchWidth());
+                        double dist = FastDTW.getWarpDistBetween(ts1.getTimeSeries(), ts2.getTimeSeries(), settings.getMatchWidth(), DistanceFunctionFactory.EUCLIDEAN_DIST_FN);
+
+                        if (dist > maxDist) {
+                            maxDist = dist;
                         }
                     }
                 }
@@ -536,9 +564,11 @@ public class DtwModel implements Model {
                 TimeSeries ts1 = list.get(i).getTimeSeries();
                 for (int j = i + 1; j < list.size(); j++) {
                     TimeSeries ts2 = list.get(j).getTimeSeries();
-                    TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts1, ts2, settings.getMatchWidth());
-                    if (info.getDistance() > maxDist) {
-                        maxDist = info.getDistance();
+                   // TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts1, ts2, settings.getMatchWidth());
+                    double dist = FastDTW.getWarpDistBetween(ts1, ts2, settings.getMatchWidth(), DistanceFunctionFactory.EUCLIDEAN_DIST_FN);
+
+                    if (dist > maxDist) {
+                        maxDist = dist;
                     }
                 }
             }
@@ -558,10 +588,16 @@ public class DtwModel implements Model {
         //Chop to sizes between minSizeInExamples, min(current ts size, maxSizeInExamples)
         // and look for best match.
 
-        int min = settings.getMinAllowedGestureLength();
-        if (min > minSizeInExamples) {
+        int min;
+        if (settings.getMinimumLengthRestriction() == DtwSettings.MinimumLengthRestriction.SET_FROM_EXAMPLES) {
             min = minSizeInExamples;
+        } else {
+            min = settings.getMinAllowedGestureLength();
+            /*if (min > minSizeInExamples) {
+                min = minSizeInExamples; //this means 1 very short example can break everything: disallow
+            } */ 
         }
+        System.out.println("Classifying with min=" + min);
 
         List<TimeSeries> l = data.getCandidateSeriesFromCurrentRun(min, maxSizeInExamples, settings.getHopSizeForContinuousSearch());
 
@@ -578,12 +614,14 @@ public class DtwModel implements Model {
                     for (DtwExample ex : data.getExamplesForGesture(whichClass)) {
                         TimeSeries ts = ex.getTimeSeries();
                         //for (TimeSeries ts : allseries.get(whichClass)) {
-                        TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, candidate, settings.getMatchWidth()); //used to be 5 instead of matchWidth
-                        if (closestDistances[whichClass] > info.getDistance()) {
-                            closestDistances[whichClass] = info.getDistance();
+                       // TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, candidate, settings.getMatchWidth()); //used to be 5 instead of matchWidth
+                        double dist = FastDTW.getWarpDistBetween(ts, candidate, settings.getMatchWidth(), DistanceFunctionFactory.EUCLIDEAN_DIST_FN);
+
+                        if (closestDistances[whichClass] > dist) {
+                            closestDistances[whichClass] = dist;
                         }
-                        if (info.getDistance() < closestDist) {
-                            closestDist = info.getDistance();
+                        if (dist < closestDist) {
+                            closestDist = dist;
                             closestClass = whichClass;
                         }
                     }
