@@ -57,4 +57,8 @@ public class DtwExample {
         this.downsampledTimeSeries = downsampledTimeSeries;
     }
     
+    public TimeSeries getDownsampledTimeSeries() {
+        return downsampledTimeSeries;
+    }
+    
 }
