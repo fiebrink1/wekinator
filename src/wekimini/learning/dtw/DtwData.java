@@ -207,6 +207,7 @@ public class DtwData {
 
     public void delete(int id) {
         List<DtwExample> matchingList = exampleListForIds.get(id);
+        int whichClass = allExamples.indexOf(matchingList);
         if (matchingList == null) {
             logger.log(Level.WARNING, "ID {0} not found in exampleListForIds!", id);
             return;
@@ -240,8 +241,10 @@ public class DtwData {
         exampleListForIds.remove(id);
         examplesForIds.remove(id);
 
-        int whichClass = allExamples.indexOf(matchingList);
-
+        //int whichClass = allExamples.indexOf(matchingList); // this breaks when element is empty list
+        //int whichClass = removed.getGestureIndex();
+        
+        
         setNumTotalExamples(numTotalExamples - 1);
 
         if (maxDownsampledUpdated && downsamplePolicy == DtwSettings.DownsamplePolicy.DOWNSAMPLE_TO_MAX_LENGTH) {

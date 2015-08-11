@@ -9,6 +9,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static wekimini.DtwLearningManager.RunningState.NOT_RUNNING;
@@ -34,8 +36,7 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
     public static final String PROP_RUNNING_STATE = "runningState";
     public static final String PROP_HAS_EXAMPLES = "hasExamples";
     private boolean hasExamples = false;
-    private DtwExample lastExample = null;
-    private int lastExampleCategory = 0;
+    private final List<InputOutputConnectionsListener> inputOutputConnectionsListeners = new LinkedList<>();
 
     public DtwLearningManager(Wekinator w, OSCOutputGroup group) {
         this.w = w;
@@ -46,7 +47,6 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         OSCDtwOutput out = (OSCDtwOutput) group.getOutput(0);
         int numGestures = out.getNumGestures();
         model = new DtwModel(out.getName(), out, numGestures, w, this, new DtwSettings());
-        
         model.addDtwUpdateListener(new DtwModel.DtwUpdateListener1() {
 
             @Override
@@ -132,14 +132,21 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         //TODO: Have to update "last example" when we delete manually
         //Solution: have a linked list of n previous examples, n deleted examples...
         // XXX
-        model.getData().deleteLastExample();       
+        model.getData().deleteLastExample();
     }
 
-    public void updateModel(DtwModel m, DtwSettings newDtwSettings, String[] selectedInputNames) {
-        m.setSettings(newDtwSettings);
-        System.out.println("SEtting settings to: ");
-        newDtwSettings.dumpToConsole();
-        //XXX feature selection: do feature change here
+    public void updateModel(DtwModel m, DtwSettings newDtwSettings, boolean[] inputSelection) {
+        if (newDtwSettings != null) {
+            m.setSettings(newDtwSettings);
+            System.out.println("SEtting settings to: ");
+            newDtwSettings.dumpToConsole();
+        }
+        boolean[][] selectionMatrix = new boolean[inputSelection.length][1];
+        for (int i = 0; i < inputSelection.length; i++) {
+            selectionMatrix[i][0] = inputSelection[0];
+        }
+        
+        updateInputOutputConnections(selectionMatrix);
     }
 
     public static enum RunningState {
@@ -213,27 +220,24 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         }
     }
 
-    //Need functions that GUI can call to start/stop running, update run mask, ...
-    @Override
-    public void addConnectionsListener(InputOutputConnectionsListener l) {
-        //XXX
-    }
-
-    @Override
     public boolean[][] getConnectionMatrix() {
-        ///XXX
-        return new boolean[0][0];
-    }
-
-    @Override
-    public boolean removeConnectionsListener(InputOutputConnectionsListener l) {
-        return true;
-        //XXX
+        //For now, only have 1 output! (only 1 model)    
+        boolean[][] b = new boolean[w.getInputManager().getNumInputs()][1];
+        for (int input = 0; input < b.length; input++) {
+            b[input][0] = model.isInputSelected(input);
+        }
+        return b;
     }
 
     @Override
     public void updateInputOutputConnections(boolean[][] newConnections) {
-        //XXX
+        boolean[] newSelections = new boolean[newConnections.length];
+        for (int i = 0; i < newConnections.length; i++) {
+            newSelections[i] = newConnections[i][0];
+        }
+        model.setSelectedInputs(newSelections);
+        notifyNewInputOutputConnections(newConnections);
+        w.getStatusUpdateCenter().update(this, "Input/Output connections updated.");
     }
 
     void deleteAllExamples() {
@@ -303,5 +307,21 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
                 Logger.getLogger(DtwLearningManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    private void notifyNewInputOutputConnections(boolean[][] connections) {
+        for (InputOutputConnectionsListener l : inputOutputConnectionsListeners) {
+            l.newConnectionMatrix(connections);
+        }
+    }
+
+    @Override
+    public void addConnectionsListener(InputOutputConnectionsListener l) {
+        inputOutputConnectionsListeners.add(l);
+    }
+
+    @Override
+    public boolean removeConnectionsListener(InputOutputConnectionsListener l) {
+        return inputOutputConnectionsListeners.remove(l);
     }
 }

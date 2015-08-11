@@ -6,10 +6,9 @@
 package wekimini.learning.dtw;
 
 import com.dtw.FastDTW;
-import com.dtw.TimeWarpInfo;
 import com.timeseries.TimeSeries;
+import com.util.DistanceFunction;
 import com.util.DistanceFunctionFactory;
-import com.util.EuclideanDistance;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
@@ -19,7 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import weka.core.Instance;
 import wekimini.DtwLearningManager;
 import wekimini.Wekinator;
 import static wekimini.learning.dtw.DtwModel.RecordingState.NOT_RECORDING;
@@ -30,10 +28,7 @@ import wekimini.osc.OSCDtwOutput;
 import wekimini.osc.OSCOutput;
 
 /*
- * allow enable/disable of each gesture in set
- properties: min size, max size of matchable gesture
- fires events: when classification results updated (i.e. distance to each), when
- new min classification result received
+ * Working notes:
  (OSC can be sent following ways:
  - Continuously, for every input (show closest class or 0 if none)
  - Only when match changes
@@ -87,6 +82,56 @@ public class DtwModel implements Model {
     private final String[] gestureNames;
     public static final String PROP_GESTURE_NAMES = "gestureNames";
     private final OSCDtwOutput myOutput;
+    private DistanceFunction distanceFunction = DistanceFunctionFactory.EUCLIDEAN_DIST_FN;
+    
+    private boolean[] selectedInputs;
+
+    public static final String PROP_SELECTED_INPUTS = "selectedInputs";
+
+    /**
+     * Get the value of selectedInputs
+     *
+     * @return the value of selectedInputs
+     */
+    public boolean[] getSelectedInputs() {
+        return selectedInputs;
+    }
+
+    /**
+     * Set the value of selectedInputs
+     *
+     * @param selectedInputs new value of selectedInputs
+     */
+    public void setSelectedInputs(boolean[] selectedInputs) {
+        boolean[] oldSelectedInputs = this.selectedInputs;
+        this.selectedInputs = selectedInputs;
+        distanceFunction = new EuclideanDistanceWithInputSelection(selectedInputs);
+        
+        //XXX must update stuff now in model -- min/ max distance etc.?
+        
+        updateMaxDistance();
+        updateID();
+        for (int i = 0; i < numGestures; i++) {
+            updateVersionNumber(i);
+        }
+        propertyChangeSupport.firePropertyChange(PROP_SELECTED_INPUTS, oldSelectedInputs, selectedInputs);
+    }
+
+    /**
+     * Set the value of selectedInputs at specified index.
+     *
+     * @param index the index of selectedInputs
+     * @param isSelected new value of selectedInputs at specified index
+     */
+    public void setSelectedInputs(int index, boolean isSelected) {
+        boolean oldSelectedInputs = this.selectedInputs[index];
+        this.selectedInputs[index] = isSelected;
+        distanceFunction = new EuclideanDistanceWithInputSelection(selectedInputs);
+
+        propertyChangeSupport.fireIndexedPropertyChange(PROP_SELECTED_INPUTS, index, oldSelectedInputs, selectedInputs);
+    }
+
+    
 
     public DtwModel(String name, OSCDtwOutput output, int numGestures, Wekinator w, DtwLearningManager m, DtwSettings settings) {
         this.modelName = name;
@@ -100,6 +145,8 @@ public class DtwModel implements Model {
         isGestureActive = new boolean[numGestures];
         versionNumbers = new int[numGestures];
         gestureNames = new String[numGestures];
+        selectedInputs = new boolean[w.getInputManager().getNumInputs()];
+        
         for (int i = 0; i < numGestures; i++) {
             isGestureActive[i] = true;
             closestDistances[i] = Double.MAX_VALUE;
@@ -107,6 +154,11 @@ public class DtwModel implements Model {
             versionNumbers[i] = 1;
             gestureNames[i] = name + "_" + i;
         }
+        
+        for (int i =0 ; i < selectedInputs.length; i++) {
+            selectedInputs[i] = true;
+        }
+        
         data = new DtwData(numGestures, m, w);
         applySettingsToData(settings, data);
         data.addDataListener(new DtwData.DtwDataListener() {
@@ -178,8 +230,8 @@ public class DtwModel implements Model {
         return numGestures;
     }
 
-    public boolean isUsingInput(String inputName) {
-        return true; //XXX feature selection
+    public boolean isInputSelected(int inputIndex) {
+        return selectedInputs[inputIndex];
     }
 
     public OSCDtwOutput getOSCOutput() {
@@ -478,7 +530,7 @@ public class DtwModel implements Model {
                     }
                     
                     //TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, currentTs, settings.getMatchWidth());
-                    double dist = FastDTW.getWarpDistBetween(ts, currentTs, settings.getMatchWidth(), DistanceFunctionFactory.EUCLIDEAN_DIST_FN);
+                    double dist = FastDTW.getWarpDistBetween(ts, currentTs, settings.getMatchWidth(), distanceFunction);
 
                     if (closestDistances[whichClass] > dist) {
                         closestDistances[whichClass] = dist;
@@ -570,7 +622,7 @@ public class DtwModel implements Model {
                             ts2 = ex2.getDownsampledTimeSeries();
                         }
 
-                        double dist = FastDTW.getWarpDistBetween(ts1, ts2, settings.getMatchWidth(), DistanceFunctionFactory.EUCLIDEAN_DIST_FN);
+                        double dist = FastDTW.getWarpDistBetween(ts1, ts2, settings.getMatchWidth(), distanceFunction);
 
                         if (dist > maxDist) {
                             maxDist = dist;
@@ -601,7 +653,7 @@ public class DtwModel implements Model {
                     }
 
                     // TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts1, ts2, settings.getMatchWidth());
-                    double dist = FastDTW.getWarpDistBetween(ts1, ts2, settings.getMatchWidth(), DistanceFunctionFactory.EUCLIDEAN_DIST_FN);
+                    double dist = FastDTW.getWarpDistBetween(ts1, ts2, settings.getMatchWidth(), distanceFunction);
 
                     if (dist > maxDist) {
                         maxDist = dist;
@@ -674,7 +726,7 @@ public class DtwModel implements Model {
 
                         //for (TimeSeries ts : allseries.get(whichClass)) {
                         // TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, candidate, settings.getMatchWidth()); //used to be 5 instead of matchWidth
-                        double dist = FastDTW.getWarpDistBetween(ts, candidate, settings.getMatchWidth(), DistanceFunctionFactory.EUCLIDEAN_DIST_FN);
+                        double dist = FastDTW.getWarpDistBetween(ts, candidate, settings.getMatchWidth(), distanceFunction);
 
                         if (closestDistances[whichClass] > dist) {
                             closestDistances[whichClass] = dist;

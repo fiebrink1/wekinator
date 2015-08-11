@@ -67,7 +67,7 @@ public class DtwEditorFrame extends javax.swing.JFrame {
         for (int i = 0; i < inputNames.length; i++) {
             final int which = i;
             inputs[i] = new JCheckBox(inputNames[i]);
-            inputs[i].setSelected(m.isUsingInput(inputNames[i]));
+            inputs[i].setSelected(m.isInputSelected(i));
             inputs[i].addMouseListener(new MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent evt) {
                     mouseClick(which);
@@ -699,14 +699,12 @@ public class DtwEditorFrame extends javax.swing.JFrame {
         return sum;
     }
     
-    private String[] getSelectedInputNames() {
-        List<String> selected = new LinkedList<>();
+    private boolean[] getInputSelection() {
+        boolean[] selected = new boolean[inputs.length];
         for (int i = 0; i < inputs.length; i++) {
-            if (inputs[i].isSelected()) {
-                selected.add(inputNames[i]);
-            }
+            selected[i] = inputs[i].isSelected();
         }
-        return selected.toArray(new String[0]);
+        return selected;
     }
 
     private void applyChanges() {
@@ -715,8 +713,8 @@ public class DtwEditorFrame extends javax.swing.JFrame {
       //if (newOutput != null) {
         //  w.getSupervisedLearningManager().updatePath(p, newOutput, newModelBuilder, getSelectedInputNames());
           
-       w.getDtwLearningManager().updateModel(m, newDtwSettings, getSelectedInputNames());
-               
+       w.getDtwLearningManager().updateModel(m, newDtwSettings, getInputSelection());
+           
          //w.getOutputManager().updateOutput(newOutput, p.getOSCOutput());
        // w.getSupervisedLearningManager().updateOutput()
         //New P or existing p??
