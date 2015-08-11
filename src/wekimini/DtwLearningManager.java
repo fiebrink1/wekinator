@@ -240,7 +240,7 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         /* for (DtwModel m : models) {
          m.deleteAllExamples();
          } */
-        model.getData().deleteAllExamples();
+        model.getData().deleteAll();
     }
 
     public DtwData getData() {

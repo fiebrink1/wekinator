@@ -254,18 +254,18 @@ public class DtwData {
     }
 
     public void deleteAll() {
+        for (int i = 0; i < numGestures; i++) {
+            allExamples.get(i).clear();
+        }
         exampleListForIds.clear();
         examplesForIds.clear();
-        allExamples.clear();
-        for (int i = 0; i < numGestures; i++) {
-            allExamples.add(new LinkedList<DtwExample>());
-        }
+        setNumTotalExamples(0);
+        
         minSizeInExamples = Integer.MAX_VALUE;
         minSizeInDownsampledExamples = Integer.MAX_VALUE;
         maxSizeInExamples = 0;
         maxSizeInDownsampledExamples = 0;
         setNumTotalExamples(0);
-
         for (int i = 0; i < numGestures; i++) {
             notifyExamplesChangedListeners(i, 0);
         }
@@ -546,9 +546,15 @@ public class DtwData {
     }
 
     public void deleteExamplesForGesture(int gestureNum) {
-        //TODO: Danger - must re-set IDs, re-set min/max values, etc.
-        allExamples.get(gestureNum).clear();
-        notifyExamplesChangedListeners(gestureNum, 0);
+        List<DtwExample> exs = getExamplesForGesture(gestureNum);
+        int[] idsToDelete = new int[exs.size()];
+        int i =0;
+        for (DtwExample ex : exs) {
+            idsToDelete[i++] = ex.getId();
+        }
+        for (i = 0; i < idsToDelete.length; i++) {
+            delete(idsToDelete[i]);
+        }
     }
 
     public void deleteMostRecentExample(int gestureNum) {
@@ -577,15 +583,6 @@ public class DtwData {
         }
         sb.append("\n");
         return sb.toString();
-    }
-
-    public void deleteAllExamples() {
-        /* for (DtwModel m : models) {
-         m.deleteAllExamples();
-         } */
-        for (int i = 0; i < numGestures; i++) {
-            deleteExamplesForGesture(i);
-        }
     }
 
     int getMinSizeInDownsampledExamples() {
