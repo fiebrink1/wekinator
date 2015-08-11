@@ -39,7 +39,7 @@ public class DtwData {
     private int maxSizeInExamples = 0;
     private int minSizeInDownsampledExamples = Integer.MAX_VALUE;
     private int maxSizeInDownsampledExamples = 0;
-    
+
     private int maxLengthToRetainDuringRun = Integer.MAX_VALUE;
     private static final Logger logger = Logger.getLogger(DtwData.class.getName());
     //private int numTotalExamples = 0;
@@ -55,6 +55,12 @@ public class DtwData {
     //private boolean isDownsampling = false;
     private transient int downsampleCounter = 0;
     private DtwSettings.DownsamplePolicy downsamplePolicy = DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING;
+
+    private DtwExample lastExample = null;
+    private int lastExampleCategory = 0;
+
+    private DtwExample lastDeletedExample = null;
+    private int lastDeletedExampleCategory = 0;
 
     public int getDownsampleFactor() {
         return downsampleFactor;
@@ -83,8 +89,9 @@ public class DtwData {
 
     private int computeDownsampleFactorForMaxLength() {
         int f = maxSizeInExamples / downsampleToLength;
-        if (f == 0) 
+        if (f == 0) {
             f = 1;
+        }
         return f;
     }
 
@@ -104,7 +111,7 @@ public class DtwData {
     private static TimeSeries downSample(int downsampleFactor, DtwExample ex) {
         return downSample(downsampleFactor, ex.getTimeSeries());
     }
-    
+
     private static TimeSeries downSample(int downsampleFactor, TimeSeries ts) {
         TimeSeries downsampled = new TimeSeries(ts.numOfDimensions());
 
@@ -221,7 +228,6 @@ public class DtwData {
         if (matchingExample.getDownsampledTimeSeries().size() == maxSizeInDownsampledExamples) {
             updateMaxDownsampledSize();
         }
-        
 
         exampleListForIds.remove(id);
         examplesForIds.remove(id);
@@ -293,16 +299,20 @@ public class DtwData {
             w.getStatusUpdateCenter().warn(this, "Could not add new example: length was 0");
             return;
         }
-        LinkedList<DtwExample> list = allExamples.get(currentClass);
         int id = DtwExample.generateNextID();
         DtwExample ex;
-        
+
         if (downsamplePolicy == DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING) {
             ex = new DtwExample(currentTimeSeries, id);
         } else {
             TimeSeries ds = downSample(downsampleFactor, currentTimeSeries);
             ex = new DtwExample(currentTimeSeries, ds, id);
         }
+        addExample(ex, currentClass, id);
+    }
+
+    private void addExample(DtwExample ex, int gestureClass, int id) {
+        LinkedList<DtwExample> list = allExamples.get(gestureClass);
         list.add(ex);
         if (currentTimeSeries.size() < minSizeInExamples) {
             minSizeInExamples = currentTimeSeries.size();
@@ -320,9 +330,13 @@ public class DtwData {
         if (ex.getDownsampledTimeSeries().size() > maxSizeInDownsampledExamples) {
             maxSizeInDownsampledExamples = ex.getDownsampledTimeSeries().size();
         }
-        
+
         exampleListForIds.put(id, list);
         examplesForIds.put(id, ex);
+
+        lastExample = ex;
+        lastExampleCategory = currentClass;
+
         setNumTotalExamples(numTotalExamples + 1);
         notifyExamplesChangedListeners(currentClass, list.size());
         notifyExampleAddedListeners(currentClass);
@@ -408,13 +422,13 @@ public class DtwData {
         }
         minSizeInExamples = min;
     }
-    
-     private void updateMinDownsampledSize() {
+
+    private void updateMinDownsampledSize() {
         int min = Integer.MAX_VALUE;
         for (List<DtwExample> list : allExamples) {
             for (DtwExample ex : list) {
                 if (ex.getDownsampledTimeSeries().size() < min) {
-                    min = ex.getTimeSeries().size();
+                    min = ex.getDownsampledTimeSeries().size();
                 }
             }
         }
@@ -437,7 +451,7 @@ public class DtwData {
         }
     }
 
-     private void updateMaxDownsampledSize() {
+    private void updateMaxDownsampledSize() {
         int max = 0;
         for (List<DtwExample> list : allExamples) {
             for (DtwExample ex : list) {
@@ -561,6 +575,30 @@ public class DtwData {
 
     int getMaxSizeInDownsampledExamples() {
         return maxSizeInDownsampledExamples;
+    }
+
+    public void reAddLastExample() {
+        if (lastDeletedExample != null) {
+            int id = lastDeletedExample.getId();
+            addExample(lastDeletedExample, lastDeletedExampleCategory, id);
+            
+            lastExample = lastDeletedExample;
+            lastExampleCategory = lastDeletedExampleCategory;
+            lastDeletedExample = null;
+            lastDeletedExampleCategory = 0;
+        }
+    }
+
+    public void deleteLastExample() {
+        if (lastExample != null) {
+            int id = lastExample.getId();
+            delete(id);
+
+            lastDeletedExample = lastExample;
+            lastDeletedExampleCategory = lastExampleCategory;
+            lastExample = null;
+            lastExampleCategory = 0;
+        }
     }
 
     public interface DtwDataListener {

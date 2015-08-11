@@ -29,7 +29,7 @@ public class DtwLearningSetGUI extends javax.swing.JPanel {
     private final ImageIcon playIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/play1.png"));
     private final ImageIcon playIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noplay1.png"));
     private static final Logger logger = Logger.getLogger(DtwLearningSetGUI.class.getName());
-
+    private boolean sliderIsResizing = false;
     /**
      * Creates new form LearningSet1
      */
@@ -386,7 +386,7 @@ public class DtwLearningSetGUI extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void sliderThresholdStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderThresholdStateChanged
-        if (!sliderThreshold.getValueIsAdjusting()) {
+        if (!sliderThreshold.getValueIsAdjusting() && !sliderIsResizing) {
             double t = sliderThreshold.getValue() * .01;
             w.getDtwLearningManager().getModel().setMatchThreshold(t);
             //analyzer.setMatchThreshold(t);
@@ -400,7 +400,9 @@ public class DtwLearningSetGUI extends javax.swing.JPanel {
     }//GEN-LAST:event_buttonEditLearner2ActionPerformed
 
     private void updateMaxSlider(Integer newMax) {
+        sliderIsResizing = true;
         sliderThreshold.setMaximum(newMax);
+        sliderIsResizing = false;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

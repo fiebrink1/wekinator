@@ -524,9 +524,9 @@ public class DtwModel implements Model {
     private void updateMaxSliderValue() {
         double newDist = maxDistance;
         if (newDist > matchThreshold) {
-            setMaxSliderValue((int) (100 * newDist) + 1);
+            setMaxSliderValue((int) (100 * newDist) + 1); //Updates matchThreshold too!
         } else {
-            setMaxSliderValue((int) (100 * matchThreshold) + 1);
+            setMaxSliderValue((int) (100 * matchThreshold) + 1); //updates matchThreshold too!
         }
         System.out.println("Slider max set to " + getMaxSliderValue() * .01);
     }
@@ -640,7 +640,7 @@ public class DtwModel implements Model {
              min = minSizeInExamples; //this means 1 very short example can break everything: disallow
              } */
         }
-        System.out.println("Classifying with min=" + min);
+        //System.out.println("Classifying with min=" + min);
 
         int max;
         if (settings.getDownsamplePolicy() == DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING) {
@@ -649,7 +649,7 @@ public class DtwModel implements Model {
             max = maxSizeInDownsampledExamples;
         }
 
-        List<TimeSeries> l = data.getCandidateSeriesFromCurrentRun(min, maxSizeInExamples, settings.getHopSizeForContinuousSearch());
+        List<TimeSeries> l = data.getCandidateSeriesFromCurrentRun(min, max, settings.getHopSizeForContinuousSearch());
 
         double closestDist = Double.MAX_VALUE;
         int closestClass = -1;

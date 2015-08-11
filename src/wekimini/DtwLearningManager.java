@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static wekimini.DtwLearningManager.RunningState.NOT_RUNNING;
 import wekimini.learning.dtw.DtwData;
+import wekimini.learning.dtw.DtwExample;
 import wekimini.learning.dtw.DtwModel;
 import wekimini.learning.dtw.DtwSettings;
 import wekimini.osc.OSCDtwOutput;
@@ -33,6 +34,8 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
     public static final String PROP_RUNNING_STATE = "runningState";
     public static final String PROP_HAS_EXAMPLES = "hasExamples";
     private boolean hasExamples = false;
+    private DtwExample lastExample = null;
+    private int lastExampleCategory = 0;
 
     public DtwLearningManager(Wekinator w, OSCOutputGroup group) {
         this.w = w;
@@ -118,7 +121,7 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
     }
 
     public void reAddLastExample() {
-        //XXX
+        model.getData().reAddLastExample();
     }
 
     public boolean hasExamples() {
@@ -126,7 +129,10 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
     }
 
     public void deleteLastExample() {
-        //XXX
+        //TODO: Have to update "last example" when we delete manually
+        //Solution: have a linked list of n previous examples, n deleted examples...
+        // XXX
+        model.getData().deleteLastExample();       
     }
 
     public void updateModel(DtwModel m, DtwSettings newDtwSettings, String[] selectedInputNames) {
