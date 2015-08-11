@@ -99,6 +99,7 @@ public class DtwData {
         return downsamplePolicy;
     }
 
+    //Requires downsampleFactor is reset
     private void redoDownsampleTraining() {
         //TODO XXX make sure doesn't break if done while running/training; may have to pause running/training
         for (List<DtwExample> exampleList : allExamples) {
@@ -225,8 +226,10 @@ public class DtwData {
         if (matchingExample.getDownsampledTimeSeries().size() == minSizeInDownsampledExamples) {
             updateMinDownsampledSize();
         }
+        boolean maxDownsampledUpdated = false;
         if (matchingExample.getDownsampledTimeSeries().size() == maxSizeInDownsampledExamples) {
             updateMaxDownsampledSize();
+            maxDownsampledUpdated = true;
         }
 
         exampleListForIds.remove(id);
@@ -235,6 +238,11 @@ public class DtwData {
         int whichClass = allExamples.indexOf(matchingList);
 
         setNumTotalExamples(numTotalExamples - 1);
+
+        if (maxDownsampledUpdated && downsamplePolicy == DtwSettings.DownsamplePolicy.DOWNSAMPLE_TO_MAX_LENGTH) {
+            computeDownsampleFactorForMaxLength();
+            redoDownsampleTraining();
+        }
 
         notifyExamplesChangedListeners(whichClass, matchingList.size());
         notifyExampleDeletedListeners(whichClass);
@@ -533,16 +541,22 @@ public class DtwData {
     }
 
     public void deleteExamplesForGesture(int gestureNum) {
+        //TODO: Danger - must re-set IDs, re-set min/max values, etc.
         allExamples.get(gestureNum).clear();
         notifyExamplesChangedListeners(gestureNum, 0);
     }
 
     public void deleteMostRecentExample(int gestureNum) {
-        DtwExample removed = allExamples.get(gestureNum).removeLast();
+        DtwExample last = allExamples.get(gestureNum).getLast();
+        if (last != null) {
+            delete(last.getId());
+        }
+        
+        /*DtwExample removed = allExamples.get(gestureNum).removeLast();
         if (removed != null) {
             notifyExampleDeletedListeners(gestureNum);
             notifyExamplesChangedListeners(gestureNum, allExamples.get(gestureNum).size());
-        }
+        } */
     }
 
     public String getSummaryString() {
@@ -581,7 +595,7 @@ public class DtwData {
         if (lastDeletedExample != null) {
             int id = lastDeletedExample.getId();
             addExample(lastDeletedExample, lastDeletedExampleCategory, id);
-            
+
             lastExample = lastDeletedExample;
             lastExampleCategory = lastDeletedExampleCategory;
             lastDeletedExample = null;

@@ -81,6 +81,8 @@ public class DtwLearningSetGUI extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jFrame1 = new javax.swing.JFrame();
+        jLabel4 = new javax.swing.JLabel();
         panelHeader = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -104,6 +106,26 @@ public class DtwLearningSetGUI extends javax.swing.JPanel {
         sliderThreshold = new javax.swing.JSlider();
         jLabel5 = new javax.swing.JLabel();
         buttonEditLearner2 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+
+        jLabel4.setText("Set slider maximum sensitivity to");
+
+        javax.swing.GroupLayout jFrame1Layout = new javax.swing.GroupLayout(jFrame1.getContentPane());
+        jFrame1.getContentPane().setLayout(jFrame1Layout);
+        jFrame1Layout.setHorizontalGroup(
+            jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jFrame1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel4)
+                .addContainerGap(183, Short.MAX_VALUE))
+        );
+        jFrame1Layout.setVerticalGroup(
+            jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jFrame1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel4)
+                .addContainerGap(278, Short.MAX_VALUE))
+        );
 
         setMinimumSize(new java.awt.Dimension(580, 0));
         setPreferredSize(new java.awt.Dimension(580, 348));
@@ -296,7 +318,7 @@ public class DtwLearningSetGUI extends javax.swing.JPanel {
             }
         });
 
-        jLabel5.setText("Match threshold:");
+        jLabel5.setText("Sensitivity");
 
         buttonEditLearner2.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         buttonEditLearner2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/pencil2.png"))); // NOI18N
@@ -310,6 +332,14 @@ public class DtwLearningSetGUI extends javax.swing.JPanel {
             }
         });
 
+        jButton1.setFont(new java.awt.Font("Lucida Grande", 2, 10)); // NOI18N
+        jButton1.setText("edit slider");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelThresholdLayout = new javax.swing.GroupLayout(panelThreshold);
         panelThreshold.setLayout(panelThresholdLayout);
         panelThresholdLayout.setHorizontalGroup(
@@ -317,22 +347,26 @@ public class DtwLearningSetGUI extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelThresholdLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(buttonEditLearner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sliderThreshold, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panelThresholdLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addComponent(sliderThreshold, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelThresholdLayout.setVerticalGroup(
             panelThresholdLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelThresholdLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
             .addComponent(sliderThreshold, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(panelThresholdLayout.createSequentialGroup()
-                .addComponent(buttonEditLearner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel5)
+                .addGap(0, 0, 0)
+                .addComponent(jButton1)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelThresholdLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(buttonEditLearner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -350,8 +384,8 @@ public class DtwLearningSetGUI extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(panelHeader, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(scrollRowsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
-                .addGap(0, 0, 0)
+                .addComponent(scrollRowsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelThreshold, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -399,6 +433,10 @@ public class DtwLearningSetGUI extends javax.swing.JPanel {
         w.getMainGUI().showDtwEditor(model);
     }//GEN-LAST:event_buttonEditLearner2ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     private void updateMaxSlider(Integer newMax) {
         sliderIsResizing = true;
         sliderThreshold.setMaximum(newMax);
@@ -407,18 +445,19 @@ public class DtwLearningSetGUI extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonDeleteAllExamples;
-    private javax.swing.JButton buttonEditLearner;
-    private javax.swing.JButton buttonEditLearner1;
     private javax.swing.JButton buttonEditLearner2;
     private javax.swing.JButton buttonViewExamples;
     private wekimini.dtw.gui.DtwLearningRow dtwLearningRow1;
     private wekimini.dtw.gui.DtwLearningRow dtwLearningRow2;
     private wekimini.dtw.gui.DtwLearningRow dtwLearningRow3;
     private wekimini.dtw.gui.DtwLearningRow dtwLearningRow4;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton5;
+    private javax.swing.JFrame jFrame1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
