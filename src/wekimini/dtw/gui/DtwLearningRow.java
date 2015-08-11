@@ -104,7 +104,7 @@ public class DtwLearningRow extends javax.swing.JPanel {
             }
         });
         
-        myModel.addNormalizedDtwUpdateListener(new DtwModel.DtwUpdateListener() {
+        myModel.addNormalizedDtwUpdateListener(new DtwModel.DtwUpdateListener1() {
 
             @Override
             public void dtwUpdateReceived(double[] normalizedDistances) {

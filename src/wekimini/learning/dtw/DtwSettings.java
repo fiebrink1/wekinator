@@ -14,11 +14,11 @@ import static wekimini.learning.dtw.DtwSettings.RunningType.LABEL_CONTINUOUSLY;
  */
 public class DtwSettings {
     public static final double DEFAULT_MATCH_THRESHOLD = 0.3;
-    public static final int DEFAULT_MIN_ALLOWED_GESTURE_LENGTH = 5; //TODO: Do somethign more reasonable with this (set from data)
+    public static final int DEFAULT_MIN_ALLOWED_GESTURE_LENGTH = 5;
     public static final int DEFAULT_HOP_SIZE_FOR_CONTINUOUS_SEARCH = 1;
     public static final RunningType DEFAULT_RUNNING_TYPE = LABEL_CONTINUOUSLY;
     public static final int DEFAULT_MATCH_WIDTH = 5;
-    public static final MinimumLengthRestriction DEFAULT_MIN_LENGTH_RESTRICTION = SET_FROM_EXAMPLES;
+    public static final MinimumLengthRestriction DEFAULT_MIN_LENGTH_RESTRICTION = MinimumLengthRestriction.SET_CONSTANT;
     public static final DownsamplePolicy DEFAULT_DOWN_SAMPLE_POLICY = DownsamplePolicy.DOWNSAMPLE_TO_MAX_LENGTH;
     public static final int DEFAULT_DOWNSAMPLE_MAX_LENGTH = 10;
     public static final int DEFAULT_DOWNSAMPLE_FACTOR = 5;

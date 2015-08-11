@@ -56,12 +56,11 @@ public class DtwModel implements Model {
     public static final String PROP_CURRENT_MATCH = "currentMatch";
     public static final String PROP_MAX_DISTANCE = "maxDistance";
 
-    private final transient List<DtwUpdateListener> updateListeners = new LinkedList<>();
-    private final transient List<DtwUpdateListener> normalizedUpdateListeners = new LinkedList<>();
+    private final transient List<DtwUpdateListener1> updateListeners = new LinkedList<>();
+    private final transient List<DtwUpdateListener1> normalizedUpdateListeners = new LinkedList<>();
     private transient int currentMatch = -1;
     private final boolean[] isGestureActive;
     private final DtwData data;
-    private transient TimeSeries currentTs;
     private int numGestures = 0;
     private final transient double[] closestDistances;
     private final transient double[] normalizedDistances;
@@ -434,25 +433,25 @@ public class DtwModel implements Model {
         }
     }
 
-    public void addDtwUpdateListener(DtwUpdateListener listener) {
+    public void addDtwUpdateListener(DtwUpdateListener1 listener) {
         if (listener != null) {
             updateListeners.add(listener);
         }
     }
 
-    public void addNormalizedDtwUpdateListener(DtwUpdateListener listener) {
+    public void addNormalizedDtwUpdateListener(DtwUpdateListener1 listener) {
         if (listener != null) {
             normalizedUpdateListeners.add(listener);
         }
     }
 
-    public void removeDtwUpdateListener(DtwUpdateListener listener) {
+    public void removeDtwUpdateListener(DtwUpdateListener1 listener) {
         if (listener != null) {
             updateListeners.remove(listener);
         }
     }
 
-    public void removeNormalizedDtwUpdateListener(DtwUpdateListener listener) {
+    public void removeNormalizedDtwUpdateListener(DtwUpdateListener1 listener) {
         if (listener != null) {
             normalizedUpdateListeners.remove(listener);
         }
@@ -464,7 +463,9 @@ public class DtwModel implements Model {
         for (int i = 0; i < closestDistances.length; i++) {
             closestDistances[i] = Double.MAX_VALUE;
         }
-
+        
+        TimeSeries currentTs = data.getCurrentTimeSeries();
+        
         for (int whichClass = 0; whichClass < numGestures; whichClass++) {
             if (isGestureActive[whichClass]) {
                 for (DtwExample ex : data.getExamplesForGesture(whichClass)) {
@@ -524,9 +525,11 @@ public class DtwModel implements Model {
     private void updateMaxSliderValue() {
         double newDist = maxDistance;
         if (newDist > matchThreshold) {
-            setMaxSliderValue((int) (100 * newDist) + 1); //Updates matchThreshold too!
+            ///setMaxSliderValue((int) (100 * newDist) + 1); //No longer updates matchThreshold
+            setMaxSliderValue((int) (200 * newDist) + 1);
         } else {
-            setMaxSliderValue((int) (100 * matchThreshold) + 1); //updates matchThreshold too!
+            //setMaxSliderValue((int) (100 * matchThreshold) + 1); //No longer updates matchThreshold; this effectively takes current match threshold and makes it slider max which is not so cool
+            setMaxSliderValue((int) (500 * matchThreshold) + 1);
         }
         System.out.println("Slider max set to " + getMaxSliderValue() * .01);
     }
@@ -711,13 +714,13 @@ public class DtwModel implements Model {
     }
 
     private void notifyUpdateListeners(double[] closest) {
-        for (DtwUpdateListener l : updateListeners) {
+        for (DtwUpdateListener1 l : updateListeners) {
             l.dtwUpdateReceived(closest);
         }
     }
 
     private void notifyNormalizedUpdateListeners(double[] closest) {
-        for (DtwUpdateListener l : normalizedUpdateListeners) {
+        for (DtwUpdateListener1 l : normalizedUpdateListeners) {
             l.dtwUpdateReceived(closest);
         }
     }
@@ -726,8 +729,7 @@ public class DtwModel implements Model {
         return data;
     }
 
-    public interface DtwUpdateListener {
-
+    public interface DtwUpdateListener1 {
         public void dtwUpdateReceived(double[] currentDistances);
     }
 

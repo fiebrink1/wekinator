@@ -69,9 +69,12 @@ public class DtwData {
     public void setDownsampleByConstantFactor(int downsampleFactor) {
         downsamplePolicy = DtwSettings.DownsamplePolicy.DOWNSAMPLE_BY_CONSTANT_FACTOR;
         downsampleCounter = 0;
+        this.downsampleFactor = downsampleFactor;
         //if (this.downsampleFactor != downsampleFactor) { // Might be inefficient, but otherwise danger is of not having downsampled newer training examples
         //    this.downsampleFactor = downsampleFactor;
         redoDownsampleTraining();
+        updateMaxDownsampledSize();
+        updateMinDownsampledSize();
         //}
     }
 
@@ -85,6 +88,8 @@ public class DtwData {
         downsampleToLength = len;
         downsampleFactor = computeDownsampleFactorForMaxLength();
         redoDownsampleTraining();
+        updateMaxDownsampledSize();
+        updateMinDownsampledSize();
     }
 
     private int computeDownsampleFactorForMaxLength() {
@@ -613,6 +618,10 @@ public class DtwData {
             lastExample = null;
             lastExampleCategory = 0;
         }
+    }
+
+    TimeSeries getCurrentTimeSeries() {
+        return currentTimeSeries;
     }
 
     public interface DtwDataListener {

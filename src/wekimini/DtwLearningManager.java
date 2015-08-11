@@ -47,7 +47,7 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         int numGestures = out.getNumGestures();
         model = new DtwModel(out.getName(), out, numGestures, w, this, new DtwSettings());
         
-        model.addDtwUpdateListener(new DtwModel.DtwUpdateListener() {
+        model.addDtwUpdateListener(new DtwModel.DtwUpdateListener1() {
 
             @Override
             public void dtwUpdateReceived(double[] currentDistances) {
