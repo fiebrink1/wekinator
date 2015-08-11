@@ -361,11 +361,11 @@ public class DtwData {
     private void addExample(DtwExample ex) {
         LinkedList<DtwExample> list = allExamples.get(ex.getGestureClass());
         list.add(ex);
-        if (currentTimeSeries.size() < minSizeInExamples) {
-            minSizeInExamples = currentTimeSeries.size();
+        if (ex.getTimeSeries().size() < minSizeInExamples) {
+            minSizeInExamples = ex.getTimeSeries().size();
         }
-        if (currentTimeSeries.size() > maxSizeInExamples) {
-            maxSizeInExamples = currentTimeSeries.size();
+        if (ex.getTimeSeries().size() > maxSizeInExamples) {
+            maxSizeInExamples = ex.getTimeSeries().size();
             if (downsamplePolicy == DtwSettings.DownsamplePolicy.DOWNSAMPLE_TO_MAX_LENGTH) {
                 downsampleFactor = computeDownsampleFactorForMaxLength();
                 redoDownsampleTraining();
