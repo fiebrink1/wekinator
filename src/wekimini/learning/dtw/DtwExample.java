@@ -15,25 +15,28 @@ public class DtwExample {
 
     private final TimeSeries timeSeries;
     private TimeSeries downsampledTimeSeries;
+    private final int gestureClass;
     private final int id;
     public static int MAX_ID = 1;
 
-    public DtwExample(TimeSeries timeSeries, int id) {
+    public DtwExample(TimeSeries timeSeries, int id, int gestureClass) {
         this.timeSeries = timeSeries;
         this.downsampledTimeSeries = new TimeSeries(timeSeries);
         this.id = id;
         if (id > MAX_ID) {
             MAX_ID = id;
         }
+        this.gestureClass = gestureClass;
     }
     
-    public DtwExample(TimeSeries timeSeries, TimeSeries downsampled, int id) {
+    public DtwExample(TimeSeries timeSeries, TimeSeries downsampled, int id, int gestureClass) {
         this.timeSeries = timeSeries;
         this.downsampledTimeSeries = downsampled;
         this.id = id;
         if (id > MAX_ID) {
             MAX_ID = id;
         }
+        this.gestureClass = gestureClass;
     }
 
     public static int generateNextID() {
@@ -59,6 +62,11 @@ public class DtwExample {
     
     public TimeSeries getDownsampledTimeSeries() {
         return downsampledTimeSeries;
+    }
+    
+    //Starts with 0
+    public int getGestureClass() {
+        return gestureClass;
     }
     
 }

@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import javax.swing.event.EventListenerList;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
+import wekimini.osc.OSCOutputGroup;
 import wekimini.util.WeakListenerSupport;
 import wekimini.osc.OSCReceiver;
 
@@ -341,7 +342,8 @@ public class OutputManager {
     }
 
     public boolean containsOutputName(String name) {
-        for (OSCOutput o : outputGroup.getOutputs()) {
+        List<OSCOutput> l = outputGroup.getOutputs();
+        for (OSCOutput o : l) {
             if (o.getName().equals(name)) {
                 return true;
             }

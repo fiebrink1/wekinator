@@ -106,9 +106,6 @@ public class DtwModel implements Model {
         boolean[] oldSelectedInputs = this.selectedInputs;
         this.selectedInputs = selectedInputs;
         distanceFunction = new EuclideanDistanceWithInputSelection(selectedInputs);
-        
-        //XXX must update stuff now in model -- min/ max distance etc.?
-        
         updateMaxDistance();
         updateID();
         for (int i = 0; i < numGestures; i++) {

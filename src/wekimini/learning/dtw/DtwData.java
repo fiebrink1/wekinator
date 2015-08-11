@@ -9,6 +9,7 @@ import com.timeseries.TimeSeries;
 import com.timeseries.TimeSeriesPoint;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -32,7 +33,7 @@ public class DtwData {
     private transient int currentClass;
     private transient final Wekinator w;
     private final ArrayList<LinkedList<DtwExample>> allExamples;
-    private final HashMap<Integer, LinkedList<DtwExample>> exampleListForIds;
+    //private final HashMap<Integer, LinkedList<DtwExample>> exampleListForIds;
     private final HashMap<Integer, DtwExample> examplesForIds;
 
     private int minSizeInExamples = Integer.MAX_VALUE;
@@ -46,7 +47,7 @@ public class DtwData {
 
     private int numTotalExamples = 0;
     private final int numInputs;
-    private int numActiveInputs;
+    //private int numActiveInputs;
 
     public static final String PROP_NUMTOTALEXAMPLES = "numTotalExamples";
 
@@ -55,12 +56,34 @@ public class DtwData {
     //private boolean isDownsampling = false;
     private transient int downsampleCounter = 0;
     private DtwSettings.DownsamplePolicy downsamplePolicy = DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING;
+    private final ArrayDeque<DtwExample> examplesInOrder;
+    private final ArrayDeque<DtwExample> deletedExamplesInOrder;
+    //private DtwExample lastExample = null;
+    //private DtwExample lastDeletedExample = null;
+    
+    private int numDeletedAndCached;
+    public static final String PROP_NUM_DELETED_AND_CACHED = "numDeletedAndCached";
 
-    private DtwExample lastExample = null;
-    private int lastExampleCategory = 0;
+    /**
+     * Get the value of numDeletedAndCached
+     *
+     * @return the value of numDeletedAndCached
+     */
+    public int getNumDeletedAndCached() {
+        return numDeletedAndCached;
+    }
 
-    private DtwExample lastDeletedExample = null;
-    private int lastDeletedExampleCategory = 0;
+    /**
+     * Set the value of numDeletedAndCached
+     *
+     * @param numDeletedAndCached new value of numDeletedAndCached
+     */
+    private void setNumDeletedAndCached(int numDeletedAndCached) {
+        int oldNumDeletedAndCached = this.numDeletedAndCached;
+        this.numDeletedAndCached = numDeletedAndCached;
+        propertyChangeSupport.firePropertyChange(PROP_NUM_DELETED_AND_CACHED, oldNumDeletedAndCached, numDeletedAndCached);
+    }
+
 
     public int getDownsampleFactor() {
         return downsampleFactor;
@@ -170,17 +193,22 @@ public class DtwData {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
+    //Learning manager needs to be its own parameter here, since this data is created during setup
+    //before wekinator knows about it
     public DtwData(int numGestures, DtwLearningManager learningManager, Wekinator w) {
         this.numGestures = numGestures;
         this.w = w;
         this.numInputs = w.getInputManager().getNumInputs();
-        this.numActiveInputs = numInputs; //XXX if learning manager has connection info here, need to use it now
+        //  this.numActiveInputs = numInputs; //XXX if learning manager has connection info here, need to use it now
         allExamples = new ArrayList<>();
         for (int i = 0; i < numGestures; i++) {
             allExamples.add(new LinkedList<DtwExample>());
         }
-        exampleListForIds = new HashMap<>();
+       // exampleListForIds = new HashMap<>();
         examplesForIds = new HashMap<>();
+        examplesInOrder = new ArrayDeque<>();
+        deletedExamplesInOrder = new ArrayDeque<>();
+        
         learningManager.addConnectionsListener(new ConnectsInputsToOutputs.InputOutputConnectionsListener() {
 
             @Override
@@ -206,13 +234,13 @@ public class DtwData {
     }
 
     public void delete(int id) {
-        List<DtwExample> matchingList = exampleListForIds.get(id);
+        DtwExample matchingExample = examplesForIds.get(id);
+        List<DtwExample> matchingList = allExamples.get(matchingExample.getGestureClass());
         int whichClass = allExamples.indexOf(matchingList);
         if (matchingList == null) {
             logger.log(Level.WARNING, "ID {0} not found in exampleListForIds!", id);
             return;
         }
-        DtwExample matchingExample = examplesForIds.get(id);
         if (matchingExample == null) {
             logger.log(Level.WARNING, "ID {0} not found in examplesForIds", id);
             return;
@@ -238,13 +266,15 @@ public class DtwData {
             maxDownsampledUpdated = true;
         }
 
-        exampleListForIds.remove(id);
+       // exampleListForIds.remove(id);
         examplesForIds.remove(id);
-
+        examplesInOrder.remove(matchingExample);
+        deletedExamplesInOrder.addLast(matchingExample);
+        setNumDeletedAndCached(deletedExamplesInOrder.size());
+        
+        
         //int whichClass = allExamples.indexOf(matchingList); // this breaks when element is empty list
         //int whichClass = removed.getGestureIndex();
-        
-        
         setNumTotalExamples(numTotalExamples - 1);
 
         if (maxDownsampledUpdated && downsamplePolicy == DtwSettings.DownsamplePolicy.DOWNSAMPLE_TO_MAX_LENGTH) {
@@ -260,10 +290,11 @@ public class DtwData {
         for (int i = 0; i < numGestures; i++) {
             allExamples.get(i).clear();
         }
-        exampleListForIds.clear();
+        //exampleListForIds.clear();
         examplesForIds.clear();
         setNumTotalExamples(0);
-        
+        examplesInOrder.clear();
+
         minSizeInExamples = Integer.MAX_VALUE;
         minSizeInDownsampledExamples = Integer.MAX_VALUE;
         maxSizeInExamples = 0;
@@ -276,7 +307,7 @@ public class DtwData {
     }
 
     protected void startRecording(int currentClass) {
-        currentTimeSeries = new TimeSeries(numActiveInputs);
+        currentTimeSeries = new TimeSeries(numInputs);
         currentTime = 0;
         this.currentClass = currentClass;
     }
@@ -319,16 +350,16 @@ public class DtwData {
         DtwExample ex;
 
         if (downsamplePolicy == DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING) {
-            ex = new DtwExample(currentTimeSeries, id);
+            ex = new DtwExample(currentTimeSeries, id, currentClass);
         } else {
             TimeSeries ds = downSample(downsampleFactor, currentTimeSeries);
-            ex = new DtwExample(currentTimeSeries, ds, id);
+            ex = new DtwExample(currentTimeSeries, ds, id, currentClass);
         }
-        addExample(ex, currentClass, id);
+        addExample(ex);
     }
 
-    private void addExample(DtwExample ex, int gestureClass, int id) {
-        LinkedList<DtwExample> list = allExamples.get(gestureClass);
+    private void addExample(DtwExample ex) {
+        LinkedList<DtwExample> list = allExamples.get(ex.getGestureClass());
         list.add(ex);
         if (currentTimeSeries.size() < minSizeInExamples) {
             minSizeInExamples = currentTimeSeries.size();
@@ -347,11 +378,10 @@ public class DtwData {
             maxSizeInDownsampledExamples = ex.getDownsampledTimeSeries().size();
         }
 
-        exampleListForIds.put(id, list);
-        examplesForIds.put(id, ex);
+        //exampleListForIds.put(id, list);
+        examplesForIds.put(ex.getId(), ex);
 
-        lastExample = ex;
-        lastExampleCategory = currentClass;
+        examplesInOrder.addLast(ex);
 
         setNumTotalExamples(numTotalExamples + 1);
         notifyExamplesChangedListeners(currentClass, list.size());
@@ -372,7 +402,7 @@ public class DtwData {
 
     public void startRunning() {
         currentTime = 0;
-        currentTimeSeries = new TimeSeries(numActiveInputs);
+        currentTimeSeries = new TimeSeries(numInputs); //Could just use active inputs here, but this is probably fine for many cases 
     }
 
     public void stopRunning() {
@@ -551,7 +581,7 @@ public class DtwData {
     public void deleteExamplesForGesture(int gestureNum) {
         List<DtwExample> exs = getExamplesForGesture(gestureNum);
         int[] idsToDelete = new int[exs.size()];
-        int i =0;
+        int i = 0;
         for (DtwExample ex : exs) {
             idsToDelete[i++] = ex.getId();
         }
@@ -565,12 +595,12 @@ public class DtwData {
         if (last != null) {
             delete(last.getId());
         }
-        
+
         /*DtwExample removed = allExamples.get(gestureNum).removeLast();
-        if (removed != null) {
-            notifyExampleDeletedListeners(gestureNum);
-            notifyExamplesChangedListeners(gestureNum, allExamples.get(gestureNum).size());
-        } */
+         if (removed != null) {
+         notifyExampleDeletedListeners(gestureNum);
+         notifyExamplesChangedListeners(gestureNum, allExamples.get(gestureNum).size());
+         } */
     }
 
     public String getSummaryString() {
@@ -597,26 +627,31 @@ public class DtwData {
     }
 
     public void reAddLastExample() {
-        if (lastDeletedExample != null) {
+        /*if (lastDeletedExample != null) {
             int id = lastDeletedExample.getId();
-            addExample(lastDeletedExample, lastDeletedExampleCategory, id);
+            addExample(lastDeletedExample, id);
 
             lastExample = lastDeletedExample;
-            lastExampleCategory = lastDeletedExampleCategory;
             lastDeletedExample = null;
-            lastDeletedExampleCategory = 0;
+        } */
+        if (deletedExamplesInOrder.size() > 0) {
+            DtwExample mostRecentlyDeleted = deletedExamplesInOrder.removeLast();
+            addExample(mostRecentlyDeleted);
+            setNumDeletedAndCached(deletedExamplesInOrder.size());
         }
     }
 
     public void deleteLastExample() {
-        if (lastExample != null) {
+       /* if (lastExample != null) {
             int id = lastExample.getId();
             delete(id);
 
             lastDeletedExample = lastExample;
-            lastDeletedExampleCategory = lastExampleCategory;
             lastExample = null;
-            lastExampleCategory = 0;
+        } */
+        if (examplesInOrder.size() > 0) {
+            DtwExample mostRecentlyAdded = examplesInOrder.removeLast();
+            delete(mostRecentlyAdded.getId());
         }
     }
 
@@ -645,7 +680,7 @@ public class DtwData {
         System.out.println("Before downsample:");
         System.out.println(ts.toString());
 
-        TimeSeries d = DtwData.downSample(2, new DtwExample(ts, 1));
+        TimeSeries d = DtwData.downSample(2, new DtwExample(ts, 1, 1));
         System.out.println("Downsample:");
         System.out.println(d.toString());
 

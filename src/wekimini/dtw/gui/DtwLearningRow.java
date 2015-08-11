@@ -15,7 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import wekimini.DtwLearningManager;
 import wekimini.Path;
 import wekimini.Wekinator;
 import wekimini.learning.dtw.DtwData;

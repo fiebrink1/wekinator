@@ -30,7 +30,6 @@ import wekimini.Wekinator;
 import wekimini.WekinatorController;
 import wekimini.WekinatorFileData;
 import wekimini.learning.AdaboostModelBuilder;
-import wekimini.learning.dtw.DtwModelBuilder;
 import wekimini.learning.J48ModelBuilder;
 import wekimini.learning.KNNModelBuilder;
 import wekimini.learning.LearningAlgorithmRegistry;
@@ -84,6 +83,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private GuiIONameCustomise outputCustomiser = null;
 
     private ModelBuilder[] customModelBuilders = null;
+    private boolean isCustomDtw = false;
 
     //private final OutputConfigurationFrame.OutputGroupReceiver outputGroupReceiver = this::initFormForOutputGroup;
     private final OutputConfigurationFrame.OutputConfigurationReceiver outputGroupReceiver = new OutputConfigurationFrame.OutputConfigurationReceiver() {
@@ -1246,7 +1246,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
                 int selectedIndex = comboOutputType.getSelectedIndex();
                 if (selectedIndex == COMBO_CLASSIFICATION_INDEX || selectedIndex == COMBO_REGRESSION_INDEX
-                        || (selectedIndex == COMBO_CUSTOM_INDEX && !(customModelBuilders[0] instanceof DtwModelBuilder))) {
+                        || (selectedIndex == COMBO_CUSTOM_INDEX && !isCustomDtw)) {
                     //Doing classification and/or regression 
                     w.getInputManager().setOSCInputGroup(inputGroup);
                     w.getOutputManager().setOSCOutputGroup(outputGroup);

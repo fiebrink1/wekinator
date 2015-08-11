@@ -79,6 +79,18 @@ public class DtwLearningPanel extends javax.swing.JPanel {
                 oscMonitorChanged(evt);
             }
         });
+        
+        w.getDtwLearningManager().getData().addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName().equals(DtwData.PROP_NUM_DELETED_AND_CACHED)) {
+                    updateReAddButton(((Integer)evt.getNewValue()) > 0);
+                }
+            }
+        });
+        
+        updateReAddButton(w.getDtwLearningManager().getData().getNumDeletedAndCached() > 0);
         setButtonsForLearningState();
         updateDeleteLastRoundButton();
         setInIcon(w.getOSCMonitor().getReceiveState());
@@ -371,7 +383,7 @@ public class DtwLearningPanel extends javax.swing.JPanel {
     private void buttonDeleteLastExampleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLastExampleActionPerformed
         w.getDtwLearningManager().deleteLastExample();
         w.getStatusUpdateCenter().update(this, "Deleted last example");
-        updateReAddButton(true);
+       // updateReAddButton(true);
     }//GEN-LAST:event_buttonDeleteLastExampleActionPerformed
 
     private void updateReAddButton(boolean canReAdd) {
@@ -381,7 +393,7 @@ public class DtwLearningPanel extends javax.swing.JPanel {
     private void buttonReAddLastExampleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonReAddLastExampleActionPerformed
         w.getDtwLearningManager().reAddLastExample();
         w.getStatusUpdateCenter().update(this, "Last example re-added");
-        updateReAddButton(false);
+      //  updateReAddButton(false);
     }//GEN-LAST:event_buttonReAddLastExampleActionPerformed
 
     private void buttonRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRunActionPerformed

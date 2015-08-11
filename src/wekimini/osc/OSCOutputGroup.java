@@ -17,12 +17,11 @@ import wekimini.util.Util;
  * @author rebecca
  */
 public class OSCOutputGroup {
-    private String oscMessage; //Does make sense to save this with OSC output group
+    private String oscMessage; //When all group values are being sent together, this is default message name
     private String hostName;
     private int outputPort;
     private final List<OSCOutput> outputs;
     private static final Logger logger = Logger.getLogger(OSCOutputGroup.class.getName());
-   // private float[] values;
     
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -38,21 +37,6 @@ public class OSCOutputGroup {
     public int getNumOutputs() {
         return outputs.size();
     }
-    
-    //Requires both arrays are same length
-   /* public void setValues(float[] values) {
-        //TODO: check if this is really necessary
-        System.arraycopy(values, 0, this.values, 0, values.length);
-    }
-    
-    public void setValue(int index, float value) {
-        values[index] = value;
-    }
-    
-    //Danger: values can be modified by caller
-    public float[] getValues() {
-        return values;
-    } */
     
     public String[] getOutputNames() {
         String s[] = new String[outputs.size()];
@@ -85,8 +69,6 @@ public class OSCOutputGroup {
     public void setOutputPort(int outputPort) {
         this.outputPort = outputPort;
     }
-    
-    
     
     /**
      * Remove PropertyChangeListener.
@@ -143,7 +125,6 @@ public class OSCOutputGroup {
         return outputs.get(which);
     }
 
-    @Override
     public String toString() {
         return Util.toXMLString(this, "OSCOutputGroup", OSCOutputGroup.class);
     }
