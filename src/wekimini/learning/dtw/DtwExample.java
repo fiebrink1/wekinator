@@ -17,7 +17,7 @@ public class DtwExample {
     private TimeSeries downsampledTimeSeries;
     private final int gestureClass;
     private final int id;
-    public static int MAX_ID = 1;
+    public static int MAX_ID = 0;
 
     public DtwExample(TimeSeries timeSeries, int id, int gestureClass) {
         this.timeSeries = timeSeries;

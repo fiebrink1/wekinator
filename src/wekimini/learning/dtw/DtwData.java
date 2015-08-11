@@ -384,8 +384,8 @@ public class DtwData {
         examplesInOrder.addLast(ex);
 
         setNumTotalExamples(numTotalExamples + 1);
-        notifyExamplesChangedListeners(currentClass, list.size());
-        notifyExampleAddedListeners(currentClass);
+        notifyExamplesChangedListeners(ex.getGestureClass(), list.size());
+        notifyExampleAddedListeners(ex.getGestureClass());
     }
 
     public int getNumExamplesForGesture(int gesture) {

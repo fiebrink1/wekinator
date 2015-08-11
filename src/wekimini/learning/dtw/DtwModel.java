@@ -87,6 +87,7 @@ public class DtwModel implements Model {
     private boolean[] selectedInputs;
 
     public static final String PROP_SELECTED_INPUTS = "selectedInputs";
+    private boolean wasRunningBeforeRecord = false;
 
     /**
      * Get the value of selectedInputs
@@ -439,6 +440,10 @@ public class DtwModel implements Model {
 
     public void startRecording(int currentClass) {
         if (recordingState == RecordingState.NOT_RECORDING) {
+            wasRunningBeforeRecord = (runningState == RunningState.RUNNING);
+            if (wasRunningBeforeRecord) {
+                stopRunning();
+            }
             data.startRecording(currentClass);
             setRecordingState(RecordingState.RECORDING);
         } else {
@@ -450,6 +455,10 @@ public class DtwModel implements Model {
         if (recordingState == RecordingState.RECORDING) {
             setRecordingState(RecordingState.NOT_RECORDING);
             data.stopRecording();
+        }
+        if (wasRunningBeforeRecord) {
+            startRunning();
+            wasRunningBeforeRecord = false;
         }
         // updateID();
     }
