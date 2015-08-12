@@ -333,7 +333,7 @@ public class DtwData {
                 currentTimeSeries.removeFirst();
             }
         }
-        if (downsamplePolicy != DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING && (++downsampleCounter == downsampleFactor)) {
+        if (downsamplePolicy != DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING && (++downsampleCounter >= downsampleFactor)) {
             downsampleCounter = 0;
         }
 

@@ -720,7 +720,9 @@ public class DtwModel implements Model {
         }
 
         List<TimeSeries> l = data.getCandidateSeriesFromCurrentRun(min, max, settings.getHopSizeForContinuousSearch());
-
+        System.out.println("min/Max:" + min + max);
+        
+        
         double closestDist = Double.MAX_VALUE;
         int closestClass = -1;
 
