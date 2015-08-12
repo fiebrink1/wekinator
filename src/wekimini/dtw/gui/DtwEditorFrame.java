@@ -59,7 +59,7 @@ public class DtwEditorFrame extends javax.swing.JFrame {
         initFormForModel();
         this.w = w;
         initInputsPanel(m, inputNames);
-        setTitle("Editing " + m.getPrettyName());
+        setTitle("Editing " + m.getOSCOutput().getName());
         populateExistingNames();
         
     }

@@ -413,7 +413,7 @@ public class DtwModel implements Model {
 
     @Override
     public String getPrettyName() {
-        return modelName;
+        return "Dynamic time warping";
     }
 
     @Override

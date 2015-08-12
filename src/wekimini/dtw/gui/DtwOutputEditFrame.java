@@ -121,7 +121,7 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
 
-        setTitle("Edit output name and type");
+        setTitle("Edit names and OSC messages");
 
         panelOutputEditRow.setLayout(new javax.swing.BoxLayout(panelOutputEditRow, javax.swing.BoxLayout.LINE_AXIS));
 

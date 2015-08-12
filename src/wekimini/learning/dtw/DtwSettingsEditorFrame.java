@@ -61,6 +61,8 @@ public class DtwSettingsEditorFrame extends javax.swing.JFrame {
         buttonCancel = new javax.swing.JButton();
         buttonOK = new javax.swing.JButton();
 
+        setTitle("Edit Dynamic Time Warping Settings");
+
         parentPanel.setBackground(new java.awt.Color(255, 255, 255));
         parentPanel.setLayout(new javax.swing.BoxLayout(parentPanel, javax.swing.BoxLayout.Y_AXIS));
 
@@ -76,7 +78,7 @@ public class DtwSettingsEditorFrame extends javax.swing.JFrame {
             panelModelEditorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelModelEditorLayout.createSequentialGroup()
                 .addComponent(dtwEditorPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 4, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         parentPanel.add(panelModelEditor);
@@ -127,7 +129,7 @@ public class DtwSettingsEditorFrame extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(parentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 374, Short.MAX_VALUE)
+            .addComponent(parentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
         );
 
         pack();
