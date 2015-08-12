@@ -26,6 +26,16 @@ public class OSCDtwOutput implements OSCOutput {
     public static final String PROP_GESTURE_NAMES = "gestureNames";
     private String[] gestureOscMessages;
     public static final String PROP_GESTURE_OSC_MESSAGES = "gestureOscMessages";
+    private String outputOscMessage;
+    
+    public String getOutputOscMessage() {
+        return outputOscMessage;
+    }
+    
+    public void setOutputOscMessage(String m) {
+        outputOscMessage = m;
+    }
+            
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -36,6 +46,7 @@ public class OSCDtwOutput implements OSCOutput {
         this.gestureNames = new String[numGestures];
         this.gestureOscMessages = new String[numGestures];
         populateNames();
+        this.outputOscMessage = name;
         populateOscMessagesFromNames();
     }
     

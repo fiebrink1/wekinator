@@ -120,15 +120,19 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        buttonAdd = new javax.swing.JButton();
 
         setTitle("Edit output name and type");
 
         panelOutputEditRow.setLayout(new javax.swing.BoxLayout(panelOutputEditRow, javax.swing.BoxLayout.LINE_AXIS));
 
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
         jLabel1.setText("OSC message for sending vector of match values:");
 
+        panelParent.setBackground(new java.awt.Color(255, 255, 255));
         panelParent.setLayout(new javax.swing.BoxLayout(panelParent, javax.swing.BoxLayout.Y_AXIS));
+
+        panelHeader.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel2.setText("Gesture names:");
 
@@ -156,6 +160,8 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
         );
 
         panelParent.add(panelHeader);
+
+        yaypanel.setBackground(new java.awt.Color(255, 255, 255));
 
         jTextField3.setText("jTextField1");
         jTextField3.addActionListener(new java.awt.event.ActionListener() {
@@ -564,20 +570,12 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
             }
         });
 
-        buttonAdd.setText("Add new gesture");
-        buttonAdd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonAddActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(buttonAdd)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1))
@@ -588,8 +586,7 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(buttonAdd)))
+                    .addComponent(jButton2)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -648,10 +645,6 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
     private void buttonDeleteLearnerExamples6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLearnerExamples6ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_buttonDeleteLearnerExamples6ActionPerformed
-
-    private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddActionPerformed
-        addNewPanel("New gesture", "/newGesture", rowPanels.size());
-    }//GEN-LAST:event_buttonAddActionPerformed
 
     private void jTextField3KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField3KeyTyped
         // TODO add your handling code here:
@@ -722,7 +715,6 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonAdd;
     private javax.swing.JButton buttonDeleteLearnerExamples;
     private javax.swing.JButton buttonDeleteLearnerExamples1;
     private javax.swing.JButton buttonDeleteLearnerExamples2;
@@ -776,6 +768,8 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
 
     private void addNewPanel(String name, String oscMessage, final int which) {
         JPanel p = new javax.swing.JPanel();
+        p.setBackground(new java.awt.Color(255, 255, 255));
+
         JLabel numLabel = new JLabel();
         numLabel.setText(which+1 + ".");
         numLabels.add(numLabel);
@@ -800,7 +794,7 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
             }
         }); */
 
-        JButton buttonDelete = new JButton();
+        /*JButton buttonDelete = new JButton();
         buttonDelete.setBackground(new java.awt.Color(255, 255, 255));
         buttonDelete.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         buttonDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/x2.png"))); // NOI18N
@@ -815,15 +809,15 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
             }
         });
 
-        deleteButtons.add(buttonDelete);
+        deleteButtons.add(buttonDelete); */
 
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(p);
         p.setLayout(panelLayout);
         panelLayout.setHorizontalGroup(
                 panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(panelLayout.createSequentialGroup()
-                        .addComponent(buttonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        //.addComponent(buttonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                       // .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(numLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -836,7 +830,7 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
                 .addGroup(panelLayout.createSequentialGroup()
                         .addGap(0, 0, 0)
                         .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(buttonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                //.addComponent(buttonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(msgField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)

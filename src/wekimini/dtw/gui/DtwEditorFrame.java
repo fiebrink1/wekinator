@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.swing.JCheckBox;
 import wekimini.LoggingManager;
 import wekimini.Wekinator;
+import wekimini.dtw.gui.DtwOutputEditFrame.OutputEditReceiver;
 import wekimini.learning.dtw.DtwModel;
 import wekimini.learning.dtw.DtwSettings;
 import wekimini.learning.dtw.DtwSettingsEditorFrame;
@@ -30,14 +31,16 @@ public class DtwEditorFrame extends javax.swing.JFrame {
     private final static HashMap<DtwModel, DtwEditorFrame> modelsBeingEdited = new HashMap<>();
     private final DtwModel m;
     private static final Logger logger = Logger.getLogger(DtwEditorFrame.class.getName());
-   // private OutputEditFrame outputEditor = null;
-   // private OSCOutput newOutput = null;
+    private DtwOutputEditFrame outputEditor = null;
+    private OSCDtwOutput newOutput = null;
+    private OSCDtwOutput oldOutput = null;
     private DtwSettingsEditorFrame dtwSettingsEditorFrame = null;
     private boolean hasValidModelType = false;
     private JCheckBox inputs[] = null;
     private String[] inputNames = null;
     private Wekinator w;
     private DtwSettings newDtwSettings = null;
+    private String[] existingNames;
     /**
      * Creates new form PathEditorFrame
      */
@@ -57,8 +60,23 @@ public class DtwEditorFrame extends javax.swing.JFrame {
         this.w = w;
         initInputsPanel(m, inputNames);
         setTitle("Editing " + m.getPrettyName());
+        populateExistingNames();
+        
     }
 
+    private void populateExistingNames() {
+        //existingNames = new String[w.getOutputManager().getOutputGroup().getNumOutputs()-1];
+        String[] allNames = w.getOutputManager().getOutputGroup().getOutputNames();
+        List<String> names = new LinkedList<>();
+        for (int i = 0; i < allNames.length; i++) {
+            if (!allNames[i].equals(oldOutput.getName())) {
+                names.add(allNames[i]);
+            }
+        }
+        existingNames = names.toArray(new String[0]);
+    }
+
+    
     private void initInputsPanel(DtwModel m, String[] inputNames) {
         panelInputList.removeAll();
         this.inputNames = new String[inputNames.length];
@@ -91,7 +109,8 @@ public class DtwEditorFrame extends javax.swing.JFrame {
 
     private void initFormForModel() {
         initModelType();
-        updateFormForOutput(m.getOSCOutput());
+        oldOutput = m.getOSCOutput();
+        updateFormForOutput(m.getOSCOutput()); 
     }
 
     private void initModelType() {
@@ -106,7 +125,7 @@ public class DtwEditorFrame extends javax.swing.JFrame {
     private void updateFormForOutput(OSCDtwOutput o) {
         labelOutputName.setText("Name: " + o.getName());
         StringBuilder sb = new StringBuilder("<html>");
-        sb.append("not implemented yet</html>");
+        sb.append(o.getNumGestures()).append(" gesture types</html>");
         labelOutputType.setText(sb.toString());
     }
 
@@ -139,7 +158,6 @@ public class DtwEditorFrame extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         buttonEditOutput = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
         labelOutputType = new javax.swing.JLabel();
         labelOutputName = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
@@ -196,9 +214,7 @@ public class DtwEditorFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel3.setText("Type:");
-
-        labelOutputType.setText("<html>Continuous output, real values<br>Values between Min=0.2, Max=0.3 (soft limits)<br></html>");
+        labelOutputType.setText("4 gesture classes");
 
         labelOutputName.setText("Name: Output 1");
 
@@ -206,19 +222,17 @@ public class DtwEditorFrame extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(buttonEditOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(labelOutputName, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
-                        .addContainerGap(81, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(labelOutputType, javax.swing.GroupLayout.PREFERRED_SIZE, 423, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(34, 34, 34))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(labelOutputName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -226,11 +240,10 @@ public class DtwEditorFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(buttonEditOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelOutputName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelOutputType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(labelOutputName)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(labelOutputType)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -337,7 +350,7 @@ public class DtwEditorFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(labelConnectedInputs, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollPaneInputs, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
+                .addComponent(scrollPaneInputs, javax.swing.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -372,7 +385,7 @@ public class DtwEditorFrame extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -408,52 +421,41 @@ public class DtwEditorFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonEditOutputActionPerformed
 
     private void showOutputEditor() {
-        //XXX not implemented yet
         
-//        if (outputEditor != null) {
-//            outputEditor.dispose();
-//        }
-//        //if (outputEditor == null) {
-//        OutputEditReceiver r = new OutputEditFrame.OutputEditReceiver() {
-//            @Override
-//            public void outputReady(OSCOutput o) {
-//                newOutputReceived(o);
-//            }
-//
-//            @Override
-//            public void outputEditorCancelled() {
-//                outputEditor = null;
-//            }
-//
-//        };
-//        if (newOutput != null) {
-//            outputEditor = new OutputEditFrame(newOutput, r);
-//        } else {
-//            outputEditor = new OutputEditFrame(p.getOSCOutput(), r);
-//        }
-//        outputEditor.setVisible(true);
-//        /*  } else {
-//         outputEditor.setVisible(true);
-//         outputEditor.toFront();
-//         } */
+        if (outputEditor != null) {
+            outputEditor.dispose();
+        }
+        //if (outputEditor == null) {
+        DtwOutputEditFrame.OutputEditReceiver r = new OutputEditReceiver() {
+
+            @Override
+            public void outputReady(OSCDtwOutput o) {
+                newOutputReceived(o);
+            }
+
+            @Override
+            public void outputEditorCancelled() {
+                outputEditor = null;
+            }
+            
+        };
+        if (newOutput != null) {
+            outputEditor = new DtwOutputEditFrame(newOutput, r, existingNames);
+        } else {
+            outputEditor = new DtwOutputEditFrame(oldOutput, r, existingNames);
+        }
+        outputEditor.setVisible(true);
+        /*  } else {
+         outputEditor.setVisible(true);
+         outputEditor.toFront();
+         } */
     }
 
-    /*private void newOutputReceived(OSCOutput o) {
+    private void newOutputReceived(OSCDtwOutput o) {
         newOutput = o;
         updateFormForOutput(o);
-        updateModelForOutput(o);
         outputEditor = null;
-    } */
-
-    /*private void updateModelForOutput(OSCOutput o) {
-        if (p.getModelBuilder().isCompatible(o)) {
-            hasValidModelType = true;
-            labelModelType.setText(p.getModelBuilder().getPrettyName());
-        } else {
-            hasValidModelType = false;
-            labelModelType.setText("None - Please edit");
-        }
-    } */
+    }
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         if (validateForm()) {
@@ -542,7 +544,6 @@ public class DtwEditorFrame extends javax.swing.JFrame {
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -710,14 +711,11 @@ public class DtwEditorFrame extends javax.swing.JFrame {
     private void applyChanges() {
       //  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 
-      //if (newOutput != null) {
-        //  w.getSupervisedLearningManager().updatePath(p, newOutput, newModelBuilder, getSelectedInputNames());
-          
+      if (newOutput != null) {
+          applyOutputSettings(newOutput, oldOutput);
+       } 
        w.getDtwLearningManager().updateModel(m, newDtwSettings, getInputSelection());
-           
-         //w.getOutputManager().updateOutput(newOutput, p.getOSCOutput());
-       // w.getSupervisedLearningManager().updateOutput()
-        //New P or existing p??
+
         //Need to update model state, path output name, 
     //  }
   //TODO: also Update output info: XOutputManager, learning manager, data manager, sender?, path, all GUIs (through listeners)
@@ -738,6 +736,13 @@ public class DtwEditorFrame extends javax.swing.JFrame {
 
     private void saveModelToFile() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void applyOutputSettings(OSCDtwOutput fromOutput, OSCDtwOutput toOutput) {
+        toOutput.setName(fromOutput.getName());
+        toOutput.setOutputOscMessage(fromOutput.getOutputOscMessage());
+        toOutput.setGestureNames(fromOutput.getGestureNames());
+        toOutput.setGestureOscMessages(fromOutput.getGestureOscMessages());
     }
     
     public interface DtwSettingsReceiver {

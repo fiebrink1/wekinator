@@ -19,6 +19,7 @@ import wekimini.Path;
 import wekimini.Wekinator;
 import wekimini.learning.dtw.DtwData;
 import wekimini.learning.dtw.DtwModel;
+import wekimini.osc.OSCDtwOutput;
 import wekimini.osc.OSCNumericOutput;
 
 /**
@@ -121,14 +122,25 @@ public class DtwLearningRow extends javax.swing.JPanel {
                     if (((IndexedPropertyChangeEvent)evt).getIndex() == gestureNum) {
                         setVersionNumber(myModel.getVersionNumber(gestureNum));
                     }
-                } else if (evt.getPropertyName().equals(DtwModel.PROP_GESTURE_NAMES)) {
-                    if (((IndexedPropertyChangeEvent)evt).getIndex() == gestureNum) {
-                        setGestureName(myModel.getGestureName(gestureNum));
-                    }
                 }
             }
         });
+        
+        myModel.getOSCOutput().addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName().equals(OSCDtwOutput.PROP_GESTURE_NAMES)) {
+                    updatePossibleNameChange();
+                }
+            }
+        });
+        
         initForGesture();
+    }
+    
+    private void updatePossibleNameChange() {
+        setGestureName(myModel.getOSCOutput().getGestureNames(gestureNum));
     }
 
     public void setGestureName(String name) {
@@ -142,7 +154,7 @@ public class DtwLearningRow extends javax.swing.JPanel {
     }
 
     private void updateNameLabel() {
-        labelModelName.setText(gestureName + "_v" + versionNumber);
+        labelModelName.setText(gestureName + " (v" + versionNumber + ")");
     }
 
     private void dataNumExamplesChanged(int currentNum) {
@@ -414,7 +426,7 @@ public class DtwLearningRow extends javax.swing.JPanel {
         panelMainLayout.setVerticalGroup(
             panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelMainLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(0, 0, 0)
                 .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator1)
                     .addComponent(jSeparator2)

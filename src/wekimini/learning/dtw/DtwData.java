@@ -29,7 +29,7 @@ public class DtwData {
     private final transient List<DtwDataListener> dataListeners = new LinkedList<>();
     private transient long currentTime = 0;
     private transient TimeSeries currentTimeSeries;
-    private final int numGestures;
+    private int numGestures;
     private transient int currentClass;
     private transient final Wekinator w;
     private final ArrayList<LinkedList<DtwExample>> allExamples;
@@ -57,7 +57,7 @@ public class DtwData {
     private transient int downsampleCounter = 0;
     private DtwSettings.DownsamplePolicy downsamplePolicy = DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING;
     private final ArrayDeque<DtwExample> examplesInOrder;
-    private final ArrayDeque<DtwExample> deletedExamplesInOrder;
+    private transient ArrayDeque<DtwExample> deletedExamplesInOrder;
     //private DtwExample lastExample = null;
     //private DtwExample lastDeletedExample = null;
     
@@ -657,6 +657,34 @@ public class DtwData {
 
     TimeSeries getCurrentTimeSeries() {
         return currentTimeSeries;
+    }
+
+    void setNumGestures(int newNumGestures) {
+        if (newNumGestures == numGestures) {
+            return;
+        }
+        if (newNumGestures < numGestures) {
+            for (int i = numGestures - 1; i > (numGestures-1); i--) {
+                deleteExamplesForGesture(i);
+                deleteDeletedExamplesForGesture(i);
+                allExamples.remove(i);
+            }
+        } else {
+            for (int i = numGestures; i < newNumGestures; i++) {
+                allExamples.add(new LinkedList<DtwExample>());
+            }
+        }
+        numGestures = newNumGestures;
+    }
+
+    private void deleteDeletedExamplesForGesture(int which) {
+        ArrayDeque<DtwExample> tmp = new ArrayDeque<>();
+        for (DtwExample ex : deletedExamplesInOrder) {
+            if (ex.getGestureClass() != which) {
+                tmp.push(ex);
+            }
+        }
+        deletedExamplesInOrder = tmp;
     }
 
     public interface DtwDataListener {

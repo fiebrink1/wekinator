@@ -9,6 +9,7 @@ import com.dtw.FastDTW;
 import com.timeseries.TimeSeries;
 import com.util.DistanceFunction;
 import com.util.DistanceFunctionFactory;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
@@ -79,11 +80,10 @@ public class DtwModel implements Model {
 
     private final int[] versionNumbers;
     public static final String PROP_VERSIONNUMBERS = "versionNumbers";
-    private final String[] gestureNames;
-    public static final String PROP_GESTURE_NAMES = "gestureNames";
+   // private final String[] gestureNames;
     private final OSCDtwOutput myOutput;
     private DistanceFunction distanceFunction = DistanceFunctionFactory.EUCLIDEAN_DIST_FN;
-    
+
     private boolean[] selectedInputs;
 
     public static final String PROP_SELECTED_INPUTS = "selectedInputs";
@@ -129,8 +129,6 @@ public class DtwModel implements Model {
         propertyChangeSupport.fireIndexedPropertyChange(PROP_SELECTED_INPUTS, index, oldSelectedInputs, selectedInputs);
     }
 
-    
-
     public DtwModel(String name, OSCDtwOutput output, int numGestures, Wekinator w, DtwLearningManager m, DtwSettings settings) {
         this.modelName = name;
         this.settings = settings;
@@ -142,21 +140,21 @@ public class DtwModel implements Model {
         normalizedDistances = new double[numGestures];
         isGestureActive = new boolean[numGestures];
         versionNumbers = new int[numGestures];
-        gestureNames = new String[numGestures];
+        //gestureNames = new String[numGestures];
         selectedInputs = new boolean[w.getInputManager().getNumInputs()];
-        
+
         for (int i = 0; i < numGestures; i++) {
             isGestureActive[i] = true;
             closestDistances[i] = Double.MAX_VALUE;
             normalizedDistances[i] = 0;
             versionNumbers[i] = 1;
-            gestureNames[i] = name + "_" + i;
+            //gestureNames[i] = name + "_" + i;
         }
-        
-        for (int i =0 ; i < selectedInputs.length; i++) {
+
+        for (int i = 0; i < selectedInputs.length; i++) {
             selectedInputs[i] = true;
         }
-        
+
         data = new DtwData(numGestures, m, w);
         applySettingsToData(settings, data);
         data.addDataListener(new DtwData.DtwDataListener() {
@@ -180,6 +178,17 @@ public class DtwModel implements Model {
             public void allExamplesDeleted() {
             }
         });
+
+        myOutput.addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName().equals(OSCDtwOutput.PROP_NUMGESTURES)) {
+                    numGesturesChanged((Integer) evt.getNewValue());
+                }
+            }
+        });
+
         updateID();
     }
 
@@ -521,9 +530,9 @@ public class DtwModel implements Model {
         for (int i = 0; i < closestDistances.length; i++) {
             closestDistances[i] = Double.MAX_VALUE;
         }
-        
+
         TimeSeries currentTs = data.getCurrentTimeSeries();
-        
+
         for (int whichClass = 0; whichClass < numGestures; whichClass++) {
             if (isGestureActive[whichClass]) {
                 for (DtwExample ex : data.getExamplesForGesture(whichClass)) {
@@ -534,7 +543,7 @@ public class DtwModel implements Model {
                     } else {
                         ts = ex.getDownsampledTimeSeries();
                     }
-                    
+
                     //TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, currentTs, settings.getMatchWidth());
                     double dist = FastDTW.getWarpDistBetween(ts, currentTs, settings.getMatchWidth(), distanceFunction);
 
@@ -788,6 +797,7 @@ public class DtwModel implements Model {
     }
 
     public interface DtwUpdateListener1 {
+
         public void dtwUpdateReceived(double[] currentDistances);
     }
 
@@ -798,7 +808,7 @@ public class DtwModel implements Model {
      * @return the value of gestureNames at specified index
      */
     public String getGestureName(int index) {
-        return this.gestureNames[index];
+        return myOutput.getGestureNames(index);
     }
 
     /**
@@ -807,10 +817,26 @@ public class DtwModel implements Model {
      * @param index the index of gestureNames
      * @param gestureNames new value of gestureNames at specified index
      */
-    public void setGestureName(int index, String gestureNames) {
+    /*public void setGestureName(int index, String gestureNames) {
         String oldGestureNames = this.gestureNames[index];
         this.gestureNames[index] = gestureNames;
         propertyChangeSupport.fireIndexedPropertyChange(PROP_GESTURE_NAMES, index, oldGestureNames, gestureNames);
-    }
+    } */
 
+    private void numGesturesChanged(int newNumGestures) {
+        boolean wasRunning = false;
+        if (runningState == RunningState.RUNNING) {
+            wasRunning = true;
+            stopRunning();
+        }
+        if (recordingState == RecordingState.RECORDING) {
+            stopRecording();
+        }
+        numGestures = newNumGestures;
+        data.setNumGestures(newNumGestures);
+        if (wasRunning) {
+            startRunning();
+        }
+    }
+    
 }
