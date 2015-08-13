@@ -144,7 +144,7 @@
         <Component class="javax.swing.JLabel" name="labelModelName">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Lucida Grande" size="11" style="0"/>
+              <Font name="Lucida Grande" size="12" style="1"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Gesture_1_v5"/>
             <Property name="toolTipText" type="java.lang.String" value="Model name"/>

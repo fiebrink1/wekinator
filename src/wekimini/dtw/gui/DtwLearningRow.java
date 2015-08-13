@@ -285,7 +285,7 @@ public class DtwLearningRow extends javax.swing.JPanel {
         panelMain.setPreferredSize(new java.awt.Dimension(540, 70));
         panelMain.setSize(new java.awt.Dimension(540, 70));
 
-        labelModelName.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
+        labelModelName.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
         labelModelName.setText("Gesture_1_v5");
         labelModelName.setToolTipText("Model name");
 

@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import weka.core.Instance;
 import wekimini.osc.OSCOutput;
 
@@ -21,6 +23,7 @@ public class SimpleModel implements SupervisedLearningModel {
     private final String prettyName;
     private final String timestamp;
     private final String myId;
+    private static final Logger logger = Logger.getLogger(SimpleModel.class.getName());
     
     public SimpleModel(String name) { 
         this.prettyName = name;
@@ -63,4 +66,8 @@ public class SimpleModel implements SupervisedLearningModel {
         return "A simple model that does nothing";
     }
     
+    @Override
+    public double[] computeDistribution(Instance instance) {
+        return new double[0];
+    }
 }

@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.functions.SMO;
 import weka.core.Instance;
@@ -26,6 +28,7 @@ public class SVMModel implements SupervisedLearningModel {
     private final String timestamp;
     private final String myId;
     private transient SMO wmodel;
+    private static final Logger logger = Logger.getLogger(SVMModel.class.getName());
     
     public SVMModel(String name, SMO wmodel) { 
         this.prettyName = name;
@@ -81,4 +84,13 @@ public class SVMModel implements SupervisedLearningModel {
         return wmodel.toString();
     }
     
+        @Override
+    public double[] computeDistribution(Instance instance) {
+        try {
+            return wmodel.distributionForInstance(instance);
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "Could not compute distribution");
+            return new double[0];
+        }
+    }
 }

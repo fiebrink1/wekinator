@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import weka.classifiers.meta.AdaBoostM1;
 import weka.core.Instance;
 import wekimini.osc.OSCClassificationOutput;
@@ -25,7 +27,7 @@ public class AdaboostModel implements SupervisedLearningModel {
     private final String timestamp;
     private final String myId;
     private transient AdaBoostM1 wmodel;
-    
+    private static final Logger logger = Logger.getLogger(AdaboostModel.class.getName());
     public AdaboostModel(String name, AdaBoostM1 wmodel) { 
         this.prettyName = name;
         Date d= new Date();
@@ -78,6 +80,16 @@ public class AdaboostModel implements SupervisedLearningModel {
     @Override
     public String getModelDescription() {
         return wmodel.toString();
+    }
+
+    @Override
+    public double[] computeDistribution(Instance instance) {
+        try {
+            return wmodel.distributionForInstance(instance);
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "Could not compute distribution");
+            return new double[0];
+        }
     }
     
 }

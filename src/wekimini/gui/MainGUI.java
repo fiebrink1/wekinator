@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import wekimini.DtwLearningManager;
 import wekimini.LearningManager;
 import wekimini.Path;
 import wekimini.WekiMiniRunner.Closeable;
@@ -123,6 +124,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuConsole = new javax.swing.JMenuItem();
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
+        computeClassificationDistributions = new javax.swing.JCheckBoxMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("New project");
@@ -243,6 +245,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         menuActions.add(checkEnableOSCControl);
 
+        computeClassificationDistributions.setText("Compute classification distributions");
+        computeClassificationDistributions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                computeClassificationDistributionsActionPerformed(evt);
+            }
+        });
+        menuActions.add(computeClassificationDistributions);
+
         jMenuBar1.add(menuActions);
 
         setJMenuBar(jMenuBar1);
@@ -334,7 +344,15 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         w.showConsole();
     }//GEN-LAST:event_menuConsoleActionPerformed
 
+    private void computeClassificationDistributionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_computeClassificationDistributionsActionPerformed
+        w.getSupervisedLearningManager().setComputeDistribution(computeClassificationDistributions.isSelected());
+    }//GEN-LAST:event_computeClassificationDistributionsActionPerformed
+
     public void showOutputTable() {
+        if (w.getLearningManager().getLearningType() == LearningManager.LearningType.TEMPORAL_MODELING) {
+            Util.showPrettyErrorPane(this, "Not yet implemented for DTW outputs");
+            return;
+        }
         if (outputTableWindow == null) {
             outputTableWindow = new OutputViewerTable(w);
             outputTableWindow.setVisible(true);
@@ -456,6 +474,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem checkEnableOSCControl;
+    private javax.swing.JCheckBoxMenuItem computeClassificationDistributions;
     private wekimini.dtw.gui.DtwLearningPanel dtwLearningPanel1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;

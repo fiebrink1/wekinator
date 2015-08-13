@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.jdesktop.swingworker.SwingWorker;
@@ -71,6 +72,27 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     private final List<PathOutputTypeEditedListener> pathEditedListeners = new LinkedList<>();
     private final List<InputOutputConnectionsListener> inputOutputConnectionsListeners = new LinkedList<>();
 
+        private boolean computeDistribution = false;
+
+    /**
+     * Get the value of computeDistribution
+     *
+     * @return the value of computeDistribution
+     */
+    public boolean isComputeDistribution() {
+        return computeDistribution;
+    }
+
+    /**
+     * Set the value of computeDistribution
+     *
+     * @param computeDistribution new value of computeDistribution
+     */
+    public void setComputeDistribution(boolean computeDistribution) {
+        this.computeDistribution = computeDistribution;
+    }
+
+    
     boolean isLegalTrainingValue(int whichOutput, float value) {
         return getPaths().get(whichOutput).getOSCOutput().isLegalTrainingValue(value);
     }
@@ -597,6 +619,17 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         }
         return myComputedOutputs;
     }
+    
+    public double[] computeProbabilisticOutputs(double[] inputs, int whichOutput) {
+        double[] outputs;
+        if (paths.get(whichOutput).canCompute()) {
+                Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, whichOutput);
+                outputs = paths.get(whichOutput).computeDistribution(instance);
+            } else {
+                outputs = new double[((OSCClassificationOutput)paths.get(whichOutput).getOSCOutput()).getNumClasses()];
+            }
+        return outputs;
+    }
 
     public void addToTraining(double[] inputs, double[] outputs, boolean[] recordingMask) {
         /*double[] trainingOutputs = new double[outputs.length];
@@ -635,12 +668,22 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
      trainingRound++;
      } */
     //
+    //TODO: Want ability to compute distribution to be done model by model! (in model editor)
     public void updateInputs(double[] inputs) {
         if (recordingState == RecordingState.RECORDING) {
             addToTraining(inputs, w.getOutputManager().getCurrentValues(), pathRecordingMask);
         } else if (runningState == RunningState.RUNNING) {
             double[] d = computeValues(inputs, pathRunningMask);
             w.getOutputManager().setNewComputedValues(d);
+            if (computeDistribution) {
+                for (int i = 0; i < w.getOutputManager().getOutputGroup().getNumOutputs(); i++) {
+                    if ((w.getOutputManager().getOutputGroup().getOutput(i) instanceof OSCClassificationOutput)
+                             && pathRunningMask[i]) {
+                        double[] dist = computeProbabilisticOutputs(inputs, i);
+                        w.getOutputManager().setDistribution(i, dist);
+                    }
+                }
+            }
         }
     }
 

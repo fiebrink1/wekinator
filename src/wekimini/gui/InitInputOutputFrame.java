@@ -1263,6 +1263,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                     }
                     finalizeSetup();
                 } else {
+                    if (!fieldNumOutputs.getText().trim().equals("1")) {
+                        Util.showPrettyErrorPane(this, "DTW is only working for 1 output right now, sorry!");
+                        return;
+                    }
                     w.getInputManager().setOSCInputGroup(inputGroup);
                     w.getOutputManager().setOSCOutputGroup(outputGroup);
                     w.getLearningManager().setDtw(outputGroup);

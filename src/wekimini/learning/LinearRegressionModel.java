@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import weka.classifiers.functions.LinearRegression;
 import weka.core.Instance;
 import wekimini.osc.OSCOutput;
@@ -27,6 +29,7 @@ public class LinearRegressionModel implements SupervisedLearningModel {
     //private int exponent;
     //private int numInputs;
     private final LinearRegressionAttributeTransformer transformer;
+    private static final Logger logger = Logger.getLogger(LinearRegressionModel.class.getName());
     
     public LinearRegressionModel(String name, LinearRegression wmodel, LinearRegressionAttributeTransformer transformer) { 
         this.prettyName = name;
@@ -91,6 +94,13 @@ public class LinearRegressionModel implements SupervisedLearningModel {
     @Override
     public String getModelDescription() {
         return wmodel.toString();
+    }
+    
+    @Override
+    public double[] computeDistribution(Instance instance) {
+        logger.log(Level.WARNING, "Cannot compute distribution for linear regression");
+        return new double[0];
+        
     }
     
 }

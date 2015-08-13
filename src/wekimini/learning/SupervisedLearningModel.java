@@ -16,5 +16,7 @@ import wekimini.osc.OSCOutput;
  */
 public interface SupervisedLearningModel extends Model {
     public double computeOutput(Instance inputs) throws Exception;
+
+    public double[] computeDistribution(Instance instance);
     
   }

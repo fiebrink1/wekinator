@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import weka.classifiers.lazy.IBk;
 import weka.core.Instance;
 import wekimini.osc.OSCClassificationOutput;
@@ -25,6 +27,7 @@ public class KNNModel implements SupervisedLearningModel {
     private final String timestamp;
     private final String myId;
     private transient IBk wmodel;
+    private static final Logger logger = Logger.getLogger(KNNModel.class.getName());
     
     public KNNModel(String name, IBk wmodel) { 
         this.prettyName = name;
@@ -79,6 +82,16 @@ public class KNNModel implements SupervisedLearningModel {
     @Override
     public String getModelDescription() {
         return wmodel.toString();
+    }
+    
+        @Override
+    public double[] computeDistribution(Instance instance) {
+        try {
+            return wmodel.distributionForInstance(instance);
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "Could not compute distribution");
+            return new double[0];
+        }
     }
     
 }

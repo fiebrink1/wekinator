@@ -77,6 +77,10 @@ public class Path {
         setModelState(p.modelState);
     }
 
+    double[] computeDistribution(Instance instance) {
+        return model.computeDistribution(instance);
+    }
+
     public static enum ModelState {
         NOT_READY, READY_FOR_BUILDING, BUILDING, BUILT, NEEDS_REBUILDING
     };

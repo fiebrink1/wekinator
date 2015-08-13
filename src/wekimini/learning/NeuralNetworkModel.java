@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Instance;
 import wekimini.osc.OSCOutput;
@@ -24,6 +26,7 @@ public class NeuralNetworkModel implements SupervisedLearningModel {
     private final String timestamp;
     private final String myId;
     private transient MultilayerPerceptron wmodel;
+    private static final Logger logger = Logger.getLogger(NeuralNetworkModel.class.getName());
     
     public NeuralNetworkModel(String name, MultilayerPerceptron wmodel) { 
         this.prettyName = name;
@@ -77,6 +80,14 @@ public class NeuralNetworkModel implements SupervisedLearningModel {
     @Override
     public String getModelDescription() {
         return wmodel.toString();
+    }
+    
+        @Override
+    public double[] computeDistribution(Instance instance) {
+        
+            logger.log(Level.WARNING, "Cannot compute distribution for neural net");
+            return new double[0];
+       
     }
     
 }

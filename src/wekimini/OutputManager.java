@@ -351,6 +351,15 @@ public class OutputManager {
         return false;
     }
     
+    void setDistribution(int i, double[] dist) {
+        try {
+            w.getOSCSender().sendOutputValuesMessage("/" + outputGroup.getOutput(i).getName(), dist);
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, "Couldn't send message");
+            logger.log(Level.SEVERE, null, ex);
+        }
+    }
+    
     // TODO: Not sure if we need this?
     public interface OutputValueListener extends EventListener {
 
