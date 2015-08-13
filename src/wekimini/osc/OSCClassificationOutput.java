@@ -5,10 +5,7 @@ package wekimini.osc;
 
 import java.util.Random;
 import wekimini.LearningModelBuilder;
-import wekimini.learning.KNNModel;
 import wekimini.learning.KNNModelBuilder;
-import wekimini.learning.ModelBuilder;
-import wekimini.learning.SimpleModelBuilder;
 import wekimini.util.Util;
 
 /**
@@ -19,13 +16,19 @@ public class OSCClassificationOutput implements OSCSupervisedLearningOutput {
     
     private final String name;
     private final int numClasses;
-    private OSCOutputGroup outputGroup;
+    private final boolean isSendingDistribution;
 
-    //ID must be unique
-    public OSCClassificationOutput(String name, int numClasses) {
+
+    public OSCClassificationOutput(String name, int numClasses, boolean isSendingDistribution) {
         this.name = name;
         this.numClasses = numClasses;
+        this.isSendingDistribution = isSendingDistribution;
     }
+
+    public boolean isSendingDistribution() {
+        return isSendingDistribution;
+    }
+    
     
     public String getName() {
         return name;

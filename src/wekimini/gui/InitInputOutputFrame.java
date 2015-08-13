@@ -1139,7 +1139,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             List<OSCOutput> outputs = new LinkedList<>();
             int numClasses = Integer.parseInt(fieldNumClasses.getText());
             for (int i = 0; i < numOutputs; i++) {
-                OSCClassificationOutput o = new OSCClassificationOutput(currentOutputNames[i], numClasses);
+                OSCClassificationOutput o = new OSCClassificationOutput(currentOutputNames[i], numClasses, false);
                 outputs.add(o);
             }
             OSCOutputGroup og = new OSCOutputGroup(outputs, oscMessage, hostname, port);

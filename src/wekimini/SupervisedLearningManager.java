@@ -31,7 +31,7 @@ import wekimini.util.WeakListenerSupport;
  *
  * @author rebecca
  */
-public class SupervisedLearningManager implements ConnectsInputsToOutputs {    
+public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     private final List<Path> paths = new ArrayList<>(5);
     private final Wekinator w;
@@ -68,31 +68,30 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     public static final String PROP_ABLE_TO_RUN = "ableToRun";
     private boolean notifyPathsOfDatasetChange = true;
-    
+
     private final List<PathOutputTypeEditedListener> pathEditedListeners = new LinkedList<>();
     private final List<InputOutputConnectionsListener> inputOutputConnectionsListeners = new LinkedList<>();
 
-        private boolean computeDistribution = false;
+    private boolean computeDistribution = false;
 
     /**
      * Get the value of computeDistribution
      *
      * @return the value of computeDistribution
      */
-    public boolean isComputeDistribution() {
+    /*public boolean isComputeDistribution() {
         return computeDistribution;
-    }
+    } */
 
     /**
      * Set the value of computeDistribution
      *
      * @param computeDistribution new value of computeDistribution
      */
-    public void setComputeDistribution(boolean computeDistribution) {
+   /* public void setComputeDistribution(boolean computeDistribution) {
         this.computeDistribution = computeDistribution;
-    }
+    } */
 
-    
     boolean isLegalTrainingValue(int whichOutput, float value) {
         return getPaths().get(whichOutput).getOSCOutput().isLegalTrainingValue(value);
     }
@@ -112,11 +111,10 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         RECORDING, NOT_RECORDING
     };
 
-
     public void addPathEditedListener(PathOutputTypeEditedListener l) {
         pathEditedListeners.add(l);
     }
-    
+
     public void removePathEditedListener(PathOutputTypeEditedListener l) {
         pathEditedListeners.remove(l);
     }
@@ -239,7 +237,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         inputNamesToIndices = new HashMap<>();
         pathsToOutputIndices = new HashMap<>();
         //TODO listen for changes in input names, # outputs or inputs, etc.
-        
+
         trainingWorkerListener = new PropertyChangeListener() {
 
             @Override
@@ -247,9 +245,8 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                 trainingWorkerChanged(evt);
             }
         };
-        
-        
-       // w.getInputManager().addPropertyChangeListener(this::inputGroupChanged);
+
+        // w.getInputManager().addPropertyChangeListener(this::inputGroupChanged);
         w.getInputManager().addPropertyChangeListener(new PropertyChangeListener() {
 
             @Override
@@ -257,7 +254,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                 inputGroupChanged(evt);
             }
         });
-        
+
         w.getOutputManager().addPropertyChangeListener(new PropertyChangeListener() {
 
             @Override
@@ -268,7 +265,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             }
         });
 
-       // w.getDataManager().addPropertyChangeListener(this::dataManagerPropertyChange);
+        // w.getDataManager().addPropertyChangeListener(this::dataManagerPropertyChange);
         w.getDataManager().addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -286,13 +283,13 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         initializeInputsAndOutputs();
         updateAbleToRecord();
         updateAbleToRun();
-        
+
     }
 
     public WekinatorSupervisedLearningController getSupervisedLearningController() {
         return controller;
     }
-    
+
     private void oscReceiverPropertyChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == OSCReceiver.PROP_CONNECTIONSTATE) {
             updateAbleToRun();
@@ -399,12 +396,12 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             pathsToOutputIndices.put(p, i);
             this.paths.add(p);
         }
-        
+
         //Without this, paths will think that examples have changed since their training    
         notifyPathsOfDatasetChange = false;
         w.getDataManager().initialize(inputNames, w.getOutputManager().getOutputGroup(), data);
         notifyPathsOfDatasetChange = true;
-        
+
         boolean anyTrained = false;
         for (Path p : paths) {
             if (p.canCompute()) {
@@ -426,7 +423,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             int[] indices = convertInputNamesToIndices(inputs);
             w.getDataManager().setInputIndicesForOutput(indices, i);
         }
-       // w.getInputManager().addInputValueListener(this::updateInputs);
+        // w.getInputManager().addInputValueListener(this::updateInputs);
         w.getInputManager().addInputValueListener(new InputManager.InputListener() {
 
             @Override
@@ -439,7 +436,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
             }
         });
-        
+
         updateAbleToRecord();
         updateAbleToRun();
     }
@@ -541,7 +538,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             if (index == null) {
                 indices[i] = 0;
                 logger.log(Level.SEVERE, "name {0} not found", names[i]);
-               // System.out.println("ERROR name " + names[i] + " not found");
+                // System.out.println("ERROR name " + names[i] + " not found");
             } else {
                 indices[i] = index;
             }
@@ -619,15 +616,15 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         }
         return myComputedOutputs;
     }
-    
+
     public double[] computeProbabilisticOutputs(double[] inputs, int whichOutput) {
         double[] outputs;
         if (paths.get(whichOutput).canCompute()) {
-                Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, whichOutput);
-                outputs = paths.get(whichOutput).computeDistribution(instance);
-            } else {
-                outputs = new double[((OSCClassificationOutput)paths.get(whichOutput).getOSCOutput()).getNumClasses()];
-            }
+            Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, whichOutput);
+            outputs = paths.get(whichOutput).computeDistribution(instance);
+        } else {
+            outputs = new double[((OSCClassificationOutput) paths.get(whichOutput).getOSCOutput()).getNumClasses()];
+        }
         return outputs;
     }
 
@@ -675,14 +672,15 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         } else if (runningState == RunningState.RUNNING) {
             double[] d = computeValues(inputs, pathRunningMask);
             w.getOutputManager().setNewComputedValues(d);
-            if (computeDistribution) {
-                for (int i = 0; i < w.getOutputManager().getOutputGroup().getNumOutputs(); i++) {
-                    if ((w.getOutputManager().getOutputGroup().getOutput(i) instanceof OSCClassificationOutput)
-                             && pathRunningMask[i]) {
-                        double[] dist = computeProbabilisticOutputs(inputs, i);
-                        w.getOutputManager().setDistribution(i, dist);
-                    }
+
+            //TODO: Get rid of search every time : slows us down!
+            for (int i = 0; i < w.getOutputManager().getOutputGroup().getNumOutputs(); i++) {
+                if ((w.getOutputManager().getOutputGroup().getOutput(i) instanceof OSCClassificationOutput)
+                        && ((OSCClassificationOutput) w.getOutputManager().getOutputGroup().getOutput(i)).isSendingDistribution()) {
+                    double[] dist = computeProbabilisticOutputs(inputs, i);
+                    w.getOutputManager().setDistribution(i, dist);
                 }
+
             }
         }
     }
@@ -719,7 +717,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public Instances getTrainingDataForPath(Path p, boolean includeMetadataFields) {
         return w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p), includeMetadataFields);
     }
-    
+
     public void buildAll() {
         //Launch training threads & get notified ...        
         synchronized (this) {
@@ -795,7 +793,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public void setModelBuilderForPath(LearningModelBuilder mb, int i) {
         paths.get(i).setModelBuilder(mb);
     }
-    
+
     public void updatePath(Path p, OSCOutput newOutput, LearningModelBuilder newModelBuilder, String[] selectedInputNames) {
         //Which path?
         int which = paths.indexOf(p);
@@ -803,7 +801,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             logger.log(Level.WARNING, "Trying to update path that does not exist");
             throw new IllegalArgumentException("Trying to update path that does not exist");
         }
-        
+
         Path newP;
         if (newOutput != null) {
             w.getOutputManager().updateOutput(newOutput, p.getOSCOutput()); //this triggers change in data manager
@@ -816,7 +814,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                 newP.inheritModelAndBuilder(p);
                 if (newP.getModelState() == Path.ModelState.BUILT) {
                     if (newOutput instanceof OSCClassificationOutput && p.getOSCOutput() instanceof OSCClassificationOutput) {
-                        if (((OSCClassificationOutput)newOutput).getNumClasses() != ((OSCClassificationOutput)p.getOSCOutput()).getNumClasses()) {
+                        if (((OSCClassificationOutput) newOutput).getNumClasses() != ((OSCClassificationOutput) p.getOSCOutput()).getNumClasses()) {
                             newP.setModelState(Path.ModelState.NEEDS_REBUILDING);
                             //Don't currently have a good way of comparing Model itself with Output to see if rebuilding necessary
                         }
@@ -828,16 +826,15 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             }
            // updateDataForPathChange(which, newP, p); 
             //w.getDataManager().notifyOutputTypeChange(); //DataManager should listen to OutputManager for this
-            
+
         } else { //keep old output; just apply input names and possibly modelBuilder
             newP = p;
             newP.setSelectedInputs(selectedInputNames);
             if (newModelBuilder != null) {
                 newP.setModelBuilder(newModelBuilder);
-            }     
+            }
         }
 
-        
         //Finally: Only do this when path object has changed:
         if (newOutput != null) {
             //Update path here, then fire change 
@@ -845,28 +842,27 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             paths.add(which, newP);
             pathsToOutputIndices.remove(p);
             pathsToOutputIndices.put(newP, which);
-            notifyPathEditedListeners(which, newP, p);   
+            notifyPathEditedListeners(which, newP, p);
         }
     }
-    
+
     private void notifyPathEditedListeners(int which, Path newPath, Path oldPath) {
         for (PathOutputTypeEditedListener l : pathEditedListeners) {
             l.pathOutputTypeEdited(which, newPath, oldPath);
         }
     }
-    
-    public interface PathOutputTypeEditedListener {
-        public void pathOutputTypeEdited(int which, Path newPath, Path oldPath);  
-    } 
-    
 
-    
+    public interface PathOutputTypeEditedListener {
+
+        public void pathOutputTypeEdited(int which, Path newPath, Path oldPath);
+    }
+
     private void notifyNewInputOutputConnections(boolean[][] connections) {
-        for (InputOutputConnectionsListener l: inputOutputConnectionsListeners) {
+        for (InputOutputConnectionsListener l : inputOutputConnectionsListeners) {
             l.newConnectionMatrix(connections);
         }
     }
-    
+
     @Override
     public void addConnectionsListener(InputOutputConnectionsListener l) {
         inputOutputConnectionsListeners.add(l);

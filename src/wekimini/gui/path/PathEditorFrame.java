@@ -133,7 +133,12 @@ public class PathEditorFrame extends javax.swing.JFrame {
         } else if (o instanceof OSCClassificationOutput) {
             sb.append("Classification output with ");
             sb.append(((OSCClassificationOutput) o).getNumClasses());
-            sb.append(" classes</html");
+            sb.append(" classes");
+            if (((OSCClassificationOutput) o).isSendingDistribution()) {
+                sb.append("<br>Sending probabilities using OSC message /");
+                sb.append(o.getName());
+            }
+            sb.append("</html>");
         } else {
             sb.append("Unknown type</html>");
             logger.log(Level.SEVERE, "Uknown output type: {0}", o.getClass().getCanonicalName());

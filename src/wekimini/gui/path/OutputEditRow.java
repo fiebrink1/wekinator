@@ -44,6 +44,7 @@ public class OutputEditRow extends javax.swing.JPanel {
         comboType.setSelectedIndex(REGRESSION_INDEX);
         setToRegression();
         textName.setText(name);
+        updateOSCHint();
 
         // finishSetup();
     }
@@ -80,12 +81,15 @@ public class OutputEditRow extends javax.swing.JPanel {
             textMax.setText(Float.toString(no.getMax()));
             textMin.setText(Float.toString(no.getMin()));
             
+            
+            
         } else if (currentOutput instanceof OSCClassificationOutput) {
             //setToClassification();
             comboType.setSelectedIndex(CLASSIFICATION_INDEX);
-
             OSCClassificationOutput co = (OSCClassificationOutput) currentOutput;
             textNumClasses.setText(Integer.toString(co.getNumClasses()));
+            checkDistribution.setSelected(co.isSendingDistribution());
+            updateOSCHint();
         } else {
             throw new UnsupportedOperationException("Unknown output type: " + currentOutput.getClass());
         }
@@ -170,7 +174,7 @@ public class OutputEditRow extends javax.swing.JPanel {
         try {
             int numClasses = Integer.parseInt(numClassesString);
             if (numClasses > 0) {
-                return new OSCClassificationOutput(name, numClasses);
+                return new OSCClassificationOutput(name, numClasses, checkDistribution.isSelected());
             } else {
                 throw new IllegalStateException("Number of classes must be an integer greater than 0.");
             }
@@ -258,6 +262,8 @@ public class OutputEditRow extends javax.swing.JPanel {
         jLabel7 = new javax.swing.JLabel();
         textNumClasses = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
+        checkDistribution = new javax.swing.JCheckBox();
+        labelOSCHint = new javax.swing.JLabel();
         cardRegression = new javax.swing.JPanel();
         jPanel26 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
@@ -280,6 +286,11 @@ public class OutputEditRow extends javax.swing.JPanel {
         textName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 textNameActionPerformed(evt);
+            }
+        });
+        textName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                textNameKeyReleased(evt);
             }
         });
 
@@ -365,25 +376,51 @@ public class OutputEditRow extends javax.swing.JPanel {
 
         jLabel8.setText("classes");
 
+        checkDistribution.setText("Send class probabilities via OSC");
+        checkDistribution.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkDistributionActionPerformed(evt);
+            }
+        });
+
+        labelOSCHint.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+        labelOSCHint.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        labelOSCHint.setText("<html><i>OSC message will be /Max1</i></html>");
+        labelOSCHint.setEnabled(false);
+        labelOSCHint.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                labelOSCHintKeyReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout cardClassificationLayout = new javax.swing.GroupLayout(cardClassification);
         cardClassification.setLayout(cardClassificationLayout);
         cardClassificationLayout.setHorizontalGroup(
             cardClassificationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cardClassificationLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(textNumClasses, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel8)
-                .addContainerGap(207, Short.MAX_VALUE))
+                .addGroup(cardClassificationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(cardClassificationLayout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(textNumClasses, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel8))
+                    .addComponent(checkDistribution)
+                    .addComponent(labelOSCHint, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(105, Short.MAX_VALUE))
         );
         cardClassificationLayout.setVerticalGroup(
             cardClassificationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(cardClassificationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jLabel7)
-                .addComponent(textNumClasses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jLabel8))
+            .addGroup(cardClassificationLayout.createSequentialGroup()
+                .addGroup(cardClassificationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(textNumClasses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8))
+                .addGap(0, 0, 0)
+                .addComponent(checkDistribution)
+                .addGap(0, 0, 0)
+                .addComponent(labelOSCHint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         panelClassificationRegression.add(cardClassification, "cardClassification");
@@ -487,7 +524,7 @@ public class OutputEditRow extends javax.swing.JPanel {
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(0, 9, Short.MAX_VALUE)
+                .addGap(0, 14, Short.MAX_VALUE)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
                     .addComponent(textMin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -517,8 +554,7 @@ public class OutputEditRow extends javax.swing.JPanel {
                 .addGap(6, 6, 6)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelClassificationRegression, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(panelClassificationRegression, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -586,6 +622,23 @@ public class OutputEditRow extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_textNumClassesKeyTyped
 
+    private void checkDistributionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkDistributionActionPerformed
+        labelOSCHint.setEnabled(checkDistribution.isSelected());
+    }//GEN-LAST:event_checkDistributionActionPerformed
+
+    private void labelOSCHintKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_labelOSCHintKeyReleased
+    }//GEN-LAST:event_labelOSCHintKeyReleased
+
+    private void textNameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textNameKeyReleased
+        updateOSCHint();
+
+    }//GEN-LAST:event_textNameKeyReleased
+
+    private void updateOSCHint() {
+        labelOSCHint.setText("OSC message will be /" + textName.getText());
+    }
+    
+    
     private void updateHint() {
         if (comboType.getSelectedIndex() == CLASSIFICATION_INDEX) {
             labelHint.setText("<html><i>Outputs are unordered categories</i></html>");
@@ -620,6 +673,7 @@ public class OutputEditRow extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel cardClassification;
     private javax.swing.JPanel cardRegression;
+    private javax.swing.JCheckBox checkDistribution;
     private javax.swing.JComboBox comboLimitType;
     private javax.swing.JComboBox comboRegressionType;
     private javax.swing.JComboBox comboType;
@@ -636,6 +690,7 @@ public class OutputEditRow extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel9;
     private javax.swing.JLabel labelHint;
     private javax.swing.JLabel labelName;
+    private javax.swing.JLabel labelOSCHint;
     private javax.swing.JPanel panelClassificationRegression;
     private javax.swing.JTextField textMax;
     private javax.swing.JTextField textMin;
