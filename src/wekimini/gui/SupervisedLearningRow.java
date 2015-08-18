@@ -78,6 +78,7 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
     private final ImageIcon trainingIcon = new ImageIcon(getClass().getResource("/wekimini/icons/pinklight.png")); // NOI18N
     private static final Logger logger = Logger.getLogger(SupervisedLearningRow.class.getName());
     
+    private boolean isOnlyDisplay = false;
     
     /**
      * Add PropertyChangeListener.
@@ -147,7 +148,7 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
     
     @Override
     public void setComputedValue(double value) {
-        setValueOnlyForDisplay(value);
+        setValueOnlyForDisplay(value); //problem resulting in an OSC send :(
     }
 
     //This should only be 
@@ -162,7 +163,9 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
         this.value = value;
         if (isClassifier) {
             if (comboClassifier.getSelectedIndex() != ((int)value) - 1 && comboClassifier.getItemCount() >= value) {
+                isOnlyDisplay = true;
                 comboClassifier.setSelectedIndex((int) value - 1 );
+                isOnlyDisplay = false;
             }
         } else {
             setSliderValueScaled(value);
@@ -771,7 +774,9 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
     }//GEN-LAST:event_sliderModelValueMouseReleased
 
     private void comboClassifierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboClassifierActionPerformed
-        setValue(comboClassifier.getSelectedIndex()+1);
+        if (!isOnlyDisplay) {
+            setValue(comboClassifier.getSelectedIndex()+1);
+        }
     }//GEN-LAST:event_comboClassifierActionPerformed
 
     private void sliderModelValueMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sliderModelValueMouseClicked

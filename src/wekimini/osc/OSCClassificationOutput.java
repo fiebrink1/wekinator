@@ -77,7 +77,7 @@ public class OSCClassificationOutput implements OSCSupervisedLearningOutput {
     
     @Override
     public boolean isLegalOutputValue(double value) {
-        if (value < 0 || value >= numClasses) { //out of range
+        if (value < 0 || value > numClasses) { //out of range
             return false;
         }
         return Util.isInteger(value); //is it really an int?

@@ -202,7 +202,7 @@ public class OutputManager {
                         //if (w.getSupervisedLearningManager().getPaths().get(i).getOSCOutput().isLegalTrainingValue((Float)o[i])) {
                             d[i] = ((Float) o[i]);
                         } else {
-                            logger.log(Level.WARNING, "Illegal output value {0} received for output {1}; ignoring it", new Object[]{o[i], i});
+                            w.getStatusUpdateCenter().warn(this, "Illegal output value " + o[i] + " received for output " + i + "; ignoring it");
                             d[i] = currentValues[i];
                         }
                     } catch (Exception ex) {
