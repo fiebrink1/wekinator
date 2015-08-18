@@ -5,6 +5,7 @@
  */
 package wekimini.gui;
 
+import wekimini.WekiMiniRunner;
 import wekimini.Wekinator;
 
 /**
@@ -18,7 +19,12 @@ public class About extends javax.swing.JFrame {
      */
     public About() {
         initComponents();
-        labelVersion.setText(Wekinator.version);
+        if (WekiMiniRunner.isKadenze()) {
+            labelVersion.setText(Wekinator.version + "- Kadenze");
+        } else {
+            labelVersion.setText(Wekinator.version);
+
+        }
     }
 
     /**

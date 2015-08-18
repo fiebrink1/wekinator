@@ -117,7 +117,7 @@ public class LinearRegressionModelBuilder implements LearningModelBuilder {
 
     @Override
     public String getPrettyName() {
-        return "Linear Regression";
+        return "Linear/Polynomial Regression";
     }
 
     @Override

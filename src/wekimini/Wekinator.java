@@ -30,7 +30,7 @@ import wekimini.util.Util;
  */
 public class Wekinator {
 
-    public static final String version = "v2.0.0.0";
+    public static final String version = "v2.0.1.0";
 
 //TODO: Can make more efficient by initializing some of these on demand (e.g. gui, OSC Monitor)
    // private final Settings settings;
@@ -69,6 +69,17 @@ public class Wekinator {
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private static final Logger logger = Logger.getLogger(Wekinator.class.getName());
 
+    private boolean isKadenze = false;
+
+    /**
+     * Get the value of isKadenze
+     *
+     * @return the value of isKadenze
+     */
+    public boolean isIsKadenze() {
+        return isKadenze;
+    }
+    
     public void addCloseListener(ChangeListener l) {
         exitListenerList.add(ChangeListener.class, l);
     }

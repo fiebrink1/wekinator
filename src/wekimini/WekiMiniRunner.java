@@ -34,6 +34,7 @@ import wekimini.util.Util;
  * @author rebecca
  */
 public final class WekiMiniRunner {
+
     private static final String versionString = "31 May 2015 19:03";
     private static final Logger logger = Logger.getLogger(WekiMiniRunner.class.getName());
     // private static final List<Wekinator> runningWekinators = new LinkedList<>();
@@ -43,22 +44,22 @@ public final class WekiMiniRunner {
     private final static About aboutBox = new About();
     private final static Preferences preferencesBox = new Preferences();
     private final ImageIcon myIcon = new ImageIcon(getClass().getResource("/wekimini/icons/wekimini_small.png"));
-    
-    
+    private static boolean isKadenze = false;
+
     public static WekiMiniRunner getInstance() {
         if (ref == null) {
             ref = new WekiMiniRunner();
         }
         return ref;
     }
-    
+
     public static ImageIcon getIcon() {
         return getInstance().myIcon;
     }
-    
+
     private void loadProperties() throws FileNotFoundException, IOException {
         //See https://docs.oracle.com/javase/tutorial/essential/environment/properties.html
-        
+
         // create and load default properties
         Properties defaultProps = new Properties();
         FileInputStream in = new FileInputStream("defaultProperties");
@@ -80,22 +81,21 @@ public final class WekiMiniRunner {
             registerForMacOSXEvents();
         }
         LoggingManager.setupUniversalLog(versionString);
-        
+
         /*try {
-            //loadProperties();
-            Util.writePropertyTest();
-        } catch (IOException ex) {
-            System.out.println("NOT WORKING");
-            Logger.getLogger(WekiMiniRunner.class.getName()).log(Level.SEVERE, null, ex);
-        }
+         //loadProperties();
+         Util.writePropertyTest();
+         } catch (IOException ex) {
+         System.out.println("NOT WORKING");
+         Logger.getLogger(WekiMiniRunner.class.getName()).log(Level.SEVERE, null, ex);
+         }
         
-        try {
-            Util.readPropertyTest();
-        } catch (IOException ex) {
-            System.out.println("READ NOT WORKING");
-            Logger.getLogger(WekiMiniRunner.class.getName()).log(Level.SEVERE, null, ex);
-        } */
-        
+         try {
+         Util.readPropertyTest();
+         } catch (IOException ex) {
+         System.out.println("READ NOT WORKING");
+         Logger.getLogger(WekiMiniRunner.class.getName()).log(Level.SEVERE, null, ex);
+         } */
         wl = new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
@@ -113,6 +113,8 @@ public final class WekiMiniRunner {
 
     public static void main(String[] args) {
         /* Create and display the form */
+        WekiMiniRunner.isKadenze = (args.length != 0);
+        //args.length == 0
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 WekiMiniRunner.getInstance().runNewProject();
@@ -229,8 +231,8 @@ public final class WekiMiniRunner {
     // General info dialog; fed to the OSXAdapter as the method to call when
     // "About OSXAdapter" is selected from the application menu
     public void about() {
-         //aboutBox.setLocation((int) this.getLocation().getX() + 22, (int) this.getLocation().getY() + 22);
-         aboutBox.setVisible(true);
+        //aboutBox.setLocation((int) this.getLocation().getX() + 22, (int) this.getLocation().getY() + 22);
+        aboutBox.setVisible(true);
     }
 
     // General preferences dialog; fed to the OSXAdapter as the method to call when
@@ -256,20 +258,24 @@ public final class WekiMiniRunner {
     public void quitWithoutPrompt() {
         //This is where we save logs, shutdown any OSC if needed, etc.
         //Notice that each Wekinator must do its own shutdown of OSC, logging, etc. separately (this is universal shutdown)
-        if (! wekinatorCurrentMainFrames.isEmpty()) {
+        if (!wekinatorCurrentMainFrames.isEmpty()) {
             Wekinator[] stillOpen = wekinatorCurrentMainFrames.keySet().toArray(new Wekinator[0]);
             for (int i = 0; i < stillOpen.length; i++) {
                 stillOpen[i].close();
             }
-            
+
             //This gives error: multiple threads accessing collection concurrently = bad !
            /* for (Wekinator w : wekinatorCurrentMainFrames.keySet()) {
-                w.close();
-            }  */
+             w.close();
+             }  */
         }
         LoggingManager.closeUniversalLogs();
-        
+
         System.exit(0);
+    }
+
+    public static boolean isKadenze() {
+        return isKadenze;
     }
 
     public interface Closeable {

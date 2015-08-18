@@ -302,7 +302,7 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
     private void sendModelMatchValue(int newMatch) {
         if (newMatch != -1) {
             try {
-                w.getOSCSender().sendOutputMessage(model.getGestureName(newMatch)); //XXX update to use output manager
+                w.getOSCSender().sendOutputMessage(model.getOSCOutput().getGestureOscMessages(newMatch)); //XXX update to use output manager
             } catch (IOException ex) {
                 Logger.getLogger(DtwLearningManager.class.getName()).log(Level.SEVERE, null, ex);
             }
