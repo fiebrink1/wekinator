@@ -136,7 +136,6 @@ public class OSCSender {
                 for (int i = 0; i < data.length; i++) {
                     o[i] = (float) data[i];
                 }
-
                 OSCMessage msg = new OSCMessage(msgName, o);
                 sender.send(msg);
                 fireSendEvent();

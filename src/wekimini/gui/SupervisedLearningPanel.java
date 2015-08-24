@@ -200,7 +200,7 @@ public class SupervisedLearningPanel extends javax.swing.JPanel {
             updateRunButtonAndText();
         } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_NUMEXAMPLESTHISROUND) {
             //TODO: Update somewhere else
-            w.getStatusUpdateCenter().update(this, w.getSupervisedLearningManager().getNumExamplesThisRound() + " new examples recorded");
+           // TODO THis is really sloww.getStatusUpdateCenter().update(this, "New examples recorded");
             //setStatus();
         } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_ABLE_TO_RECORD) {
             setButtonsForLearningState();
@@ -254,7 +254,7 @@ public class SupervisedLearningPanel extends javax.swing.JPanel {
                 }
             }
         } else if (ls == SupervisedLearningManager.LearningState.READY_TO_TRAIN) {
-            w.getStatusUpdateCenter().update(this, w.getSupervisedLearningManager().getNumExamplesThisRound() + " new examples recorded");
+            w.getStatusUpdateCenter().update(this, "New examples recorded");
            // setStatus("Examples recorded. Press \"Train\" to build models from data.");
         }
     }

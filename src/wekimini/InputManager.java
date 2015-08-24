@@ -157,18 +157,30 @@ public class InputManager {
                 messageArrived(g.getOscMessage(), oscm);
             }
         };
+        
+        
+        OSCListener groupl = new OSCListener() {
+            @Override
+            public void acceptMessage(Date date, OSCMessage oscm) {
+                bundleArrived(g.getOscMessage(), oscm);
+            }
+
+
+        };
+        
         w.getOSCReceiver().addOSCListener(g.getOscMessage(), l);
+        w.getOSCReceiver().addOSCListener("/wek/inputs/bundle", groupl) ;
     }
 
     private void messageArrived(String messageName, OSCMessage m) {
         //TODO: CHeck if enabled before doing anything
         //System.out.println("Received " + name);
         if (inputGroup != null && messageName.equals(inputGroup.getOscMessage())) {
-            Object[] o = m.getArguments();
-                double d[] = new double[o.length];
-                for (int i = 0; i < o.length; i++) {
-                    if (o[i] instanceof Float) {
-                        d[i] = ((Float) o[i]);
+            List<Object> o = m.getArguments();
+                double d[] = new double[o.size()];
+                for (int i = 0; i < o.size(); i++) {
+                    if (o.get(i) instanceof Float) {
+                        d[i] = ((Float) o.get(i));
                     } else {
                         Logger.getLogger(InputManager.class.getName()).log(Level.WARNING, "Received feature is not a float");
                     }
@@ -178,12 +190,60 @@ public class InputManager {
                     System.arraycopy(d, 0, currentValues, 0, d.length);
                 } else {
                     String msg = "Mismatch in input length: "
-                            + "Expected " + currentValues.length + ", received " + o.length;
+                            + "Expected " + currentValues.length + ", received " + o.size();
                     w.getStatusUpdateCenter().warn(this, msg);
                     notifyListenersOfError();
                 }
         }
         //Not sure if we need to store this array within this class, too
+    }
+    
+    private void bundleArrived(String messageName, OSCMessage m) {
+        //TODO
+        
+        //TODO: CHeck if enabled before doing anything
+        //System.out.println("Received " + name);
+        if (inputGroup != null) { //&& messageName.equals(makeBundleMessage(inputGroup.getOscMessage()))) {
+            List<Object> o = m.getArguments();
+            if (o == null || o.size() < 1) {
+                String msg = "Unexpected bundle message; require at least 1 message";
+                    w.getStatusUpdateCenter().warn(this, msg);
+                    notifyListenersOfError();
+                    return;
+            }
+            int numDatapoints = 0;
+            if (o.get(0) instanceof Float) {
+                numDatapoints = (int)((Float)o.get(0)).floatValue();
+            } else {
+                    String msg = "Unexpected bundle message; require at least 1 datapoint";
+                    w.getStatusUpdateCenter().warn(this, msg);
+                    notifyListenersOfError();
+                    return;
+            }
+            if (o.size() != (numDatapoints * currentValues.length + 1)) {
+                String msg = "Unexpected bundle length: Expected " + numDatapoints + " points";
+                    w.getStatusUpdateCenter().warn(this, msg);
+                    notifyListenersOfError();
+                    return;
+            }
+            int dataIndex = 1;
+            for (int i = 0; i < numDatapoints; i++) {
+                double[] d = new double[currentValues.length];
+                for (int j = 0; j < currentValues.length; j++) {
+                    if (o.get(dataIndex) instanceof Float) {
+                        d[j] = ((Float) o.get(dataIndex++));
+                    } else {
+                        String msg = "Received feature is not a float";
+                        w.getStatusUpdateCenter().warn(this, msg);
+                        notifyListenersOfError();
+                        return;
+                    }
+                }
+                notifyListeners(d);
+                System.arraycopy(d, 0, currentValues, 0, d.length);
+            }
+            
+        }
     }
 
     private void notifyListeners(double[] data) {
@@ -196,6 +256,10 @@ public class InputManager {
         for(InputListener l : inputValueListeners) {
             l.notifyInputError();
         }
+    }
+
+    private String makeBundleMessage(String oscMessage) {
+        return new StringBuilder(oscMessage).append("/bundle").toString();
     }
 
     public interface InputListener extends EventListener {
