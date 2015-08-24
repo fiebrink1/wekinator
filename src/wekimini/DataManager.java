@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini;
+package wekimini; //m
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
