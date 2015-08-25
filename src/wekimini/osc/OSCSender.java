@@ -27,11 +27,13 @@ public class OSCSender {
 
     //Mapped to OSC OutputGroup ID
     private OSCPortOut sender = null;
+    private OSCPortOut bundleSender = null;
     private InetAddress hostname = null;
     private int port = -1;
    // private String sendMessage;
   //  private final String DEFAULT_SEND_MESSAGE = "/wek/outputs";
     private final int DEFAULT_SEND_PORT = 6453;
+    private final int BUNDLE_PORT = 12001;
     private boolean isValidState = false;
 
     protected EventListenerList listenerList = new EventListenerList();
@@ -47,6 +49,8 @@ public class OSCSender {
 //        port = DEFAULT_SEND_PORT;
       //  sendMessage = DEFAULT_SEND_MESSAGE;
 //        sender = new OSCPortOut(hostname, port);
+          bundleSender = new OSCPortOut(InetAddress.getByName("localhost"), BUNDLE_PORT); //motionmachine hack 
+
     }
 
    /* public OSCSender(InetAddress hostname, int port) throws SocketException {
@@ -182,7 +186,7 @@ public class OSCSender {
             }
             try {
                 OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
-                sender.send(msg);
+                bundleSender.send(msg);
                 fireSendEvent();
             } catch (IOException ex) {
                 Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
@@ -204,7 +208,7 @@ public class OSCSender {
             }
             try {
                 OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
-                sender.send(msg);
+                bundleSender.send(msg);
                 fireSendEvent();
             } catch (IOException ex) {
                 Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
