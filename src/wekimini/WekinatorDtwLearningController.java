@@ -20,10 +20,15 @@ public class WekinatorDtwLearningController {
 
     //REQUIRES that it is legal to move to record state at this time
     public void startRecord(int whichGesture) {
+        if (whichGesture <= 0 || whichGesture > m.getModel().getNumGestures()) {
+            w.getStatusUpdateCenter().warn(this, "Illegal DTW gesture number " + 
+                    whichGesture + ": must be between 1 and " +m.getModel().getNumGestures() );
+            return;
+        } 
         if (m.getRunningState() == DtwLearningManager.RunningState.RUNNING) {
             stopRun();
         }
-        m.startRecording(whichGesture);
+        m.startRecording(whichGesture-1);
         w.getStatusUpdateCenter().update(this, "Recording for gesture " + whichGesture + ": waiting for inputs to arrive");
     }
     

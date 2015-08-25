@@ -207,7 +207,6 @@ public class DtwModel implements Model {
      * @param matchThreshold new value of matchThreshold
      */
     public void setMatchThreshold(double matchThreshold) {
-        System.out.println("SETTING MATCH THRESHOLD TO " + matchThreshold);
         double oldMatchThreshold = this.matchThreshold;
         this.matchThreshold = matchThreshold;
         propertyChangeSupport.firePropertyChange(PROP_MATCHTHRESHOLD, oldMatchThreshold, matchThreshold);
