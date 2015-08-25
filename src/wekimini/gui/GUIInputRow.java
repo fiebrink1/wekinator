@@ -5,6 +5,7 @@
  */
 package wekimini.gui;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -50,6 +51,11 @@ public class GUIInputRow extends javax.swing.JPanel {
 
             @Override
             public void notifyInputError() {
+            }
+
+            @Override
+            public void updateBundle(int numPoints, List<Object> values) {
+                updateLight();
             }
         };
         

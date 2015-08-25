@@ -3,8 +3,6 @@
  */
 package wekimini;
 
-import java.util.List;
-
 /**
  *
  * @author rebecca

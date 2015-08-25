@@ -80,20 +80,70 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
      * @return the value of computeDistribution
      */
     /*public boolean isComputeDistribution() {
-        return computeDistribution;
-    } */
-
+     return computeDistribution;
+     } */
     /**
      * Set the value of computeDistribution
      *
      * @param computeDistribution new value of computeDistribution
      */
-   /* public void setComputeDistribution(boolean computeDistribution) {
-        this.computeDistribution = computeDistribution;
-    } */
-
+    /* public void setComputeDistribution(boolean computeDistribution) {
+     this.computeDistribution = computeDistribution;
+     } */
     boolean isLegalTrainingValue(int whichOutput, float value) {
         return getPaths().get(whichOutput).getOSCOutput().isLegalTrainingValue(value);
+    }
+
+    private List<List<Double>> computeBundleValues(int numPoints, int numInputs, List<Object> values, boolean[] computeMask) {
+        List<List<Double>> newValues = new ArrayList<List<Double>>();
+        int whichValue = 0;
+        for (int n = 0; n < numPoints; n++) {
+            double[] nextInput = new double[numInputs];
+            for (int i = 0; i< numInputs; i++) {
+                nextInput[i] = (Float)values.get(whichValue++);
+            }
+
+            List<Double> theseValues = new ArrayList<Double>(computeMask.length);
+            for (int i = 0; i < computeMask.length; i++) {
+                if (computeMask[i] && paths.get(i).canCompute()) {
+                    Instance instance = w.getDataManager().getClassifiableInstanceForOutput(nextInput, i);
+                    try {
+                        //myComputedOutputs[i] = paths.get(i).compute(instance);
+                        theseValues.add(paths.get(i).compute(instance));
+                    } catch (Exception ex) {
+                        theseValues.add(new Double(0));
+                        logger.log(Level.SEVERE, "Error encountered in computing: {0}", ex.getMessage());
+                    }
+                } else {
+                    theseValues.add(w.getOutputManager().getCurrentValues()[i]);
+                    //myComputedOutputs[i] = w.getOutputManager().getCurrentValues()[i];
+                }
+            }
+            newValues.add(theseValues);
+        }
+        return newValues;
+    }
+
+    private double[][] computeBundleDistributions(int numPoints, int numInputs, List<Object> values, int whichOutput) {
+        double[][] allDistributions = new double[numPoints][];
+        int whichValue = 0;
+        if (paths.get(whichOutput).canCompute()) {
+            for (int n = 0; n < numPoints; n++) {
+                double[] nextInput = new double[numInputs];
+                for (int i = 0; i < numInputs; i++) {
+                    nextInput[i] = (Float)values.get(whichValue++);
+                }
+                Instance instance = w.getDataManager().getClassifiableInstanceForOutput(nextInput, whichOutput);
+                double[] thisDist = paths.get(whichOutput).computeDistribution(instance);
+                allDistributions[n] = thisDist; 
+            }
+        } else {
+            for (int n = 0; n < numPoints; n++) {
+                double[] nextDist = new double[((OSCClassificationOutput) paths.get(whichOutput).getOSCOutput()).getNumClasses()];
+                allDistributions[n] = nextDist;
+            }
+        }
+        return allDistributions;
     }
 
     public static enum LearningState {
@@ -435,6 +485,11 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             public void notifyInputError() {
 
             }
+
+            @Override
+            public void updateBundle(int numPoints, List<Object> values) {
+                updateInputBundle(numPoints, values);
+            }
         });
 
         updateAbleToRecord();
@@ -516,6 +571,11 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
             @Override
             public void notifyInputError() {
+            }
+
+            @Override
+            public void updateBundle(int numPoints, List<Object> values) {
+                updateInputBundle(numPoints, values);
             }
         });
     }
@@ -639,6 +699,18 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         setNumExamplesThisRound(numExamplesThisRound + 1);
         w.getDataManager().addToTraining(inputs, outputs, recordingMask, recordingRound);
     }
+    
+    public void addBundleToTraining(int numInputs, List<Object> inputs, double[] outputs, boolean[] recordingMask) {
+        setNumExamplesThisRound(numExamplesThisRound + inputs.size());
+        int currentValue = 0;
+        while (currentValue < inputs.size()) {
+            double[] nextInputs = new double[numInputs];
+            for (int i = 0; i < numInputs; i++) {
+                nextInputs[i] = (Float)inputs.get(currentValue++);
+            }
+            w.getDataManager().addToTraining(nextInputs, outputs, recordingMask, recordingRound);
+        }
+    }
 
     /* public boolean wasCancelled() {
      return wasCancelled;
@@ -679,6 +751,28 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                         && ((OSCClassificationOutput) w.getOutputManager().getOutputGroup().getOutput(i)).isSendingDistribution()) {
                     double[] dist = computeProbabilisticOutputs(inputs, i);
                     w.getOutputManager().setDistribution(i, dist);
+                }
+
+            }
+        }
+    }
+
+    private void updateInputBundle(int numPoints, List<Object> values) {
+        if (recordingState == RecordingState.RECORDING) {
+            //addToTraining(inputs, w.getOutputManager().getCurrentValues(), pathRecordingMask);
+            addBundleToTraining(numPoints, values, w.getOutputManager().getCurrentValues(), pathRecordingMask);
+        } else if (runningState == RunningState.RUNNING) {
+            List<List<Double>> allOutputs = computeBundleValues(numPoints, w.getInputManager().getNumInputs(), values, pathRunningMask);
+           // double[] d = computeValues(inputs, pathRunningMask);
+            w.getOutputManager().setNewComputedBundleValues(allOutputs);
+
+            //TODO: Get rid of search every time : slows us down!
+            for (int i = 0; i < w.getOutputManager().getOutputGroup().getNumOutputs(); i++) {
+                if ((w.getOutputManager().getOutputGroup().getOutput(i) instanceof OSCClassificationOutput)
+                        && ((OSCClassificationOutput) w.getOutputManager().getOutputGroup().getOutput(i)).isSendingDistribution()) {
+                    //double[] dist = computeProbabilisticOutputs(numPoints,, i);
+                    double[][] allDistributions = computeBundleDistributions(numPoints, w.getInputManager().getNumInputs(), values, i);
+                    w.getOutputManager().setNewComputedBundleDistribution(i, allDistributions);
                 }
 
             }
@@ -824,7 +918,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                 //DO need update if # classes has changed (if not for model output safety, then at least for saving safety)
                 //DON'T need update if just NN doing int/real or hard/soft limits.
             }
-           // updateDataForPathChange(which, newP, p); 
+            // updateDataForPathChange(which, newP, p); 
             //w.getDataManager().notifyOutputTypeChange(); //DataManager should listen to OutputManager for this
 
         } else { //keep old output; just apply input names and possibly modelBuilder

@@ -244,6 +244,26 @@ public class DtwModel implements Model {
         return myOutput;
     }
 
+    public double[][] outputs runOnBundle(int numPoints, int numInputs, List<Object> values) {
+        int valNum = 0;
+        for (int i = 0; i < numPoints; i++) {
+            double[] thisInput = new double[numInputs];
+            for (int j = 0 ; j < numInputs; j++) {
+                thisInput[j] = (Double) values.get(valNum++);
+            }
+            data.addRunningVector(thisInput);
+            double[] thisOutput = getClassificationVector();
+        }
+        
+        
+        
+        boolean wasAdded = data.addRunningVector(inputs);
+        if (settings.getRunningType() == RunningType.LABEL_CONTINUOUSLY && wasAdded) {
+            classifyContinuous();
+        }
+    
+    }
+
     public static enum RecordingState {
 
         RECORDING, NOT_RECORDING

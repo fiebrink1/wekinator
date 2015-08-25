@@ -359,6 +359,35 @@ public class OutputManager {
             logger.log(Level.SEVERE, null, ex);
         }
     }
+
+    void setNewComputedBundleValues(List<List<Double>> allOutputs) {
+        // System.out.println("IN SETTING NEW COMPUTED");
+        for (List<Double> nextOutputs : allOutputs) {
+            double[] values = new double[nextOutputs.size()];
+            if (values.length != currentValues.length) {
+                throw new IllegalArgumentException("values is null or wrong length");
+            }
+            System.arraycopy(values, 0, currentValues, 0, values.length);
+            notifyOutputGroupComputedListeners(values);
+        }
+        try {
+            w.getOSCSender().sendOutputBundleValuesMessage(outputGroup.getOscMessage(), allOutputs);
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, "Couldn't send message");
+            logger.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    void setNewComputedBundleDistribution(int i, double[][] allDistributions) {
+        try {
+            w.getOSCSender().sendOutputBundleValuesMessage("/" + outputGroup.getOutput(i).getName(), allDistributions);
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, "Couldn't send message");
+            logger.log(Level.SEVERE, null, ex);
+        }
+        
+        
+    }
     
     // TODO: Not sure if we need this?
     public interface OutputValueListener extends EventListener {

@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.ChangeEvent;
@@ -166,6 +168,50 @@ public class OSCSender {
                 }
                 ((ChangeListener) listeners[i + 1]).stateChanged(changeEvent);
             }
+        }
+    }
+
+    public void sendOutputBundleValuesMessage(String oscMessage, List<List<Double>> allOutputs) throws IOException {
+        if (isValidState) {
+            List<Object> o = new LinkedList<Object>();
+            o.add(new Integer(allOutputs.size()));
+            for (List<Double> thisList : allOutputs) {
+                for (Double d : thisList) {
+                    o.add(d);
+                }
+            }
+            try {
+                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
+                sender.send(msg);
+                fireSendEvent();
+            } catch (IOException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
+            }
+        } else {
+            logger.log(Level.WARNING, "Could not send OSC message: Invalid state");
+        }
+    }
+
+    public void sendOutputBundleValuesMessage(String oscMessage, double[][] allDistributions) throws IOException {
+        if (isValidState) {
+            List<Object> o = new LinkedList<Object>();
+            o.add(new Integer(allDistributions.length));
+            for (int i = 0; i < allDistributions.length; i++) {
+                for (int j = 0; j < allDistributions[i].length; j++) {
+                    o.add(allDistributions[i][j]);
+                }
+            }
+            try {
+                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
+                sender.send(msg);
+                fireSendEvent();
+            } catch (IOException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
+            }
+        } else {
+            logger.log(Level.WARNING, "Could not send OSC message: Invalid state");
         }
     }
 

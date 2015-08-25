@@ -116,6 +116,11 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
             @Override
             public void notifyInputError() {
             }
+
+            @Override
+            public void updateBundle(int numPoints, List<Object> values) {
+                updateInputBundle(numPoints, values);
+            }
         });
     }
 
@@ -234,6 +239,22 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
             model.runOnVector(vals);
         }
     }
+    
+    private void updateInputBundle(int numPoints, int numInputs, List<Object> values) {
+        if (model.getRecordingState() == DtwModel.RecordingState.RECORDING) {
+            int currentVal = 0;
+            for (int i = 0; i < numPoints; i++) {
+                double[] theseVals = new double[numInputs];
+                for (int j = 0; j < numInputs; j++) {
+                    theseVals[j] = (Double)values.get(currentVal++);
+                }
+                model.getData().addTrainingVector(theseVals);
+            }
+        } else if (runningState == RunningState.RUNNING) {
+            model.runOnBundle(numPoints, values);
+        }
+    }
+    
 
     public boolean[][] getConnectionMatrix() {
         //For now, only have 1 output! (only 1 model)    

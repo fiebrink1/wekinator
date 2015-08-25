@@ -37,6 +37,17 @@ public class InputMonitor extends javax.swing.JFrame {
         @Override
         public void notifyInputError() {
         }
+
+        @Override
+        public void updateBundle(int numPoints, List<Object> values) {
+            if (numPoints > 0) {
+                double[] vals = new double[rows.size()];
+                for (int i = 0; i < vals.length; i++) {
+                    vals[i] = (Float)values.get(values.size() - vals.length + i);
+                }
+                updateValues(vals);
+            }
+        }
     };
 
     

@@ -226,7 +226,16 @@ public class InputManager {
                     notifyListenersOfError();
                     return;
             }
-            int dataIndex = 1;
+            if (numDatapoints > 0) {
+                o.remove(0);
+                notifyBundleListeners(numDatapoints, o);
+                //update currentValues
+                for (int i = 0; i < currentValues.length; i++) {
+                    currentValues[i] = (Float)o.get(o.size()-currentValues.length + i);
+                }
+            }
+                    
+           /* int dataIndex = 1;
             for (int i = 0; i < numDatapoints; i++) {
                 double[] d = new double[currentValues.length];
                 for (int j = 0; j < currentValues.length; j++) {
@@ -241,7 +250,7 @@ public class InputManager {
                 }
                 notifyListeners(d);
                 System.arraycopy(d, 0, currentValues, 0, d.length);
-            }
+            } */
             
         }
     }
@@ -262,8 +271,13 @@ public class InputManager {
         return new StringBuilder(oscMessage).append("/bundle").toString();
     }
 
+    private void notifyBundleListeners(int numDatapoints, List<Object> o) {
+        
+    }
+
     public interface InputListener extends EventListener {
         public void update(double[] vals);
+        public void updateBundle(int numPoints, List<Object> values);
         public void notifyInputError();
     }
 
