@@ -561,7 +561,7 @@ public class DtwModel implements Model {
 
                     //TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, currentTs, settings.getMatchWidth());
                     double dist = FastDTW.getWarpDistBetween(ts, currentTs, settings.getMatchWidth(), distanceFunction);
-
+                    
                     if (closestDistances[whichClass] > dist) {
                         closestDistances[whichClass] = dist;
                     }
