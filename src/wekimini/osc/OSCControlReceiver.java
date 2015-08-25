@@ -9,7 +9,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import wekimini.Wekinator;
 import wekimini.util.Util;
 
@@ -23,10 +22,10 @@ public class OSCControlReceiver {
     private final OSCController controller;
     private final PropertyChangeListener oscReceiverListener;
     private final String startRecordMessage = "/wekinator/control/startRecording";
+    private final String stopRecordMessage = "/wekinator/control/stopRecording";
     private final String startDtwRecordMessage = "/wekinator/control/startDtwRecording";
     private final String stopDtwRecordMessage = "/wekinator/control/stopDtwRecording";
 
-    private final String stopRecordMessage = "/wekinator/control/stopRecording";
     private final String trainMessage = "/wekinator/control/train";
     private final String cancelTrainingMessage = "/wekinator/control/cancelTrain";
     private final String startRunningMessage = "/wekinator/control/startRunning";
@@ -91,7 +90,8 @@ public class OSCControlReceiver {
                 if (o != null && o.size() > 0 && o.get(0) instanceof Integer) {
                     controller.startDtwRecord((Integer)o.get(0)); 
                 } else {
-                    
+                    String msg = "Error: Expected message " + startDtwRecordMessage + " to be followed by 1 integer argument";
+                    w.getStatusUpdateCenter().warn(this, msg);
                 }
             }
         };

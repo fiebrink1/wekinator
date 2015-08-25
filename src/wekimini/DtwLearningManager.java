@@ -37,9 +37,12 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
     public static final String PROP_HAS_EXAMPLES = "hasExamples";
     private boolean hasExamples = false;
     private final List<InputOutputConnectionsListener> inputOutputConnectionsListeners = new LinkedList<>();
-
+    private final WekinatorDtwLearningController controller;
+    
     public DtwLearningManager(Wekinator w, OSCOutputGroup group) {
         this.w = w;
+        controller = new WekinatorDtwLearningController(this, w);
+
         if (group.getNumOutputs() != 1) {
             throw new IllegalArgumentException("Only one DTW output allowed right now");
         }
@@ -147,6 +150,18 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         }
         
         updateInputOutputConnections(selectionMatrix);
+    }
+
+    void startRecording(int whichGesture) {
+        model.startRecording(whichGesture);
+    }
+
+    void stopRecording() {
+        model.stopRecording();
+    }
+
+    public WekinatorDtwLearningController getDtwLearningController() {
+        return controller;
     }
 
     public static enum RunningState {
