@@ -118,8 +118,8 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
             }
 
             @Override
-            public void updateBundle(int numPoints, List<Object> values) {
-                updateInputBundle(numPoints, values);
+            public void updateBundle(List<Object> values) {
+                updateInputBundle(values);
             }
         });
     }
@@ -240,18 +240,26 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         }
     }
     
-    private void updateInputBundle(int numPoints, int numInputs, List<Object> values) {
+    private void updateInputBundle(List<Object> values) {
+        int numPoints = (Integer) values.get(0);
+        int numInputs = w.getInputManager().getNumInputs();
         if (model.getRecordingState() == DtwModel.RecordingState.RECORDING) {
-            int currentVal = 0;
+            int currentVal = 1; //starts at 1
             for (int i = 0; i < numPoints; i++) {
                 double[] theseVals = new double[numInputs];
                 for (int j = 0; j < numInputs; j++) {
-                    theseVals[j] = (Double)values.get(currentVal++);
+                    theseVals[j] = (Float)values.get(currentVal++);
                 }
                 model.getData().addTrainingVector(theseVals);
             }
         } else if (runningState == RunningState.RUNNING) {
-            model.runOnBundle(numPoints, values);
+            double[][] allOutputs = model.runOnBundle(numPoints, w.getInputManager().getNumInputs(), values);
+            try {
+                w.getOSCSender().sendOutputBundleValuesMessage(w.getOutputManager().getOutputGroup().getOscMessage(), allOutputs);
+            } catch (IOException ex) {
+                Logger.getLogger(DtwLearningManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         }
     }
     

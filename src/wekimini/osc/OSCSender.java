@@ -177,7 +177,7 @@ public class OSCSender {
             o.add(new Integer(allOutputs.size()));
             for (List<Double> thisList : allOutputs) {
                 for (Double d : thisList) {
-                    o.add(d);
+                    o.add((float)d.doubleValue());
                 }
             }
             try {
@@ -199,7 +199,7 @@ public class OSCSender {
             o.add(new Integer(allDistributions.length));
             for (int i = 0; i < allDistributions.length; i++) {
                 for (int j = 0; j < allDistributions[i].length; j++) {
-                    o.add(allDistributions[i][j]);
+                    o.add((float)allDistributions[i][j]);
                 }
             }
             try {

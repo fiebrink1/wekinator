@@ -363,12 +363,14 @@ public class OutputManager {
     void setNewComputedBundleValues(List<List<Double>> allOutputs) {
         // System.out.println("IN SETTING NEW COMPUTED");
         for (List<Double> nextOutputs : allOutputs) {
-            double[] values = new double[nextOutputs.size()];
-            if (values.length != currentValues.length) {
+           // double[] values = new double[nextOutputs.size()];
+            if (nextOutputs.size() != currentValues.length) {
                 throw new IllegalArgumentException("values is null or wrong length");
             }
-            System.arraycopy(values, 0, currentValues, 0, values.length);
-            notifyOutputGroupComputedListeners(values);
+            for (int i = 0; i < currentValues.length; i++) {
+                currentValues[i] = nextOutputs.get(i);
+            }
+            notifyOutputGroupComputedListeners(currentValues);
         }
         try {
             w.getOSCSender().sendOutputBundleValuesMessage(outputGroup.getOscMessage(), allOutputs);

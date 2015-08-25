@@ -74,7 +74,7 @@ public class OSCMonitor {
             }
 
             @Override
-            public void updateBundle(int numPoints, List<Object> values) {
+            public void updateBundle(List<Object> values) {
                 inputReceived();
             }
         });

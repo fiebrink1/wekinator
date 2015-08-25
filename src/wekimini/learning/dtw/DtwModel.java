@@ -244,23 +244,19 @@ public class DtwModel implements Model {
         return myOutput;
     }
 
-    public double[][] outputs runOnBundle(int numPoints, int numInputs, List<Object> values) {
-        int valNum = 0;
+    public double[][] runOnBundle(int numPoints, int numInputs, List<Object> values) {
+        int valNum = 1; //Starts at 1
+        double[][] allOutputs = new double[numPoints][];
         for (int i = 0; i < numPoints; i++) {
             double[] thisInput = new double[numInputs];
             for (int j = 0 ; j < numInputs; j++) {
-                thisInput[j] = (Double) values.get(valNum++);
+                thisInput[j] = (Float) values.get(valNum++);
             }
             data.addRunningVector(thisInput);
             double[] thisOutput = getClassificationVector();
+            allOutputs[i] = thisOutput;
         }
-        
-        
-        
-        boolean wasAdded = data.addRunningVector(inputs);
-        if (settings.getRunningType() == RunningType.LABEL_CONTINUOUSLY && wasAdded) {
-            classifyContinuous();
-        }
+        return allOutputs;
     
     }
 
@@ -712,6 +708,82 @@ public class DtwModel implements Model {
         }
     }
 
+      private double[] getClassificationVector() {
+          double[] d = new double[numGestures];
+          
+        //Chop to sizes between minSizeInExamples, min(current ts size, maxSizeInExamples)
+        // and look for best match.
+
+        int min;
+        if (settings.getMinimumLengthRestriction() == DtwSettings.MinimumLengthRestriction.SET_FROM_EXAMPLES) {
+            if (settings.getDownsamplePolicy() == DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING) {
+                min = minSizeInExamples;
+            } else {
+                min = minSizeInDownsampledExamples;
+            }
+        } else {
+            min = settings.getMinAllowedGestureLength();
+            /*if (min > minSizeInExamples) {
+             min = minSizeInExamples; //this means 1 very short example can break everything: disallow
+             } */
+        }
+        //System.out.println("Classifying with min=" + min);
+
+        int max;
+        if (settings.getDownsamplePolicy() == DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING) {
+            max = maxSizeInExamples;
+        } else {
+            max = maxSizeInDownsampledExamples;
+        }
+
+        List<TimeSeries> l = data.getCandidateSeriesFromCurrentRun(min, max, settings.getHopSizeForContinuousSearch());
+       // System.out.println("min/Max:" + min + max);
+        
+        
+        double closestDist = Double.MAX_VALUE;
+        int closestClass = -1;
+
+        for (int i = 0; i < closestDistances.length; i++) {
+            d[i] = Double.MAX_VALUE;
+        }
+
+        for (int whichClass = 0; whichClass < numGestures; whichClass++) {
+            if (isGestureActive[whichClass]) {
+                for (TimeSeries candidate : l) {
+                    for (DtwExample ex : data.getExamplesForGesture(whichClass)) {
+                        TimeSeries ts;
+                        if (settings.getDownsamplePolicy() == DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING) {
+                            ts = ex.getTimeSeries();
+                        } else {
+                            ts = ex.getDownsampledTimeSeries();
+                        }
+
+                        //for (TimeSeries ts : allseries.get(whichClass)) {
+                        // TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, candidate, settings.getMatchWidth()); //used to be 5 instead of matchWidth
+                        double dist = FastDTW.getWarpDistBetween(ts, candidate, settings.getMatchWidth(), distanceFunction);
+
+                        if (d[whichClass] > dist) {
+                            d[whichClass] = dist;
+                        }
+                        if (dist < closestDist) {
+                            closestDist = dist;
+                            closestClass = whichClass;
+                        }
+                    }
+                }
+            }
+        }
+        /*if (closestDist < matchThreshold) {
+            setCurrentMatch(closestClass);
+        } else {
+            setCurrentMatch(-1);
+        } */
+        //notifyUpdateListeners(closestDistances);
+        //computeAndNotifyNormalizedDistances();
+        return d;
+    }
+
+    
     private void classifyContinuous() {
         //Chop to sizes between minSizeInExamples, min(current ts size, maxSizeInExamples)
         // and look for best match.

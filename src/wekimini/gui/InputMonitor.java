@@ -39,7 +39,8 @@ public class InputMonitor extends javax.swing.JFrame {
         }
 
         @Override
-        public void updateBundle(int numPoints, List<Object> values) {
+        public void updateBundle(List<Object> values) {
+            int numPoints = (Integer) values.get(0);
             if (numPoints > 0) {
                 double[] vals = new double[rows.size()];
                 for (int i = 0; i < vals.length; i++) {

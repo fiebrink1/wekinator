@@ -212,8 +212,8 @@ public class InputManager {
                     return;
             }
             int numDatapoints = 0;
-            if (o.get(0) instanceof Float) {
-                numDatapoints = (int)((Float)o.get(0)).floatValue();
+            if (o.get(0) instanceof Integer) {
+                numDatapoints = (Integer) o.get(0);
             } else {
                     String msg = "Unexpected bundle message; require at least 1 datapoint";
                     w.getStatusUpdateCenter().warn(this, msg);
@@ -227,8 +227,8 @@ public class InputManager {
                     return;
             }
             if (numDatapoints > 0) {
-                o.remove(0);
-                notifyBundleListeners(numDatapoints, o);
+                //o.remove(0);
+                notifyBundleListeners(o);
                 //update currentValues
                 for (int i = 0; i < currentValues.length; i++) {
                     currentValues[i] = (Float)o.get(o.size()-currentValues.length + i);
@@ -271,13 +271,15 @@ public class InputManager {
         return new StringBuilder(oscMessage).append("/bundle").toString();
     }
 
-    private void notifyBundleListeners(int numDatapoints, List<Object> o) {
-        
+    private void notifyBundleListeners(List<Object> o) {
+        for(InputListener l : inputValueListeners) {
+            l.updateBundle(o);
+        }
     }
 
     public interface InputListener extends EventListener {
         public void update(double[] vals);
-        public void updateBundle(int numPoints, List<Object> values);
+        public void updateBundle(List<Object> values);
         public void notifyInputError();
     }
 
