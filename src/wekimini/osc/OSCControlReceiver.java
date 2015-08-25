@@ -23,6 +23,9 @@ public class OSCControlReceiver {
     private final OSCController controller;
     private final PropertyChangeListener oscReceiverListener;
     private final String startRecordMessage = "/wekinator/control/startRecording";
+    private final String startDtwRecordMessage = "/wekinator/control/startDtwRecording";
+    private final String stopDtwRecordMessage = "/wekinator/control/stopDtwRecording";
+
     private final String stopRecordMessage = "/wekinator/control/stopRecording";
     private final String trainMessage = "/wekinator/control/train";
     private final String cancelTrainingMessage = "/wekinator/control/cancelTrain";
@@ -80,6 +83,28 @@ public class OSCControlReceiver {
         };
         w.getOSCReceiver().addOSCListener(stopRecordMessage, stopRecordListener);
 
+        
+        OSCListener startDtwRecordListener = new OSCListener() {
+            @Override
+            public void acceptMessage(Date date, OSCMessage oscm) {
+                List<Object> o = oscm.getArguments();
+                if (o != null && o.size() > 0 && o.get(0) instanceof Integer) {
+                    controller.startDtwRecord((Integer)o.get(0)); 
+                } else {
+                    
+                }
+            }
+        };
+        w.getOSCReceiver().addOSCListener(startDtwRecordMessage, startDtwRecordListener);
+        
+        OSCListener stopDtwRecordListener = new OSCListener() {
+            @Override
+            public void acceptMessage(Date date, OSCMessage oscm) {
+                controller.stopDtwRecord();
+            }
+        };
+        w.getOSCReceiver().addOSCListener(stopDtwRecordMessage, stopDtwRecordListener);
+        
         OSCListener startRunListener = new OSCListener() {
             @Override
             public void acceptMessage(Date date, OSCMessage oscm) {

@@ -4,6 +4,7 @@
  */
 package wekimini.osc;
 
+import com.illposed.osc.OSCMessage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import wekimini.LearningManager;
@@ -162,6 +163,15 @@ public class OSCController {
     //Also requires inputs and outputs to already be set up
     public void setInputSelectionForOutput(int[] whichInputs, int outputNum) {
         w.getWekinatorController().setInputsForOutput(whichInputs, outputNum);
+    }
+
+    void startDtwRecord(OSCMessage oscm) {
+        //Message should contain number of DTW class
+        
+    }
+
+    void stopDtwRecord() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
