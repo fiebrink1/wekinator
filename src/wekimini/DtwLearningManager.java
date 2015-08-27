@@ -118,7 +118,7 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
             }
 
             @Override
-            public void updateBundle(List<Object> values) {
+            public void updateBundle(List<List<Double>> values) {
                 updateInputBundle(values);
             }
         });
@@ -240,20 +240,21 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         }
     }
     
-    private void updateInputBundle(List<Object> values) {
-        int numPoints = (Integer) values.get(0);
-        int numInputs = w.getInputManager().getNumInputs();
+    private void updateInputBundle(List<List<Double>> values) {
+       // int numPoints = (Integer) values.get(0);
+       // int numInputs = w.getInputManager().getNumInputs();
         if (model.getRecordingState() == DtwModel.RecordingState.RECORDING) {
-            int currentVal = 1; //starts at 1
-            for (int i = 0; i < numPoints; i++) {
-                double[] theseVals = new double[numInputs];
-                for (int j = 0; j < numInputs; j++) {
-                    theseVals[j] = (Float)values.get(currentVal++);
+            //int currentVal = 1; //starts at 1
+            for (List<Double> thisValue : values) {
+            //for (int i = 0; i < numPoints; i++) {
+                double[] theseVals = new double[thisValue.size()];
+                for (int j = 0; j < thisValue.size(); j++) {
+                    theseVals[j] = thisValue.get(j);
                 }
                 model.getData().addTrainingVector(theseVals);
             }
         } else if (runningState == RunningState.RUNNING) {
-            double[][] allOutputs = model.runOnBundle(numPoints, w.getInputManager().getNumInputs(), values);
+            double[][] allOutputs = model.runOnBundle(values);
             try {
                 w.getOSCSender().sendOutputBundleValuesMessage(w.getOutputManager().getOutputGroup().getOscMessage(), allOutputs);
             } catch (IOException ex) {

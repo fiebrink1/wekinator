@@ -7,7 +7,10 @@ package wekimini.osc;
 
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortOut;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -177,7 +180,7 @@ public class OSCSender {
 
     public void sendOutputBundleValuesMessage(String oscMessage, List<List<Double>> allOutputs) throws IOException {
         if (isValidState) {
-            List<Object> o = new LinkedList<Object>();
+            /*List<Object> o = new LinkedList<Object>();
             o.add(new Integer(allOutputs.size()));
             for (List<Double> thisList : allOutputs) {
                 for (Double d : thisList) {
@@ -191,15 +194,55 @@ public class OSCSender {
             } catch (IOException ex) {
                 Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
                 throw ex;
+            } */
+            String filename = System.getProperty("java.io.tmpdir") + File.separator + "wekOutputs.csv";
+            System.out.println("Writing to " + filename);
+            writeBundleToFile(filename, allOutputs);
+            try {
+                List<Object> o = new LinkedList<Object>();
+                o.add(filename);
+                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
+                bundleSender.send(msg);
+                fireSendEvent();
+            } catch (IOException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
             }
         } else {
             logger.log(Level.WARNING, "Could not send OSC message: Invalid state");
         }
     }
 
+    private void writeBundleToFile(String filename, List<List<Double>> allOutputs) throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(filename);
+        for (List<Double> output : allOutputs) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < output.size()-1; i++) {
+                sb.append(Double.toString(output.get(i))).append(",");
+            }
+            sb.append(Double.toString(output.get(output.size()-1)));
+            writer.println(sb.toString());
+        }
+        writer.close();
+    }
+    
+    private void writeBundleToFile(String filename, double[][] allDistributions) throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(filename);
+        for (int i = 0; i < allDistributions.length; i++) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < allDistributions[i].length-1; j++) {
+                sb.append(Double.toString(allDistributions[i][j])).append(",");
+            }
+            sb.append(Double.toString(allDistributions[i][allDistributions[i].length-1]));
+            writer.println(sb.toString());
+        }
+        writer.close();
+    }
+    
+    
     public void sendOutputBundleValuesMessage(String oscMessage, double[][] allDistributions) throws IOException {
         if (isValidState) {
-            List<Object> o = new LinkedList<Object>();
+            /*List<Object> o = new LinkedList<Object>();
             o.add(new Integer(allDistributions.length));
             for (int i = 0; i < allDistributions.length; i++) {
                 for (int j = 0; j < allDistributions[i].length; j++) {
@@ -207,6 +250,19 @@ public class OSCSender {
                 }
             }
             try {
+                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
+                bundleSender.send(msg);
+                fireSendEvent();
+            } catch (IOException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
+            } */
+            String filename = System.getProperty("java.io.tmpdir") + File.separator + "wekOutputs.csv";
+            System.out.println("Writing to " + filename);
+            writeBundleToFile(filename, allDistributions);
+            try {
+                List<Object> o = new LinkedList<Object>();
+                o.add(filename);
                 OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
                 bundleSender.send(msg);
                 fireSendEvent();

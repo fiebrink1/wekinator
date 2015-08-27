@@ -244,17 +244,19 @@ public class DtwModel implements Model {
         return myOutput;
     }
 
-    public double[][] runOnBundle(int numPoints, int numInputs, List<Object> values) {
-        int valNum = 1; //Starts at 1
-        double[][] allOutputs = new double[numPoints][];
-        for (int i = 0; i < numPoints; i++) {
-            double[] thisInput = new double[numInputs];
-            for (int j = 0 ; j < numInputs; j++) {
-                thisInput[j] = (Float) values.get(valNum++);
+    public double[][] runOnBundle(List<List<Double>> values) {
+        //int valNum = 1; //Starts at 1
+        double[][] allOutputs = new double[values.size()][];
+        int i = 0;
+        //for (int i = 0; i < values.size(); i++) {
+        for (List<Double> thisValue : values) {
+            double[] thisInput = new double[thisValue.size()];
+            for (int j = 0 ; j < thisValue.size(); j++) {
+                thisInput[j] = thisValue.get(j);
             }
             data.addRunningVector(thisInput);
             double[] thisOutput = getClassificationVector();
-            allOutputs[i] = thisOutput;
+            allOutputs[i++] = thisOutput;
         }
         return allOutputs;
     

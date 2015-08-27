@@ -54,7 +54,7 @@ public class GUIInputRow extends javax.swing.JPanel {
             }
 
             @Override
-            public void updateBundle(List<Object> values) {
+            public void updateBundle(List<List<Double>> values) {
                 updateLight();
             }
         };

@@ -94,14 +94,16 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         return getPaths().get(whichOutput).getOSCOutput().isLegalTrainingValue(value);
     }
 
-    private List<List<Double>> computeBundleValues(int numInputs, List<Object> values, boolean[] computeMask) {
-        int numPoints = (Integer) values.get(0);
+    private List<List<Double>> computeBundleValues(int numInputs, List<List<Double>> values, boolean[] computeMask) {
+        //int numPoints = (Integer) values.get(0);
         List<List<Double>> newValues = new ArrayList<List<Double>>();
-        int whichValue = 1; //Starts at 1
-        for (int n = 0; n < numPoints; n++) {
+        ///int whichValue = 1; //Starts at 1
+        for (List<Double> nextValue : values) {
+        
+        //for (int n = 0; n < numPoints; n++) {
             double[] nextInput = new double[numInputs];
             for (int i = 0; i< numInputs; i++) {
-                nextInput[i] = (Float)values.get(whichValue++);
+                nextInput[i] = nextValue.get(i);
             }
 
             List<Double> theseValues = new ArrayList<Double>(computeMask.length);
@@ -125,22 +127,27 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         return newValues;
     }
 
-    private double[][] computeBundleDistributions(int numInputs, List<Object> values, int whichOutput) {
-        int numPoints = (Integer) values.get(0);
-        double[][] allDistributions = new double[numPoints][];
-        int whichValue = 1; //starts at 1
+    private double[][] computeBundleDistributions(int numInputs, List<List<Double>> values, int whichOutput) {
+       // int numPoints = (Integer) values.get(0);
+        double[][] allDistributions = new double[values.size()][];
+       // int whichValue = 1; //starts at 1
+        
+        
         if (paths.get(whichOutput).canCompute()) {
-            for (int n = 0; n < numPoints; n++) {
+            int n = 0;
+            for (List<Double> nextValue : values) {
+            
+            //for (int n = 0; n < numPoints; n++) {
                 double[] nextInput = new double[numInputs];
                 for (int i = 0; i < numInputs; i++) {
-                    nextInput[i] = (Float)values.get(whichValue++);
+                    nextInput[i] = nextValue.get(i);
                 }
                 Instance instance = w.getDataManager().getClassifiableInstanceForOutput(nextInput, whichOutput);
                 double[] thisDist = paths.get(whichOutput).computeDistribution(instance);
-                allDistributions[n] = thisDist; 
+                allDistributions[n++] = thisDist; 
             }
         } else {
-            for (int n = 0; n < numPoints; n++) {
+            for (int n = 0; n < values.size(); n++) {
                 double[] nextDist = new double[((OSCClassificationOutput) paths.get(whichOutput).getOSCOutput()).getNumClasses()];
                 allDistributions[n] = nextDist;
             }
@@ -489,7 +496,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             }
 
             @Override
-            public void updateBundle(List<Object> values) {
+            public void updateBundle(List<List<Double>> values) {
                 updateInputBundle(values);
             }
         });
@@ -576,7 +583,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             }
 
             @Override
-            public void updateBundle(List<Object> values) {
+            public void updateBundle(List<List<Double>> values) {
                 updateInputBundle(values);
             }
         });
@@ -702,14 +709,15 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         w.getDataManager().addToTraining(inputs, outputs, recordingMask, recordingRound);
     }
     
-    public void addBundleToTraining(List<Object> inputs, double[] outputs, boolean[] recordingMask) {
+    public void addBundleToTraining(List<List<Double>> inputs, double[] outputs, boolean[] recordingMask) {
         int numInputs = w.getInputManager().getNumInputs();
         //setNumExamplesThisRound(numExamplesThisRound + inputs.size());
-        int currentValue = 1; //data starts at 1!
-        while (currentValue < inputs.size()) {
+       // int currentValue = 1; //data starts at 1!
+        for (List<Double> thisList : inputs) {
+        //while (currentValue < inputs.size()) {
             double[] nextInputs = new double[numInputs];
             for (int i = 0; i < numInputs; i++) {
-                nextInputs[i] = (Float)inputs.get(currentValue++);
+                nextInputs[i] = thisList.get(i);
             }
             w.getDataManager().addToTraining(nextInputs, outputs, recordingMask, recordingRound);
         }
@@ -760,7 +768,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         }
     }
 
-    private void updateInputBundle(List<Object> values) {
+    private void updateInputBundle(List<List<Double>> values) {
         if (recordingState == RecordingState.RECORDING) {
             //addToTraining(inputs, w.getOutputManager().getCurrentValues(), pathRecordingMask);
             addBundleToTraining(values, w.getOutputManager().getCurrentValues(), pathRecordingMask);
