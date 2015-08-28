@@ -35,7 +35,7 @@ import wekimini.util.Util;
  */
 public final class WekiMiniRunner {
 
-    private static final String versionString = "31 May 2015 19:03";
+    private static final String versionString = "28 August 2015 - eNTERFACE";
     private static final Logger logger = Logger.getLogger(WekiMiniRunner.class.getName());
     // private static final List<Wekinator> runningWekinators = new LinkedList<>();
     private static WekiMiniRunner ref = null; //Singleton
