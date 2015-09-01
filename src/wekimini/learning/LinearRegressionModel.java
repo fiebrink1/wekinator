@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import weka.classifiers.Classifier;
 import weka.classifiers.functions.LinearRegression;
 import weka.core.Instance;
 import wekimini.osc.OSCOutput;
@@ -101,6 +102,11 @@ public class LinearRegressionModel implements SupervisedLearningModel {
         logger.log(Level.WARNING, "Cannot compute distribution for linear regression");
         return new double[0];
         
+    }
+    
+    @Override
+    public Classifier getClassifier() {
+        return wmodel;
     }
     
 }

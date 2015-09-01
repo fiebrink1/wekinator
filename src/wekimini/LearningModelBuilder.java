@@ -5,6 +5,7 @@
  */
 package wekimini;
 
+import weka.classifiers.Classifier;
 import wekimini.learning.ModelBuilder;
 import weka.core.Instances;
 import wekimini.learning.Model;
@@ -24,5 +25,7 @@ public interface LearningModelBuilder extends ModelBuilder {
 
     @Override
     public LearningModelBuilder fromTemplate(ModelBuilder template);
+    
+    public Classifier getClassifier();
 
 }
