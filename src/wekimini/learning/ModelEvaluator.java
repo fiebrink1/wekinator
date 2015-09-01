@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini;
+package wekimini.learning;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -20,19 +20,21 @@ import org.jdesktop.swingworker.SwingWorker;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
-import wekimini.learning.ClassificationModelBuilder;
+import wekimini.LearningModelBuilder;
+import wekimini.Path;
+import wekimini.Wekinator;
 import wekimini.util.Util;
 
 /**
  *
  * @author rebecca
  */
-public class CrossValidationEvaluator {
+public class ModelEvaluator {
 
     public static boolean hasWarned = false;
     public static boolean isEvaluating = false;
     protected EvaluationStatus evaluationStatus = new EvaluationStatus();
-    public static final String PROP_CV_PROGRESS = "cvProgress";
+    public static final String PROP_PROGRESS = "progress";
     private transient SwingWorker evalWorker = null;
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -40,10 +42,10 @@ public class CrossValidationEvaluator {
     private ChangeEvent cancelEvent = null;
     private boolean wasCancelled = false;
     private boolean hadError = false;
-    private static final Logger logger = Logger.getLogger(CrossValidationEvaluator.class.getName());
+    private static final Logger logger = Logger.getLogger(ModelEvaluator.class.getName());
     private final Wekinator w;
     private String[] results;
-    private final CrossValidationResultsReceiver receiver;
+    private final EvaluationResultsReceiver receiver;
     private static final DecimalFormat dFormat = new DecimalFormat(" #.##;-#.##");
 
     public static final String PROP_RESULTS = "results";
@@ -91,7 +93,7 @@ public class CrossValidationEvaluator {
     }
 
     
-    public CrossValidationEvaluator(Wekinator w, CrossValidationResultsReceiver r) {
+    public ModelEvaluator(Wekinator w, EvaluationResultsReceiver r) {
         this.w = w;
         this.receiver = r;
     }
@@ -154,13 +156,11 @@ public class CrossValidationEvaluator {
 
     public void setEvalStatus(EvaluationStatus evalStatus) {
         EvaluationStatus oldEvalStatus = this.evaluationStatus;
-        //System.out.println("updating training progress: " + trainingProgress);
         this.evaluationStatus = evaluationStatus;
-        propertyChangeSupport.firePropertyChange(PROP_CV_PROGRESS, oldEvalStatus, evaluationStatus);
+        propertyChangeSupport.firePropertyChange(PROP_PROGRESS, oldEvalStatus, evaluationStatus);
     }
     
     private void cancelMe(Path p) {
-        //logger.log(Level.INFO, "Training was cancelled");
         w.getStatusUpdateCenter().update(this, "Evaluation was cancelled");
         wasCancelled = true;
         fireCancelled();
@@ -173,7 +173,6 @@ public class CrossValidationEvaluator {
             data.add(i);
         }
 
-        //Todo: init paths and data before this
         setResults(new String[paths.size()]);
         if (evalWorker != null && evalWorker.getState() != SwingWorker.StateValue.DONE) {
             return;
@@ -206,15 +205,11 @@ public class CrossValidationEvaluator {
                             //EVALUATE HERE: TODO 
                             Instances instances = w.getSupervisedLearningManager().getTrainingDataForPath(p, false);
                             Evaluation eval = new Evaluation(instances);
-                            
                             Classifier c = ((LearningModelBuilder)p.getModelBuilder()).getClassifier();
-                            //Classifier c = ((SupervisedLearningModel) p.getModel()).getClassifier();
                             if (! isTraining) {
-                                System.out.println("COMPUTING CV");
                                 Random r = new Random();
                                 eval.crossValidateModel(c, instances, numFolds, r);
                             } else {
-                                System.out.println("COMPUTING TRAINING");
                                 Classifier c2 = Classifier.makeCopy(c);
                                 c2.buildClassifier(instances);
                                 eval.evaluateModel(c2, instances);
@@ -225,7 +220,6 @@ public class CrossValidationEvaluator {
                             } else {
                                 result = dFormat.format(eval.errorRate()) + " (RMS)";
                             }
-                            //String s = Double.toString(eval.pctCorrect()); //TODO WON"T WORK FOR NN
                             setResults(i, result);  
                             finishedModel(i, result);
                             numEvaluated++;
@@ -244,8 +238,6 @@ public class CrossValidationEvaluator {
                             numErr++;
                             Util.showPrettyErrorPane(null, "Error encountered during evaluation " + p.getCurrentModelName() + ": " + ex.getMessage());
                             logger.log(Level.SEVERE, ex.getMessage());
-                                //Logger.getLogger(LearningManager.class.getName()).log(Level.SEVERE, null, ex);
-                            //TODO: test this works when error actually occurs in learner
                         }
                         setEvalStatus(new EvaluationStatus(numToEvaluate, numEvaluated, numErr, false));
                     } else {
@@ -260,13 +252,9 @@ public class CrossValidationEvaluator {
 
             @Override
             public void done() {
-                //setProgress(numParams+1);
-                //System.out.println("thread is done");
                 if (isCancelled()) {
                     EvaluationStatus t = new EvaluationStatus(evaluationStatus.numToEvaluate, evaluationStatus.numEvaluated, evaluationStatus.numErrorsEncountered, true);
-                    // trainingProgress.wasCancelled = true;
                     setEvalStatus(t);
-                    //System.out.println("I was cancelled");
                 }
                 finished();
             }
@@ -274,42 +262,6 @@ public class CrossValidationEvaluator {
         evalWorker.addPropertyChangeListener(listener);
         evalWorker.execute();
     }
-
-    
-    
-    /*public void evaluate(int numFolds, CrossValidationResultsReceiver r) {
-        hasWarned = false;
-        List<Path> paths = w.getSupervisedLearningManager().getPaths();
-        for (Path p : paths) {
-            CVWorker worker = new CVWorker(w, p, numFolds);
-            worker.addPropertyChangeListener(new PropertyChangeListener() {
-
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    workerPropertyChanged(evt);
-                }
-
-            }
-        }
-
-        evaluationWorker = new EvaluationWorker();
-        evaluationWorker.addPropertyChangeListener(evalWorkerListener);
-
-        //   setEvaluationState(evaluationState.EVALUTATING);
-        learnerToEvaluate = paramNum;
-        this.numFolds = numFolds;
-        evaluationType = EvaluationType.CV;
-        evaluationWorker.execute();
-        if (WekinatorRunner.isLogging()) {
-            Plog.log(Msg.EVAL_START_CV, paramNum + "," + numFolds);
-        }
-    } */
-
- /*   private void workerPropertyChanged(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(SwingWorker.StateValue)) {
-            
-        }
-    } */
 
     public static boolean isEvaluating() {
         return isEvaluating;
@@ -323,52 +275,12 @@ public class CrossValidationEvaluator {
         receiver.finished(results);
     }
 
-    public interface CrossValidationResultsReceiver {
+    public interface EvaluationResultsReceiver {
         public void finishedModel(int modelNum, String results);
         public void finished(String[] results);
         public void cancelled();
     }
 
-   /* protected static class CVWorker extends SwingWorker<Double, Void> {
-
-        private final Path p;
-        private final Wekinator w;
-        private final int numFolds;
-
-        protected CVWorker(Wekinator w, Path p, int numFolds) {
-            this.p = p;
-            this.w = w;
-            this.numFolds = numFolds;
-        }
-
-        @Override
-        protected Double doInBackground() throws Exception {
-            try {
-                if (p.getNumExamples() == 0) {
-                    return new Double(0); //todo; log somewhere
-                }
-                boolean hadErr = false;
-                Instances instances = w.getSupervisedLearningManager().getTrainingDataForPath(p, false);
-                Evaluation eval = new Evaluation(instances);
-                Classifier c = ((SupervisedLearningModel) p.getModel()).getClassifier();
-                Random r = new Random();
-                eval.crossValidateModel(c, instances, numFolds, r);
-                return eval.pctCorrect();
-            } catch (InterruptedException ex) {
-                return 0.0;
-            }
-        }
-
-        @Override
-        protected void done() {
-            if (isCancelled()) {
-                //new EvalStatus(
-                //Do anything?
-            }
-        }
-    }
-     */
-    
     public static class EvaluationStatus {
 
         private int numToEvaluate = 0;

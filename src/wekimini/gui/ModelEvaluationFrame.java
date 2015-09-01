@@ -15,8 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import wekimini.CrossValidationEvaluator;
-import wekimini.CrossValidationEvaluator.CrossValidationResultsReceiver;
+import wekimini.learning.ModelEvaluator;
+import wekimini.learning.ModelEvaluator.EvaluationResultsReceiver;
 import wekimini.Path;
 import wekimini.SupervisedLearningManager.LearningState;
 import wekimini.Wekinator;
@@ -34,7 +34,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
     private final Wekinator w;
     private final LinkedList<NameValueRow> rows = new LinkedList<>();
     private boolean isComputing = false;
-    private CrossValidationEvaluator e = null;
+    private ModelEvaluator e = null;
     int numModelsToCompute = 0;
     int modelsComputed = 0;
     int singleModelOffset = 0;
@@ -346,7 +346,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             if (e != null) {
                 e.cancel();
             } else {
-                logger.log(Level.SEVERE, "Cross-validation cancelled but worker is null");
+                logger.log(Level.SEVERE, "Evaluation cancelled but worker is null");
             }
             return;
         }
@@ -379,12 +379,12 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         }
         LearningState ls = w.getSupervisedLearningManager().getLearningState();
         if (ls == LearningState.NOT_READY_TO_TRAIN) {
-            Util.showPrettyErrorPane(this, "Cannot compute cross-validation accuracy: please supply some training examples first.");
+            Util.showPrettyErrorPane(this, "Cannot compute evaluation: please supply some training examples first.");
             return;
         }
         int numExamples = w.getDataManager().getNumExamples();
         if (numExamples == 0) {
-            Util.showPrettyErrorPane(this, "Cannot compute cross-validation accuracy: please supply some training examples first.");
+            Util.showPrettyErrorPane(this, "Cannot compute evaluation: please supply some training examples first.");
             return;
         }
         if (! isTraining) {
@@ -393,7 +393,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             numFolds = numExamples;
         }
         }
-         e = new CrossValidationEvaluator(w, new CrossValidationResultsReceiver() {
+         e = new ModelEvaluator(w, new EvaluationResultsReceiver() {
 
             @Override
             public void finishedModel(int modelNum, String results) {
