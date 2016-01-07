@@ -16,8 +16,6 @@ import java.io.IOException;
 public class CppWriter {
     private int numNeighbours = 3;
     private int numClasses = 2;
-    private int numExamples = 5;
-    private int numFeatures = 5;
     
     public int getNumNeighbours() {
         return numNeighbours;
@@ -33,21 +31,7 @@ public class CppWriter {
         this.numClasses = numClasses;
     }
     
-    public int getNumExamples() {
-        return numExamples;
-    }
-    public void setnumExamples(int numExamples) {
-        this.numExamples = numExamples;
-    }
-    
-    public int getNumFeatures() {
-        return numFeatures;
-    }
-    public void setnumFeatures(int numFeatures) {
-        this.numExamples = numFeatures;
-    }
-    
-    public void writeToFiles(String filename) throws IOException {
+    public void writeToFiles(String filename, int numExamples, int numFeatures) throws IOException {
         
         //Write header
         String headerName = filename + ".h";

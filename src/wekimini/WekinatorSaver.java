@@ -111,7 +111,7 @@ public class WekinatorSaver {
         String location = projectDir + cppAppend + File.separator;
         for (int i = 0; i < paths.size(); i++) {
             String filename = location + "model-cpp." + i;
-            Cpp.writeToFiles(filename);
+            paths.get(i).writeToCppFiles(filename);
         }
     }
 

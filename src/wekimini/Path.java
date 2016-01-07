@@ -519,6 +519,27 @@ public class Path {
         // os.writeObject(wmodel);
         //Util.writeToXMLFile(this, "Path", Path.class, filename);
     }
+    /*
+    MZ: In progress 
+    */
+   public void writeToCppFiles(String filename) throws IOException {
+        boolean success = false;
+        IOException myEx = new IOException();
+        
+        try {
+            CppWriter Cpp = new CppWriter();
+            Cpp.writeToFiles(filename, numExamples, inputNames.size());
+            success = true;
+        } catch (IOException ex) {
+            success = false;
+            myEx = ex;
+            logger.log(Level.WARNING, "Could not write to Cpp file {0", ex.getMessage());
+        }
+        
+        if (!success) {
+            throw myEx;
+        }
+   }
 
     /* public static Path readFromFile(String filename) throws Exception {
         
