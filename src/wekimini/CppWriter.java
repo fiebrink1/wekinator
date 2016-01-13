@@ -8,77 +8,66 @@ package wekimini;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import weka.core.Instances;
+import wekimini.learning.KNNModelBuilder;
+import wekimini.osc.OSCOutput;
 
 /**
  *
  * @author mzed
  */
 public class CppWriter {
-    private int numNeighbours = 3;
-    private int numClasses = 2;
+    private static final Logger logger = Logger.getLogger(CppWriter.class.getName());
+    private int numNeighbours;
+    private int numClasses;
     
-    public int getNumNeighbours() {
-        return numNeighbours;
-    }
-    public void setNumNeighbours(int numNeighbours) {
-        this.numNeighbours = numNeighbours;
-    }
-    
-    public int getNumClasses() {
-        return numClasses;
-    }
-    public void setNumClasses(int numClasses) {
-        this.numClasses = numClasses;
-    }
-    
-    public void writeToFiles(String filename, int numExamples, int numFeatures) throws IOException {
-        
+    public void writeToFiles(String filename, int numExamples, int numFeatures, OSCOutput output, LearningModelBuilder modelBuilder) throws IOException {
+        //Get numNeighbours from modelBuilder and numClasses from output
+        try {
+            Method getNumNeighbors = modelBuilder.getClass().getMethod("getNumNeighbors", null);
+            numNeighbours = (int)getNumNeighbors.invoke(modelBuilder, null);
+            Method getNumClasses = output.getClass().getMethod("getNumClasses",null);
+            numClasses = (int)getNumClasses.invoke(output, null);
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "Could not write to Cpp file ", ex.getMessage());
+        }
         //Write header
         String headerName = filename + ".h";
         FileWriter headerWrite = new FileWriter(headerName, true);
         PrintWriter headerPrint = new PrintWriter(headerWrite);
-        headerPrint.printf("#ifndef classify_h\n" +
-"#define classify_h\n" +
-"\n" +
-"//from Wekinator\n" +
-"#define NUM_NEIGHBOURS " + numNeighbours + "\n" +
-"#define NUM_CLASSES " + numClasses + "\n" +
-"#define NUM_EXAMPLES " + numExamples + "\n" +
-"#define NUM_FEATURES " + numFeatures + "\n" +
-"\n" +
-"struct neighbour {\n" +
-"	int classNum;\n" +
-"	float features[NUM_EXAMPLES];\n" +
-"};\n" +
-"\n" +
-"class knnClassification {\n" +
-"\n" +
-"public:\n" +
-"	knnClassification();\n" +
-"	int getClass(neighbour inputVector);\n" +
-"	\n" +
-"private:\n" +
-"	neighbour neighbours[NUM_EXAMPLES];\n" +
-"	int foundClass;\n" +
-"};\n" +
-"\n" +
-"#endif");
+        headerPrint.printf("#ifndef classify_h\n");
+        headerPrint.printf("#define classify_h\n\n");
+        headerPrint.printf("#define NUM_NEIGHBOURS " + numNeighbours + "\n" );
+        headerPrint.printf("#define NUM_CLASSES " + numClasses + "\n");
+        headerPrint.printf("#define NUM_EXAMPLES " + numExamples + "\n");
+        headerPrint.printf("#define NUM_FEATURES " + numFeatures + "\n\n");
+        headerPrint.printf("struct neighbour {\n");
+        headerPrint.printf("	int classNum;\n");
+        headerPrint.printf("	float features[NUM_EXAMPLES];\n");
+        headerPrint.printf("};\n\n");
+        headerPrint.printf("class knnClassification {\n\n");
+        headerPrint.printf("public:\n");
+        headerPrint.printf("	knnClassification();\n");
+        headerPrint.printf("	int getClass(neighbour inputVector);\n\n");
+        headerPrint.printf("private:\n");
+        headerPrint.printf("	neighbour neighbours[NUM_EXAMPLES];\n");
+        headerPrint.printf("	int foundClass;\n");
+        headerPrint.printf("};\n\n");
+        headerPrint.printf("#endif");
         headerPrint.close();
 
         //Write cpp
         String cppName = filename + ".cpp";
         FileWriter cppWrite = new FileWriter(cppName, true);
         PrintWriter cppPrint = new PrintWriter(cppWrite);
-        cppPrint.printf("//Copyright © Goldsmiths College and Goldsmiths RAPID-MIX investigators\n" +
-"//All Rights Reserved\n" +
-"//Unauthorised copying of this file, via any medium is strictly prohibited\n" +
-"//Proprietary and confidential\n" +
-"//Written by Michael Zbyszyński, m.zbyszynski@gold.ac.uk, 4 December 2015\n" +
-"\n" +
-"#include <math.h>\n" +
+        cppPrint.printf("this is output: " +  output + "\n");
+       
+        cppPrint.printf("#include <math.h>\n" +
 "#include <utility>\n" +
-"#include \"classify.h\"\n" +
-"\n" +
+"#include \"classify.h\"\n\n" +
 "knnClassification::knnClassification() {\n" +
 "	//These values should come directly from wekinator\n" +
 "	neighbours[0] = { 1, {0., 0., 0., 0., 0.}};\n" +
@@ -87,8 +76,7 @@ public class CppWriter {
 "	neighbours[3] = { 2, {0.7, 0.7, 0.7, 0.7, 0.7}};\n" +
 "	neighbours[4] = { 2, {1., 1., 1., 1., 1.}};\n" +
 "	foundClass = 0;\n" +
-"}\n" +
-"\n" +
+"}\n\n" +
 "int knnClassification::getClass(neighbour inputVector) {\n" +
 "	std::pair<int, double> nearestNeighbours[NUM_NEIGHBOURS];\n" +
 "	std::pair<int, double> farthestNN = {0, 0.};\n" +

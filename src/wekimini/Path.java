@@ -528,7 +528,8 @@ public class Path {
         
         try {
             CppWriter Cpp = new CppWriter();
-            Cpp.writeToFiles(filename, numExamples, inputNames.size());
+            DataManager dM = w.getDataManager();
+            Cpp.writeToFiles(filename, numExamples, inputNames.size(), output, modelBuilder);
             success = true;
         } catch (IOException ex) {
             success = false;
