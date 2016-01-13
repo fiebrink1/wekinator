@@ -45,7 +45,7 @@ public class CppWriter {
         headerPrint.printf("#define NUM_FEATURES " + numFeatures + "\n\n");
         headerPrint.printf("struct neighbour {\n");
         headerPrint.printf("	int classNum;\n");
-        headerPrint.printf("	float features[NUM_EXAMPLES];\n");
+        headerPrint.printf("	float features[NUM_FEATURES];\n");
         headerPrint.printf("};\n\n");
         headerPrint.printf("class knnClassification {\n\n");
         headerPrint.printf("public:\n");
