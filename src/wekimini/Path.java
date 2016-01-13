@@ -528,8 +528,8 @@ public class Path {
         
         try {
             CppWriter Cpp = new CppWriter();
-            DataManager dM = w.getDataManager();
-            Cpp.writeToFiles(filename, numExamples, inputNames.size(), output, modelBuilder);
+            Instances insts = w.getSupervisedLearningManager().getTrainingDataForPath(this, true);
+            Cpp.writeToFiles(filename, numExamples, inputNames.size(), output, modelBuilder, insts);
             success = true;
         } catch (IOException ex) {
             success = false;
