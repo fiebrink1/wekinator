@@ -480,11 +480,11 @@ public class DtwLearningRow extends javax.swing.JPanel {
     }//GEN-LAST:event_buttonAddMousePressed
 
     private void buttonAddKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buttonAddKeyPressed
-        myModel.startRecording(gestureNum);
+      //  myModel.startRecording(gestureNum);
     }//GEN-LAST:event_buttonAddKeyPressed
 
     private void buttonAddKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buttonAddKeyReleased
-        myModel.stopRecording();
+       // myModel.stopRecording();
     }//GEN-LAST:event_buttonAddKeyReleased
 
     private void buttonAddMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonAddMouseReleased
