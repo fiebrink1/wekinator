@@ -120,7 +120,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
+        menuItemEvaluation = new javax.swing.JMenuItem();
         menuPerformanceCheck = new javax.swing.JCheckBoxMenuItem();
         menuConsole = new javax.swing.JMenuItem();
         menuActions = new javax.swing.JMenu();
@@ -216,13 +216,13 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         jMenu2.add(jMenuItem7);
 
-        jMenuItem3.setText("Model evaluation");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+        menuItemEvaluation.setText("Model evaluation");
+        menuItemEvaluation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
+                menuItemEvaluationActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem3);
+        jMenu2.add(menuItemEvaluation);
 
         menuPerformanceCheck.setText("Performance mode view");
         menuPerformanceCheck.addActionListener(new java.awt.event.ActionListener() {
@@ -344,9 +344,9 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         w.showConsole();
     }//GEN-LAST:event_menuConsoleActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+    private void menuItemEvaluationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemEvaluationActionPerformed
         showEvaluationWindow();
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
+    }//GEN-LAST:event_menuItemEvaluationActionPerformed
 
     private void showEvaluationWindow() {
        if (modelEvaluationFrame == null) {
@@ -498,7 +498,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
@@ -507,6 +506,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenu menuActions;
     private javax.swing.JMenuItem menuConsole;
     private javax.swing.JMenu menuFile;
+    private javax.swing.JMenuItem menuItemEvaluation;
     private javax.swing.JMenuItem menuItemSave;
     private javax.swing.JMenuItem menuItemSaveAs;
     private javax.swing.JCheckBoxMenuItem menuPerformanceCheck;
@@ -540,6 +540,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         panelParent.removeAll();
         dtwLearningPanel1 = new DtwLearningPanel(w);
         panelParent.add(dtwLearningPanel1);
+        menuItemEvaluation.setEnabled(false);
         //dtwLearningPanel1.setup(w);
         revalidate();
         repaint();
