@@ -18,7 +18,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class KNNModelBuilder implements LearningModelBuilder {
+public class KNNModelBuilder implements ClassificationModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
     private static final int defaultNumNeighbors = 1;
@@ -79,5 +79,10 @@ public class KNNModelBuilder implements LearningModelBuilder {
     @Override
     public KNNEditorPanel getEditorPanel() {
         return new KNNEditorPanel(this);
+    }
+
+    @Override
+    public Classifier getClassifier() {
+        return classifier;
     }
 }

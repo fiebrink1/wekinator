@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import weka.classifiers.Classifier;
 import weka.classifiers.lazy.IBk;
 import weka.core.Instance;
 import wekimini.osc.OSCClassificationOutput;
@@ -92,6 +93,11 @@ public class KNNModel implements SupervisedLearningModel {
             logger.log(Level.WARNING, "Could not compute distribution");
             return new double[0];
         }
+    }
+    
+    @Override
+    public Classifier getClassifier() {
+        return wmodel;
     }
     
 }

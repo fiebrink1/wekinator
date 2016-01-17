@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import weka.classifiers.Classifier;
 import weka.classifiers.trees.J48;
 import weka.core.Instance;
 import wekimini.osc.OSCClassificationOutput;
@@ -91,5 +92,10 @@ public class J48Model implements SupervisedLearningModel {
             logger.log(Level.WARNING, "Could not compute distribution");
             return new double[0];
         }
+    }
+    
+    @Override
+    public Classifier getClassifier() {
+        return wmodel;
     }
 }

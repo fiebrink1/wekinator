@@ -20,50 +20,55 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class AdaboostModelBuilder implements LearningModelBuilder {
+public class AdaboostModelBuilder implements ClassificationModelBuilder {
+
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
     private static final int defaultNumRounds = 100;
     private static final boolean isBaseTree = true;
     private int numRounds = defaultNumRounds;
-    public static enum BaseLearner {DECISION_TREE, DECISION_STUMP};
+
+    public static enum BaseLearner {
+
+        DECISION_TREE, DECISION_STUMP
+    };
     private BaseLearner baseLearnerType = BaseLearner.DECISION_TREE;
-    
+
     public AdaboostModelBuilder() {
         classifier = new AdaBoostM1();
-       // ((AdaBoostM1) classifier).setClassifier(new DecisionStump());
-        ((AdaBoostM1)classifier).setClassifier(new J48());
+        // ((AdaBoostM1) classifier).setClassifier(new DecisionStump());
+        ((AdaBoostM1) classifier).setClassifier(new J48());
         ((AdaBoostM1) classifier).setNumIterations(defaultNumRounds);
     }
-    
-    public AdaboostModelBuilder (int numRounds, BaseLearner t) {
+
+    public AdaboostModelBuilder(int numRounds, BaseLearner t) {
         classifier = new AdaBoostM1();
         setNumRounds(numRounds);
         setBaseLearnerType(t);
     }
-    
+
     public int getNumRounds() {
         return numRounds;
     }
-    
+
     public BaseLearner getBaseLearnerType() {
         return baseLearnerType;
     }
-    
+
     public void setNumRounds(int n) {
         numRounds = n;
         ((AdaBoostM1) classifier).setNumIterations(numRounds);
     }
-    
+
     public void setBaseLearnerType(BaseLearner t) {
         baseLearnerType = t;
         if (t == BaseLearner.DECISION_STUMP) {
-            ((AdaBoostM1)classifier).setClassifier(new DecisionStump());
+            ((AdaBoostM1) classifier).setClassifier(new DecisionStump());
         } else {
-            ((AdaBoostM1)classifier).setClassifier(new J48());
+            ((AdaBoostM1) classifier).setClassifier(new J48());
         }
     }
-    
+
     @Override
     public void setTrainingExamples(Instances examples) {
         trainingData = examples;
@@ -71,21 +76,21 @@ public class AdaboostModelBuilder implements LearningModelBuilder {
 
     @Override
     public AdaboostModel build(String name) throws Exception {
-       if (trainingData == null) {
-           throw new IllegalStateException("Must set training examples (to not null) before building model");
-       }
-       AdaBoostM1 m = (AdaBoostM1)WekaModelBuilderHelper.build(classifier, trainingData);
-       return new AdaboostModel(name, m);
+        if (trainingData == null) {
+            throw new IllegalStateException("Must set training examples (to not null) before building model");
+        }
+        AdaBoostM1 m = (AdaBoostM1) WekaModelBuilderHelper.build(classifier, trainingData);
+        return new AdaboostModel(name, m);
     }
 
     @Override
     public boolean isCompatible(OSCOutput o) {
         return (o instanceof OSCClassificationOutput);
     }
-    
+
     public AdaboostModelBuilder fromTemplate(ModelBuilder b) {
         if (b instanceof AdaboostModelBuilder) {
-            AdaboostModelBuilder a = (AdaboostModelBuilder)b;
+            AdaboostModelBuilder a = (AdaboostModelBuilder) b;
             return new AdaboostModelBuilder(a.getNumRounds(), a.getBaseLearnerType());
         }
         return null;
@@ -99,5 +104,10 @@ public class AdaboostModelBuilder implements LearningModelBuilder {
     @Override
     public LearningModelBuilderEditorPanel getEditorPanel() {
         return new AdaBoostEditorPanel(this);
+    }
+
+    @Override
+    public Classifier getClassifier() {
+        return classifier;
     }
 }

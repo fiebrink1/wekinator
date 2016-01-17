@@ -21,7 +21,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class SVMModelBuilder implements LearningModelBuilder {
+public class SVMModelBuilder implements ClassificationModelBuilder {
 
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
@@ -121,7 +121,8 @@ public class SVMModelBuilder implements LearningModelBuilder {
         updateClassifier();
     }
 
-    private SMO getClassifier() {
+    @Override
+    public SMO getClassifier() {
         return (SMO) classifier;
     }
 

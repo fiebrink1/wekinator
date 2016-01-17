@@ -40,7 +40,8 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
     private final Wekinator w;
     private boolean closeable = true; //flaseif this is the last window open
-    
+    private ModelEvaluationFrame modelEvaluationFrame = null;
+
     
     
     /**
@@ -121,6 +122,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
         menuPerformanceCheck = new javax.swing.JCheckBoxMenuItem();
         menuConsole = new javax.swing.JMenuItem();
         menuActions = new javax.swing.JMenu();
@@ -215,6 +217,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             }
         });
         jMenu2.add(jMenuItem7);
+
+        jMenuItem3.setText("Model evaluation");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem3);
 
         menuPerformanceCheck.setText("Performance mode view");
         menuPerformanceCheck.addActionListener(new java.awt.event.ActionListener() {
@@ -336,6 +346,29 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         w.showConsole();
     }//GEN-LAST:event_menuConsoleActionPerformed
 
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        showEvaluationWindow();
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void showEvaluationWindow() {
+       if (modelEvaluationFrame == null) {
+            modelEvaluationFrame = new ModelEvaluationFrame(w.getOutputManager().getOutputGroup().getOutputNames(), w);;
+            modelEvaluationFrame.setVisible(true);
+
+            
+            Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                @Override
+                public void callMe() {
+                    modelEvaluationFrame = null;
+                }
+            };    
+            Util.callOnClosed(modelEvaluationFrame, callMe);
+        } else {
+            modelEvaluationFrame.toFront();
+        }
+    }
+    
+    
     public void showOutputTable() {
         if (w.getLearningManager().getLearningType() == LearningManager.LearningType.TEMPORAL_MODELING) {
             Util.showPrettyErrorPane(this, "Not yet implemented for DTW outputs");
@@ -467,6 +500,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;

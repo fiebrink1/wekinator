@@ -17,7 +17,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class NaiveBayesModelBuilder implements LearningModelBuilder {
+public class NaiveBayesModelBuilder implements ClassificationModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
     
@@ -60,5 +60,10 @@ public class NaiveBayesModelBuilder implements LearningModelBuilder {
     @Override
     public NaiveBayesEditorPanel getEditorPanel() {
         return new NaiveBayesEditorPanel(this);
+    }
+
+    @Override
+    public Classifier getClassifier() {
+        return classifier;
     }
 }

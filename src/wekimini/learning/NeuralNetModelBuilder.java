@@ -19,9 +19,14 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class NeuralNetModelBuilder implements LearningModelBuilder {
+public class NeuralNetModelBuilder implements RegressionModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
+
+    @Override
+    public Classifier getClassifier() {
+        return classifier;
+    }
     
     public enum HiddenLayerType {NUM_FEATURES, NUMBER};
     

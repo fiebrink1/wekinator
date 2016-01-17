@@ -7,6 +7,7 @@ package wekimini.learning;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import weka.classifiers.Classifier;
 import weka.core.Instance;
 import wekimini.osc.OSCOutput;
 
@@ -16,7 +17,7 @@ import wekimini.osc.OSCOutput;
  */
 public interface SupervisedLearningModel extends Model {
     public double computeOutput(Instance inputs) throws Exception;
-
     public double[] computeDistribution(Instance instance);
+    public Classifier getClassifier();
     
   }

@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Instance;
 import wekimini.osc.OSCOutput;
@@ -88,6 +89,11 @@ public class NeuralNetworkModel implements SupervisedLearningModel {
             logger.log(Level.WARNING, "Cannot compute distribution for neural net");
             return new double[0];
        
+    }
+    
+    @Override
+    public Classifier getClassifier() {
+        return wmodel;
     }
     
 }

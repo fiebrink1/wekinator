@@ -17,7 +17,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class DecisionStumpModelBuilder implements LearningModelBuilder {
+public class DecisionStumpModelBuilder implements ClassificationModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
     
@@ -60,5 +60,10 @@ public class DecisionStumpModelBuilder implements LearningModelBuilder {
     @Override
     public DecisionStumpEditorPanel getEditorPanel() {
         return new DecisionStumpEditorPanel(this);
+    }
+
+    @Override
+    public Classifier getClassifier() {
+        return classifier;
     }
 }

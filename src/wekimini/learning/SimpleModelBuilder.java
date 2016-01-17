@@ -6,6 +6,7 @@
 package wekimini.learning;
 
 import java.awt.Component;
+import weka.classifiers.Classifier;
 import weka.core.Instances;
 import wekimini.LearningModelBuilder;
 import wekimini.osc.OSCOutput;
@@ -14,7 +15,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class SimpleModelBuilder implements LearningModelBuilder {
+public class SimpleModelBuilder implements ClassificationModelBuilder {
     
     
     @Override
@@ -28,7 +29,13 @@ public class SimpleModelBuilder implements LearningModelBuilder {
        // double d = Math.random();
         Thread.sleep(2000); //Not a great example of how other code will function, since sleep() does throw Interrupted exception.
        // if (d < 0.5) {
-            return new SimpleModel(name);
+            return new SimpleModel(name) {
+
+            @Override
+            public Classifier getClassifier() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        };
        // } else {
        //     throw new Exception("Testing");
        // }
@@ -54,6 +61,11 @@ public class SimpleModelBuilder implements LearningModelBuilder {
 
     @Override
     public LearningModelBuilderEditorPanel getEditorPanel() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Classifier getClassifier() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

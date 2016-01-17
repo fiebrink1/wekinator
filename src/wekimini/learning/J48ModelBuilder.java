@@ -18,7 +18,7 @@ import wekimini.osc.OSCOutput;
  *
  * @author rebecca
  */
-public class J48ModelBuilder implements LearningModelBuilder {
+public class J48ModelBuilder implements ClassificationModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
     
@@ -61,5 +61,10 @@ public class J48ModelBuilder implements LearningModelBuilder {
     @Override
     public J48EditorPanel getEditorPanel() {
         return new J48EditorPanel(this);
+    }
+
+    @Override
+    public Classifier getClassifier() {
+        return classifier;
     }
 }
