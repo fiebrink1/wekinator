@@ -13,6 +13,7 @@ import com.illposed.osc.OSCBundle;
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPacket;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -64,10 +65,15 @@ public class OSCPacketDispatcher {
 	}
 
 	private void dispatchMessage(OSCMessage message, Date time) {
-		for (final Entry<AddressSelector, OSCListener> addrList : selectorToListener.entrySet()) {
+		try {
+                for (final Entry<AddressSelector, OSCListener> addrList : selectorToListener.entrySet()) {
 			if (addrList.getKey().matches(message.getAddress())) {
 				addrList.getValue().acceptMessage(time, message);
 			}
 		}
+                } catch (ConcurrentModificationException ex) {
+                    System.out.println("Caught concurent modification exception in OSC receive; ignoring it");
+                    // This can occur if new OSC messages are coming in as we're still setting up OSC receivers; we don't care
+                }
 	}
 }
