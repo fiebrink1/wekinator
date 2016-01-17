@@ -30,7 +30,7 @@ import wekimini.util.Util;
  */
 public class Wekinator {
 
-    public static final String version = "v2.0.1.0";
+    public static final String version = "v2.0.1.1-eNTERFACE";
 
 //TODO: Can make more efficient by initializing some of these on demand (e.g. gui, OSC Monitor)
    // private final Settings settings;

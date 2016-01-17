@@ -192,17 +192,17 @@ public class OutputManager {
         //TODO: Probably want to make intelligent decision about whether to
         //use these or not (i.e., if in running mode, ignore these)
 
-        Object[] o = m.getArguments();
-        double d[] = new double[o.length];
+        List<Object> o = m.getArguments();
+        double d[] = new double[o.size()];
         if (currentValues.length == d.length) {
-            for (int i = 0; i < o.length; i++) {
-                if (o[i] instanceof Float) {
+            for (int i = 0; i < o.size(); i++) {
+                if (o.get(i) instanceof Float) {
                     try {
-                        if (w.getLearningManager().isLegalTrainingValue(i, (Float)o[i])) {
+                        if (w.getLearningManager().isLegalTrainingValue(i, (Float)o.get(i))) {
                         //if (w.getSupervisedLearningManager().getPaths().get(i).getOSCOutput().isLegalTrainingValue((Float)o[i])) {
-                            d[i] = ((Float) o[i]);
+                            d[i] = ((Float) o.get(i));
                         } else {
-                            w.getStatusUpdateCenter().warn(this, "Illegal output value " + o[i] + " received for output " + i + "; ignoring it");
+                            w.getStatusUpdateCenter().warn(this, "Illegal output value " + o.get(i) + " received for output " + i + "; ignoring it");
                             d[i] = currentValues[i];
                         }
                     } catch (Exception ex) {
@@ -358,6 +358,37 @@ public class OutputManager {
             logger.log(Level.SEVERE, "Couldn't send message");
             logger.log(Level.SEVERE, null, ex);
         }
+    }
+
+    void setNewComputedBundleValues(List<List<Double>> allOutputs) {
+        // System.out.println("IN SETTING NEW COMPUTED");
+        for (List<Double> nextOutputs : allOutputs) {
+           // double[] values = new double[nextOutputs.size()];
+            if (nextOutputs.size() != currentValues.length) {
+                throw new IllegalArgumentException("values is null or wrong length");
+            }
+            for (int i = 0; i < currentValues.length; i++) {
+                currentValues[i] = nextOutputs.get(i);
+            }
+            notifyOutputGroupComputedListeners(currentValues);
+        }
+        try {
+            w.getOSCSender().sendOutputBundleValuesMessage(outputGroup.getOscMessage(), allOutputs);
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, "Couldn't send message");
+            logger.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    void setNewComputedBundleDistribution(int i, double[][] allDistributions) {
+        try {
+            w.getOSCSender().sendOutputBundleValuesMessage("/" + outputGroup.getOutput(i).getName(), allDistributions);
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, "Couldn't send message");
+            logger.log(Level.SEVERE, null, ex);
+        }
+        
+        
     }
     
     // TODO: Not sure if we need this?

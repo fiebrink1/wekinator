@@ -6,12 +6,16 @@
 package wekimini.learning.dtw;
 
 import com.dtw.FastDTW;
+import com.thoughtworks.xstream.XStream;
 import com.timeseries.TimeSeries;
 import com.util.DistanceFunction;
 import com.util.DistanceFunctionFactory;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Date;
@@ -27,6 +31,8 @@ import wekimini.learning.dtw.DtwSettings.RunningType;
 import wekimini.learning.Model;
 import wekimini.osc.OSCDtwOutput;
 import wekimini.osc.OSCOutput;
+import wekimini.osc.OSCOutputGroup;
+import wekimini.util.Util;
 
 /*
  * Working notes:
@@ -51,7 +57,6 @@ public class DtwModel implements Model {
     public static final String PROP_RUNNING_TYPE = "runningType";
     public static final String PROP_CURRENT_MATCH = "currentMatch";
     public static final String PROP_MAX_DISTANCE = "maxDistance";
-
     private final transient List<DtwUpdateListener1> updateListeners = new LinkedList<>();
     private final transient List<DtwUpdateListener1> normalizedUpdateListeners = new LinkedList<>();
     private transient int currentMatch = -1;
@@ -115,6 +120,14 @@ public class DtwModel implements Model {
         propertyChangeSupport.firePropertyChange(PROP_SELECTED_INPUTS, oldSelectedInputs, selectedInputs);
     }
 
+    private void setSelectedInputsWithoutVersionOrIDIncrement(boolean[] selectedInputs) {
+        boolean[] oldSelectedInputs = this.selectedInputs;
+        this.selectedInputs = selectedInputs;
+        distanceFunction = new EuclideanDistanceWithInputSelection(selectedInputs);
+        updateMaxDistance();
+        propertyChangeSupport.firePropertyChange(PROP_SELECTED_INPUTS, oldSelectedInputs, selectedInputs);
+    }
+    
     /**
      * Set the value of selectedInputs at specified index.
      *
@@ -179,6 +192,8 @@ public class DtwModel implements Model {
             }
         });
 
+        System.out.println("myOutput = " + myOutput);
+        System.out.println("Prop is " + OSCDtwOutput.PROP_NUMGESTURES);
         myOutput.addPropertyChangeListener(new PropertyChangeListener() {
 
             @Override
@@ -207,7 +222,6 @@ public class DtwModel implements Model {
      * @param matchThreshold new value of matchThreshold
      */
     public void setMatchThreshold(double matchThreshold) {
-        System.out.println("SETTING MATCH THRESHOLD TO " + matchThreshold);
         double oldMatchThreshold = this.matchThreshold;
         this.matchThreshold = matchThreshold;
         propertyChangeSupport.firePropertyChange(PROP_MATCHTHRESHOLD, oldMatchThreshold, matchThreshold);
@@ -243,6 +257,105 @@ public class DtwModel implements Model {
 
     public OSCDtwOutput getOSCOutput() {
         return myOutput;
+    }
+
+    public double[][] runOnBundle(List<List<Double>> values) {
+        //int valNum = 1; //Starts at 1
+        double[][] allOutputs = new double[values.size()][];
+        int i = 0;
+        //for (int i = 0; i < values.size(); i++) {
+        for (List<Double> thisValue : values) {
+            double[] thisInput = new double[thisValue.size()];
+            for (int j = 0 ; j < thisValue.size(); j++) {
+                thisInput[j] = thisValue.get(j);
+            }
+            data.addRunningVector(thisInput);
+            double[] thisOutput = getClassificationVector();
+            allOutputs[i++] = thisOutput;
+        }
+        return allOutputs;
+    
+    }
+
+    public void writeDataToFile(File f) throws FileNotFoundException {
+        data.writeDataToFile(f);
+    }
+
+    public void writeToFile(String filename) throws IOException {
+        Util.writeToXMLFile(this, "DtwModel", DtwModel.class, filename);
+        
+        /*boolean success = false;
+        IOException myEx = new IOException();
+        FileOutputStream outstream = null;
+        ObjectOutputStream objout = null;
+        try {
+            outstream = new FileOutputStream(filename);
+            objout = new ObjectOutputStream(outstream);
+            XStream xstream = new XStream();
+            xstream.alias("DtwModel", DtwModel.class);
+            String xml = xstream.toXML(this);
+            objout.writeObject(xml);
+            success = true;
+        } catch (IOException ex) {
+            success = false;
+            myEx = ex;
+            logger.log(Level.WARNING, "Could not write to file {0", ex.getMessage());
+        } finally {
+            try {
+                if (objout != null) {
+                    objout.close();
+                }
+                if (outstream != null) {
+                    outstream.close();
+                }
+            } catch (IOException ex) {
+                logger.log(Level.WARNING, "Could not close file objects");
+            }
+        }
+        if (!success) {
+            throw myEx;
+        } */
+        
+    }
+
+    private boolean isCompatible(DtwModel m) {
+        if (m.getNumGestures() != getNumGestures()) {
+            return false;
+        }
+        return m.getSelectedInputs().length == getSelectedInputs().length;
+    }
+    
+    //Do it this way rather than copying model because of listeners & memory
+    public void loadFromExisting(DtwModel modelToLoad) {
+        //TODO: Turn into warning if we can recover gracefully (e.g. different # gestures, features)
+        if (! isCompatible(modelToLoad)) {
+            throw new IllegalArgumentException("New DTW model is incompatible with this one");
+        }
+        //But for now, assume # of gestures and # of features is the same.
+        
+        System.arraycopy(modelToLoad.isGestureActive, 0, isGestureActive, 0, isGestureActive.length);
+        
+        data.loadFromExisting(modelToLoad.data);
+        setSettings(modelToLoad.settings, false);
+        maxDistance = modelToLoad.maxDistance;
+        
+        //TODO: Use a setter for these for GUI?
+        modelName = modelToLoad.modelName;
+        myID = modelToLoad.myID;
+        for (int i = 0; i < versionNumbers.length; i++) {
+            setVersionNumber(i, modelToLoad.versionNumbers[i]);
+        }
+        //setSelectedInputs(modelToLoad.selectedInputs); //NO: This will update distance and increment version number
+        boolean[] oldSelectedInputs = selectedInputs;
+        selectedInputs = modelToLoad.selectedInputs;
+        distanceFunction = new EuclideanDistanceWithInputSelection(selectedInputs);
+        updateMaxDistance();
+        propertyChangeSupport.firePropertyChange(PROP_SELECTED_INPUTS, oldSelectedInputs, selectedInputs);
+    
+        //Update stats:
+        updateExampleSizeStats();
+        setMaxSliderValue(modelToLoad.maxSliderValue);
+        setMatchThreshold(modelToLoad.matchThreshold);
     }
 
     public static enum RecordingState {
@@ -307,7 +420,7 @@ public class DtwModel implements Model {
         }
     }
 
-    public void setSettings(DtwSettings settings) {
+    private void setSettings(DtwSettings settings, boolean updateID) {
         boolean isRunning = (getRunningState() == RunningState.RUNNING);
         if (isRunning) {
             stopRunning();
@@ -326,6 +439,10 @@ public class DtwModel implements Model {
         if (isRunning) {
             startRunning();
         }
+    }
+    
+    public void setSettings(DtwSettings settings) {
+        setSettings(settings, true);
     }
 
     /**
@@ -546,7 +663,7 @@ public class DtwModel implements Model {
 
                     //TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, currentTs, settings.getMatchWidth());
                     double dist = FastDTW.getWarpDistBetween(ts, currentTs, settings.getMatchWidth(), distanceFunction);
-
+                    
                     if (closestDistances[whichClass] > dist) {
                         closestDistances[whichClass] = dist;
                     }
@@ -693,6 +810,82 @@ public class DtwModel implements Model {
         }
     }
 
+    private double[] getClassificationVector() {
+          double[] d = new double[numGestures];
+          
+        //Chop to sizes between minSizeInExamples, min(current ts size, maxSizeInExamples)
+        // and look for best match.
+
+        int min;
+        if (settings.getMinimumLengthRestriction() == DtwSettings.MinimumLengthRestriction.SET_FROM_EXAMPLES) {
+            if (settings.getDownsamplePolicy() == DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING) {
+                min = minSizeInExamples;
+            } else {
+                min = minSizeInDownsampledExamples;
+            }
+        } else {
+            min = settings.getMinAllowedGestureLength();
+            /*if (min > minSizeInExamples) {
+             min = minSizeInExamples; //this means 1 very short example can break everything: disallow
+             } */
+        }
+        //System.out.println("Classifying with min=" + min);
+
+        int max;
+        if (settings.getDownsamplePolicy() == DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING) {
+            max = maxSizeInExamples;
+        } else {
+            max = maxSizeInDownsampledExamples;
+        }
+
+        List<TimeSeries> l = data.getCandidateSeriesFromCurrentRun(min, max, settings.getHopSizeForContinuousSearch());
+       // System.out.println("min/Max:" + min + max);
+        
+        
+        double closestDist = Double.MAX_VALUE;
+        int closestClass = -1;
+
+        for (int i = 0; i < closestDistances.length; i++) {
+            d[i] = Double.MAX_VALUE;
+        }
+
+        for (int whichClass = 0; whichClass < numGestures; whichClass++) {
+            if (isGestureActive[whichClass]) {
+                for (TimeSeries candidate : l) {
+                    for (DtwExample ex : data.getExamplesForGesture(whichClass)) {
+                        TimeSeries ts;
+                        if (settings.getDownsamplePolicy() == DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING) {
+                            ts = ex.getTimeSeries();
+                        } else {
+                            ts = ex.getDownsampledTimeSeries();
+                        }
+
+                        //for (TimeSeries ts : allseries.get(whichClass)) {
+                        // TimeWarpInfo info = com.dtw.FastDTW.getWarpInfoBetween(ts, candidate, settings.getMatchWidth()); //used to be 5 instead of matchWidth
+                        double dist = FastDTW.getWarpDistBetween(ts, candidate, settings.getMatchWidth(), distanceFunction);
+
+                        if (d[whichClass] > dist) {
+                            d[whichClass] = dist;
+                        }
+                        if (dist < closestDist) {
+                            closestDist = dist;
+                            closestClass = whichClass;
+                        }
+                    }
+                }
+            }
+        }
+        /*if (closestDist < matchThreshold) {
+            setCurrentMatch(closestClass);
+        } else {
+            setCurrentMatch(-1);
+        } */
+        //notifyUpdateListeners(closestDistances);
+        //computeAndNotifyNormalizedDistances();
+        return d;
+    }
+
+    
     private void classifyContinuous() {
         //Chop to sizes between minSizeInExamples, min(current ts size, maxSizeInExamples)
         // and look for best match.
@@ -839,6 +1032,12 @@ public class DtwModel implements Model {
         if (wasRunning) {
             startRunning();
         }
+    }
+    
+    public static DtwModel readFromFile(String filename) throws IOException {
+       // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        DtwModel m = (DtwModel) Util.readFromXMLFile("DtwModel", DtwModel.class, filename);
+        return m;
     }
     
 }

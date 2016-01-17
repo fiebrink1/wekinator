@@ -41,7 +41,8 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
     private final Wekinator w;
     private boolean closeable = true; //flaseif this is the last window open
-    
+    private ModelEvaluationFrame modelEvaluationFrame = null;
+
     
     
     /**
@@ -76,6 +77,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     private void setGUIForWekinator(LearningManager.LearningType type) {
         this.setTitle(w.getProjectName());
+        menuItemSave.setEnabled(w.hasSaveLocation());
         w.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -366,6 +368,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             modelEvaluationFrame.toFront();
         }
     }
+    
     
     public void showOutputTable() {
         if (w.getLearningManager().getLearningType() == LearningManager.LearningType.TEMPORAL_MODELING) {

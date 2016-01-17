@@ -7,10 +7,15 @@ package wekimini.osc;
 
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortOut;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.ChangeEvent;
@@ -25,11 +30,13 @@ public class OSCSender {
 
     //Mapped to OSC OutputGroup ID
     private OSCPortOut sender = null;
+    private OSCPortOut bundleSender = null;
     private InetAddress hostname = null;
     private int port = -1;
    // private String sendMessage;
   //  private final String DEFAULT_SEND_MESSAGE = "/wek/outputs";
     private final int DEFAULT_SEND_PORT = 6453;
+    private final int BUNDLE_PORT = 12001;
     private boolean isValidState = false;
 
     protected EventListenerList listenerList = new EventListenerList();
@@ -45,6 +52,8 @@ public class OSCSender {
 //        port = DEFAULT_SEND_PORT;
       //  sendMessage = DEFAULT_SEND_MESSAGE;
 //        sender = new OSCPortOut(hostname, port);
+          bundleSender = new OSCPortOut(InetAddress.getByName("localhost"), BUNDLE_PORT); //motionmachine hack 
+
     }
 
    /* public OSCSender(InetAddress hostname, int port) throws SocketException {
@@ -136,7 +145,6 @@ public class OSCSender {
                 for (int i = 0; i < data.length; i++) {
                     o[i] = (float) data[i];
                 }
-
                 OSCMessage msg = new OSCMessage(msgName, o);
                 sender.send(msg);
                 fireSendEvent();
@@ -167,6 +175,103 @@ public class OSCSender {
                 }
                 ((ChangeListener) listeners[i + 1]).stateChanged(changeEvent);
             }
+        }
+    }
+
+    public void sendOutputBundleValuesMessage(String oscMessage, List<List<Double>> allOutputs) throws IOException {
+        if (isValidState) {
+            /*List<Object> o = new LinkedList<Object>();
+            o.add(new Integer(allOutputs.size()));
+            for (List<Double> thisList : allOutputs) {
+                for (Double d : thisList) {
+                    o.add((float)d.doubleValue());
+                }
+            }
+            try {
+                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
+                bundleSender.send(msg);
+                fireSendEvent();
+            } catch (IOException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
+            } */
+            String filename = System.getProperty("java.io.tmpdir") + File.separator + "wekOutputs.csv";
+            System.out.println("Writing to " + filename);
+            writeBundleToFile(filename, allOutputs);
+            try {
+                List<Object> o = new LinkedList<Object>();
+                o.add(filename);
+                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
+                bundleSender.send(msg);
+                fireSendEvent();
+            } catch (IOException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
+            }
+        } else {
+            logger.log(Level.WARNING, "Could not send OSC message: Invalid state");
+        }
+    }
+
+    private void writeBundleToFile(String filename, List<List<Double>> allOutputs) throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(filename);
+        for (List<Double> output : allOutputs) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < output.size()-1; i++) {
+                sb.append(Double.toString(output.get(i))).append(",");
+            }
+            sb.append(Double.toString(output.get(output.size()-1)));
+            writer.println(sb.toString());
+        }
+        writer.close();
+    }
+    
+    private void writeBundleToFile(String filename, double[][] allDistributions) throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(filename);
+        for (int i = 0; i < allDistributions.length; i++) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < allDistributions[i].length-1; j++) {
+                sb.append(Double.toString(allDistributions[i][j])).append(",");
+            }
+            sb.append(Double.toString(allDistributions[i][allDistributions[i].length-1]));
+            writer.println(sb.toString());
+        }
+        writer.close();
+    }
+    
+    
+    public void sendOutputBundleValuesMessage(String oscMessage, double[][] allDistributions) throws IOException {
+        if (isValidState) {
+            /*List<Object> o = new LinkedList<Object>();
+            o.add(new Integer(allDistributions.length));
+            for (int i = 0; i < allDistributions.length; i++) {
+                for (int j = 0; j < allDistributions[i].length; j++) {
+                    o.add((float)allDistributions[i][j]);
+                }
+            }
+            try {
+                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
+                bundleSender.send(msg);
+                fireSendEvent();
+            } catch (IOException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
+            } */
+            String filename = System.getProperty("java.io.tmpdir") + File.separator + "wekOutputs.csv";
+            System.out.println("Writing to " + filename);
+            writeBundleToFile(filename, allDistributions);
+            try {
+                List<Object> o = new LinkedList<Object>();
+                o.add(filename);
+                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
+                bundleSender.send(msg);
+                fireSendEvent();
+            } catch (IOException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
+            }
+        } else {
+            logger.log(Level.WARNING, "Could not send OSC message: Invalid state");
         }
     }
 

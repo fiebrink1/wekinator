@@ -133,7 +133,7 @@ public class OSCOutputGroup {
        Util.writeToXMLFile(this, "OSCOutputGroup", OSCOutputGroup.class, filename);
     }
     
-    public static OSCOutputGroup readFromFile(String filename) throws Exception {
+    public static OSCOutputGroup readFromFile(String filename) throws IOException {
         OSCOutputGroup g = (OSCOutputGroup) Util.readFromXMLFile("OSCOutputGroup", OSCOutputGroup.class, filename);
         return g;
     }

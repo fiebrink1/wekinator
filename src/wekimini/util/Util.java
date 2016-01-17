@@ -5,6 +5,7 @@
 package wekimini.util;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.XStreamException;
 import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -129,10 +130,14 @@ public class Util {
         }
     }
 
-    public static Object readFromXMLFile(String id, Class c, String filename) throws Exception {
-        XStream xstream = new XStream();
-        xstream.alias(id, c);
-        return xstream.fromXML(new File(filename));
+    public static Object readFromXMLFile(String id, Class c, String filename) throws IOException {
+        try {
+            XStream xstream = new XStream();
+            xstream.alias(id, c);
+            return xstream.fromXML(new File(filename));
+        } catch (XStreamException ex) {
+            throw new IOException(ex);
+        }
     }
 
     public static String toXMLString(Object o, String id, Class c) {

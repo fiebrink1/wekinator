@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini;
+package wekimini; //m22
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -937,33 +937,6 @@ public class DataManager {
     public void writeInstancesToArff(File file) throws IOException {
         ArffSaver saver = new ArffSaver();
         Instances temp = new Instances(allInstances);
-        //Attribute niceDate = new Attribute("Time", nullF); 
-      /*  Attribute niceDate = new Attribute("Time", prettyDateFormatString);
-         temp.insertAttributeAt(niceDate, timestampIndex);
-
-         Date d;
-         for (int i = 0; i < temp.numInstances(); i++) {
-         double ddate = temp.instance(i).value(timestampIndex+1);
-         String niceDecimal = decimalFormat.format(ddate);
-         try {
-         d = dateFormat.parse(niceDecimal);
-         String pretty = prettyDateFormat.format(d);
-         temp.instance(i).setValue(timestampIndex, niceDate.parseDate(pretty));
-
-         } catch (ParseException ex) {
-         temp.instance(i).setValue(timestampIndex, 0);
-         Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
-         } 
-           
-           
-         }
-        
-         temp.deleteAttributeAt(timestampIndex+1);
-         */
-
-        /*for (int i = 0; i < numFeatures; i++) {
-         temp.renameAttribute(i, featureNames[i]);
-         }*/
         saver.setInstances(temp);
         saver.setFile(file);
         saver.writeBatch();

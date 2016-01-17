@@ -31,7 +31,7 @@ public class WekinatorSupervisedLearningController {
         m.stopRecording();
         // setStatus("Examples recorded. Press \"Train\" to build models from data.");
         w.getStatusUpdateCenter().update(this, 
-                m.getNumExamplesThisRound() + " new examples recorded");
+        m.getNumExamplesThisRound() + " new examples recorded");
 
     }
 
