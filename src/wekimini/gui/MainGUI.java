@@ -41,9 +41,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
     private final Wekinator w;
     private boolean closeable = true; //flaseif this is the last window open
-    private ModelEvaluationFrame modelEvaluationFrame = null;
-
-    
     
     /**
      * Creates new form MainGUI

@@ -97,10 +97,4 @@ public class AdaboostModel implements SupervisedLearningModel {
     public Classifier getClassifier() {
         return wmodel;
     }
-    
-    @Override
-    public Classifier getClassifier() {
-        return wmodel;
-    }
-    
 }
