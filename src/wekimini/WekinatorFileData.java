@@ -52,7 +52,7 @@ public class WekinatorFileData {
         return Util.toXMLString(this, "WekinatorFileData", WekinatorFileData.class);
     }
     
-    public static WekinatorFileData readFromFile(String filename) throws Exception {
+    public static WekinatorFileData readFromFile(String filename) throws IOException {
         WekinatorFileData w = (WekinatorFileData) Util.readFromXMLFile("WekinatorFileData", WekinatorFileData.class, filename);
         return w;
         /*InputStream in = new FileInputStream(filename);

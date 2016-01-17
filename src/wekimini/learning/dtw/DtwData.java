@@ -726,15 +726,16 @@ public class DtwData {
                 examplesInOrder.addLast(ex);
             }  
         }
-        numTotalExamples = data.numTotalExamples;
-       
+        //numTotalExamples = data.numTotalExamples;
+        setNumTotalExamples(data.numTotalExamples);
+        
         minSizeInExamples = data.minSizeInExamples;
         maxSizeInExamples = data.maxSizeInExamples;
         minSizeInDownsampledExamples = data.minSizeInDownsampledExamples;
         maxSizeInDownsampledExamples = data.maxSizeInDownsampledExamples;
         
         for (int i = 0; i < numGestures; i++) {
-            notifyExamplesChangedListeners(i, 0);
+            notifyExamplesChangedListeners(i, getNumExamplesForGesture(i));
         }
 
         maxLengthToRetainDuringRun = data.maxLengthToRetainDuringRun;

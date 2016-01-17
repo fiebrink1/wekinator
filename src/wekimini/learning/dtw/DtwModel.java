@@ -31,6 +31,8 @@ import wekimini.learning.dtw.DtwSettings.RunningType;
 import wekimini.learning.Model;
 import wekimini.osc.OSCDtwOutput;
 import wekimini.osc.OSCOutput;
+import wekimini.osc.OSCOutputGroup;
+import wekimini.util.Util;
 
 /*
  * Working notes:
@@ -190,6 +192,8 @@ public class DtwModel implements Model {
             }
         });
 
+        System.out.println("myOutput = " + myOutput);
+        System.out.println("Prop is " + OSCDtwOutput.PROP_NUMGESTURES);
         myOutput.addPropertyChangeListener(new PropertyChangeListener() {
 
             @Override
@@ -278,7 +282,9 @@ public class DtwModel implements Model {
     }
 
     public void writeToFile(String filename) throws IOException {
-        boolean success = false;
+        Util.writeToXMLFile(this, "DtwModel", DtwModel.class, filename);
+        
+        /*boolean success = false;
         IOException myEx = new IOException();
         FileOutputStream outstream = null;
         ObjectOutputStream objout = null;
@@ -308,7 +314,8 @@ public class DtwModel implements Model {
         }
         if (!success) {
             throw myEx;
-        }
+        } */
+        
     }
 
     private boolean isCompatible(DtwModel m) {
@@ -1027,8 +1034,10 @@ public class DtwModel implements Model {
         }
     }
     
-    public static DtwModel readFromFile() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public static DtwModel readFromFile(String filename) throws IOException {
+       // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        DtwModel m = (DtwModel) Util.readFromXMLFile("DtwModel", DtwModel.class, filename);
+        return m;
     }
     
 }

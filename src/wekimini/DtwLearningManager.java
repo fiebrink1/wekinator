@@ -183,10 +183,12 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         //}
     }
     
-    void initializeFromExisting(String modelDirectory) {
+    void initializeFromExisting(String modelDirectory) throws IOException {
         String filename = modelDirectory + File.separator + "model1.xml";
-        DtwModel modelToLoad = DtwModel.readFromFile();
+        DtwModel modelToLoad = DtwModel.readFromFile(filename);
         model.loadFromExisting(modelToLoad);
+        
+        //Update statuses...
     }
 
     public static enum RunningState {

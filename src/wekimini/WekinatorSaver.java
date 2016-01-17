@@ -58,7 +58,6 @@ public class WekinatorSaver {
            w = instantiateSupervisedWekinator(wfd, ig, og, data, paths, projectDir);
         } else {
             //Temporal modeling
-            DtwModel dtwModel = DtwModel.readFromFile();
             w = instantiateTemporalWekinator(wfd, ig, og, projectDir);
         } 
         return w;
@@ -160,12 +159,12 @@ public class WekinatorSaver {
     }
 
     //TODO: take care of this within object static load functions, not here
-    private static OSCInputGroup loadInputs(String projectDir) throws Exception {
+    private static OSCInputGroup loadInputs(String projectDir) throws IOException {
         OSCInputGroup loaded = OSCInputGroup.readFromFile(projectDir + inputFilename);
         return new OSCInputGroup(loaded);
     }
 
-    private static OSCOutputGroup loadOutputs(String projectDir) throws Exception {
+    private static OSCOutputGroup loadOutputs(String projectDir) throws IOException {
         OSCOutputGroup loaded = OSCOutputGroup.readFromFile(projectDir + outputFilename);
         return new OSCOutputGroup(loaded);
     }
