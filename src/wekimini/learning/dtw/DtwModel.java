@@ -6,12 +6,16 @@
 package wekimini.learning.dtw;
 
 import com.dtw.FastDTW;
+import com.thoughtworks.xstream.XStream;
 import com.timeseries.TimeSeries;
 import com.util.DistanceFunction;
 import com.util.DistanceFunctionFactory;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Date;
@@ -51,7 +55,6 @@ public class DtwModel implements Model {
     public static final String PROP_RUNNING_TYPE = "runningType";
     public static final String PROP_CURRENT_MATCH = "currentMatch";
     public static final String PROP_MAX_DISTANCE = "maxDistance";
-
     private final transient List<DtwUpdateListener1> updateListeners = new LinkedList<>();
     private final transient List<DtwUpdateListener1> normalizedUpdateListeners = new LinkedList<>();
     private transient int currentMatch = -1;
@@ -115,6 +118,14 @@ public class DtwModel implements Model {
         propertyChangeSupport.firePropertyChange(PROP_SELECTED_INPUTS, oldSelectedInputs, selectedInputs);
     }
 
+    private void setSelectedInputsWithoutVersionOrIDIncrement(boolean[] selectedInputs) {
+        boolean[] oldSelectedInputs = this.selectedInputs;
+        this.selectedInputs = selectedInputs;
+        distanceFunction = new EuclideanDistanceWithInputSelection(selectedInputs);
+        updateMaxDistance();
+        propertyChangeSupport.firePropertyChange(PROP_SELECTED_INPUTS, oldSelectedInputs, selectedInputs);
+    }
+    
     /**
      * Set the value of selectedInputs at specified index.
      *
@@ -262,6 +273,84 @@ public class DtwModel implements Model {
     
     }
 
+    public void writeDataToFile(File f) throws FileNotFoundException {
+        data.writeDataToFile(f);
+    }
+
+    public void writeToFile(String filename) throws IOException {
+        boolean success = false;
+        IOException myEx = new IOException();
+        FileOutputStream outstream = null;
+        ObjectOutputStream objout = null;
+        try {
+            outstream = new FileOutputStream(filename);
+            objout = new ObjectOutputStream(outstream);
+            XStream xstream = new XStream();
+            xstream.alias("DtwModel", DtwModel.class);
+            String xml = xstream.toXML(this);
+            objout.writeObject(xml);
+            success = true;
+        } catch (IOException ex) {
+            success = false;
+            myEx = ex;
+            logger.log(Level.WARNING, "Could not write to file {0", ex.getMessage());
+        } finally {
+            try {
+                if (objout != null) {
+                    objout.close();
+                }
+                if (outstream != null) {
+                    outstream.close();
+                }
+            } catch (IOException ex) {
+                logger.log(Level.WARNING, "Could not close file objects");
+            }
+        }
+        if (!success) {
+            throw myEx;
+        }
+    }
+
+    private boolean isCompatible(DtwModel m) {
+        if (m.getNumGestures() != getNumGestures()) {
+            return false;
+        }
+        return m.getSelectedInputs().length == getSelectedInputs().length;
+    }
+    
+    //Do it this way rather than copying model because of listeners & memory
+    public void loadFromExisting(DtwModel modelToLoad) {
+        //TODO: Turn into warning if we can recover gracefully (e.g. different # gestures, features)
+        if (! isCompatible(modelToLoad)) {
+            throw new IllegalArgumentException("New DTW model is incompatible with this one");
+        }
+        //But for now, assume # of gestures and # of features is the same.
+        
+        System.arraycopy(modelToLoad.isGestureActive, 0, isGestureActive, 0, isGestureActive.length);
+        
+        data.loadFromExisting(modelToLoad.data);
+        setSettings(modelToLoad.settings, false);
+        maxDistance = modelToLoad.maxDistance;
+        
+        //TODO: Use a setter for these for GUI?
+        modelName = modelToLoad.modelName;
+        myID = modelToLoad.myID;
+        for (int i = 0; i < versionNumbers.length; i++) {
+            setVersionNumber(i, modelToLoad.versionNumbers[i]);
+        }
+        //setSelectedInputs(modelToLoad.selectedInputs); //NO: This will update distance and increment version number
+        boolean[] oldSelectedInputs = selectedInputs;
+        selectedInputs = modelToLoad.selectedInputs;
+        distanceFunction = new EuclideanDistanceWithInputSelection(selectedInputs);
+        updateMaxDistance();
+        propertyChangeSupport.firePropertyChange(PROP_SELECTED_INPUTS, oldSelectedInputs, selectedInputs);
+    
+        //Update stats:
+        updateExampleSizeStats();
+        setMaxSliderValue(modelToLoad.maxSliderValue);
+        setMatchThreshold(modelToLoad.matchThreshold);
+    }
+
     public static enum RecordingState {
 
         RECORDING, NOT_RECORDING
@@ -324,7 +413,7 @@ public class DtwModel implements Model {
         }
     }
 
-    public void setSettings(DtwSettings settings) {
+    private void setSettings(DtwSettings settings, boolean updateID) {
         boolean isRunning = (getRunningState() == RunningState.RUNNING);
         if (isRunning) {
             stopRunning();
@@ -343,6 +432,10 @@ public class DtwModel implements Model {
         if (isRunning) {
             startRunning();
         }
+    }
+    
+    public void setSettings(DtwSettings settings) {
+        setSettings(settings, true);
     }
 
     /**
@@ -710,7 +803,7 @@ public class DtwModel implements Model {
         }
     }
 
-      private double[] getClassificationVector() {
+    private double[] getClassificationVector() {
           double[] d = new double[numGestures];
           
         //Chop to sizes between minSizeInExamples, min(current ts size, maxSizeInExamples)
@@ -932,6 +1025,10 @@ public class DtwModel implements Model {
         if (wasRunning) {
             startRunning();
         }
+    }
+    
+    public static DtwModel readFromFile() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

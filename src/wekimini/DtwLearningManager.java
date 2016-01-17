@@ -8,6 +8,8 @@ package wekimini;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static wekimini.DtwLearningManager.RunningState.NOT_RUNNING;
 import wekimini.learning.dtw.DtwData;
-import wekimini.learning.dtw.DtwExample;
 import wekimini.learning.dtw.DtwModel;
 import wekimini.learning.dtw.DtwSettings;
 import wekimini.osc.OSCDtwOutput;
@@ -167,6 +168,25 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
 
     public WekinatorDtwLearningController getDtwLearningController() {
         return controller;
+    }
+
+    void writeDataToFile(File projectDir, String baseFilename) throws FileNotFoundException {
+        File f = new File(projectDir + baseFilename + ".csv");
+        model.writeDataToFile(f);
+    }
+
+    void saveModels(String directory, Wekinator w) throws IOException {
+        String location = directory + File.separator;
+        //for (int i = 0; i < models.size(); i++) {
+            String filename = location + "model1.xml";
+            model.writeToFile(filename);
+        //}
+    }
+    
+    void initializeFromExisting(String modelDirectory) {
+        String filename = modelDirectory + File.separator + "model1.xml";
+        DtwModel modelToLoad = DtwModel.readFromFile();
+        model.loadFromExisting(modelToLoad);
     }
 
     public static enum RunningState {

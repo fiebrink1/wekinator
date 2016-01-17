@@ -9,6 +9,8 @@ import java.beans.IndexedPropertyChangeEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -155,6 +157,15 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         return allDistributions;
     }
 
+    void saveModels(String directory, Wekinator w) throws IOException {
+        //paths = getPaths();
+        String location = directory + File.separator;
+        for (int i = 0; i < paths.size(); i++) {
+            String filename = location + "model" + i + ".xml";
+            paths.get(i).writeToFile(filename);
+        }
+    }
+
     public static enum LearningState {
 
         DONE_TRAINING, TRAINING, READY_TO_TRAIN, NOT_READY_TO_TRAIN
@@ -288,6 +299,61 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
      */
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
+    }
+    
+    //TODO (low priority: merge constructors into one)
+    public SupervisedLearningManager (Wekinator w, Instances data, List<Path> paths) {
+        this.w = w;
+        controller = new WekinatorSupervisedLearningController(this, w);
+        inputNamesToIndices = new HashMap<>();
+        pathsToOutputIndices = new HashMap<>();
+        //TODO listen for changes in input names, # outputs or inputs, etc.
+
+        trainingWorkerListener = new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                trainingWorkerChanged(evt);
+            }
+        };
+
+        // w.getInputManager().addPropertyChangeListener(this::inputGroupChanged);
+        w.getInputManager().addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                inputGroupChanged(evt);
+            }
+        });
+
+        w.getOutputManager().addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName() == OutputManager.PROP_OUTPUTGROUP) {
+                    outputGroupChanged(evt);
+                }
+            }
+        });
+
+        // w.getDataManager().addPropertyChangeListener(this::dataManagerPropertyChange);
+        w.getDataManager().addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                dataManagerPropertyChange(evt);
+            }
+        });
+
+        w.getOSCReceiver().addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                oscReceiverPropertyChanged(evt);
+            }
+        });
+        //updateAbleToRecord();
+        initializeInputsAndOutputsWithExisting(data, paths);
+        updateAbleToRecord();
+        updateAbleToRun();
     }
 
     public SupervisedLearningManager(Wekinator w) {

@@ -7,6 +7,12 @@ package wekimini;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import weka.core.Instances;
 import wekimini.osc.OSCOutputGroup;
 
 /**
@@ -15,6 +21,7 @@ import wekimini.osc.OSCOutputGroup;
  */
 //TODO Might want to make this an interface?
 public class LearningManager implements ConnectsInputsToOutputs {
+    private static final Logger logger = Logger.getLogger(LearningManager.class.getName());
 
     @Override
     public void addConnectionsListener(InputOutputConnectionsListener l) {
@@ -49,6 +56,29 @@ public class LearningManager implements ConnectsInputsToOutputs {
             return true;
         }
     }
+
+    //Base filename has no extension; add arff for ARFF files and CSV for DTW
+    void writeDataToFile(File projectDir, String baseFilename) throws IOException {
+        if (learningType == LearningType.SUPERVISED_LEARNING) {
+           File f = new File(projectDir + baseFilename + ".arff");
+           w.getDataManager().writeInstancesToArff(f);
+        } else if (learningType == LearningType.TEMPORAL_MODELING) {
+            dtwLearningManager.writeDataToFile(projectDir, baseFilename);
+        } else {
+            logger.log(Level.WARNING, "Unknown learning manager type");
+        }
+    
+    }
+
+    void saveModels(String directory, Wekinator w) throws IOException {
+        if (learningType == LearningType.SUPERVISED_LEARNING) {
+            w.getSupervisedLearningManager().saveModels(directory, w);
+        } else if (learningType == LearningType.TEMPORAL_MODELING) {
+            w.getDtwLearningManager().saveModels(directory, w);
+        } else {
+            logger.log(Level.WARNING, "Unknown learning manager type");
+        }
+    }
     
     public static enum LearningType {INITIALIZATION, SUPERVISED_LEARNING, TEMPORAL_MODELING};
     //private LearningType learningType = LearningType.INITIALIZATION;
@@ -58,7 +88,7 @@ public class LearningManager implements ConnectsInputsToOutputs {
     
     private final Wekinator w;
     
-        private LearningType learningType = LearningType.INITIALIZATION;
+    private LearningType learningType = LearningType.INITIALIZATION;
 
     public static final String PROP_LEARNINGTYPE = "learningType";
 
@@ -103,7 +133,7 @@ public class LearningManager implements ConnectsInputsToOutputs {
     }
     
     public LearningManager(Wekinator w) {
-        this. w = w;
+        this.w = w;
     }
     
     public void setSupervisedLearning() {
@@ -114,6 +144,16 @@ public class LearningManager implements ConnectsInputsToOutputs {
         connector = supervisedLearningManager;
         setLearningType(LearningType.SUPERVISED_LEARNING);
     }
+    
+    public void setSupervisedLearningWithExisting(Instances data, List<Path> paths) {
+        if (learningType != LearningType.INITIALIZATION) {
+            throw new IllegalStateException("Learning type cannot be changed after initialization is complete");
+        }   
+        supervisedLearningManager = new SupervisedLearningManager(w, data, paths);
+        connector = supervisedLearningManager;
+        setLearningType(LearningType.SUPERVISED_LEARNING);
+    }
+    
     
     public void setDtw(OSCOutputGroup outputGroup) {
         if (learningType != LearningType.INITIALIZATION) {
