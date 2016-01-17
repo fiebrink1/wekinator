@@ -35,7 +35,7 @@ import wekimini.util.Util;
  */
 public final class WekiMiniRunner {
 
-    private static final String versionString = "28 August 2015 - eNTERFACE";
+    private static final String versionString = "17 January 2016";
     private static final Logger logger = Logger.getLogger(WekiMiniRunner.class.getName());
     // private static final List<Wekinator> runningWekinators = new LinkedList<>();
     private static WekiMiniRunner ref = null; //Singleton
@@ -114,6 +114,7 @@ public final class WekiMiniRunner {
     public static void main(String[] args) {
         /* Create and display the form */
         WekiMiniRunner.isKadenze = (args.length != 0);
+        aboutBox.setKadenze(isKadenze);
         //args.length == 0
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
