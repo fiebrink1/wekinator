@@ -75,6 +75,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     private void setGUIForWekinator(LearningManager.LearningType type) {
         this.setTitle(w.getProjectName());
+        menuItemSave.setEnabled(w.hasSaveLocation());
         w.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
