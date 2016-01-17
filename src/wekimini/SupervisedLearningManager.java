@@ -54,6 +54,8 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     private RecordingState recordingState = RecordingState.NOT_RECORDING;
     public static final String PROP_RECORDINGSTATE = "recordingState";
+   
+    public static final String PROP_RECORDINGROUND = "recordingRound";
 
     private int numExamplesThisRound;
 
@@ -222,10 +224,16 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         this.recordingState = recordingState;
         propertyChangeSupport.firePropertyChange(PROP_RECORDINGSTATE, oldRecordingState, recordingState);
     }
+    
+    public void setRecordingRound(int newRound) {
+        int oldRecordingRound = this.recordingRound;
+        this.recordingRound = newRound;
+        propertyChangeSupport.firePropertyChange(PROP_RECORDINGROUND, oldRecordingRound, this.recordingRound);
+    }
 
     public void startRecording() {
         numExamplesThisRound = 0;
-        recordingRound++;
+        setRecordingRound(recordingRound+1);
         setRecordingState(RecordingState.RECORDING);
     }
 
@@ -569,6 +577,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
         updateAbleToRecord();
         updateAbleToRun();
+        setRecordingRound(w.getDataManager().getMaxRecordingRound());
     }
 
     private void updateAbleToRecord() {

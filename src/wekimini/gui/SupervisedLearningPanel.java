@@ -190,7 +190,9 @@ public class SupervisedLearningPanel extends javax.swing.JPanel {
     }
 
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
-        if (evt.getPropertyName() == SupervisedLearningManager.PROP_RECORDINGSTATE) {
+        if (evt.getPropertyName() == SupervisedLearningManager.PROP_RECORDINGROUND) {
+            updateDeleteLastRoundButton();
+        }else if (evt.getPropertyName() == SupervisedLearningManager.PROP_RECORDINGSTATE) {
             updateForRecordingState((SupervisedLearningManager.RecordingState) evt.getNewValue());
         } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_LEARNINGSTATE) {
             setButtonsForLearningState();
