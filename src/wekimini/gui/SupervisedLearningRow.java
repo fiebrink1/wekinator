@@ -59,7 +59,7 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
     private final ImageIcon recordIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/norec3.png"));
     private final ImageIcon playIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/play1.png"));
     private final ImageIcon playIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noplay1.png"));
-
+    private boolean caretReset = false;
     
     //Colors for Path status
    /* private static final Color notTrainedColor = new Color(235, 235, 235);
@@ -114,6 +114,10 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
         modelName = p.getCurrentModelName();
         labelModelName.setText(p.getCurrentModelName());
         initForPath();
+        
+        //Without this, highlighter has problems with rapidly changing text when
+        //model is running and box is double-clicked:
+        textModelValue.setHighlighter(null); 
     }
 
     @Override
@@ -549,6 +553,11 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
 
         textModelValue.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
         textModelValue.setText("13.83");
+        textModelValue.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                textModelValueCaretUpdate(evt);
+            }
+        });
         textModelValue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 textModelValueFocusLost(evt);
@@ -790,6 +799,35 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
     private void buttonLearnerPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLearnerPlayActionPerformed
         toggleLearnerRun();
     }//GEN-LAST:event_buttonLearnerPlayActionPerformed
+
+    private void textModelValueCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_textModelValueCaretUpdate
+       /* //Get the location in the text
+        if (! caretReset) {
+            caretReset = true;
+            textModelValue.setSelectionEnd(0);
+            textModelValue.setSelectionStart(0);
+            caretReset = false;
+        }  */
+        
+    /*int dot = evt.getDot();
+    int mark = evt.getMark();
+    if (dot == mark) {  // no selection
+        try {
+            Rectangle caretCoords = textPane.modelToView(dot);
+            //Convert it to view coordinates
+            setText("caret: text position: " + dot +
+                    ", view location = [" +
+                    caretCoords.x + ", " + caretCoords.y + "]" +
+                    newline);
+        } catch (BadLocationException ble) {
+            setText("caret: text position: " + dot + newline);
+        }
+     } else if (dot < mark) {
+        setText("selection from: " + dot + " to " + mark + newline);
+     } else {
+        setText("selection from: " + mark + " to " + dot + newline);
+     } */
+    }//GEN-LAST:event_textModelValueCaretUpdate
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

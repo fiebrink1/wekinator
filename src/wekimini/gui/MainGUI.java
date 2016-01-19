@@ -536,7 +536,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }
     
     private void initializeForTemporalModeling() {
-        
         panelParent.removeAll();
         dtwLearningPanel1 = new DtwLearningPanel(w);
         panelParent.add(dtwLearningPanel1);
