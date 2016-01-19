@@ -860,7 +860,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         }
     }//GEN-LAST:event_fieldOscPortKeyTyped
 
-    private void buttonOscListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOscListenActionPerformed
+    private void tryToStartListening() {
         if (w.getOSCReceiver().getConnectionState()
                 == OSCReceiver.ConnectionState.CONNECTED) {
             w.getOSCReceiver().stopListening();
@@ -880,8 +880,15 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             w.getOSCReceiver().setReceivePort(port);
             w.getOSCReceiver().startListening();
         }
+    }
+    
+    private void buttonOscListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOscListenActionPerformed
+        tryToStartListening();
     }//GEN-LAST:event_buttonOscListenActionPerformed
 
+    
+    
+    
     private void fieldNumInputsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumInputsKeyTyped
         char enter = evt.getKeyChar();
         if (!(Character.isDigit(enter))) {
@@ -1236,7 +1243,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
     private void buttonNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonNextActionPerformed
         //TODO: have to do more if configuringOSC on next screen...
-        if (checkOSCReady() && checkInputReady() && checkOutputReady() && checkNamesUnique() && customConfigMatchesGUI()) {
+        //if (checkOSCReady() && checkInputReady() && checkOutputReady() && checkNamesUnique() && customConfigMatchesGUI()) {
+        if (checkInputReady() && checkOutputReady() && checkNamesUnique() && customConfigMatchesGUI()) {
+
             //System.out.println("READY TO GO");
             try {
                 configureOSCSenderFromForm();
@@ -1262,6 +1271,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                         initCustomNonTemporalModelBuilders();
                     }
                     finalizeSetup();
+                    if (w.getOSCReceiver().getConnectionState() != OSCReceiver.ConnectionState.CONNECTED) {
+                        tryToStartListening();
+                    } 
                 } else {
                     if (!fieldNumOutputs.getText().trim().equals("1")) {
                         Util.showPrettyErrorPane(this, "DTW is only working for 1 output right now, sorry!");
@@ -1275,6 +1287,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                         initForCustomDtw();
                     }
                     finalizeSetup();
+                    if (w.getOSCReceiver().getConnectionState() != OSCReceiver.ConnectionState.CONNECTED) {
+                        tryToStartListening();
+                    }   
                 }
 
             } catch (UnknownHostException ex) {
