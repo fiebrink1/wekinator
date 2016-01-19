@@ -68,17 +68,6 @@ public class Wekinator {
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private static final Logger logger = Logger.getLogger(Wekinator.class.getName());
-
-    private boolean isKadenze = false;
-
-    /**
-     * Get the value of isKadenze
-     *
-     * @return the value of isKadenze
-     */
-    public boolean isIsKadenze() {
-        return isKadenze;
-    }
     
     public void addCloseListener(ChangeListener l) {
         exitListenerList.add(ChangeListener.class, l);

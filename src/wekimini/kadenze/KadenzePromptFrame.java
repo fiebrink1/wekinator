@@ -6,12 +6,12 @@
 package wekimini.kadenze;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.BackingStoreException;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import wekimini.GlobalSettings;
+import wekimini.WekiMiniRunner;
 import wekimini.util.Util;
 
 /**
@@ -21,7 +21,7 @@ import wekimini.util.Util;
 public class KadenzePromptFrame extends javax.swing.JFrame {
 
     private String currentSaveLocation = null; //used for guiding pop-up location
-
+    
     /**
      * Creates new form KadenzePromptFrame
      */
@@ -62,14 +62,14 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
         labelVersion = new javax.swing.JLabel();
         labelVersion1 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel1.setText("Are you working on a Kadenze assignment?");
 
-        comboAssignment.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "No, just exploring or playing", "Yes: Assignment 1", "Yes: Assignment 2" }));
+        comboAssignment.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "No, just exploring or playing", "Yes: Assignment 1", "Yes: Assignment 2, Part 1", "Yes: Assignment 2, Part 2" }));
         comboAssignment.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboAssignmentActionPerformed(evt);
@@ -217,7 +217,25 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
         } 
         GlobalSettings s = GlobalSettings.getInstance();
         s.setKadenzeSaveLocation(f.getAbsolutePath());
-        this.dispose();
+        if (comboAssignment.getSelectedIndex() != 0) {
+            KadenzeLogging.KadenzeAssignment ka;
+            ka = KadenzeLogging.comboOptions[comboAssignment.getSelectedIndex()-1];
+            try {
+                KadenzeLogging.startLoggingForAssignment(ka);
+                WekiMiniRunner.getInstance().runNewProject();
+                this.dispose();
+            } catch (IOException ex) {
+                ex.printStackTrace(); //TODO remove
+                Util.showPrettyErrorPane(this, "Could not begin Kadenze logging! " +
+                        " Please ensure that the directory at " + f.getAbsolutePath() +
+                        " and its subdirectories are writeable, or choose a different " + 
+                        " write location, otherwise your Kadenze assignments will not be gradeable.");
+            }
+        } else {
+            KadenzeLogging.noLogging();
+            WekiMiniRunner.getInstance().runNewProject();
+            this.dispose();
+        }
     }//GEN-LAST:event_buttonDoneActionPerformed
 
     /**

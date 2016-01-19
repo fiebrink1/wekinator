@@ -136,6 +136,11 @@
             </MenuItem>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="menuKadenze">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Kadenze"/>
+          </Properties>
+        </Menu>
       </SubComponents>
     </Menu>
   </NonVisualComponents>

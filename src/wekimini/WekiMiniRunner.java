@@ -27,6 +27,9 @@ import javax.swing.event.ChangeListener;
 import wekimini.gui.About;
 import wekimini.gui.InitInputOutputFrame;
 import wekimini.gui.Preferences;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
+import wekimini.kadenze.KadenzePromptFrame;
 import wekimini.util.Util;
 
 /**
@@ -118,7 +121,11 @@ public final class WekiMiniRunner {
         //args.length == 0
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                WekiMiniRunner.getInstance().runNewProject();
+                if (WekiMiniRunner.isKadenze) {
+                     new KadenzePromptFrame().setVisible(true);
+                } else {
+                    WekiMiniRunner.getInstance().runNewProject();
+                }
             }
         });
     }
@@ -249,6 +256,7 @@ public final class WekiMiniRunner {
     // General quit handler; fed to the OSXAdapter as the method to call when a system quit event occurs
     // A quit event is triggered by Cmd-Q, selecting Quit from the application or Dock menu, or logging out
     public boolean quitNicely() {
+        
         int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Quit Wekinator?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, myIcon);
         if (option == JOptionPane.YES_OPTION) {
             quitWithoutPrompt();
@@ -259,6 +267,9 @@ public final class WekiMiniRunner {
     public void quitWithoutPrompt() {
         //This is where we save logs, shutdown any OSC if needed, etc.
         //Notice that each Wekinator must do its own shutdown of OSC, logging, etc. separately (this is universal shutdown)
+        LoggingManager.closeUniversalLogs();
+        KadenzeLogging.getLogger().closeLog();
+        
         if (!wekinatorCurrentMainFrames.isEmpty()) {
             Wekinator[] stillOpen = wekinatorCurrentMainFrames.keySet().toArray(new Wekinator[0]);
             for (int i = 0; i < stillOpen.length; i++) {
@@ -270,7 +281,7 @@ public final class WekiMiniRunner {
              w.close();
              }  */
         }
-        LoggingManager.closeUniversalLogs();
+       
 
         System.exit(0);
     }

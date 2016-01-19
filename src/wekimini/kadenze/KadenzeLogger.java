@@ -35,12 +35,15 @@ public class KadenzeLogger {
     //TODO Use unique identifier for each Wekinator project!
     
     //assignmentDir includes terminating file separator
-    public void beginLog(String assignmentDir) throws IOException {
+    public void beginLog(String assignmentDir, String assignmentSuffix) throws IOException {
         File f = new File(assignmentDir);
         f.mkdirs();
-        String loc = assignmentDir + "assignment.txt";
+        String loc = assignmentDir + "assignment" + assignmentSuffix + ".txt";
+        System.out.println("Trying to write to " + loc);
+        File l = new File(loc);
        // fw = new FileWriter(loc, true); //do append if it exists
-        fos = new FileOutputStream(f, true);
+        //fos = new FileOutputStream
+        fos = new FileOutputStream(l, true);
         osw = new OutputStreamWriter(fos, "UTF-8");
         bw = new BufferedWriter(osw);
         pw = new PrintWriter(bw);
@@ -58,8 +61,18 @@ public class KadenzeLogger {
         }
     }
     public void closeLog() {
+        logClose();
         pw.flush();
         pw.close();
+    }
+
+    void logSameAssignmentRequested(KadenzeLogging.KadenzeAssignment a) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    void switchToLog(String myAssignmentDir, String suffix) {
+    //TODO: Need to handle when this chnages part without wekinator being closed.
+    //Need to Flush, close current log and move on
     }
     
     public static enum KEvent {
@@ -76,6 +89,10 @@ public class KadenzeLogger {
         RANDOMIZE,
         DATA_VIEWED,
         MODEL_DISPLAYED_IN_CONSOLE
+    }
+    
+    public void logEvent(KEvent ke) {
+        
     }
     
     public void newProjectStarted(OSCInputGroup ing, OSCOutputGroup og) {
@@ -106,9 +123,7 @@ public class KadenzeLogger {
     
     
     
-    public void logEvent(KEvent ke) {
-        
-    }
+
     
     public void logComputeCVal(int modelNum, int numFolds, double val) {
         //Probably also need to output all model info & data here so we know what is being tested
@@ -152,9 +167,11 @@ public class KadenzeLogger {
         return (new Date()).getTime();
     }
     
-    public void logVersionNumberAndDate() {
-        //pw.print(dateString);
-        pw.println(ts()+",VERSION="+version+",LOGGERDATE="+dateString);
+    private void logClose() {
+        pw.println(ts()+",0,STOPLOG");
     }
     
+    public void logVersionNumberAndDate() {
+        pw.println(ts()+",0,STARTLOG,VERSION="+version+",LOGGERDATE="+dateString);
+    }
 }

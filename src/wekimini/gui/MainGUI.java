@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import wekimini.DtwLearningManager;
 import wekimini.LearningManager;
@@ -26,6 +27,7 @@ import wekimini.Wekinator;
 import wekimini.WekinatorFileData;
 import wekimini.dtw.gui.DtwEditorFrame;
 import wekimini.dtw.gui.DtwLearningPanel;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.dtw.DtwModel;
 
 /**
@@ -41,6 +43,8 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
     private final Wekinator w;
     private boolean closeable = true; //flaseif this is the last window open
+    
+    private JMenuItem[] kadenzeMenuItems = new JMenuItem[0];
     
     /**
      * Creates new form MainGUI
@@ -87,8 +91,82 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         } else if (type == LearningManager.LearningType.TEMPORAL_MODELING) {
             initializeForTemporalModeling();
         }
+        
+        initKadenzeMenu();
+        
     }
 
+    private void initKadenzeMenu() {
+        menuKadenze.setVisible(WekiMiniRunner.isKadenze());
+        if (! WekiMiniRunner.isKadenze()) {
+            return;
+        }
+        
+        //Add sub-menus here
+        addKadenzeMenus();
+        updateKadenzeMenus();
+        
+        //Add listeners
+        KadenzeLogging.addListener(new KadenzeLogging.KadenzeListener() {
+
+            //This is called when part changes as well
+            @Override
+            public void assignmentChanged(KadenzeLogging.KadenzeAssignment ka) {
+                  updateKadenzeMenus();
+            }
+
+            @Override
+            public void assignmentStarted(KadenzeLogging.KadenzeAssignment ka) {
+            }
+
+            @Override
+            public void assignmentStopped() {
+                updateKadenzeMenus();
+            }
+        });        
+    }
+
+    private void addKadenzeMenus() {
+        KadenzeLogging.KadenzeAssignment ka = KadenzeLogging.getCurrentAssignment();
+        if (ka == KadenzeLogging.KadenzeAssignment.ASSIGNMENT1) {
+            //Don't need any sub-menus
+            kadenzeMenuItems = new JMenuItem[2];
+            JMenuItem k1 = new JMenuItem("Doing assignment 1");
+            k1.setEnabled(false);
+            menuKadenze.add(k1);
+            kadenzeMenuItems[0] = k1;
+            
+            JMenuItem k2 = new JMenuItem("Create Kadenze Assignment 1 submission");
+            k2.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    createAssignmentSubmission();
+                }
+            });
+            menuKadenze.add(k2);
+            kadenzeMenuItems[1] = k2;
+        } else {
+            System.out.println("NOT IMPLEMENTED YET");
+        }
+    }
+    
+    //Called when part changed or assignment stopped
+    private void updateKadenzeMenus() {
+        KadenzeLogging.KadenzeAssignment ka = KadenzeLogging.getCurrentAssignment();
+        if (ka == KadenzeLogging.KadenzeAssignment.ASSIGNMENT1) {
+            if (KadenzeLogging.isCurrentlyLogging()) {
+                kadenzeMenuItems[1].setEnabled(true);
+            } else {
+                kadenzeMenuItems[1].setEnabled(false);
+            }
+        } else {
+            System.out.println("NOT IMPLEMENTED YET");
+        }
+    }
+    
+    private void createAssignmentSubmission() {
+        KadenzeLogging.submitAssignment();
+    }
+    
     private void wekinatorPropertyChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == Wekinator.PROP_PROJECT_NAME) {
             this.setTitle(w.getProjectName());
@@ -125,6 +203,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuConsole = new javax.swing.JMenuItem();
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
+        menuKadenze = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("New project");
@@ -254,6 +333,9 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuActions.add(checkEnableOSCControl);
 
         jMenuBar1.add(menuActions);
+
+        menuKadenze.setText("Kadenze");
+        jMenuBar1.add(menuKadenze);
 
         setJMenuBar(jMenuBar1);
 
@@ -509,6 +591,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuItem menuItemEvaluation;
     private javax.swing.JMenuItem menuItemSave;
     private javax.swing.JMenuItem menuItemSaveAs;
+    private javax.swing.JMenu menuKadenze;
     private javax.swing.JCheckBoxMenuItem menuPerformanceCheck;
     private javax.swing.JPanel panelParent;
     // End of variables declaration//GEN-END:variables
