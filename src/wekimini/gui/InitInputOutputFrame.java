@@ -66,6 +66,8 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private final static int COMBO_ADABOOST_INDEX = 2;
     private final static int COMBO_SVM_INDEX = 1;
     private final static int COMBO_J48_INDEX = 3;
+    
+    private int lastNumOutputs = 5;
 
     private final ButtonGroup classificationRadioGroup = new ButtonGroup();
     private LearningModelBuilder[] classificationModelBuilders;
@@ -1049,18 +1051,30 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private void comboOutputTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboOutputTypeActionPerformed
         updateOutputCard();
         updateOutputOptions();
+        updateNumOutputsOption();
     }//GEN-LAST:event_comboOutputTypeActionPerformed
 
+    private void updateNumOutputsOption() {
+       int index = comboOutputType.getSelectedIndex();
+        CardLayout layout = (CardLayout) panelOutputTypes.getLayout();
+
+        if (index == COMBO_REGRESSION_INDEX || index == COMBO_CLASSIFICATION_INDEX) {
+            fieldNumOutputs.setText(Integer.toString(lastNumOutputs));
+            fieldNumOutputs.setEnabled(true);
+        } else {
+            try {
+                lastNumOutputs = Integer.parseInt(fieldNumOutputs.getText());
+            } catch (NumberFormatException ex) {
+                lastNumOutputs = 1;
+            }
+            fieldNumOutputs.setText("1");
+            fieldNumOutputs.setEnabled(false);
+        }
+    }
+    
     private void updateOutputOptions() {
         int index = comboOutputType.getSelectedIndex();
         CardLayout layout = (CardLayout) panelOutputTypes.getLayout();
-        /*if (index == COMBO_REGRESSION_INDEX) {
-         menuChooseAlgorithm.setEnabled(false);
-         } else if (index == COMBO_CLASSIFICATION_INDEX) {
-         menuChooseAlgorithm.setEnabled(true);
-         } else {
-         menuChooseAlgorithm.setEnabled(false);
-         } */
 
         if (index == COMBO_REGRESSION_INDEX) {
             menuChooseAlgorithm.setEnabled(true);
