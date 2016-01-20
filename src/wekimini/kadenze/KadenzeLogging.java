@@ -5,7 +5,6 @@
  */
 package wekimini.kadenze;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,8 +69,12 @@ public class KadenzeLogging {
         }
     }
 
-    public static void submitAssignment() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public static String submitAssignment() throws IOException {
+        //try {
+        logger.flush();
+        String filename = logger.createZip();
+        //} 
+        return filename;
     }
     
     public enum KadenzeAssignment {
@@ -83,11 +86,9 @@ public class KadenzeLogging {
     public static final KadenzeAssignment[] comboOptions = {ASSIGNMENT1, ASSIGNMENT2_PART1, ASSIGNMENT2_PART2};
     public static final String[] comboStrings = {"Assignment 1", "Assignment 2: Part 1", "Assignment 2: Part 2"};
     
-    
     public static void startLoggingForAssignment(KadenzeAssignment a) throws IOException {
-        System.out.println("Starting to log for assignment " + a);
         String dir = GlobalSettings.getInstance().getKadenzeSaveLocation();
-        String assignmentDir, suffix;
+        /*String assignmentDir, suffix;
       
         switch (a) {
             case ASSIGNMENT1:
@@ -106,19 +107,18 @@ public class KadenzeLogging {
                 assignmentDir = "tmp";
                 suffix = "";     
         } 
-        String myAssignmentDir = dir + File.separator + assignmentDir + File.separator;
-        
-        
+        String myAssignmentDir = dir + File.separator + assignmentDir + File.separator; */
+
         if (isCurrentlyLogging) {
             if (a == currentAssignment) {
-                getLogger().logSameAssignmentRequested(a);
+                getLogger().sameAssignmentRequested(a);
             } else {
-                getLogger().switchToLog(myAssignmentDir, suffix);
+                getLogger().switchToAssignment(dir, a);
                 currentAssignment = a;
                 notifyAssignmentChangeListeners(currentAssignment);
             }
         } else {
-            logger.beginLog(myAssignmentDir, suffix);
+            logger.beginLog(dir, a);
             currentAssignment = a;
             isCurrentlyLogging = true;
             notifyAssignmentStartedListeners(currentAssignment);

@@ -40,6 +40,7 @@ public class Wekinator {
     private final InputManager inputManager;
     private final OutputManager outputManager;
     private MainGUI mainGUI;
+    private final int id;
     
     //private final SupervisedLearningManager supervisedLearningManager;
     private final DataManager dataManager;
@@ -68,6 +69,10 @@ public class Wekinator {
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private static final Logger logger = Logger.getLogger(Wekinator.class.getName());
+    
+    public int getID() {
+        return id;
+    }
     
     public void addCloseListener(ChangeListener l) {
         exitListenerList.add(ChangeListener.class, l);
@@ -208,7 +213,7 @@ public class Wekinator {
 
     //Use only for testing
     public static Wekinator TestingWekinator() throws IOException {
-        return new Wekinator();
+        return new Wekinator(WekiMiniRunner.generateNextID());
     }
 
     public LearningManager getLearningManager() {
@@ -219,7 +224,8 @@ public class Wekinator {
         return loggingManager;
     }
 
-    public Wekinator() throws IOException {
+    public Wekinator(int id) throws IOException {
+        this.id = id;
         loggingManager = new LoggingManager(this);
         loggingManager.startLoggingToFile();
 

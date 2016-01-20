@@ -42,9 +42,26 @@ public class GlobalSettings {
         prefs.put("kadenzeSaveLocation", location);
     }
     
+    public void setStringValue(String key, String value) {
+        prefs.put(key, value);
+    }
+    
+    public String getStringValue(String key, String def) {
+        return prefs.get(key, def);
+    }
+    
     public String getKadenzeSaveLocation() {
         return prefs.get("kadenzeSaveLocation", "");
     }
+    
+    public int getIntValue(String key, int def) {
+        return prefs.getInt(key, def);
+    }
+    
+    public void setIntValue(String key, int value) {
+        prefs.putInt(key, value);
+    }
+    
     
     public void clearPreferences() throws BackingStoreException {
         prefs.clear();

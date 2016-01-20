@@ -191,7 +191,7 @@ public class WekinatorSaver {
     }
 
     private static Wekinator instantiateTemporalWekinator(WekinatorFileData wfd, OSCInputGroup ig, OSCOutputGroup og, String projectDir) throws IOException {
-        Wekinator w = new Wekinator();
+        Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
         w.setProjectLocation(projectDir);
         w.setHasSaveLocation(true);
         wfd.applySettings(w);
@@ -208,7 +208,7 @@ public class WekinatorSaver {
     
     //TODO: XXX WON"T WORK ANYMORE: NEED TO SET LEARNING TYPE HERE!
     private static Wekinator instantiateSupervisedWekinator(WekinatorFileData wfd, OSCInputGroup ig, OSCOutputGroup og, Instances data, List<Path> tempPaths, String projectDir) throws IOException {
-        Wekinator w = new Wekinator();
+        Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
         w.setProjectLocation(projectDir);
         w.setHasSaveLocation(true);
         wfd.applySettings(w);

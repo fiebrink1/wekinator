@@ -11,6 +11,8 @@ import wekimini.Path;
 import wekimini.StatusUpdateCenter;
 import wekimini.TrainingRunner;
 import wekimini.Wekinator;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.osc.OSCMonitor;
 
 /*
@@ -559,6 +561,7 @@ public class SupervisedLearningPanel extends javax.swing.JPanel {
     private void buttonDeleteLastRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteLastRecordingActionPerformed
         w.getDataManager().deleteTrainingRound(lastRoundAdvertised);
         int numDeleted = w.getDataManager().getNumDeletedTrainingRound();
+        KadenzeLogging.getLogger().deleteLastRecordingRound(w, lastRoundAdvertised);
         w.getStatusUpdateCenter().update(this, "Recording set #" + lastRoundAdvertised + " (" + numDeleted + " examples) deleted.");
         if (numDeleted > 0) {
             updateReAddButton(lastRoundAdvertised);
@@ -576,6 +579,7 @@ public class SupervisedLearningPanel extends javax.swing.JPanel {
         w.getDataManager().reAddDeletedTrainingRound();
         w.getStatusUpdateCenter().update(this, "Last recording set restored: undeleted " + num + " examples");
         updateDeleteLastRoundButton();
+        KadenzeLogging.getLogger().reAddLastRecordingRound(w, lastRoundAdvertised);
         buttonReAddLastRecording.setText("Re-add last recording");
         buttonReAddLastRecording.setEnabled(false);
     }//GEN-LAST:event_buttonReAddLastRecordingActionPerformed

@@ -48,7 +48,12 @@ public final class WekiMiniRunner {
     private final static Preferences preferencesBox = new Preferences();
     private final ImageIcon myIcon = new ImageIcon(getClass().getResource("/wekimini/icons/wekimini_small.png"));
     private static boolean isKadenze = false;
-
+    private static int nextID = 1;
+    
+    public static int generateNextID() {
+        return nextID++;
+    }
+    
     public static WekiMiniRunner getInstance() {
         if (ref == null) {
             ref = new WekiMiniRunner();
@@ -139,7 +144,7 @@ public final class WekiMiniRunner {
             public void run() {
 
                 try {
-                    Wekinator w = new Wekinator();
+                    Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
                     InitInputOutputFrame f = new InitInputOutputFrame(w);
                     f.setVisible(true);
                     wekinatorCurrentMainFrames.put(w, f);

@@ -1549,7 +1549,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             public void run() {
                 Wekinator w;
                 try {
-                    w = new Wekinator();
+                    w = new Wekinator(WekiMiniRunner.generateNextID());
                     InitInputOutputFrame p = new InitInputOutputFrame(w);
                     p.setVisible(true);
                 } catch (IOException ex) {

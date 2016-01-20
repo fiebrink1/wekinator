@@ -75,6 +75,13 @@ public class Util {
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
     }
+    
+    public static void showPrettyInfoPane(Component caller, String msg, String title) {
+        JOptionPane.showMessageDialog(caller,
+                "<html><body><p style='width: 200px;'>" + msg + "</p></body></html>",
+                title,
+                JOptionPane.INFORMATION_MESSAGE);
+    }
 
     public static int showPrettyWarningPromptPane(Component caller, String msg) {
         Object[] options = {"OK", "Cancel"};

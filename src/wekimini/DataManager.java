@@ -34,6 +34,8 @@ import weka.filters.unsupervised.attribute.AddValues;
 import weka.filters.unsupervised.attribute.Reorder;
 import weka.filters.unsupervised.instance.RemoveWithValues;
 import wekimini.gui.DatasetViewer;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
@@ -788,6 +790,7 @@ public class DataManager {
             setNumExamplesPerOutput(i, 0);
             // outputInstanceCounts[i] = 0;
         }
+        KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.SUPERVISED_DELETE_ALL_EXAMPLES);
         fireStateChanged();
     }
 
@@ -1006,6 +1009,8 @@ public class DataManager {
          viewer.setVisible(true);
          viewer.toFront();
          */
+        
+        KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.SUPERVISED_DATA_VIEWED);
         if (viewer != null) {
             viewer.toFront();
             return;

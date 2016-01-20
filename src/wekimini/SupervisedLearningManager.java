@@ -17,13 +17,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.jdesktop.swingworker.SwingWorker;
 import weka.core.Instances;
 import weka.core.Instance;
-import wekimini.learning.ModelBuilder;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCReceiver;
@@ -194,8 +194,14 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     private void trainingWorkerChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("state")) {
             if (evt.getNewValue() == SwingWorker.StateValue.DONE) {
-                //SwingWorker.StateValue.
-                //System.out.println("!!!TODOTODOTODOshould be setting training to false here");
+                try {
+                    //SwingWorker.StateValue.
+                    //System.out.println("!!!TODOTODOTODOshould be setting training to false here");
+                    KadenzeLogging.getLogger().supervisedTrainFinished(w);
+                } catch (IOException ex) {
+                    Logger.getLogger(SupervisedLearningManager.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
                 setLearningState(LearningState.DONE_TRAINING);
             }
         } // else if = progress: TODO do anything with tthis?
@@ -233,11 +239,14 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     public void startRecording() {
         numExamplesThisRound = 0;
+       // KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.SUPERVISED_RECORD_START);
+        KadenzeLogging.getLogger().supervisedLearningRecordStarted(w);
         setRecordingRound(recordingRound+1);
         setRecordingState(RecordingState.RECORDING);
     }
 
     public void stopRecording() {
+        KadenzeLogging.getLogger().supervisedLearningRecordStopped(w);
         setRecordingState(RecordingState.NOT_RECORDING);
     }
 
@@ -263,6 +272,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     public void cancelTraining() {
         if (learningState == LearningState.TRAINING) {
+            KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.TRAIN_CANCEL);
             w.getTrainingRunner().cancel();
             //trainingWorker.cancel(true);
         }
@@ -758,6 +768,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                 myComputedOutputs[i] = w.getOutputManager().getCurrentValues()[i];
             }
         }
+        KadenzeLogging.getLogger().supervisedRunData(w, inputs, computeMask, myComputedOutputs);
         return myComputedOutputs;
     }
 
@@ -899,6 +910,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     }
 
     public void buildAll() {
+        KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.TRAIN_START);
         //Launch training threads & get notified ...        
         synchronized (this) {
             List<Instances> data = new ArrayList<>(paths.size());

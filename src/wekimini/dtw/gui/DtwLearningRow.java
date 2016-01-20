@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import wekimini.Path;
+import wekimini.WekiMiniRunner;
 import wekimini.Wekinator;
 import wekimini.learning.dtw.DtwData;
 import wekimini.learning.dtw.DtwModel;
@@ -216,7 +217,7 @@ public class DtwLearningRow extends javax.swing.JPanel {
                 f.setSize(500, 500);
                 Wekinator w;
                 try {
-                    w = new Wekinator();
+                    w = new Wekinator(WekiMiniRunner.generateNextID());
 
                     OSCNumericOutput no = new OSCNumericOutput("model1", 5, 10, OSCNumericOutput.NumericOutputType.REAL, OSCNumericOutput.LimitType.HARD);
                     String[] names = new String[]{"abc", "def"};

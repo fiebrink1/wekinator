@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.EventListenerList;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
 import wekimini.osc.OSCOutputGroup;
@@ -233,6 +235,7 @@ public class OutputManager {
             randoms[i] = r;
         }
         setNewComputedValues(randoms);
+        KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.RANDOMIZE);
     }
     
     //Notifies listeners that we've got a new OSC-received output vector
