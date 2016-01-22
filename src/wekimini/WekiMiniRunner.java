@@ -124,6 +124,7 @@ public final class WekiMiniRunner {
                 if (WekiMiniRunner.isKadenze) {
                      new KadenzePromptFrame().setVisible(true);
                 } else {
+                    KadenzeLogging.noLogging();
                     WekiMiniRunner.getInstance().runNewProject();
                 }
             }
