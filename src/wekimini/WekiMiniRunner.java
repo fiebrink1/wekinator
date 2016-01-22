@@ -6,7 +6,6 @@
 package wekimini;
 
 import wekimini.gui.MainGUI;
-import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -17,17 +16,13 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import wekimini.gui.About;
 import wekimini.gui.InitInputOutputFrame;
 import wekimini.gui.Preferences;
-import wekimini.kadenze.Assignment12Logger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.kadenze.KadenzePromptFrame;
 import wekimini.util.Util;

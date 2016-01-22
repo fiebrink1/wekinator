@@ -11,7 +11,6 @@ import wekimini.Path;
 import wekimini.StatusUpdateCenter;
 import wekimini.TrainingRunner;
 import wekimini.Wekinator;
-import wekimini.kadenze.Assignment12Logger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.osc.OSCMonitor;
 
