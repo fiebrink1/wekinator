@@ -30,7 +30,7 @@ public class LinearRegressionModelBuilder implements RegressionModelBuilder {
         NONE, M5, GREEDY
     };
 
-    private transient FeatureSelectionType featureSelectionType;
+    private FeatureSelectionType featureSelectionType;
     private static final Logger logger = Logger.getLogger(LinearRegressionModelBuilder.class.getName());
     private int exponent = 1;
     private boolean removeColinear = false;
