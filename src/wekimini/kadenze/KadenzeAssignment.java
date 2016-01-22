@@ -99,6 +99,8 @@ public class KadenzeAssignment {
             return new NoLogger();
         } else if (assignmentType == KadenzeAssignmentType.ASSIGNMENT1) {
             return new Assignment12Logger();
+        } else if (assignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART1) {
+            return new Assignment12Logger();
         } else {
             throw new Exception("No logger for this assignment!");
         }

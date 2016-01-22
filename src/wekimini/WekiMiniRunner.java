@@ -110,7 +110,7 @@ public final class WekiMiniRunner {
     //TODO: remove unnecessary argument
     public void transferControl(Wekinator w, Closeable oldC, Closeable newC) {
         oldC.removeWindowListener(wl);
-        newC.addWindowListener(wl);
+        newC.addWindowListener(wl); //Danger: this won't be called if newC is last GUI open :/
         wekinatorCurrentMainFrames.put(w, newC);
     }
 

@@ -26,6 +26,11 @@ public class DecisionStumpModelBuilder implements ClassificationModelBuilder {
     }
     
     @Override
+    public String toLogString() {
+        return "DECISIONSTUMP";
+    }
+    
+    @Override
     public void setTrainingExamples(Instances examples) {
         trainingData = examples;
     }

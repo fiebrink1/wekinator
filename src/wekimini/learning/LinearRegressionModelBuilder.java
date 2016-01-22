@@ -35,6 +35,16 @@ public class LinearRegressionModelBuilder implements RegressionModelBuilder {
     private int exponent = 1;
     private boolean removeColinear = false;
 
+    
+    @Override
+    public String toLogString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("LINPOLREG,EXPONENT=").append(exponent);
+        sb.append(",FEAT=").append(featureSelectionType);
+        sb.append(",REMOVE=").append(removeColinear);
+        return sb.toString();
+    }
+    
     public int getExponent() {
         return exponent;
     }

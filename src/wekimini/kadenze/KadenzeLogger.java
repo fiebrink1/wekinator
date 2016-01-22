@@ -7,6 +7,7 @@ package wekimini.kadenze;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import wekimini.LearningModelBuilder;
 import wekimini.Wekinator;
 import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
 import wekimini.osc.OSCOutput;
@@ -18,6 +19,10 @@ import wekimini.osc.OSCOutput;
 public interface KadenzeLogger {
 
     public String getCurrentLoggingDirectory();
+
+    public void logModelBuilderUpdated(Wekinator w, LearningModelBuilder mb, int i);
+
+    public void logPathUpdated(Wekinator w, int which, OSCOutput oldOutput, OSCOutput newOutput, LearningModelBuilder oldModelBuilder, LearningModelBuilder newModelBuilder, String[] selectedInputs, String[] selectedInputNames);
 
     public static enum KEvent {
         TRAIN_START, //X
@@ -31,7 +36,8 @@ public interface KadenzeLogger {
         RANDOMIZE,//X
         SUPERVISED_DATA_VIEWED,//X
         DTW_DATA_VIEWED,
-        SUPERVISED_MODEL_DISPLAYED_IN_CONSOLE
+        SUPERVISED_MODEL_DISPLAYED_IN_CONSOLE,
+        PROJECT_CLOSED
     }
     
     // public void beginLog(String assignmentDir, String assignmentSuffix) throws IOException {

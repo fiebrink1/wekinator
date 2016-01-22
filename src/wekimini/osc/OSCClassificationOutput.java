@@ -99,5 +99,14 @@ public class OSCClassificationOutput implements OSCSupervisedLearningOutput {
         }
         return which;
     }
+
+    @Override
+    public String toLogString() {
+        StringBuilder sb = new StringBuilder("CLASSIFICATION,");
+        sb.append(",NAME=").append(name);
+        sb.append(",NUM_CLASSES=").append(numClasses);
+        sb.append(",SENDING_DISTRIBUTION=").append(isSendingDistribution);
+        return sb.toString();
+    }
     
 }

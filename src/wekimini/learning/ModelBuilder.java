@@ -33,4 +33,6 @@ public interface ModelBuilder {
 
     public LearningModelBuilderEditorPanel getEditorPanel();
     
+    public String toLogString();
+    
 }

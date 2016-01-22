@@ -16,6 +16,18 @@ public class OSCNumericOutput implements OSCSupervisedLearningOutput {
 
     private final String name;
 
+    @Override
+    public String toLogString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("NUMERIC,NAME=").append(name);
+        sb.append(",MIN=").append(min).append(",MAX=").append(max);
+        sb.append(",TYPE=").append(outputType);
+        sb.append(",LIMIT_TYPE=").append(limitType);
+        sb.append(",TRAINING_LIMIT=").append(trainingDataLimitRestriction);
+        sb.append(",TRAINING_INT=").append(trainingDataIntegerRestriction);
+        return sb.toString();
+    }
+
     public static enum NumericOutputType {
 
         INTEGER, REAL

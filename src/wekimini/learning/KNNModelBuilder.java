@@ -24,6 +24,11 @@ public class KNNModelBuilder implements ClassificationModelBuilder {
     private static final int defaultNumNeighbors = 1;
     private int numNeighbors = defaultNumNeighbors;
     
+    @Override
+    public String toLogString() {
+        return "KNN,K=" + numNeighbors;
+    }
+    
     public KNNModelBuilder() {
         classifier = new IBk();
         ((IBk)classifier).setKNN(defaultNumNeighbors);

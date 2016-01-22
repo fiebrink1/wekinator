@@ -5,6 +5,8 @@
  */
 package wekimini.kadenze;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,10 +21,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipOutputStream;
 import wekimini.GlobalSettings;
+import static wekimini.InputManager.PROP_INPUTGROUP;
+import wekimini.LearningManager;
+import wekimini.LearningModelBuilder;
+import wekimini.OutputManager;
 import wekimini.Path;
+import wekimini.SupervisedLearningManager;
 import wekimini.Wekinator;
 import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
+import wekimini.osc.OSCInputGroup;
 import wekimini.osc.OSCOutput;
+import wekimini.osc.OSCOutputGroup;
 
 /**
  *
@@ -110,9 +119,140 @@ public class Assignment12Logger implements KadenzeLogger {
     }
 
     @Override
-    public void newProjectStarted(Wekinator w) {
+    public void newProjectStarted(final Wekinator w) {
         //Possibly human-readable algorithms list here (esp if CV used, can partition by run)
+        pw.println(ts() + "," + w.getID() + ",NEW_PROJECT_STARTED");
+        /*printInputNames(w);
+         printOutputNames(w);*/
+        //printModelInfo(w);
+        w.getInputManager().addPropertyChangeListener(new PropertyChangeListener() {
 
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName().equals(PROP_INPUTGROUP)) {
+                    logInputGroupUpdate((OSCInputGroup) evt.getNewValue(), w.getID());
+                }
+            }
+        });
+
+        w.getOutputManager().addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName().equals(OutputManager.PROP_OUTPUTGROUP)) {
+                    logOutputGroupUpdate((OSCOutputGroup) evt.getNewValue(), w.getID());
+                }
+            }
+        });
+
+        w.getLearningManager().addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName().equals(LearningManager.PROP_LEARNINGTYPE)) {
+                    logLearningTypeStarted(w);
+                }
+            }
+        });
+
+    }
+
+    private void logLearningTypeStarted(final Wekinator w) {
+        if (w.getLearningManager().getLearningType() == LearningManager.LearningType.SUPERVISED_LEARNING) {
+            pw.println(ts() + "," + w.getID() + ",SUPERVISED_LEARNING_START");
+           /* w.getSupervisedLearningManager().add
+            w.getSupervisedLearningManager().addPathEditedListener(new SupervisedLearningManager.PathOutputTypeEditedListener() {
+                @Override
+                public void pathOutputTypeEdited(int which, Path newPath, Path oldPath) {
+                    logPathOutputTypeEdited(w, which, newPath, oldPath);
+                }
+            });*/
+        } else if (w.getLearningManager().getLearningType() == LearningManager.LearningType.TEMPORAL_MODELING) {
+            pw.println(ts() + "," + w.getID() + ",TEMPORAL_MODELING_START");
+        } else {
+            pw.println(ts() + "," + w.getID() + ",OTHER_MODEL_START");
+        }
+    }
+
+    
+    
+    /*private void logPathOutputTypeEdited(final Wekinator w, int which, Path newPath, Path oldPath) {
+        pw.println(ts() + "," + w.getID() + ",PATH_EDITED," + which + "," + newPath.getModelBuilder().getPrettyName());
+    } */
+
+    private void logInputGroupUpdate(OSCInputGroup newG, int id) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(ts()).append(',').append(id).append(",INPUT_GROUP_UPDATE");
+
+        try {
+            String[] ins = newG.getInputNames();
+            for (String in : ins) {
+                sb.append(',').append(in);
+            }
+            pw.println(sb.toString());
+        } catch (Exception ex) {
+            sb.append("ERROR_ENCOUNTERED");
+            pw.println(sb.toString());
+        }
+    }
+
+    private void logOutputGroupUpdate(OSCOutputGroup newG, int id) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(ts()).append(',').append(id).append(",OUTPUT_GROUP_UPDATE");
+
+        try {
+            String[] ins = newG.getOutputNames();
+            for (String in : ins) {
+                sb.append(',').append(in);
+            }
+            pw.println(sb.toString());
+        } catch (Exception ex) {
+            sb.append("ERROR_ENCOUNTERED");
+            pw.println(sb.toString());
+        }
+    }
+
+    private void printOutputNames(Wekinator w) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(ts()).append(",").append(w.getID()).append(",OUTPUT_NAMES_LIST");
+        try {
+            String[] outs = w.getOutputManager().getOutputGroup().getOutputNames();
+            for (String out : outs) {
+                sb.append(',').append(out);
+            }
+            pw.println(sb.toString());
+        } catch (Exception ex) {
+            sb.append("ERROR_ENCOUNTERED");
+            pw.println(sb.toString());
+        }
+    }
+
+    private void printModelInfo(Wekinator w) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(ts()).append(",").append(w.getID()).append(",MODEL_INFO_LIST");
+        try {
+            if (w.getLearningManager().getLearningType() == LearningManager.LearningType.SUPERVISED_LEARNING) {
+                sb.append(",SUPERVISED");
+                List<Path> paths = w.getSupervisedLearningManager().getPaths();
+                for (Path p : paths) {
+                    sb.append(',').append(p.getModelBuilder().getPrettyName());
+                }
+            } else if (w.getLearningManager().getLearningType() == LearningManager.LearningType.TEMPORAL_MODELING) {
+                sb.append(",TEMPORAL");
+                int num = w.getDtwLearningManager().getModel().getNumGestures();
+                for (int i = 0; i < num; i++) {
+                    sb.append(',').append(w.getDtwLearningManager().getModel().getGestureName(i));
+                }
+            } else {
+                //Initialization
+                sb.append(",INITIALIZATION");
+            }
+            sb.append('\n');
+            pw.print(sb.toString());
+        } catch (Exception ex) {
+            sb.append("ERROR_ENCOUNTERED\n");
+            pw.print(sb.toString());
+        }
     }
 
     @Override
@@ -286,6 +426,68 @@ public class Assignment12Logger implements KadenzeLogger {
     @Override
     public String getCurrentLoggingDirectory() {
         return currentAssignmentDir;
+    }
+
+    @Override
+    public void logModelBuilderUpdated(Wekinator w, LearningModelBuilder mb, int i) {
+        pw.println(ts() + "," + w.getID() + ",MODEL_BUILDER_UPDATED," + i + "," + mb.getPrettyName());
+
+    }
+
+    @Override
+    public void logPathUpdated(Wekinator w, int which, OSCOutput oldOutput, OSCOutput newOutput, LearningModelBuilder oldModelBuilder, LearningModelBuilder newModelBuilder, String[] oldSelectedInputs, String[] newSelectedInputs) {
+        //Which : which path
+        Long t = ts();
+        int id = w.getID();
+        pw.println(t + "," + w.getID() + ",PATH_EDITED," + which);
+        if (newOutput != null) {
+            logOutputUpdated(t, id, which, oldOutput, newOutput);
+        }
+        if (newModelBuilder != null) {
+            logModelBuilderChange(t, id, which, oldModelBuilder, newModelBuilder);
+        }
+        //if (oldSelectedInputs.length != newSelectedInputs.length) {
+        logInputSelectionChange(t, id, which, oldSelectedInputs, newSelectedInputs);
+        //}
+    }
+
+    private void logModelBuilderChange(Long t, int id, int which, LearningModelBuilder oldModelBuilder, LearningModelBuilder newModelBuilder) {
+        String oldModelString = oldModelBuilder.toLogString();
+        String newModelString = newModelBuilder.toLogString();
+        
+        if (oldModelString.equals(newModelString)) {
+            return;
+        }
+        
+        pw.println(t + "," + id + ",MODEL_EDITED_OLD," + which + "," + oldModelString);
+        pw.println(t + "," + id + ",MODEL_EDITED_NEW," + which + "," + newModelString);
+    }
+    
+    private void logOutputUpdated(Long t, int id, int which, OSCOutput oldOutput, OSCOutput newOutput) {
+        String oldOutputString = oldOutput.toLogString();
+        String newOutputString = newOutput.toLogString();
+        
+        pw.println(t + "," + id + ",OUTPUT_EDITED_OLD," + which + "," + oldOutputString);
+        pw.println(t + "," + id + ",OUTPUT_EDITED_NEW," + which + "," + newOutputString);
+    }
+
+    private void logInputSelectionChange(Long t, int id, int which, String[] oldSelectedInputs, String[] newSelectedInputs) {
+        StringBuilder oldInputNames = new StringBuilder();
+        for (int i = 0; i < oldSelectedInputs.length; i++) {
+            oldInputNames.append(oldSelectedInputs[i]).append(',');
+        }
+        StringBuilder newInputNames = new StringBuilder();
+        for (int i = 0; i < newSelectedInputs.length; i++) {
+            newInputNames.append(newSelectedInputs[i]).append(',');
+        }
+        
+        if (oldInputNames.toString().equals(newInputNames.toString())) {
+            return;
+        }
+
+        pw.println(t + "," + id + ",SELECTED_INPUTS_OLD," + which + "," + oldInputNames.toString());
+        pw.println(t + "," + id + ",SELECTED_INPUTS_NEW," + which + "," + newInputNames.toString());
+    
     }
 
 }

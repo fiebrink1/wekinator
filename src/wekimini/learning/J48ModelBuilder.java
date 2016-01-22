@@ -27,6 +27,11 @@ public class J48ModelBuilder implements ClassificationModelBuilder {
     }
     
     @Override
+    public String toLogString() {
+        return "J48";
+    }
+    
+    @Override
     public void setTrainingExamples(Instances examples) {
         trainingData = examples;
     }

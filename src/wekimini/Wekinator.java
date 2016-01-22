@@ -20,6 +20,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import wekimini.LearningManager.LearningType;
 import wekimini.gui.Console;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.osc.OSCMonitor;
 import wekimini.osc.OSCReceiver;
 import wekimini.util.Util;
@@ -95,6 +97,7 @@ public class Wekinator {
     }
 
     public void close() {
+        KadenzeLogging.getLogger().logEvent(this, KadenzeLogger.KEvent.PROJECT_CLOSED);
         prepareToDie();
         fireCloseEvent();
     }
@@ -257,6 +260,7 @@ public class Wekinator {
                 }
             }
         });
+        KadenzeLogging.getLogger().newProjectStarted(this);
     }
 
     private void learningTypeChanged(LearningManager.LearningType learningType) {

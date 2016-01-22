@@ -7,6 +7,7 @@ package wekimini.kadenze;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import wekimini.LearningModelBuilder;
 import wekimini.Wekinator;
 import wekimini.osc.OSCOutput;
 
@@ -22,7 +23,7 @@ public class NoLogger implements KadenzeLogger {
 
     @Override
     public String createZip() throws FileNotFoundException, IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "NO ZIP FILE:NO LOGGING DONE";
     }
 
     @Override
@@ -71,7 +72,7 @@ public class NoLogger implements KadenzeLogger {
 
     @Override
     public void newProjectStarted(Wekinator w) {
-    }
+    } 
 
     @Override
     public void projectLoaded(Wekinator w, String projectName) {
@@ -124,5 +125,14 @@ public class NoLogger implements KadenzeLogger {
     @Override
     public String getCurrentLoggingDirectory() {
         return "ERROR: NO DIRECTORY";
+    }
+
+    @Override
+    public void logModelBuilderUpdated(Wekinator w, LearningModelBuilder mb, int i) {
+    }
+
+    @Override
+    public void logPathUpdated(Wekinator w, int which, OSCOutput oldOutput, OSCOutput newOutput, LearningModelBuilder oldModelBuilder, LearningModelBuilder newModelBuilder, String[] selectedInputs, String[] selectedInputNames) {
+
     }
 }

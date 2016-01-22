@@ -21,6 +21,11 @@ public class NaiveBayesModelBuilder implements ClassificationModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
     
+    @Override
+    public String toLogString() {
+        return "NAIVEBAYES";
+    }
+    
     public NaiveBayesModelBuilder() {
         classifier = new NaiveBayes();
     }

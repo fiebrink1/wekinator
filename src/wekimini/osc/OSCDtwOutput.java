@@ -270,5 +270,17 @@ public class OSCDtwOutput implements OSCOutput {
         propertyChangeSupport = new PropertyChangeSupport(this);
         return this;
   }
+
+    @Override
+    public String toLogString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("DTW,NAME=").append(name);
+        sb.append(",NUM_GEST=").append(numGestures);
+        sb.append(",GESTURE_NAMES=");
+        for (int i = 0; i < numGestures; i++) {
+            sb.append(gestureNames[i]).append(',');
+        }
+        return sb.toString();
+    }
     
 }

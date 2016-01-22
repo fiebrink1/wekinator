@@ -984,6 +984,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     public void setModelBuilderForPath(LearningModelBuilder mb, int i) {
         paths.get(i).setModelBuilder(mb);
+        KadenzeLogging.getLogger().logModelBuilderUpdated(w, mb, i);
     }
 
     public void updatePath(Path p, OSCOutput newOutput, LearningModelBuilder newModelBuilder, String[] selectedInputNames) {
@@ -994,6 +995,8 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             throw new IllegalArgumentException("Trying to update path that does not exist");
         }
 
+        KadenzeLogging.getLogger().logPathUpdated(w, which, p.getOSCOutput(), newOutput, p.getModelBuilder(), newModelBuilder, p.getSelectedInputs(), selectedInputNames);
+        
         Path newP;
         if (newOutput != null) {
             w.getOutputManager().updateOutput(newOutput, p.getOSCOutput()); //this triggers change in data manager

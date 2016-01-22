@@ -29,6 +29,7 @@ import wekimini.dtw.gui.DtwEditorFrame;
 import wekimini.dtw.gui.DtwLearningPanel;
 import wekimini.kadenze.KadenzeAssignment;
 import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
+import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.dtw.DtwModel;
 
@@ -73,7 +74,9 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
     }
 
-    private void finishUp() {
+    private void finishUp() {        
+        KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.PROJECT_CLOSED);
+        KadenzeLogging.getLogger().flush(); //Imperfect: Log won't be closed if this is last GUI and we haven't submitted yet...
         w.close();
         this.dispose();
     }

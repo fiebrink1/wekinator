@@ -17,6 +17,10 @@ import wekimini.osc.OSCOutput;
  */
 public class SimpleModelBuilder implements ClassificationModelBuilder {
     
+    @Override
+    public String toLogString() {
+        return "SIMPLE";
+    }
     
     @Override
     public void setTrainingExamples(Instances examples) {
