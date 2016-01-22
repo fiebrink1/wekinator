@@ -7,11 +7,11 @@ package wekimini.kadenze;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import wekimini.GlobalSettings;
 import wekimini.WekiMiniRunner;
+import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
 import wekimini.util.Util;
 
 /**
@@ -21,19 +21,27 @@ import wekimini.util.Util;
 public class KadenzePromptFrame extends javax.swing.JFrame {
 
     private String currentSaveLocation = null; //used for guiding pop-up location
-    
+
+    private final String[] comboOptions
+            = {"No, just exploring or playing",
+                "Assignment 1, Part 1A",
+                "Assignment 2, Part 1",
+                "Assignment 2, Part 2"
+            };
+
+    private final KadenzeAssignmentType[] assignmentTypes
+            = {KadenzeAssignmentType.NONE,
+                KadenzeAssignmentType.ASSIGNMENT1,
+                KadenzeAssignmentType.ASSIGNMENT2_PART1,
+                KadenzeAssignmentType.ASSIGNMENT2_PART2
+            };
+
     /**
      * Creates new form KadenzePromptFrame
      */
     public KadenzePromptFrame() {
         initComponents();
         GlobalSettings s = GlobalSettings.getInstance();
-        /*try {
-         s.clearPreferences();
-            
-         } catch (BackingStoreException ex) {
-         Logger.getLogger(KadenzePromptFrame.class.getName()).log(Level.SEVERE, null, ex);
-         }   */
         if (s.hasKadenzeSaveLocation()) {
             currentSaveLocation = s.getKadenzeSaveLocation();
             labelDirectory.setText(s.getKadenzeSaveLocation());
@@ -41,6 +49,11 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
             currentSaveLocation = System.getProperty("user.home");
             labelDirectory.setText(System.getProperty("user.home") + File.separator + "kadenze");
         }
+        populateComboBox();
+    }
+
+    private void populateComboBox() {
+        comboAssignment.setModel(new DefaultComboBoxModel(comboOptions));
     }
 
     /**
@@ -61,6 +74,7 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
         buttonDone = new javax.swing.JButton();
         labelVersion = new javax.swing.JLabel();
         labelVersion1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -104,6 +118,9 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
         labelVersion1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelVersion1.setText("Last updated 17 January 2016");
 
+        jLabel2.setFont(new java.awt.Font("Lucida Grande", 2, 13)); // NOI18N
+        jLabel2.setText("<html>This will be the parent directory for all Kadenze assignments. We recommend leaving this unchanged.</html>");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -111,11 +128,11 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(labelVersion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(labelVersion, javax.swing.GroupLayout.DEFAULT_SIZE, 465, Short.MAX_VALUE)
+                    .addComponent(labelVersion1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addComponent(labelDirectory, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(labelVersion1, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
@@ -125,7 +142,8 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(buttonChangeDirectory)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buttonDone)))
+                        .addComponent(buttonDone))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -144,10 +162,11 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(labelDirectory)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonChangeDirectory)
-                    .addComponent(buttonDone))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(buttonDone)
+                    .addComponent(buttonChangeDirectory)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -191,14 +210,20 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
             File chosenFile;
             File f = fc.getSelectedFile();
             if (f.isDirectory()) {
-               // System.out.println("Choosing directory: " + f.getAbsolutePath());
+                // System.out.println("Choosing directory: " + f.getAbsolutePath());
                 chosenFile = f;
             } else {
                 chosenFile = f.getParentFile();
-               // System.out.println("Choosing parent dir: " + f2.getAbsolutePath());
+                // System.out.println("Choosing parent dir: " + f2.getAbsolutePath());
             }
-            labelDirectory.setText(chosenFile.getAbsolutePath());
-            currentSaveLocation = chosenFile.getAbsolutePath();
+            try {
+                labelDirectory.setText(chosenFile.getCanonicalPath());
+                currentSaveLocation = chosenFile.getCanonicalPath();
+            } catch (IOException ex) {
+                //Rare event that can't resolve canonical path name
+                labelDirectory.setText(chosenFile.getAbsolutePath());
+                currentSaveLocation = chosenFile.getAbsolutePath();
+            }
         }
     }//GEN-LAST:event_buttonChangeDirectoryActionPerformed
 
@@ -207,29 +232,32 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
         //File f = new File(currentSaveLocation);
         if (!f.exists()) {
             try {
-               // System.out.println("Creating directories: " + f.getAbsolutePath());
+                // System.out.println("Creating directories: " + f.getAbsolutePath());
                 f.mkdirs();
             } catch (Exception ex) {
                 //COuld not create file!
                 Util.showPrettyErrorPane(this, "Could not create directory " + currentSaveLocation + ". Please choose a different location.");
                 return;
             }
-        } 
+        }
         GlobalSettings s = GlobalSettings.getInstance();
-        s.setKadenzeSaveLocation(f.getAbsolutePath());
+        try {
+            s.setKadenzeSaveLocation(f.getCanonicalPath());
+        } catch (IOException ex) {
+            s.setKadenzeSaveLocation(f.getAbsolutePath());
+        }
         if (comboAssignment.getSelectedIndex() != 0) {
-            KadenzeLogging.KadenzeAssignment ka;
-            ka = KadenzeLogging.comboOptions[comboAssignment.getSelectedIndex()-1];
+            KadenzeAssignmentType type = assignmentTypes[comboAssignment.getSelectedIndex()];
             try {
-                KadenzeLogging.startLoggingForAssignment(ka);
+                KadenzeLogging.startLoggingForAssignment(type);
                 WekiMiniRunner.getInstance().runNewProject();
                 this.dispose();
             } catch (IOException ex) {
                 ex.printStackTrace(); //TODO remove
-                Util.showPrettyErrorPane(this, "Could not begin Kadenze logging! " +
-                        " Please ensure that the directory at " + f.getAbsolutePath() +
-                        " and its subdirectories are writeable, or choose a different " + 
-                        " write location, otherwise your Kadenze assignments will not be gradeable.");
+                Util.showPrettyErrorPane(this, "Could not begin Kadenze logging! "
+                        + " Please ensure that the directory at " + f.getAbsolutePath()
+                        + " and its subdirectories are writeable, or choose a different "
+                        + " write location, otherwise your Kadenze assignments will not be gradeable.");
             }
         } else {
             KadenzeLogging.noLogging();
@@ -256,6 +284,7 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
     private javax.swing.JButton buttonDone;
     private javax.swing.JComboBox comboAssignment;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel labelDirectory;
     private javax.swing.JLabel labelSaving;

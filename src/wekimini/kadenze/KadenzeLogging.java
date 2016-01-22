@@ -8,41 +8,50 @@ package wekimini.kadenze;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import javax.imageio.IIOException;
 import wekimini.GlobalSettings;
-import static wekimini.kadenze.KadenzeLogging.KadenzeAssignment.*;
+import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
 
 /**
  *
  * @author rebecca
  */
 public class KadenzeLogging {
-    protected static List<KadenzeListener> listenerList = new LinkedList<>();
-    private static KadenzeLogger logger = new KadenzeLogger();
-    private static boolean isCurrentlyLogging = false;
-    private static KadenzeAssignment currentAssignment = ASSIGNMENT1;
-    public static final String PROP_CURRENTASSIGNMENT1 = "currentAssignment1";
 
+    protected static List<KadenzeListener> listenerList = new LinkedList<>();
+    private static KadenzeLogger logger = new NoLogger();
+
+    private static boolean isCurrentlyLogging = false;
+
+    private static KadenzeAssignmentType currentAssignmentType = KadenzeAssignmentType.NONE;
+    //private static KadenzeAssignment currentAssignment = null;
+
+    public static final String PROP_CURRENT_ASSIGNMENT_TYPE = "currentAssignmentType";
+
+    //public static final KadenzeAssignment[] comboOptions = {ASSIGNMENT1, ASSIGNMENT2_PART1, ASSIGNMENT2_PART2};
+    //public static final String[] comboStrings = {"Assignment 1", "Assignment 2: Part 1", "Assignment 2: Part 2"};
     public static boolean isCurrentlyLogging() {
         return isCurrentlyLogging;
     }
+
     /**
-     * Get the value of currentAssignment1
+     * Get the value of currentAssignment
      *
-     * @return the value of currentAssignment1
+     * @return the value of currentAssignment
      */
-    public static KadenzeAssignment getCurrentAssignment() {
-        return currentAssignment;
+    public static KadenzeAssignmentType getCurrentAssignmentType() {
+        return currentAssignmentType;
     }
 
     /**
-     * Set the value of currentAssignment1
+     * Set the value of currentAssignment
      *
-     * @param currentAssignment1 new value of currentAssignment1
+     * @param currentAssignment new value of currentAssignment
      */
-    private static void setCurrentAssignment(KadenzeAssignment newAssignment) {
-        notifyAssignmentChangeListeners(newAssignment);
+    private static void setCurrentAssignmentType(KadenzeAssignmentType newAssignmentType) {
+        notifyAssignmentChangeListeners(newAssignmentType);
     }
-    
+
     public static void addListener(KadenzeListener l) {
         listenerList.add(l);
     }
@@ -51,95 +60,81 @@ public class KadenzeLogging {
         listenerList.remove(l);
     }
 
-    private static void notifyAssignmentChangeListeners(KadenzeAssignment newAssignment) {
+    private static void notifyAssignmentChangeListeners(KadenzeAssignmentType newAssignmentType) {
         for (KadenzeListener l : listenerList) {
-            l.assignmentChanged(newAssignment);
+            l.assignmentChanged(newAssignmentType);
         }
     }
-    
-    private static void notifyAssignmentStartedListeners(KadenzeAssignment newAssignment) {
+
+    private static void notifyAssignmentStartedListeners(KadenzeAssignmentType newAssignmentType) {
         for (KadenzeListener l : listenerList) {
-            l.assignmentStarted(newAssignment);
+            l.assignmentStarted(newAssignmentType);
         }
     }
-    
+
     private static void notifyAssignmentStoppedListeners() {
         for (KadenzeListener l : listenerList) {
             l.assignmentStopped();
         }
     }
 
-    public static String submitAssignment() throws IOException {
-        //try {
+    public static String createZipForAssignment() throws IOException {
+        if (currentAssignmentType == KadenzeAssignmentType.NONE) {
+            throw new IIOException("Error: Not currently logging, cannot submit");
+        }
         logger.flush();
         String filename = logger.createZip();
-        //} 
         return filename;
     }
-    
-    public enum KadenzeAssignment {
-        ASSIGNMENT1,
-        ASSIGNMENT2_PART1,
-        ASSIGNMENT2_PART2
-    }
-    
-    public static final KadenzeAssignment[] comboOptions = {ASSIGNMENT1, ASSIGNMENT2_PART1, ASSIGNMENT2_PART2};
-    public static final String[] comboStrings = {"Assignment 1", "Assignment 2: Part 1", "Assignment 2: Part 2"};
-    
-    public static void startLoggingForAssignment(KadenzeAssignment a) throws IOException {
-        String dir = GlobalSettings.getInstance().getKadenzeSaveLocation();
-        /*String assignmentDir, suffix;
-      
-        switch (a) {
-            case ASSIGNMENT1:
-                assignmentDir = "assignment1";
-                suffix = "1";
-                break;
-            case ASSIGNMENT2_PART1: 
-                assignmentDir = "assignment2";
-                suffix = "2Part1";
-                break;
-            case ASSIGNMENT2_PART2:
-                assignmentDir = "assignment2";
-                suffix = "2Part2";
-                break;
-            default:
-                assignmentDir = "tmp";
-                suffix = "";     
-        } 
-        String myAssignmentDir = dir + File.separator + assignmentDir + File.separator; */
 
+    //TODO: Make sure you can't do this while WEkinator is running!
+    public static void startLoggingForAssignment(KadenzeAssignmentType a) throws IOException {
+        String dir = GlobalSettings.getInstance().getKadenzeSaveLocation();
         if (isCurrentlyLogging) {
-            if (a == currentAssignment) {
+            if (a == currentAssignmentType) {
                 getLogger().sameAssignmentRequested(a);
+                return;
             } else {
-                getLogger().switchToAssignment(dir, a);
-                currentAssignment = a;
-                notifyAssignmentChangeListeners(currentAssignment);
+                getLogger().closeLog();
+                try {
+                    logger = KadenzeAssignment.getLoggerForAssignmentType(currentAssignmentType);
+                } catch (Exception ex) {
+                    throw new IOException("Could not get logger for assignment " + KadenzeAssignment.getReadableName(a));
+                }
+                currentAssignmentType = a;
+                logger.beginLog(dir, a);
+                notifyAssignmentChangeListeners(currentAssignmentType);
             }
         } else {
+            try {
+                logger = KadenzeAssignment.getLoggerForAssignmentType(a);
+            } catch (Exception ex) {
+                throw new IOException("Could not get logger for assignment " + KadenzeAssignment.getReadableName(a));
+            }
+            currentAssignmentType = a;
             logger.beginLog(dir, a);
-            currentAssignment = a;
             isCurrentlyLogging = true;
-            notifyAssignmentStartedListeners(currentAssignment);
+            notifyAssignmentStartedListeners(currentAssignmentType);
         }
     }
-    
+
     public static void noLogging() {
-        //ERROR: NOt implemented yet!
-        System.out.println("ERROR: NO LOGGING NOT IMPLEMENTED YET");
-        isCurrentlyLogging = false;
-        notifyAssignmentStoppedListeners();
+        logger = new NoLogger();
+        currentAssignmentType = KadenzeAssignmentType.NONE;
+        if (isCurrentlyLogging) {
+            isCurrentlyLogging = false;
+            notifyAssignmentStoppedListeners();
+        }
     }
-    
+
     public static KadenzeLogger getLogger() {
         return logger;
     }
-    
+
     public interface KadenzeListener {
-        public void assignmentChanged(KadenzeAssignment ka);
-        public void assignmentStarted(KadenzeAssignment ka);
+        public void assignmentChanged(KadenzeAssignmentType ka);
+        public void assignmentStarted(KadenzeAssignmentType ka);
         public void assignmentStopped();
     }
-    
+
 }

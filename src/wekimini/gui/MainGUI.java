@@ -27,6 +27,8 @@ import wekimini.Wekinator;
 import wekimini.WekinatorFileData;
 import wekimini.dtw.gui.DtwEditorFrame;
 import wekimini.dtw.gui.DtwLearningPanel;
+import wekimini.kadenze.KadenzeAssignment;
+import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.dtw.DtwModel;
 
@@ -111,12 +113,12 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
             //This is called when part changes as well
             @Override
-            public void assignmentChanged(KadenzeLogging.KadenzeAssignment ka) {
+            public void assignmentChanged(KadenzeAssignmentType ka) {
                   updateKadenzeMenus();
             }
 
             @Override
-            public void assignmentStarted(KadenzeLogging.KadenzeAssignment ka) {
+            public void assignmentStarted(KadenzeAssignmentType ka) {
             }
 
             @Override
@@ -127,17 +129,18 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }
 
     private void addKadenzeMenus() {
-        KadenzeLogging.KadenzeAssignment ka = KadenzeLogging.getCurrentAssignment();
-        if (ka == KadenzeLogging.KadenzeAssignment.ASSIGNMENT1) {
+        KadenzeAssignmentType ka = KadenzeLogging.getCurrentAssignmentType();
+        if (ka == KadenzeAssignmentType.ASSIGNMENT1) {
             //Don't need any sub-menus
             kadenzeMenuItems = new JMenuItem[2];
-            JMenuItem k1 = new JMenuItem("Doing assignment 1");
+            JMenuItem k1 = new JMenuItem("Doing Assignment 1, Part 1A");
             k1.setEnabled(false);
             menuKadenze.add(k1);
             kadenzeMenuItems[0] = k1;
             
             JMenuItem k2 = new JMenuItem("Create Kadenze Assignment 1 submission");
             k2.addActionListener(new java.awt.event.ActionListener() {
+                @Override
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     createAssignmentSubmission();
                 }
@@ -151,8 +154,8 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     
     //Called when part changed or assignment stopped
     private void updateKadenzeMenus() {
-        KadenzeLogging.KadenzeAssignment ka = KadenzeLogging.getCurrentAssignment();
-        if (ka == KadenzeLogging.KadenzeAssignment.ASSIGNMENT1) {
+        KadenzeAssignmentType ka = KadenzeLogging.getCurrentAssignmentType();
+        if (ka == KadenzeAssignmentType.ASSIGNMENT1) {
             if (KadenzeLogging.isCurrentlyLogging()) {
                 kadenzeMenuItems[1].setEnabled(true);
             } else {
@@ -165,10 +168,11 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     
     private void createAssignmentSubmission() {
         try {
-            String zipped = KadenzeLogging.submitAssignment();
+            String zipped = KadenzeLogging.createZipForAssignment();
             Util.showPrettyInfoPane(this, "Your assignment is done! Please submit file " + zipped, "Success!");
         } catch (Exception ex) {
-            Util.showPrettyErrorPane(this, "Could not zip file. Please zip your assignment1 (or assignment2, etc.) directory manually.");
+            String dir = KadenzeLogging.getLogger().getCurrentLoggingDirectory();
+            Util.showPrettyErrorPane(this, "Could not zip file. Please zip your " + dir + " directory manually.");
         }
     }
     

@@ -27,7 +27,7 @@ import javax.swing.event.ChangeListener;
 import wekimini.gui.About;
 import wekimini.gui.InitInputOutputFrame;
 import wekimini.gui.Preferences;
-import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.Assignment12Logger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.kadenze.KadenzePromptFrame;
 import wekimini.util.Util;

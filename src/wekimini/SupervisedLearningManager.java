@@ -22,7 +22,7 @@ import javax.swing.event.ChangeListener;
 import org.jdesktop.swingworker.SwingWorker;
 import weka.core.Instances;
 import weka.core.Instance;
-import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.Assignment12Logger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
@@ -239,7 +239,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     public void startRecording() {
         numExamplesThisRound = 0;
-       // KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.SUPERVISED_RECORD_START);
+       // KadenzeLogging.getLogger().logEvent(w, Assignment12Logger.KEvent.SUPERVISED_RECORD_START);
         KadenzeLogging.getLogger().supervisedLearningRecordStarted(w);
         setRecordingRound(recordingRound+1);
         setRecordingState(RecordingState.RECORDING);
@@ -272,7 +272,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     public void cancelTraining() {
         if (learningState == LearningState.TRAINING) {
-            KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.TRAIN_CANCEL);
+            KadenzeLogging.getLogger().logEvent(w, Assignment12Logger.KEvent.TRAIN_CANCEL);
             w.getTrainingRunner().cancel();
             //trainingWorker.cancel(true);
         }
@@ -910,7 +910,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     }
 
     public void buildAll() {
-        KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.TRAIN_START);
+        KadenzeLogging.getLogger().logEvent(w, Assignment12Logger.KEvent.TRAIN_START);
         //Launch training threads & get notified ...        
         synchronized (this) {
             List<Instances> data = new ArrayList<>(paths.size());
