@@ -1056,17 +1056,17 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
     private void updateNumOutputsOption() {
        int index = comboOutputType.getSelectedIndex();
-        CardLayout layout = (CardLayout) panelOutputTypes.getLayout();
+       CardLayout layout = (CardLayout) panelOutputTypes.getLayout();
 
         if (index == COMBO_REGRESSION_INDEX || index == COMBO_CLASSIFICATION_INDEX) {
-            fieldNumOutputs.setText(Integer.toString(lastNumOutputs));
+          //  fieldNumOutputs.setText(Integer.toString(lastNumOutputs));
             fieldNumOutputs.setEnabled(true);
         } else {
-            try {
+           /* try {
                 lastNumOutputs = Integer.parseInt(fieldNumOutputs.getText());
             } catch (NumberFormatException ex) {
                 lastNumOutputs = 1;
-            }
+            } */
             fieldNumOutputs.setText("1");
             fieldNumOutputs.setEnabled(false);
         }
