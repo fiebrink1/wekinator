@@ -46,8 +46,7 @@ public class ModelLoader {
             return LinearRegressionModel.readFromInputStream(is);
         } else if (c == DecisionStumpModel.class)  {
             return DecisionStumpModel.readFromInputStream(is);
-        }
-        else if (c == NaiveBayesModel.class)  {
+        } else if (c == NaiveBayesModel.class)  {
             return NaiveBayesModel.readFromInputStream(is);
         } else {
             logger.log(Level.WARNING, "Could not find input reader for class {0}", c);
