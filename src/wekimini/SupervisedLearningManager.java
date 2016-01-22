@@ -891,6 +891,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             return;
         }
         w.getDataManager().setOutputMissingForAll(whichPath);
+        KadenzeLogging.getLogger().examplesDeletedForModel(w, whichPath);
     }
 
     //Currently coming from Path GUI (row) - should NOT be called when new output is computed!

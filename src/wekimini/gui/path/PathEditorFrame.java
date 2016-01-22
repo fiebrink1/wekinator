@@ -20,6 +20,8 @@ import wekimini.Path;
 import wekimini.Wekinator;
 import wekimini.gui.path.ModelEditorFrame.ModelBuilderReceiver;
 import wekimini.gui.path.OutputEditFrame.OutputEditReceiver;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.Model;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCNumericOutput;
@@ -538,6 +540,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         } else {
             logger.log(LoggingManager.USER_INFO, m.getModelDescription());
         }
+        KadenzeLogging.getLogger().logModelPrintedToConsole(w, p);
     }//GEN-LAST:event_buttonPrintToConsoleActionPerformed
 
     /**

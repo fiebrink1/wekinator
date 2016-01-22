@@ -462,13 +462,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     private void showEvaluationWindow() {
        if (modelEvaluationFrame == null) {
-            modelEvaluationFrame = new ModelEvaluationFrame(w.getOutputManager().getOutputGroup().getOutputNames(), w);;
+            modelEvaluationFrame = new ModelEvaluationFrame(w.getOutputManager().getOutputGroup().getOutputNames(), w);
             modelEvaluationFrame.setVisible(true);
 
             
             Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
                 @Override
                 public void callMe() {
+                    System.out.println("Setting to null");
                     modelEvaluationFrame = null;
                 }
             };    

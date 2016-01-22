@@ -15,6 +15,7 @@ import javax.swing.JComponent;
 import javax.swing.JToggleButton;
 import wekimini.ConnectsInputsToOutputs.InputOutputConnectionsListener;
 import wekimini.Wekinator;
+import wekimini.kadenze.KadenzeLogging;
 
 /**
  *
@@ -239,9 +240,11 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        boolean[][] oldConnections = w.getLearningManager().getConnectionMatrix();
         boolean[][] c = gridPanel.getConnectionsFromForm();
         if (gridPanel.checkValid(c)) {
             w.getLearningManager().updateInputOutputConnections(c);
+            KadenzeLogging.getLogger().selectedFeatures(w, oldConnections, c);
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
             this.dispose();
         }

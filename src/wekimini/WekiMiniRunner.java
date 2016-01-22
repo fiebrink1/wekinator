@@ -141,6 +141,7 @@ public final class WekiMiniRunner {
 
                 try {
                     Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
+                    KadenzeLogging.getLogger().newProjectStarted(w);
                     InitInputOutputFrame f = new InitInputOutputFrame(w);
                     f.setVisible(true);
                     wekinatorCurrentMainFrames.put(w, f);

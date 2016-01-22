@@ -21,6 +21,8 @@ import wekimini.learning.ModelEvaluator.EvaluationResultsReceiver;
 import wekimini.Path;
 import wekimini.SupervisedLearningManager.LearningState;
 import wekimini.Wekinator;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.util.Util;
 
 /**

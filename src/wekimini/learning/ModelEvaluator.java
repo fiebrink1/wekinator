@@ -23,6 +23,7 @@ import weka.core.Instances;
 import wekimini.LearningModelBuilder;
 import wekimini.Path;
 import wekimini.Wekinator;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.util.Util;
 
 /**
@@ -156,7 +157,7 @@ public class ModelEvaluator {
 
     public void setEvalStatus(EvaluationStatus evalStatus) {
         EvaluationStatus oldEvalStatus = this.evaluationStatus;
-        this.evaluationStatus = evaluationStatus;
+        this.evaluationStatus = evalStatus;
         propertyChangeSupport.firePropertyChange(PROP_PROGRESS, oldEvalStatus, evaluationStatus);
     }
     
@@ -219,6 +220,11 @@ public class ModelEvaluator {
                                  result = dFormat.format(eval.pctCorrect()) + "%"; //WON"T WORK FOR NN
                             } else {
                                 result = dFormat.format(eval.errorRate()) + " (RMS)";
+                            }
+                            if (!isTraining) {
+                                KadenzeLogging.getLogger().crossValidationComputed(w, i, numFolds, result);
+                            } else {
+                                KadenzeLogging.getLogger().trainingAccuracyComputed(w, i, result);
                             }
                             setResults(i, result);  
                             finishedModel(i, result);

@@ -16,6 +16,8 @@ import java.util.logging.Logger;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 import wekimini.Path.PathAndDataLoader;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.dtw.DtwModel;
 import wekimini.osc.OSCInputGroup;
 import wekimini.osc.OSCOutputGroup;
@@ -104,7 +106,6 @@ public class WekinatorSaver {
         }
     }
 
-    //XXX Fix saving for DTW
     private static void saveModels(File projectDir, Wekinator w) throws IOException {
         String directory = projectDir + modelsAppend;
         w.getLearningManager().saveModels(directory, w);
@@ -126,6 +127,7 @@ public class WekinatorSaver {
         }
         String filename = projectDir + File.separator + name + "." + WekinatorFileData.FILENAME_EXTENSION;
         wfd.writeToFile(filename);
+        KadenzeLogging.getLogger().projectSaved(w, wfd.getProjectName());
     }
 
     private static void createProjectFiles(File f) throws SecurityException {
@@ -192,6 +194,7 @@ public class WekinatorSaver {
 
     private static Wekinator instantiateTemporalWekinator(WekinatorFileData wfd, OSCInputGroup ig, OSCOutputGroup og, String projectDir) throws IOException {
         Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
+        KadenzeLogging.getLogger().loadedFromFile(w, wfd.getProjectName());
         w.setProjectLocation(projectDir);
         w.setHasSaveLocation(true);
         wfd.applySettings(w);
@@ -209,6 +212,7 @@ public class WekinatorSaver {
     //TODO: XXX WON"T WORK ANYMORE: NEED TO SET LEARNING TYPE HERE!
     private static Wekinator instantiateSupervisedWekinator(WekinatorFileData wfd, OSCInputGroup ig, OSCOutputGroup og, Instances data, List<Path> tempPaths, String projectDir) throws IOException {
         Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
+        KadenzeLogging.getLogger().loadedFromFile(w, wfd.getProjectName());
         w.setProjectLocation(projectDir);
         w.setHasSaveLocation(true);
         wfd.applySettings(w);

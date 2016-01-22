@@ -8,6 +8,7 @@ package wekimini.kadenze;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import wekimini.LearningModelBuilder;
+import wekimini.Path;
 import wekimini.Wekinator;
 import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
 import wekimini.osc.OSCOutput;
@@ -27,7 +28,7 @@ public interface KadenzeLogger {
     public static enum KEvent {
         TRAIN_START, //X
         TRAIN_CANCEL, //X
-        RUN_START,
+        RUN_START, //X
         RUN_STOP, //X
         SUPERVISED_DELETE_ALL_EXAMPLES, //X
         DTW_DELETE_ALL_EXAMPLES,
@@ -36,8 +37,7 @@ public interface KadenzeLogger {
         RANDOMIZE,//X
         SUPERVISED_DATA_VIEWED,//X
         DTW_DATA_VIEWED,
-        SUPERVISED_MODEL_DISPLAYED_IN_CONSOLE,
-        PROJECT_CLOSED
+        PROJECT_CLOSED //Not called when AppleQ, but whatev
     }
     
     // public void beginLog(String assignmentDir, String assignmentSuffix) throws IOException {
@@ -47,7 +47,7 @@ public interface KadenzeLogger {
 
     String createZip() throws FileNotFoundException, IOException;
 
-    void crossValidationComputed(Wekinator w, int modelNum, int numFolds, double val);
+    void crossValidationComputed(Wekinator w, int modelNum, int numFolds, String val);
 
     void deleteLastRecordingRound(Wekinator w, int deletedRound);
 
@@ -63,15 +63,11 @@ public interface KadenzeLogger {
 
     void flush();
 
-    void learningAlgorithmChanged(Wekinator w, int modelNum);
-
     void logEvent(Wekinator w, KEvent ke);
 
     void logVersionNumberAndDate();
 
     void newProjectStarted(Wekinator w);
-
-    void projectLoaded(Wekinator w, String projectName);
 
     void projectSaved(Wekinator w, String projectName);
 
@@ -79,8 +75,8 @@ public interface KadenzeLogger {
 
     void sameAssignmentRequested(KadenzeAssignmentType a);
 
-    void selectedFeatures(Wekinator w, boolean[] matrix);
-
+    void selectedFeatures(Wekinator w, boolean[][] oldConnections, boolean[][] newConnections);
+    
     void supervisedLearningRecordStarted(Wekinator w);
 
     void supervisedLearningRecordStopped(Wekinator w);
@@ -95,6 +91,10 @@ public interface KadenzeLogger {
 
     void supervisedTrainFinished(Wekinator w) throws IOException;
 
-    void trainingAccuracyComputed(Wekinator w, int modelNum, double val);
+    void trainingAccuracyComputed(Wekinator w, int modelNum, String val);
+    
+    void loadedFromFile(Wekinator w, String projectName);
+    
+    void logModelPrintedToConsole(Wekinator w, Path p);
     
 }

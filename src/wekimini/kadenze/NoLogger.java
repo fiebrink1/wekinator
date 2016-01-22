@@ -8,6 +8,7 @@ package wekimini.kadenze;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import wekimini.LearningModelBuilder;
+import wekimini.Path;
 import wekimini.Wekinator;
 import wekimini.osc.OSCOutput;
 
@@ -27,7 +28,7 @@ public class NoLogger implements KadenzeLogger {
     }
 
     @Override
-    public void crossValidationComputed(Wekinator w, int modelNum, int numFolds, double val) {
+    public void crossValidationComputed(Wekinator w, int modelNum, int numFolds, String val) {
     }
 
     @Override
@@ -59,10 +60,6 @@ public class NoLogger implements KadenzeLogger {
     }
 
     @Override
-    public void learningAlgorithmChanged(Wekinator w, int modelNum) {
-    }
-
-    @Override
     public void logEvent(Wekinator w, KEvent ke) {
     }
 
@@ -75,21 +72,13 @@ public class NoLogger implements KadenzeLogger {
     } 
 
     @Override
-    public void projectLoaded(Wekinator w, String projectName) {
-    }
-
-    @Override
     public void projectSaved(Wekinator w, String projectName) {
     }
 
     @Override
     public void reAddLastRecordingRound(Wekinator w, int num) {
     }
-
-    @Override
-    public void selectedFeatures(Wekinator w, boolean[] matrix) {
-    }
-
+    
     @Override
     public void supervisedLearningRecordStarted(Wekinator w) {
     }
@@ -111,7 +100,7 @@ public class NoLogger implements KadenzeLogger {
     }
 
     @Override
-    public void trainingAccuracyComputed(Wekinator w, int modelNum, double val) {
+    public void trainingAccuracyComputed(Wekinator w, int modelNum, String val) {
     }
 
     @Override
@@ -133,6 +122,20 @@ public class NoLogger implements KadenzeLogger {
 
     @Override
     public void logPathUpdated(Wekinator w, int which, OSCOutput oldOutput, OSCOutput newOutput, LearningModelBuilder oldModelBuilder, LearningModelBuilder newModelBuilder, String[] selectedInputs, String[] selectedInputNames) {
+
+    }
+
+    @Override
+    public void loadedFromFile(Wekinator w, String projectName) {
+    }
+
+    @Override
+    public void selectedFeatures(Wekinator w, boolean[][] oldConnections, boolean[][] newConnections) {
+
+    }
+
+    @Override
+    public void logModelPrintedToConsole(Wekinator w, Path p) {
 
     }
 }

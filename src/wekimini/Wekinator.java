@@ -260,7 +260,7 @@ public class Wekinator {
                 }
             }
         });
-        KadenzeLogging.getLogger().newProjectStarted(this);
+       // KadenzeLogging.getLogger().newProjectStarted(this);
     }
 
     private void learningTypeChanged(LearningManager.LearningType learningType) {
