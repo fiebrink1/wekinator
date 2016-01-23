@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import wekimini.DtwLearningManager;
 import wekimini.LearningManager;
 import wekimini.Path;
 import wekimini.WekiMiniRunner.Closeable;
@@ -249,7 +248,8 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             String zipped = KadenzeLogging.createZipForAssignment();
             Util.showPrettyInfoPane(this, "Your assignment is done! Please submit file " + zipped, "Success!");
         } catch (Exception ex) {
-            String dir = KadenzeLogging.getLogger().getCurrentLoggingDirectory();
+            //String dir = KadenzeLogging.getLogger().getCurrentLoggingDirectory();
+            String dir = KadenzeLogging.getLogger().getZipDirectoryNameForAssignment();
             Util.showPrettyErrorPane(this, "Could not zip file. Please zip your " + dir + " directory manually.");
         }
     }

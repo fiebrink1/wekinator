@@ -25,6 +25,8 @@ public interface KadenzeLogger {
 
     public void logPathUpdated(Wekinator w, int which, OSCOutput oldOutput, OSCOutput newOutput, LearningModelBuilder oldModelBuilder, LearningModelBuilder newModelBuilder, String[] selectedInputs, String[] selectedInputNames);
 
+    public String getZipDirectoryNameForAssignment();
+
     public static enum KEvent {
         TRAIN_START, //X
         TRAIN_CANCEL, //X

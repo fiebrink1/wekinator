@@ -142,4 +142,9 @@ public class NoLogger implements KadenzeLogger {
     @Override
     public void logStartRun(Wekinator w) {
     }
+
+    @Override
+    public String getZipDirectoryNameForAssignment() {
+        return "";
+    }
 }
