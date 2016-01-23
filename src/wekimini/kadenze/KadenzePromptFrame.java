@@ -24,16 +24,26 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
 
     private final String[] comboOptions
             = {"No, just exploring or playing",
-                "Assignment 1, Part 1A",
-                "Assignment 2, Part 1",
-                "Assignment 2, Part 2"
+                "Assignment 1",
+                "Assignment 2, Part 1A",
+                "Assignment 2, Part 1B",
+                "Assignment 2, Part 1C",
+                "Assignment 2, Part 1D",
+                "Assignment 2, Part 2",
+                "Assignment 2, Part 3A",
+                "Assignment 2, Part 3B"
             };
 
     private final KadenzeAssignmentType[] assignmentTypes
             = {KadenzeAssignmentType.NONE,
                 KadenzeAssignmentType.ASSIGNMENT1,
-                KadenzeAssignmentType.ASSIGNMENT2_PART1,
-                KadenzeAssignmentType.ASSIGNMENT2_PART2
+                KadenzeAssignmentType.ASSIGNMENT2_PART1A,
+                KadenzeAssignmentType.ASSIGNMENT2_PART1B,
+                KadenzeAssignmentType.ASSIGNMENT2_PART1C,
+                KadenzeAssignmentType.ASSIGNMENT2_PART1D,
+                KadenzeAssignmentType.ASSIGNMENT2_PART2,
+                KadenzeAssignmentType.ASSIGNMENT2_PART3A,
+                KadenzeAssignmentType.ASSIGNMENT2_PART3B
             };
 
     /**

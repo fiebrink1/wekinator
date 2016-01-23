@@ -138,4 +138,8 @@ public class NoLogger implements KadenzeLogger {
     public void logModelPrintedToConsole(Wekinator w, Path p) {
 
     }
+
+    @Override
+    public void logStartRun(Wekinator w) {
+    }
 }

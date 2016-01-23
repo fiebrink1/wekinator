@@ -46,9 +46,9 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
     private final Wekinator w;
     private boolean closeable = true; //flaseif this is the last window open
-    
+    private static final Logger logger = Logger.getLogger(MainGUI.class.getName());
     private JMenuItem[] kadenzeMenuItems = new JMenuItem[0];
-    
+
     /**
      * Creates new form MainGUI
      */
@@ -57,7 +57,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         if (type == LearningManager.LearningType.INITIALIZATION) {
             throw new IllegalStateException("GUI can only be created for Wekinator whose learning type is known");
         }
-        
+
         this.w = w;
         setGUIForWekinator(type);
         this.addWindowListener(new WindowAdapter() {
@@ -69,12 +69,12 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                 if (option == JOptionPane.YES_OPTION) {
                     finishUp();
                 }
-                
+
             }
         });
     }
 
-    private void finishUp() {        
+    private void finishUp() {
         KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.PROJECT_CLOSED);
         KadenzeLogging.getLogger().flush(); //Imperfect: Log won't be closed if this is last GUI and we haven't submitted yet...
         w.close();
@@ -90,34 +90,34 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                 wekinatorPropertyChanged(evt);
             }
         });
-        
+
         if (type == LearningManager.LearningType.SUPERVISED_LEARNING) {
             initializeForSupervisedLearning();
         } else if (type == LearningManager.LearningType.TEMPORAL_MODELING) {
             initializeForTemporalModeling();
         }
-        
+
         initKadenzeMenu();
-        
+
     }
 
     private void initKadenzeMenu() {
         menuKadenze.setVisible(WekiMiniRunner.isKadenze());
-        if (! WekiMiniRunner.isKadenze()) {
+        if (!WekiMiniRunner.isKadenze()) {
             return;
         }
-        
+
         //Add sub-menus here
         addKadenzeMenus();
         updateKadenzeMenus();
-        
+
         //Add listeners
         KadenzeLogging.addListener(new KadenzeLogging.KadenzeListener() {
 
             //This is called when part changes as well
             @Override
             public void assignmentChanged(KadenzeAssignmentType ka) {
-                  updateKadenzeMenus();
+                updateKadenzeMenus();
             }
 
             @Override
@@ -128,19 +128,21 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             public void assignmentStopped() {
                 updateKadenzeMenus();
             }
-        });        
+        });
     }
 
     private void addKadenzeMenus() {
         KadenzeAssignmentType ka = KadenzeLogging.getCurrentAssignmentType();
-        if (ka == KadenzeAssignmentType.ASSIGNMENT1) {
+        int whichMainAssignment = KadenzeAssignment.getAssignmentNumber(ka);
+
+        if (whichMainAssignment == 1) {
             //Don't need any sub-menus
             kadenzeMenuItems = new JMenuItem[2];
             JMenuItem k1 = new JMenuItem("Doing Assignment 1, Part 1A");
             k1.setEnabled(false);
             menuKadenze.add(k1);
             kadenzeMenuItems[0] = k1;
-            
+
             JMenuItem k2 = new JMenuItem("Create Kadenze Assignment 1 submission");
             k2.addActionListener(new java.awt.event.ActionListener() {
                 @Override
@@ -150,25 +152,98 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             });
             menuKadenze.add(k2);
             kadenzeMenuItems[1] = k2;
+        } else if (whichMainAssignment == 2) {
+            makeKadenzeAssignment2Menu(ka);
         } else {
-            System.out.println("NOT IMPLEMENTED YET");
+            logger.log(Level.WARNING, "Unknown assignment :" + ka);
         }
     }
-    
+
+    private void makeKadenzeAssignment2Menu(final KadenzeAssignmentType ka) {
+        kadenzeMenuItems = new JMenuItem[8];
+        int subPart = KadenzeAssignment.getAssignmentSubPart(ka); //1 through 7
+        for (int i = 0; i < 7; i++) {
+            String s;
+            if (i == (subPart - 1)) {
+                s = "Doing ";
+            } else {
+                s = "Start ";
+            }
+            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(2, i+1));
+            kadenzeMenuItems[i] = new JMenuItem(s);
+            if (i == (subPart - 1)) {
+                kadenzeMenuItems[i].setEnabled(false);
+            }
+            /* kadenzeMenuItems[i].addActionListener(new java.awt.event.ActionListener() {
+             @Override
+             public void actionPerformed(java.awt.event.ActionEvent evt) {
+             switchToAssignment(KadenzeAssignment.getAssignmentNumber(ka), i);
+             }
+             }); */
+            menuKadenze.add(kadenzeMenuItems[i]);
+        }
+
+        addKadenzeListener(kadenzeMenuItems[0], KadenzeAssignmentType.ASSIGNMENT2_PART1A);
+        addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT2_PART1B);
+        addKadenzeListener(kadenzeMenuItems[2], KadenzeAssignmentType.ASSIGNMENT2_PART1C);
+        addKadenzeListener(kadenzeMenuItems[3], KadenzeAssignmentType.ASSIGNMENT2_PART1D);
+        addKadenzeListener(kadenzeMenuItems[4], KadenzeAssignmentType.ASSIGNMENT2_PART2);
+        addKadenzeListener(kadenzeMenuItems[5], KadenzeAssignmentType.ASSIGNMENT2_PART3A);
+        addKadenzeListener(kadenzeMenuItems[6], KadenzeAssignmentType.ASSIGNMENT2_PART3B);
+
+        kadenzeMenuItems[7] = new JMenuItem("Create Kadenze Assignment 2 submission");
+        kadenzeMenuItems[7].addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createAssignmentSubmission();
+            }
+        });
+        menuKadenze.add(kadenzeMenuItems[7]);
+    }
+
+    private void addKadenzeListener(final JMenuItem kadenzeMenuItem, final KadenzeAssignmentType kadenzeAssignmentType) {
+        kadenzeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                switchToAssignment(kadenzeAssignmentType);
+            }
+        });
+    }
+
+    private void switchToAssignment(KadenzeAssignmentType t) {
+        try {
+            KadenzeLogging.startLoggingForAssignment(t);
+        } catch (IOException ex) {
+            //Can we give a better error?
+            Util.showPrettyErrorPane(this, "Error encountered in creating log file! Please ensure that your Kadenze log location is writable, and that no other copies of Wekinator are also trying to log there.");
+        }
+    }
+
     //Called when part changed or assignment stopped
+    //TODO:
     private void updateKadenzeMenus() {
         KadenzeAssignmentType ka = KadenzeLogging.getCurrentAssignmentType();
-        if (ka == KadenzeAssignmentType.ASSIGNMENT1) {
+        int which = KadenzeAssignment.getAssignmentNumber(ka);
+        if (which == 1) {
             if (KadenzeLogging.isCurrentlyLogging()) {
                 kadenzeMenuItems[1].setEnabled(true);
             } else {
                 kadenzeMenuItems[1].setEnabled(false);
             }
-        } else {
+        } else if (which == 2) {
+            int subpart = KadenzeAssignment.getAssignmentSubPart(ka);
+            for (int i= 0; i < 7; i++) {
+                if (subpart == (i+1)) {
+                    kadenzeMenuItems[i].setEnabled(false);
+                } else {
+                    kadenzeMenuItems[i].setEnabled(true);
+                }
+            }
+        }else {
             System.out.println("NOT IMPLEMENTED YET");
         }
     }
-    
+
     private void createAssignmentSubmission() {
         try {
             String zipped = KadenzeLogging.createZipForAssignment();
@@ -178,7 +253,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             Util.showPrettyErrorPane(this, "Could not zip file. Please zip your " + dir + " directory manually.");
         }
     }
-    
+
     private void wekinatorPropertyChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == Wekinator.PROP_PROJECT_NAME) {
             this.setTitle(w.getProjectName());
@@ -461,25 +536,23 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void showEvaluationWindow() {
-       if (modelEvaluationFrame == null) {
+        if (modelEvaluationFrame == null) {
             modelEvaluationFrame = new ModelEvaluationFrame(w.getOutputManager().getOutputGroup().getOutputNames(), w);
             modelEvaluationFrame.setVisible(true);
 
-            
             Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
                 @Override
                 public void callMe() {
                     System.out.println("Setting to null");
                     modelEvaluationFrame = null;
                 }
-            };    
+            };
             Util.callOnClosed(modelEvaluationFrame, callMe);
         } else {
             modelEvaluationFrame.toFront();
         }
     }
-    
-    
+
     public void showOutputTable() {
         if (w.getLearningManager().getLearningType() == LearningManager.LearningType.TEMPORAL_MODELING) {
             Util.showPrettyErrorPane(this, "Not yet implemented for DTW outputs");
@@ -489,10 +562,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             outputTableWindow = new OutputViewerTable(w);
             outputTableWindow.setVisible(true);
 
-           /* Util.callOnClosed(outputTableWindow, (Callable) () -> {
-                outputTableWindow = null;
-                return null;
-            }); */
+            /* Util.callOnClosed(outputTableWindow, (Callable) () -> {
+             outputTableWindow = null;
+             return null;
+             }); */
             Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
                 @Override
                 public void callMe() {
@@ -500,7 +573,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                 }
             };
             Util.callOnClosed(outputTableWindow, callMe);
-            
+
         } else {
             outputTableWindow.toFront();
         }
@@ -528,13 +601,12 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             inputMonitorFrame = new InputMonitor(w);
             inputMonitorFrame.setVisible(true);
 
-            
             Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
                 @Override
                 public void callMe() {
                     inputMonitorFrame = null;
                 }
-            };    
+            };
             Util.callOnClosed(inputMonitorFrame, callMe);
         } else {
             inputMonitorFrame.toFront();
@@ -547,14 +619,13 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             inputOutputConnectionsWindow.setVisible(true);
 
             //Problem: Won't call on button-triggered dispose...
-            
             Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
                 @Override
                 public void callMe() {
                     inputOutputConnectionsWindow = null;
                 }
-            }; 
-            
+            };
+
             Util.callOnClosed(inputOutputConnectionsWindow, callMe);
         } else {
             inputOutputConnectionsWindow.toFront();
@@ -650,7 +721,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         panelParent.removeAll();
         panelParent.add(learningPanel1);
     }
-    
+
     private void initializeForTemporalModeling() {
         panelParent.removeAll();
         dtwLearningPanel1 = new DtwLearningPanel(w);

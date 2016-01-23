@@ -28,7 +28,7 @@ public class KadenzeLogging {
 
     public static final String PROP_CURRENT_ASSIGNMENT_TYPE = "currentAssignmentType";
 
-    //public static final KadenzeAssignment[] comboOptions = {ASSIGNMENT1, ASSIGNMENT2_PART1, ASSIGNMENT2_PART2};
+    //public static final KadenzeAssignment[] comboOptions = {ASSIGNMENT1, ASSIGNMENT2_PART1A, ASSIGNMENT2_PART1B};
     //public static final String[] comboStrings = {"Assignment 1", "Assignment 2: Part 1", "Assignment 2: Part 2"};
     public static boolean isCurrentlyLogging() {
         return isCurrentlyLogging;

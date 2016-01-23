@@ -28,7 +28,7 @@ public interface KadenzeLogger {
     public static enum KEvent {
         TRAIN_START, //X
         TRAIN_CANCEL, //X
-        RUN_START, //X
+        //RUN_START, //X
         RUN_STOP, //X
         SUPERVISED_DELETE_ALL_EXAMPLES, //X
         DTW_DELETE_ALL_EXAMPLES,
@@ -39,6 +39,8 @@ public interface KadenzeLogger {
         DTW_DATA_VIEWED,
         PROJECT_CLOSED //Not called when AppleQ, but whatev
     }
+    
+    void logStartRun(Wekinator w);
     
     // public void beginLog(String assignmentDir, String assignmentSuffix) throws IOException {
     void beginLog(String parentDir, KadenzeAssignmentType a) throws IOException;
