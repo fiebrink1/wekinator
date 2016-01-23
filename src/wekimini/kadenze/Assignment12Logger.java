@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipOutputStream;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.filters.Filter;
 import wekimini.GlobalSettings;
 import static wekimini.InputManager.PROP_INPUTGROUP;
 import wekimini.LearningManager;
@@ -29,7 +32,10 @@ import wekimini.Path;
 import wekimini.SupervisedLearningManager;
 import wekimini.Wekinator;
 import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
+import wekimini.learning.ModelBuilder;
+import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCInputGroup;
+import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
 
@@ -49,6 +55,8 @@ public class Assignment12Logger implements KadenzeLogger {
     private String currentAssignmentDir = ""; //Directory for this assignment
     private int modelSetID = 1; //For choosing model xml file names
     private KadenzeAssignmentType currentAssignmentType;
+    private static final Logger logger = Logger.getLogger(Assignment12Logger.class.getName());
+    private boolean hasLoggedModelsInThisAssignment = false;
 
     @Override
     public void beginLog(String parentDir, KadenzeAssignment.KadenzeAssignmentType a) throws IOException {
@@ -67,6 +75,7 @@ public class Assignment12Logger implements KadenzeLogger {
 
         logVersionNumberAndDate();
         assignmentStarted(a);
+        hasLoggedModelsInThisAssignment = false;
     }
 
     private void doAssignmentSetup(KadenzeAssignmentType a) {
@@ -96,14 +105,14 @@ public class Assignment12Logger implements KadenzeLogger {
         }
     }
 
-    @Override
+    @Override //CloseLog called when AppleQ hit, whereas project closed called when window X hit
     public void closeLog() {
         logClose();
         pw.flush();
         pw.close();
     }
 
-    @Override
+    @Override //Add record mask TODO
     public void supervisedLearningRecordStarted(Wekinator w) {
         pw.println(ts() + "," + w.getID() + ",SUPERVISED_RECORD_START," + (w.getSupervisedLearningManager().getRecordingRound() + 1));
     }
@@ -120,11 +129,11 @@ public class Assignment12Logger implements KadenzeLogger {
 
     @Override
     public void newProjectStarted(final Wekinator w) {
-        //Possibly human-readable algorithms list here (esp if CV used, can partition by run)
         pw.println(ts() + "," + w.getID() + ",NEW_PROJECT_STARTED");
-        /*printInputNames(w);
-         printOutputNames(w);*/
-        //printModelInfo(w);
+        addListeners(w);
+    }
+
+    private void addListeners(final Wekinator w) {
         w.getInputManager().addPropertyChangeListener(new PropertyChangeListener() {
 
             @Override
@@ -154,31 +163,23 @@ public class Assignment12Logger implements KadenzeLogger {
                 }
             }
         });
+    }
 
+    @Override
+    public void loadedFromFile(Wekinator w, String projectName) {
+        pw.println(ts() + "," + w.getID() + ",PROJECT_LOADED," + projectName);
+        addListeners(w);
     }
 
     private void logLearningTypeStarted(final Wekinator w) {
         if (w.getLearningManager().getLearningType() == LearningManager.LearningType.SUPERVISED_LEARNING) {
             pw.println(ts() + "," + w.getID() + ",SUPERVISED_LEARNING_START");
-           /* w.getSupervisedLearningManager().add
-            w.getSupervisedLearningManager().addPathEditedListener(new SupervisedLearningManager.PathOutputTypeEditedListener() {
-                @Override
-                public void pathOutputTypeEdited(int which, Path newPath, Path oldPath) {
-                    logPathOutputTypeEdited(w, which, newPath, oldPath);
-                }
-            });*/
         } else if (w.getLearningManager().getLearningType() == LearningManager.LearningType.TEMPORAL_MODELING) {
             pw.println(ts() + "," + w.getID() + ",TEMPORAL_MODELING_START");
         } else {
             pw.println(ts() + "," + w.getID() + ",OTHER_MODEL_START");
         }
     }
-
-    
-    
-    /*private void logPathOutputTypeEdited(final Wekinator w, int which, Path newPath, Path oldPath) {
-        pw.println(ts() + "," + w.getID() + ",PATH_EDITED," + which + "," + newPath.getModelBuilder().getPrettyName());
-    } */
 
     private void logInputGroupUpdate(OSCInputGroup newG, int id) {
         StringBuilder sb = new StringBuilder();
@@ -199,6 +200,17 @@ public class Assignment12Logger implements KadenzeLogger {
     private void logOutputGroupUpdate(OSCOutputGroup newG, int id) {
         StringBuilder sb = new StringBuilder();
         sb.append(ts()).append(',').append(id).append(",OUTPUT_GROUP_UPDATE");
+        sb.append(",").append(newG.getNumOutputs());
+
+        for (int i = 0; i < newG.getNumOutputs(); i++) {
+            if (newG.getOutput(i) instanceof OSCNumericOutput) {
+                sb.append(',').append("N");
+            } else if (newG.getOutput(i) instanceof OSCClassificationOutput) {
+                sb.append(',').append("C");
+            } else {
+                sb.append(',').append("D");
+            }
+        }
 
         try {
             String[] ins = newG.getOutputNames();
@@ -212,21 +224,20 @@ public class Assignment12Logger implements KadenzeLogger {
         }
     }
 
-    private void printOutputNames(Wekinator w) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(ts()).append(",").append(w.getID()).append(",OUTPUT_NAMES_LIST");
-        try {
-            String[] outs = w.getOutputManager().getOutputGroup().getOutputNames();
-            for (String out : outs) {
-                sb.append(',').append(out);
-            }
-            pw.println(sb.toString());
-        } catch (Exception ex) {
-            sb.append("ERROR_ENCOUNTERED");
-            pw.println(sb.toString());
-        }
-    }
-
+    /* private void printOutputNames(Wekinator w) {
+     StringBuilder sb = new StringBuilder();
+     sb.append(ts()).append(",").append(w.getID()).append(",OUTPUT_NAMES_LIST");
+     try {
+     String[] outs = w.getOutputManager().getOutputGroup().getOutputNames();
+     for (String out : outs) {
+     sb.append(',').append(out);
+     }
+     pw.println(sb.toString());
+     } catch (Exception ex) {
+     sb.append("ERROR_ENCOUNTERED");
+     pw.println(sb.toString());
+     }
+     } */
     private void printModelInfo(Wekinator w) {
         StringBuilder sb = new StringBuilder();
         sb.append(ts()).append(",").append(w.getID()).append(",MODEL_INFO_LIST");
@@ -257,45 +268,58 @@ public class Assignment12Logger implements KadenzeLogger {
 
     @Override
     public void projectSaved(Wekinator w, String projectName) {
-
+        pw.println(ts() + "," + w.getID() + ",PROJECT_SAVED," + projectName);
     }
 
-    @Override
-    public void projectLoaded(Wekinator w, String projectName) {
-
-    }
-
-    @Override
+    @Override //Supervised learning only
     public void examplesDeletedForModel(Wekinator w, int modelNum) {
-
+        pw.println(ts() + "," + w.getID() + ",MODEL_EXAMPLES_DELETED," + modelNum);
     }
 
     @Override
     public void dtwGestureAdded(Wekinator w, int gestureNum) {
+        //TODO
+    }
+
+    //TODO
+    public void dtwExamplesDeletedForGesture() {
 
     }
 
-    @Override
-    public void learningAlgorithmChanged(Wekinator w, int modelNum) {
-        //Need info about what exactly changed:
-        //Algorihtm, parameters, etc.
-
-    }
-
-    @Override
-    public void crossValidationComputed(Wekinator w, int modelNum, int numFolds, double val) {
+    @Override //TODO
+    public void crossValidationComputed(Wekinator w, int modelNum, int numFolds, String val) {
         //Probably also need to output all model info & data here so we know what is being tested
         //(E.g., model params may have been changed since last rn, training data may have changed)
+        ModelBuilder mmb = w.getSupervisedLearningManager().getPaths().get(modelNum).getModelBuilder();
+        pw.println(ts() + "," + w.getID() + ",CROSS_VALIDATATION,MODEL_NUM=" + modelNum + ",NUM_FOLDS=" + numFolds + ",VAL=" + val + ",MODEL=" + mmb.toLogString());
     }
 
     @Override
-    public void trainingAccuracyComputed(Wekinator w, int modelNum, double val) {
-        //Same as CVal: Need to output all info we'd usually output for a run session
+    public void trainingAccuracyComputed(Wekinator w, int modelNum, String val) {
+        ModelBuilder mmb = w.getSupervisedLearningManager().getPaths().get(modelNum).getModelBuilder();
+        pw.println(ts() + "," + w.getID() + ",TRAIN_ACCURACY,MODEL_NUM=" + modelNum + ",VAL=" + val + ",MODEL=" + mmb.toLogString());
     }
 
     @Override
-    public void selectedFeatures(Wekinator w, boolean[] matrix) {
+    public void selectedFeatures(Wekinator w, boolean[][] oldConnections, boolean[][] newConnections) {
+        int numInputs = oldConnections.length;
+        int numOutputs = oldConnections[0].length;
+        pw.println(ts() + "," + w.getID() + ",NUM_IN=" + numInputs + ",NUM_OUT=" + numOutputs
+                + ",OLD=" + booleanMatrixToString(oldConnections)
+                + ",NEW=" + booleanMatrixToString(newConnections));
+    }
 
+    private String booleanMatrixToString(boolean[][] m) {
+        StringBuilder sb = new StringBuilder("{");
+        for (int i = 0; i < m.length; i++) {
+            sb.append('{');
+            for (int j = 0; j < m[i].length; j++) {
+                sb.append(m[i][j]).append(',');
+            }
+            sb.append("},");
+        }
+        sb.append("}");
+        return sb.toString();
     }
 
     @Override
@@ -305,30 +329,95 @@ public class Assignment12Logger implements KadenzeLogger {
         //Probably want good way of storing binary serialization data into XML as well
         //Want info about which models are currently run-enabled.
         List<Path> paths = w.getSupervisedLearningManager().getPaths();
-        pw.println(ts() + "," + w.getID() + ",TRAIN_FINISHED,NUM_MODELS=" + paths.size() + ",MODEL_SET=" + modelSetID);
+        Long t = ts();
+        pw.println(t + "," + w.getID() + ",TRAIN_FINISHED,NUM_MODELS=" + paths.size() + ",MODEL_SET=" + modelSetID);
         String baseName = "model_" + modelSetID + "_";
         int i = 0;
+        int numInputs = w.getInputManager().getNumInputs();
+        int numOutputs = w.getOutputManager().getOutputGroup().getNumOutputs();
+        int numMetaData = w.getDataManager().getNumMetaData();
         for (Path p : paths) {
             String f = currentAssignmentDir + baseName + i + ".xml";
-            pw.println(ts() + "," + w.getID() + ",MODEL_NUM=" + i + "," + baseName + i + ".xml");
+           // pw.println(t + "," + w.getID() + ",MODEL_NUM=" + i + "," + baseName + i + ".xml");
+            pw.println(t + "," + w.getID() + ",MODEL_NUM=" + i + "," + baseName + i + ".xml," + p.getModelBuilder().toLogString());
+
             p.writeToFile(f);
+
+            //Write to another file:
+            // int numInputs, int numOutputs, int numMetaData, Instances dummyInstances, Filter outputFilter) {
+            Instances dummyInstances = w.getDataManager().getDummyInstances();
+            String outputFilterString = w.getDataManager().getOutputFilterString(i);
+            LoadableInstanceMaker m;
+            try {
+                m = new LoadableInstanceMaker(numInputs, numOutputs, numMetaData, dummyInstances, outputFilterString);
+                String f2 = currentAssignmentDir + baseName + i + "_m.xml";
+                m.writeToFile(f2);
+            } catch (Exception ex) {
+                Logger.getLogger(Assignment12Logger.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+
+            i++;
+        }
+
+        GlobalSettings.getInstance().setIntValue("modelSetID", modelSetID);
+        modelSetID++;
+        hasLoggedModelsInThisAssignment = true;
+    }
+
+    //Call when these models are runnable but not logged in the current assignment
+    //e.g., have been loaded from a saved project.
+    //TODO: MUST SAVE MODEL LOADER HERE TOO!
+    private void logFirstRunInAssignmentWithNewModels(Wekinator w) throws IOException {
+        List<Path> paths = w.getSupervisedLearningManager().getPaths();
+        Long t = ts();
+        pw.println(t + "," + w.getID() + ",FIRST_ASSIGNMENT_MODEL_LOG,NUM_MODELS=" + paths.size() + ",MODEL_SET=" + modelSetID);
+        String baseName = "model_" + modelSetID + "_";
+        int i = 0;
+        int numInputs = w.getInputManager().getNumInputs();
+        int numOutputs = w.getOutputManager().getOutputGroup().getNumOutputs();
+        int numMetaData = w.getDataManager().getNumMetaData();
+        for (Path p : paths) {
+            String f = currentAssignmentDir + baseName + i + ".xml";
+            pw.println(t + "," + w.getID() + ",MODEL_NUM=" + i + "," + baseName + i + ".xml," + p.getModelBuilder().toLogString());
+            p.writeToFile(f);
+
+            //Write to another file:
+            // int numInputs, int numOutputs, int numMetaData, Instances dummyInstances, Filter outputFilter) {
+            Instances dummyInstances = w.getDataManager().getDummyInstances();
+            String outputFilterString = w.getDataManager().getOutputFilterString(i);
+            LoadableInstanceMaker m;
+            try {
+                m = new LoadableInstanceMaker(numInputs, numOutputs, numMetaData, dummyInstances, outputFilterString);
+                String f2 = currentAssignmentDir + baseName + i + "_m.xml";
+                m.writeToFile(f2);
+            } catch (Exception ex) {
+                Logger.getLogger(Assignment12Logger.class.getName()).log(Level.SEVERE, null, ex);
+            }
             i++;
         }
         GlobalSettings.getInstance().setIntValue("modelSetID", modelSetID);
         modelSetID++;
+        hasLoggedModelsInThisAssignment = true;
     }
 
     //Call each time a new supervised datapoint is added
     @Override
     public void supervisedRunData(Wekinator w, double[] inputs, boolean[] computeMask, double[] outputs) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(ts());
-        sb.append(",").append(w.getID()).append(",RUN,i=").append(inputs.length);
-        sb.append(",o=").append(outputs.length).append(',');
-        sb.append(doubleArrayToString(inputs));
-        sb.append(booleanArrayToString(computeMask)).append(',');
-        sb.append(doubleArrayToString(outputs));
-        pw.println(sb.toString());
+
+        //ONLY do this for certain assignemnts:
+        if (currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART3A ||
+                currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART3B) {
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(ts());
+            sb.append(",").append(w.getID()).append(",RUN,i=").append(inputs.length);
+            sb.append(",o=").append(outputs.length).append(',');
+            sb.append(doubleArrayToString(inputs));
+            sb.append(booleanArrayToString(computeMask)).append(',');
+            sb.append(doubleArrayToString(outputs));
+            pw.println(sb.toString());
+        }
     }
 
     private String doubleArrayToString(double[] vals) {
@@ -399,20 +488,64 @@ public class Assignment12Logger implements KadenzeLogger {
 
     @Override
     public String createZip() throws FileNotFoundException, IOException {
-        String zipName = parentDir + File.separator + KadenzeAssignment.getLogDirectory(currentAssignmentType) + ".zip";
-        FileOutputStream fos2 = new FileOutputStream(zipName);
-        ZipOutputStream zos = new ZipOutputStream(fos2);
-        File assignDir = new File(currentAssignmentDir);
-        List<File> fileList = new LinkedList<>();
-        KadenzeUtils.listFilesForFolder(assignDir, fileList);
-        File p = new File(parentDir);
-        for (File f : fileList) {
-            KadenzeUtils.addToZipFile(p, f.getCanonicalPath(), zos);
+        //  String zipName = parentDir + File.separator + KadenzeAssignment.getLogDirectory(currentAssignmentType) + ".zip";
+        //String zipName = parentDir + File.separator + "assignment" + KadenzeAssignment.getAssignmentNumber(currentAssignmentType) + ".zip";
+        String zipName = getZipDirectoryNameForAssignment() + ".zip";
+
+        try (FileOutputStream fos2 = new FileOutputStream(zipName); ZipOutputStream zos = new ZipOutputStream(fos2)) {
+            // File assignDir = new File(currentAssignmentDir);
+            //String dirToZip = parentDir + File.separator + "assignment" + KadenzeAssignment.getAssignmentNumber(currentAssignmentType);
+            String dirToZip = getZipDirectoryNameForAssignment();
+            File fileToZip = new File(dirToZip);
+            List<File> fileList = new LinkedList<>();
+            KadenzeUtils.listFilesForFolder(fileToZip, fileList);
+            File p = new File(parentDir);
+            for (File f : fileList) {
+                KadenzeUtils.addToZipFile(p, f.getCanonicalPath(), zos);
+            }
         }
-        zos.close();
-        fos2.close();
         return zipName;
     }
+    /*@Override
+     public String createZip() throws FileNotFoundException, IOException {
+     // String zipName = parentDir + File.separator + KadenzeAssignment.getLogDirectory(currentAssignmentType) + ".zip";
+     String zipName = parentDir + File.separator + "assignment" + KadenzeAssignment.getAssignmentNumber(currentAssignmentType) + ".zip";
+     int whichAssignment = KadenzeAssignment.getAssignmentNumber(currentAssignmentType);
+     List<String> fileNames = new LinkedList<>();
+     if (whichAssignment == 1) {
+     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT1));
+     } else if (whichAssignment == 2) {
+     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART1A));
+     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART1B));
+     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART1C));
+     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART1D));
+     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART2));
+     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART3A));
+     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART3B));
+     } else {
+     logger.log(Level.WARNING, "ERROR Cannot log assignment{0}", currentAssignmentType);
+     throw new FileNotFoundException("Could not initiate submission for assignment " + currentAssignmentType);
+     }
+     return createZipForDirectories(zipName, fileNames);
+     }
+
+     private String createZipForDirectories(String zipName, List<String> directoriesToZip) throws FileNotFoundException, IOException {
+     FileOutputStream fos2 = new FileOutputStream(zipName);
+     ZipOutputStream zos = new ZipOutputStream(fos2);
+     for (String dir : directoriesToZip) {
+     File assignDir = new File(dir);
+     List<File> fileList = new LinkedList<>();
+     KadenzeUtils.listFilesForFolder(assignDir, fileList);
+     File p = new File(parentDir);
+     for (File f : fileList) {
+     KadenzeUtils.addToZipFile(p, f.getCanonicalPath(), zos);
+     }
+     }
+     zos.close();
+     fos2.close();
+     return zipName;
+
+     } */
 
     /* @Override
      public void beginLog(String parentDir, KadenzeAssignment.KadenzeAssignmentType a) throws IOException {
@@ -420,7 +553,7 @@ public class Assignment12Logger implements KadenzeLogger {
      } */
     @Override
     public void sameAssignmentRequested(KadenzeAssignment.KadenzeAssignmentType a) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //TODO: Anything?
     }
 
     @Override
@@ -430,8 +563,7 @@ public class Assignment12Logger implements KadenzeLogger {
 
     @Override
     public void logModelBuilderUpdated(Wekinator w, LearningModelBuilder mb, int i) {
-        pw.println(ts() + "," + w.getID() + ",MODEL_BUILDER_UPDATED," + i + "," + mb.getPrettyName());
-
+        pw.println(ts() + "," + w.getID() + ",MODEL_BUILDER_UPDATED," + i + "," + mb.toLogString());
     }
 
     @Override
@@ -447,31 +579,31 @@ public class Assignment12Logger implements KadenzeLogger {
             logModelBuilderChange(t, id, which, oldModelBuilder, newModelBuilder);
         }
         //if (oldSelectedInputs.length != newSelectedInputs.length) {
-        logInputSelectionChange(t, id, which, oldSelectedInputs, newSelectedInputs);
+        logFeatureSelectionChangeForModel(t, id, which, oldSelectedInputs, newSelectedInputs);
         //}
     }
 
     private void logModelBuilderChange(Long t, int id, int which, LearningModelBuilder oldModelBuilder, LearningModelBuilder newModelBuilder) {
         String oldModelString = oldModelBuilder.toLogString();
         String newModelString = newModelBuilder.toLogString();
-        
+
         if (oldModelString.equals(newModelString)) {
             return;
         }
-        
+
         pw.println(t + "," + id + ",MODEL_EDITED_OLD," + which + "," + oldModelString);
         pw.println(t + "," + id + ",MODEL_EDITED_NEW," + which + "," + newModelString);
     }
-    
+
     private void logOutputUpdated(Long t, int id, int which, OSCOutput oldOutput, OSCOutput newOutput) {
         String oldOutputString = oldOutput.toLogString();
         String newOutputString = newOutput.toLogString();
-        
+
         pw.println(t + "," + id + ",OUTPUT_EDITED_OLD," + which + "," + oldOutputString);
         pw.println(t + "," + id + ",OUTPUT_EDITED_NEW," + which + "," + newOutputString);
     }
 
-    private void logInputSelectionChange(Long t, int id, int which, String[] oldSelectedInputs, String[] newSelectedInputs) {
+    private void logFeatureSelectionChangeForModel(Long t, int id, int which, String[] oldSelectedInputs, String[] newSelectedInputs) {
         StringBuilder oldInputNames = new StringBuilder();
         for (int i = 0; i < oldSelectedInputs.length; i++) {
             oldInputNames.append(oldSelectedInputs[i]).append(',');
@@ -480,14 +612,40 @@ public class Assignment12Logger implements KadenzeLogger {
         for (int i = 0; i < newSelectedInputs.length; i++) {
             newInputNames.append(newSelectedInputs[i]).append(',');
         }
-        
+
         if (oldInputNames.toString().equals(newInputNames.toString())) {
             return;
         }
 
         pw.println(t + "," + id + ",SELECTED_INPUTS_OLD," + which + "," + oldInputNames.toString());
         pw.println(t + "," + id + ",SELECTED_INPUTS_NEW," + which + "," + newInputNames.toString());
-    
+
+    }
+
+    //TODO: Do equivalent for DTW!
+    @Override
+    public void logModelPrintedToConsole(Wekinator w, Path p) {
+        List<Path> paths = w.getSupervisedLearningManager().getPaths();
+        int which = paths.indexOf(p);
+        pw.println(ts() + "," + w.getID() + ",MODEL_TO_CONSOLE," + which);
+    }
+
+    @Override
+    public void logStartRun(Wekinator w) {
+        pw.println(ts() + "," + w.getID() + ",START_RUN");
+        if (!hasLoggedModelsInThisAssignment) {
+            try {
+                logFirstRunInAssignmentWithNewModels(w);
+            } catch (IOException ex) {
+                Logger.getLogger(Assignment12Logger.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    @Override
+    public String getZipDirectoryNameForAssignment() {
+        return parentDir + File.separator + "assignment" + KadenzeAssignment.getAssignmentNumber(currentAssignmentType);
+
     }
 
 }
