@@ -538,6 +538,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
             pathsToOutputIndices.put(p, i);
             this.paths.add(p);
+            KadenzeLogging.getLogger().logModelBuilderUpdated(w, p.getModelBuilder(), i);
         }
 
         //Without this, paths will think that examples have changed since their training    

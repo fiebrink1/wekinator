@@ -13,18 +13,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.filters.Filter;
+import wekimini.DataManager;
+import wekimini.learning.KNNModelBuilder;
 
 /**
  *
  * @author rebecca
  */
 public class KadenzeUtils {
-
+    private static final Logger logger = Logger.getLogger(KadenzeUtils.class.getName());
+    
     //Modified from http://stackoverflow.com/questions/1844688/read-all-files-in-a-folder
-
     public static void listFilesForFolder(final File folder, List<File> files) {
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
@@ -38,7 +45,7 @@ public class KadenzeUtils {
     //From http://www.avajava.com/tutorials/lessons/how-can-i-create-a-zip-file-from-a-set-of-files.html
     public static void addToZipFile(File directoryToZip, String fileName, ZipOutputStream zos) throws FileNotFoundException, IOException {
 
-		//System.out.println("Writing '" + fileName + "' to zip file");
+        //System.out.println("Writing '" + fileName + "' to zip file");
         File file = new File(fileName);
         FileInputStream fis = new FileInputStream(file);
         //ZipEntry zipEntry = new ZipEntry(fileName);
@@ -93,7 +100,7 @@ public class KadenzeUtils {
         }
         zipFile.close();
     }
-    
+
     public static long getLineTimestamp(String line) throws Exception {
         int index = line.indexOf(",");
         if (index != -1) {
@@ -107,26 +114,100 @@ public class KadenzeUtils {
             throw new Exception("Improperly formatted log file");
         }
     }
-    
+
     public static String getLineType(String line) throws Exception {
         //All lines are formatted timestamp,wekID,lineType
-        String[] parts = line.split(",",4);
-        if (parts.length < 3) {
+        String[] parts = line.split(",", 4);
+        /*if (parts.length < 3) {
             throw new Exception("Improperly formatted log file");
         } else {
             return parts[2];
+        } */ //Let's be more forgiving, e.g. if log has quit mid-line
+        if (parts.length >= 3) {
+            return parts[2];
+        } else {
+            logger.log(Level.WARNING, "Line is not properly formatted: {0}", line);
+            return "NONE";
         }
     }
-    
-        
+
     public static String getNthField(int n, String line) throws Exception {
         //All lines are formatted timestamp,wekID,lineType
-        String[] parts = line.split(",",n+1);
+        String[] parts = line.split(",", n + 1);
         if (parts.length < n) {
             throw new Exception("Improperly formatted log file");
         } else {
-            return parts[n-1];
+            return parts[n - 1];
         }
     }
+
+    public static String getLineAfterRegex(String line, String pattern) throws Exception {
+        int i = line.indexOf(pattern);
+        if (i == -1) {
+            throw new Exception("Improperly formatted log file");
+        }
+        int numChars = pattern.length();
+        return line.substring(i + numChars);
+
+    }
+
+    public static void main(String[] args) {
+        String s1 = "abcdefg1";
+        String s2 = "1";
+        try {
+            System.out.println(getLineAfterRegex(s1, s2));
+        } catch (Exception ex) {
+            Logger.getLogger(KadenzeUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    static String getModelStringFromLine(String line) throws Exception {
+        String type = KadenzeUtils.getLineType(line);
+        if (type.equals("MODEL_BUILDER_UPDATED")) {
+            String s1 = KadenzeUtils.getLineAfterRegex(line, "MODEL_BUILDER_UPDATED,");
+            return s1.substring(s1.indexOf(",") + 1);
+        } else if (type.equals("MODEL_EDITED_NEW")) {
+            //Called when model edited using GUI
+            String s1 = KadenzeUtils.getLineAfterRegex(line, "MODEL_EDITED_NEW,");
+            return s1.substring(s1.indexOf(",") + 1);
+        } else {
+            logger.log(Level.WARNING, "Not a valid model line");
+            return "";
+        }
+        
+    }
+
+    static boolean isModelStringClassifier(String modelString) {
+        //     int
+        //       String modelName = modelString.substring(0, modelString.indexOf(","));
+        return modelString.startsWith("KNN") || modelString.startsWith("J48") || modelString.startsWith("SVM") 
+                || modelString.startsWith("DECISIONSTUMP") || modelString.startsWith("ADABOOST")
+                || modelString.startsWith("NAIVEBAYES");
+    }
     
+    
+    /*static boolean isModelNameClassifier(String modelName) {
+        return modelName.equals("KNN") || modelName.equals("J48") || modelName.equals("SVM") 
+                || modelName.equals("DECISIONSTUMP") || modelName.equals("ADABOOST")
+                || modelName.equals("NAIVEBAYES");
+    }*/
+    
+    public static boolean deleteDirectory(File directory) {
+    if(directory.exists()){
+        File[] files = directory.listFiles();
+        if(null!=files){
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteDirectory(file);
+                } else {
+                    file.delete();
+                }
+            }
+        }
+    }
+    return(directory.delete());
+}
+    
+   
+
 }

@@ -487,7 +487,28 @@ public class DataManager {
         }
         setInitialized(true);
     }
-
+    
+    public Instances getDummyInstances() {
+        return dummyInstances;
+    }
+    
+    public int getNumMetaData() {
+        return numMetaData;
+    }
+    
+    /*public Filter getOutputFilter(int which) {
+        //return outputFilters[which];
+        //outputFilters[0].
+        Reorder r= new Reorder();
+        r = new Reorder();
+        r.s
+    } */
+    
+    public String getOutputFilterString(int which) {
+        Reorder r = (Reorder)outputFilters[which];
+        return r.getAttributeIndices();
+    }
+    
     private void initializeInstances() {
         //Set up instances
         FastVector ff = new FastVector(numInputs + numOutputs + numMetaData); //Include ID, timestamp, training round
