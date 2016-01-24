@@ -51,7 +51,7 @@ public class KadenzeUtils {
         FileInputStream fis = new FileInputStream(file);
         //ZipEntry zipEntry = new ZipEntry(fileName);
         String zipFilePath = file.getCanonicalPath().substring(directoryToZip.getCanonicalPath().length() + 1,
-                file.getCanonicalPath().length());
+                file.getCanonicalPath().length());        
         ZipEntry zipEntry = new ZipEntry(zipFilePath);
         zos.putNextEntry(zipEntry);
 
@@ -72,13 +72,14 @@ public class KadenzeUtils {
             ZipEntry zipEntry = (ZipEntry) enu.nextElement();
 
             String name = zipEntry.getName();
+            String nameFixed = name.replaceAll("\\\\", "/");
             //long size = zipEntry.getSize();
             //long compressedSize = zipEntry.getCompressedSize();
             ///System.out.printf("name: %-20s | size: %6d | compressed size: %6d\n",
             //        name, size, compressedSize);
 
-            File file = new File(intoFolder, name);
-            if (name.endsWith(File.separator)) {
+            File file = new File(intoFolder, nameFixed);
+            if (nameFixed.endsWith("/")) { 
                 file.mkdirs();
                 continue;
             }
@@ -186,14 +187,7 @@ public class KadenzeUtils {
                 || modelString.startsWith("DECISIONSTUMP") || modelString.startsWith("ADABOOST")
                 || modelString.startsWith("NAIVEBAYES");
     }
-    
-    
-    /*static boolean isModelNameClassifier(String modelName) {
-        return modelName.equals("KNN") || modelName.equals("J48") || modelName.equals("SVM") 
-                || modelName.equals("DECISIONSTUMP") || modelName.equals("ADABOOST")
-                || modelName.equals("NAIVEBAYES");
-    }*/
-    
+
     public static boolean deleteDirectory(File directory) {
     if(directory.exists()){
         File[] files = directory.listFiles();

@@ -506,46 +506,7 @@ public class Assignment12Logger implements KadenzeLogger {
         }
         return zipName;
     }
-    /*@Override
-     public String createZip() throws FileNotFoundException, IOException {
-     // String zipName = parentDir + File.separator + KadenzeAssignment.getLogDirectory(currentAssignmentType) + ".zip";
-     String zipName = parentDir + File.separator + "assignment" + KadenzeAssignment.getAssignmentNumber(currentAssignmentType) + ".zip";
-     int whichAssignment = KadenzeAssignment.getAssignmentNumber(currentAssignmentType);
-     List<String> fileNames = new LinkedList<>();
-     if (whichAssignment == 1) {
-     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT1));
-     } else if (whichAssignment == 2) {
-     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART1A));
-     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART1B));
-     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART1C));
-     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART1D));
-     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART2));
-     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART3A));
-     fileNames.add(KadenzeAssignment.getLogDirectory(KadenzeAssignmentType.ASSIGNMENT2_PART3B));
-     } else {
-     logger.log(Level.WARNING, "ERROR Cannot log assignment{0}", currentAssignmentType);
-     throw new FileNotFoundException("Could not initiate submission for assignment " + currentAssignmentType);
-     }
-     return createZipForDirectories(zipName, fileNames);
-     }
 
-     private String createZipForDirectories(String zipName, List<String> directoriesToZip) throws FileNotFoundException, IOException {
-     FileOutputStream fos2 = new FileOutputStream(zipName);
-     ZipOutputStream zos = new ZipOutputStream(fos2);
-     for (String dir : directoriesToZip) {
-     File assignDir = new File(dir);
-     List<File> fileList = new LinkedList<>();
-     KadenzeUtils.listFilesForFolder(assignDir, fileList);
-     File p = new File(parentDir);
-     for (File f : fileList) {
-     KadenzeUtils.addToZipFile(p, f.getCanonicalPath(), zos);
-     }
-     }
-     zos.close();
-     fos2.close();
-     return zipName;
-
-     } */
 
     /* @Override
      public void beginLog(String parentDir, KadenzeAssignment.KadenzeAssignmentType a) throws IOException {
