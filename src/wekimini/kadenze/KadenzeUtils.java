@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
@@ -131,6 +132,7 @@ public class KadenzeUtils {
         }
     }
 
+    //Counts starting from 1
     public static String getNthField(int n, String line) throws Exception {
         //All lines are formatted timestamp,wekID,lineType
         String[] parts = line.split(",", n + 1);
@@ -207,6 +209,24 @@ public class KadenzeUtils {
     }
     return(directory.delete());
 }
+    
+    public static String formatDouble(double d) {
+        DecimalFormat formatter = new DecimalFormat("#0.00");
+        return formatter.format(d);
+    }
+
+    static double[] getInputsFromRunLine(String line, int numInputs) {
+        double[] vals = new double[numInputs];
+        String[] fields = line.split(",");
+        for (int i = 0; i < numInputs; i++) {
+            try {
+                vals[i] = Double.parseDouble(fields[i+5]);
+            } catch (NumberFormatException ex) {
+                vals[i] = 0;
+            }
+        }
+        return vals;
+    }
     
    
 

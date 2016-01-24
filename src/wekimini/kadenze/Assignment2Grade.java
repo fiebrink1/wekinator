@@ -24,7 +24,6 @@ public class Assignment2Grade {
     
     private final NotedCriterion validSubmission = new NotedCriterion(1, "valid_submission");
     private final NotedCriterion part1aCorrectSetup = new NotedCriterion(2, "part1a_setup");
-
     private final NotedCriterion part1aExperimented = new NotedCriterion(3, "part1a_experimented");
     private final NotedCriterion part1bUsedCorrectClassifier = new NotedCriterion(4, "part1b_used_correct_classifier");
     private final NotedCriterion part1bQuality = new NotedCriterion(5, "part1b_classifier_quality");
@@ -93,7 +92,12 @@ public class Assignment2Grade {
 
     public void score3bClassifierQuality(Outcome o, double score) {
         part3bClassifierAccuracy.setScore(score);
-        part3bClassifierAccuracy.setNoteWithErrValue(o, "assignment2_3b");
+        //part3bClassifierAccuracy.setNoteWithErrValue(o, "assignment2_3b");
+        if (o == Outcome.COULD_BE_BETTER) {
+            part3bClassifierAccuracy.setNote(o, KadenzeUtils.formatDouble(score*100));
+        } else {
+            part3bClassifierAccuracy.setNoteWithErrValue(o, "assignment2_3b");
+        }
     }
     
     public void setCompletelyInvalidSubmission(Outcome o) {
