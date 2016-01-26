@@ -17,6 +17,7 @@ public class OSCClassificationOutput implements OSCSupervisedLearningOutput {
     private final String name;
     private final int numClasses;
     private final boolean isSendingDistribution;
+    //d
 
 
     public OSCClassificationOutput(String name, int numClasses, boolean isSendingDistribution) {
