@@ -56,7 +56,7 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
 
     private void initFormForOutput(OSCDtwOutput currentOutput) {
         fieldOutputName.setText(currentOutput.getName());
-        fieldOutputOSCMessage.setText(currentOutput.getOutputOscMessage());
+        //fieldOutputOSCMessage.setText(currentOutput.getOutputOscMessage());
         for (int i = 0; i < currentOutput.getNumGestures(); i++) {
             addNewPanel(currentOutput.getGestureNames(i), currentOutput.getGestureOscMessages(i), i);
         }
@@ -73,7 +73,6 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
 
         panelOutputEditRow = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         scrollParent = new javax.swing.JScrollPane();
         panelParent = new javax.swing.JPanel();
         panelHeader = new javax.swing.JPanel();
@@ -116,7 +115,6 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
         buttonDeleteLearnerExamples6 = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
         fieldOutputName = new javax.swing.JTextField();
-        fieldOutputOSCMessage = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
@@ -126,8 +124,6 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
         panelOutputEditRow.setLayout(new javax.swing.BoxLayout(panelOutputEditRow, javax.swing.BoxLayout.LINE_AXIS));
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-
-        jLabel1.setText("OSC message for sending vector of match values:");
 
         panelParent.setBackground(new java.awt.Color(255, 255, 255));
         panelParent.setLayout(new javax.swing.BoxLayout(panelParent, javax.swing.BoxLayout.Y_AXIS));
@@ -515,8 +511,6 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
 
         fieldOutputName.setText("Output_2");
 
-        fieldOutputOSCMessage.setText("/wek/outputs");
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -529,11 +523,7 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
                         .addComponent(jLabel11)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(fieldOutputName, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fieldOutputOSCMessage)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -543,12 +533,8 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
                     .addComponent(fieldOutputName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, 0)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(fieldOutputOSCMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollParent, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+                .addComponent(scrollParent, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -723,10 +709,8 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
     private javax.swing.JButton buttonDeleteLearnerExamples5;
     private javax.swing.JButton buttonDeleteLearnerExamples6;
     private javax.swing.JTextField fieldOutputName;
-    private javax.swing.JTextField fieldOutputOSCMessage;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
@@ -881,12 +865,12 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
             return false;
         }
 
-        if (!Util.checkNotBlank(fieldOutputOSCMessage, "OSC message for vector of match values", this)) {
+       /* if (!Util.checkNotBlank(fieldOutputOSCMessage, "OSC message for vector of match values", this)) {
             return false;
         }
         if (!Util.checkNotBlank(fieldOutputOSCMessage, "OSC message for vector of match values", this)) {
             return false;
-        }
+        } */
 
         for (int i = 0; i < rowPanels.size(); i++) {
             if (!Util.checkNotBlank(nameFields.get(i), "Gesture name #" + (i + 1), this)) {
@@ -929,10 +913,10 @@ public class DtwOutputEditFrame extends javax.swing.JFrame {
     //Requires validation
     private OSCDtwOutput getOSCOutputFromForm() {
         String name = fieldOutputName.getText();
-        String oscMessage = fieldOutputOSCMessage.getText();
+        //String oscMessage = fieldOutputOSCMessage.getText();
         int numGestures = rowPanels.size();
         OSCDtwOutput o = new OSCDtwOutput(name, numGestures);
-        o.setOutputOscMessage(oscMessage);
+       // o.setOutputOscMessage(oscMessage);
         String[] gestureNames = getGestureNamesFromForm();
         String[] oscMessages = getOscMessagesFromForm();
         o.setGestureNames(gestureNames);
