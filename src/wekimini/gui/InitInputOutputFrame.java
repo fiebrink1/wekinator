@@ -1183,7 +1183,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             int numGestures = Integer.parseInt(fieldNumDtwTypes.getText());
             for (int i = 0; i < numOutputs; i++) {
                 if (currentOutputNames[i].equals("outputs-1")) {
-                    currentOutputNames[i] = "outputs";
+                    currentOutputNames[i] = "output";
                 }
                 
                 OSCDtwOutput o = new OSCDtwOutput(
