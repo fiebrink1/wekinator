@@ -26,6 +26,7 @@ import wekimini.Wekinator;
 import wekimini.WekinatorFileData;
 import wekimini.dtw.gui.DtwEditorFrame;
 import wekimini.dtw.gui.DtwLearningPanel;
+import wekimini.dtw.gui.DtwOutputEditor;
 import wekimini.kadenze.KadenzeAssignment;
 import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
 import wekimini.kadenze.KadenzeLogger;
@@ -41,6 +42,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private OSCInputStatusFrame oscInputStatusFrame = null;
     private InputMonitor inputMonitorFrame = null;
     private OutputViewerTable outputTableWindow = null;
+    private DtwOutputEditor dtwOutputEditor = null;
     private ModelEvaluationFrame modelEvaluationFrame = null;
     private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
     private final Wekinator w;
@@ -168,7 +170,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             } else {
                 s = "Start ";
             }
-            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(2, i+1));
+            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(2, i + 1));
             kadenzeMenuItems[i] = new JMenuItem(s);
             if (i == (subPart - 1)) {
                 kadenzeMenuItems[i].setEnabled(false);
@@ -231,14 +233,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             }
         } else if (which == 2) {
             int subpart = KadenzeAssignment.getAssignmentSubPart(ka);
-            for (int i= 0; i < 7; i++) {
-                if (subpart == (i+1)) {
+            for (int i = 0; i < 7; i++) {
+                if (subpart == (i + 1)) {
                     kadenzeMenuItems[i].setEnabled(false);
                 } else {
                     kadenzeMenuItems[i].setEnabled(true);
                 }
             }
-        }else {
+        } else {
             System.out.println("NOT IMPLEMENTED YET");
         }
     }
@@ -555,27 +557,45 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     public void showOutputTable() {
         if (w.getLearningManager().getLearningType() == LearningManager.LearningType.TEMPORAL_MODELING) {
-            Util.showPrettyErrorPane(this, "Not yet implemented for DTW outputs");
-            return;
-        }
-        if (outputTableWindow == null) {
-            outputTableWindow = new OutputViewerTable(w);
-            outputTableWindow.setVisible(true);
+            if (dtwOutputEditor == null) {
+                dtwOutputEditor = new DtwOutputEditor(w);
+                dtwOutputEditor.setVisible(true);
 
-            /* Util.callOnClosed(outputTableWindow, (Callable) () -> {
-             outputTableWindow = null;
-             return null;
-             }); */
-            Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
-                @Override
-                public void callMe() {
-                    outputTableWindow = null;
-                }
-            };
-            Util.callOnClosed(outputTableWindow, callMe);
+                /* Util.callOnClosed(outputTableWindow, (Callable) () -> {
+                 outputTableWindow = null;
+                 return null;
+                 }); */
+                Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                    @Override
+                    public void callMe() {
+                        dtwOutputEditor = null;
+                    }
+                };
+                Util.callOnClosed(dtwOutputEditor, callMe);
 
+            } else {
+                dtwOutputEditor.toFront();
+            }
         } else {
-            outputTableWindow.toFront();
+            if (outputTableWindow == null) {
+                outputTableWindow = new OutputViewerTable(w);
+                outputTableWindow.setVisible(true);
+
+                /* Util.callOnClosed(outputTableWindow, (Callable) () -> {
+                 outputTableWindow = null;
+                 return null;
+                 }); */
+                Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                    @Override
+                    public void callMe() {
+                        outputTableWindow = null;
+                    }
+                };
+                Util.callOnClosed(outputTableWindow, callMe);
+
+            } else {
+                outputTableWindow.toFront();
+            }
         }
     }
 
