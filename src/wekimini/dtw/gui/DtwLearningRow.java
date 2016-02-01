@@ -284,7 +284,6 @@ public class DtwLearningRow extends javax.swing.JPanel {
         panelMain.setBackground(new java.awt.Color(255, 255, 255));
         panelMain.setMaximumSize(new java.awt.Dimension(540, 70));
         panelMain.setPreferredSize(new java.awt.Dimension(540, 70));
-        panelMain.setSize(new java.awt.Dimension(540, 70));
 
         labelModelName.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
         labelModelName.setText("Gesture_1_v5");
@@ -303,7 +302,6 @@ public class DtwLearningRow extends javax.swing.JPanel {
         buttonDeleteLearnerExamples.setMaximumSize(new java.awt.Dimension(31, 32));
         buttonDeleteLearnerExamples.setMinimumSize(new java.awt.Dimension(31, 32));
         buttonDeleteLearnerExamples.setPreferredSize(new java.awt.Dimension(31, 32));
-        buttonDeleteLearnerExamples.setSize(new java.awt.Dimension(30, 30));
         buttonDeleteLearnerExamples.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonDeleteLearnerExamplesActionPerformed(evt);
@@ -332,7 +330,6 @@ public class DtwLearningRow extends javax.swing.JPanel {
         buttonLearnerPlay.setMaximumSize(new java.awt.Dimension(30, 30));
         buttonLearnerPlay.setMinimumSize(new java.awt.Dimension(30, 30));
         buttonLearnerPlay.setPreferredSize(new java.awt.Dimension(30, 30));
-        buttonLearnerPlay.setSize(new java.awt.Dimension(30, 30));
         buttonLearnerPlay.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonLearnerPlayActionPerformed(evt);
@@ -340,6 +337,7 @@ public class DtwLearningRow extends javax.swing.JPanel {
         });
 
         buttonAdd.setText("+");
+        buttonAdd.setMargin(new java.awt.Insets(2, 2, 2, 2));
         buttonAdd.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 buttonAddMousePressed(evt);
@@ -370,6 +368,7 @@ public class DtwLearningRow extends javax.swing.JPanel {
         jLabel1.setText("degree of match:");
 
         buttonDelete.setText("-");
+        buttonDelete.setMargin(new java.awt.Insets(2, 2, 2, 2));
         buttonDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonDeleteActionPerformed(evt);

@@ -7,6 +7,7 @@ package wekimini.gui;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -151,6 +152,7 @@ public class LabeledButtonGridPanel extends JPanel {
                 final int y = j;
                 MousableToggleButton b = new MousableToggleButton(i, j);
                 b.setSize(buttonWidth, buttonHeight);
+                b.setMargin(new Insets(2,2,2,2));
                 b.addMouseListener(new java.awt.event.MouseAdapter() {
                     @Override
                     public void mouseExited(java.awt.event.MouseEvent evt) {

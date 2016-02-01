@@ -187,7 +187,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="panelParent" alignment="0" max="32767" attributes="0"/>
+          <Component id="panelParent" alignment="0" pref="851" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
