@@ -139,7 +139,7 @@ public class KadenzeAssignment {
         if (t == KadenzeAssignmentType.NONE) {
             return "No assignment";
         } else if (t == KadenzeAssignmentType.ASSIGNMENT1) {
-            return "Assignment 1";
+            return "Assignment 1, Part 1";
         } else if (t == KadenzeAssignmentType.ASSIGNMENT2_PART1A) {
             return "Assignment 2, Part 1A";
         } else if (t == KadenzeAssignmentType.ASSIGNMENT2_PART1B) {

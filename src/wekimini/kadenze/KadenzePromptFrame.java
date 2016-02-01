@@ -24,7 +24,7 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
 
     private final String[] comboOptions
             = {"No, just exploring or playing",
-                "Assignment 1",
+                "Assignment 1, Part 1",
                 "Assignment 2, Part 1A",
                 "Assignment 2, Part 1B",
                 "Assignment 2, Part 1C",

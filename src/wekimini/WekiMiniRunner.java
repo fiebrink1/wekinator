@@ -116,7 +116,9 @@ public final class WekiMiniRunner {
 
     public static void main(String[] args) {
         /* Create and display the form */
-        WekiMiniRunner.isKadenze = (args.length != 0);
+        //WekiMiniRunner.isKadenze = (args.length != 0);
+        WekiMiniRunner.isKadenze = true; //KADENZE SET
+        
         aboutBox.setKadenze(isKadenze);
         //args.length == 0
         java.awt.EventQueue.invokeLater(new Runnable() {
