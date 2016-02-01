@@ -49,7 +49,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private boolean closeable = true; //flaseif this is the last window open
     private static final Logger logger = Logger.getLogger(MainGUI.class.getName());
     private JMenuItem[] kadenzeMenuItems = new JMenuItem[0];
-
+    private DtwLearningPanel dtwLearningPanel1;
     /**
      * Creates new form MainGUI
      */
@@ -275,7 +275,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
         learningPanel1 = new wekimini.gui.SupervisedLearningPanel();
         panelParent = new javax.swing.JPanel();
-        dtwLearningPanel1 = new wekimini.dtw.gui.DtwLearningPanel();
+        supervisedLearningPanel1 = new wekimini.gui.SupervisedLearningPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         jMenuItem6 = new javax.swing.JMenuItem();
@@ -308,7 +308,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
 
         panelParent.setLayout(new javax.swing.BoxLayout(panelParent, javax.swing.BoxLayout.LINE_AXIS));
-        panelParent.add(dtwLearningPanel1);
+
+        supervisedLearningPanel1.setMinimumSize(new java.awt.Dimension(840, 313));
+        supervisedLearningPanel1.setPreferredSize(new java.awt.Dimension(840, 313));
+        panelParent.add(supervisedLearningPanel1);
 
         menuFile.setMnemonic('F');
         menuFile.setText("File");
@@ -697,7 +700,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem checkEnableOSCControl;
-    private wekimini.dtw.gui.DtwLearningPanel dtwLearningPanel1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
@@ -718,6 +720,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JCheckBoxMenuItem menuPerformanceCheck;
     private javax.swing.JMenu menuTemp;
     private javax.swing.JPanel panelParent;
+    private wekimini.gui.SupervisedLearningPanel supervisedLearningPanel1;
     // End of variables declaration//GEN-END:variables
 
     void displayEditOutput(String name) {
