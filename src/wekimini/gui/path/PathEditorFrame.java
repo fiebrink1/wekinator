@@ -74,6 +74,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         for (int i = 0; i < inputNames.length; i++) {
             final int which = i;
             inputs[i] = new JCheckBox(inputNames[i]);
+            inputs[i].setBackground(new java.awt.Color(255, 255, 255));
             inputs[i].setSelected(p.isUsingInput(inputNames[i]));
             inputs[i].addMouseListener(new MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent evt) {
