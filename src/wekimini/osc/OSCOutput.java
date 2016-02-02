@@ -28,5 +28,7 @@ public interface OSCOutput {
     public double forceLegalTrainingValue(double value);
     
     public double forceLegalOutputValue(double value);
+    
+    public String toLogString();
 
 }

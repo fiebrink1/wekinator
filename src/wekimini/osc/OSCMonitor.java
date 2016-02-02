@@ -6,6 +6,7 @@ package wekimini.osc;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -70,6 +71,11 @@ public class OSCMonitor {
             @Override
             public void notifyInputError() {
                 inputError();
+            }
+
+            @Override
+            public void updateBundle(List<List<Double>> values) {
+                inputReceived();
             }
         });
 

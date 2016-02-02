@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import wekimini.Path;
+import wekimini.WekiMiniRunner;
 import wekimini.Wekinator;
 import wekimini.learning.dtw.DtwData;
 import wekimini.learning.dtw.DtwModel;
@@ -216,7 +217,7 @@ public class DtwLearningRow extends javax.swing.JPanel {
                 f.setSize(500, 500);
                 Wekinator w;
                 try {
-                    w = new Wekinator();
+                    w = new Wekinator(WekiMiniRunner.generateNextID());
 
                     OSCNumericOutput no = new OSCNumericOutput("model1", 5, 10, OSCNumericOutput.NumericOutputType.REAL, OSCNumericOutput.LimitType.HARD);
                     String[] names = new String[]{"abc", "def"};
@@ -283,7 +284,6 @@ public class DtwLearningRow extends javax.swing.JPanel {
         panelMain.setBackground(new java.awt.Color(255, 255, 255));
         panelMain.setMaximumSize(new java.awt.Dimension(540, 70));
         panelMain.setPreferredSize(new java.awt.Dimension(540, 70));
-        panelMain.setSize(new java.awt.Dimension(540, 70));
 
         labelModelName.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
         labelModelName.setText("Gesture_1_v5");
@@ -302,7 +302,6 @@ public class DtwLearningRow extends javax.swing.JPanel {
         buttonDeleteLearnerExamples.setMaximumSize(new java.awt.Dimension(31, 32));
         buttonDeleteLearnerExamples.setMinimumSize(new java.awt.Dimension(31, 32));
         buttonDeleteLearnerExamples.setPreferredSize(new java.awt.Dimension(31, 32));
-        buttonDeleteLearnerExamples.setSize(new java.awt.Dimension(30, 30));
         buttonDeleteLearnerExamples.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonDeleteLearnerExamplesActionPerformed(evt);
@@ -331,7 +330,6 @@ public class DtwLearningRow extends javax.swing.JPanel {
         buttonLearnerPlay.setMaximumSize(new java.awt.Dimension(30, 30));
         buttonLearnerPlay.setMinimumSize(new java.awt.Dimension(30, 30));
         buttonLearnerPlay.setPreferredSize(new java.awt.Dimension(30, 30));
-        buttonLearnerPlay.setSize(new java.awt.Dimension(30, 30));
         buttonLearnerPlay.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonLearnerPlayActionPerformed(evt);
@@ -339,6 +337,7 @@ public class DtwLearningRow extends javax.swing.JPanel {
         });
 
         buttonAdd.setText("+");
+        buttonAdd.setMargin(new java.awt.Insets(2, 2, 2, 2));
         buttonAdd.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 buttonAddMousePressed(evt);
@@ -369,6 +368,7 @@ public class DtwLearningRow extends javax.swing.JPanel {
         jLabel1.setText("degree of match:");
 
         buttonDelete.setText("-");
+        buttonDelete.setMargin(new java.awt.Insets(2, 2, 2, 2));
         buttonDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonDeleteActionPerformed(evt);
@@ -480,11 +480,11 @@ public class DtwLearningRow extends javax.swing.JPanel {
     }//GEN-LAST:event_buttonAddMousePressed
 
     private void buttonAddKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buttonAddKeyPressed
-        myModel.startRecording(gestureNum);
+      //  myModel.startRecording(gestureNum);
     }//GEN-LAST:event_buttonAddKeyPressed
 
     private void buttonAddKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buttonAddKeyReleased
-        myModel.stopRecording();
+       // myModel.stopRecording();
     }//GEN-LAST:event_buttonAddKeyReleased
 
     private void buttonAddMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonAddMouseReleased

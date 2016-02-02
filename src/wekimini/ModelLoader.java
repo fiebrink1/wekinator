@@ -12,9 +12,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.trees.DecisionStump;
 import wekimini.learning.AdaboostModel;
+import wekimini.learning.DecisionStumpModel;
 import wekimini.learning.J48Model;
 import wekimini.learning.KNNModel;
+import wekimini.learning.LinearRegressionModel;
+import wekimini.learning.NaiveBayesModel;
 import wekimini.learning.SVMModel;
 
 /**
@@ -37,11 +42,15 @@ public class ModelLoader {
             return J48Model.readFromInputStream(is);
         } else if (c == SVMModel.class) {
             return SVMModel.readFromInputStream(is);
+        } else if (c == LinearRegressionModel.class)  {
+            return LinearRegressionModel.readFromInputStream(is);
+        } else if (c == DecisionStumpModel.class)  {
+            return DecisionStumpModel.readFromInputStream(is);
+        } else if (c == NaiveBayesModel.class)  {
+            return NaiveBayesModel.readFromInputStream(is);
         } else {
             logger.log(Level.WARNING, "Could not find input reader for class {0}", c);
             return null;
         }
     }
-    
-    
 }

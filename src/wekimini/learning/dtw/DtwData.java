@@ -9,6 +9,9 @@ import com.timeseries.TimeSeries;
 import com.timeseries.TimeSeriesPoint;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,13 +50,11 @@ public class DtwData {
 
     private int numTotalExamples = 0;
     private final int numInputs;
-    //private int numActiveInputs;
 
     public static final String PROP_NUMTOTALEXAMPLES = "numTotalExamples";
 
     private int downsampleFactor = 1;
     private int downsampleToLength = 10;
-    //private boolean isDownsampling = false;
     private transient int downsampleCounter = 0;
     private DtwSettings.DownsamplePolicy downsamplePolicy = DtwSettings.DownsamplePolicy.NO_DOWNSAMPLING;
     private final ArrayDeque<DtwExample> examplesInOrder;
@@ -61,7 +62,7 @@ public class DtwData {
     //private DtwExample lastExample = null;
     //private DtwExample lastDeletedExample = null;
     
-    private int numDeletedAndCached;
+    private transient int numDeletedAndCached;
     public static final String PROP_NUM_DELETED_AND_CACHED = "numDeletedAndCached";
 
     /**
@@ -685,6 +686,63 @@ public class DtwData {
             }
         }
         deletedExamplesInOrder = tmp;
+    }
+
+    //Only writes raw examples as CSV, nothing else
+    void writeDataToFile(File f) throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(f);
+        writer.println("# First field is # dimensions of each datapoint, 2nd is gesture class, Next fields are raw time series in order t_f1[0], t_f2[0], t_f3[0] etc. where f1, f2, etc are features and [0] is time");
+        boolean first = true;
+        for (LinkedList<DtwExample> list : allExamples) {
+            //List is a set of DTW examples
+            for (DtwExample ex : list) {
+                StringBuilder s = new StringBuilder();
+                s.append(ex.getTimeSeries().numOfDimensions()).append(",");
+                s.append(ex.getGestureClass()+1).append(","); //1 is first gesture class, for consistency with classification
+                TimeSeries ts = ex.getTimeSeries();
+                for (int i = 0; i < ts.numOfPts(); i++) {
+                    double[] vals = ts.getMeasurementVector(i);
+                    for (int j = 0; j < ts.numOfDimensions(); j++) {
+                        s.append(vals[j]).append(",");
+                    }
+                }
+                writer.println(s.toString());
+            } 
+        }
+        writer.close();
+    }
+
+    //Requires # of gestures match, and numInputs match
+    void loadFromExisting(DtwData data) {
+        //Delete all examples:
+        allExamples.clear();
+        examplesForIds.clear();
+        examplesInOrder.clear();
+        
+        for (LinkedList<DtwExample> list : data.allExamples) {
+            allExamples.add(list); 
+            for (DtwExample ex : list) {
+                examplesForIds.put(ex.getId(), ex);
+                examplesInOrder.addLast(ex);
+            }  
+        }
+        //numTotalExamples = data.numTotalExamples;
+        setNumTotalExamples(data.numTotalExamples);
+        
+        minSizeInExamples = data.minSizeInExamples;
+        maxSizeInExamples = data.maxSizeInExamples;
+        minSizeInDownsampledExamples = data.minSizeInDownsampledExamples;
+        maxSizeInDownsampledExamples = data.maxSizeInDownsampledExamples;
+        
+        for (int i = 0; i < numGestures; i++) {
+            notifyExamplesChangedListeners(i, getNumExamplesForGesture(i));
+        }
+
+        maxLengthToRetainDuringRun = data.maxLengthToRetainDuringRun;
+        downsamplePolicy = data.downsamplePolicy;
+        downsampleFactor = data.downsampleFactor;
+        downsampleToLength = data.downsampleToLength;
+        downsampleCounter = 0;
     }
 
     public interface DtwDataListener {

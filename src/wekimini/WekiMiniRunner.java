@@ -6,7 +6,6 @@
 package wekimini;
 
 import wekimini.gui.MainGUI;
-import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -17,16 +16,15 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import wekimini.gui.About;
 import wekimini.gui.InitInputOutputFrame;
 import wekimini.gui.Preferences;
+import wekimini.kadenze.KadenzeLogging;
+import wekimini.kadenze.KadenzePromptFrame;
 import wekimini.util.Util;
 
 /**
@@ -35,7 +33,7 @@ import wekimini.util.Util;
  */
 public final class WekiMiniRunner {
 
-    private static final String versionString = "31 May 2015 19:03";
+    private static final String versionString = "17 January 2016";
     private static final Logger logger = Logger.getLogger(WekiMiniRunner.class.getName());
     // private static final List<Wekinator> runningWekinators = new LinkedList<>();
     private static WekiMiniRunner ref = null; //Singleton
@@ -45,7 +43,12 @@ public final class WekiMiniRunner {
     private final static Preferences preferencesBox = new Preferences();
     private final ImageIcon myIcon = new ImageIcon(getClass().getResource("/wekimini/icons/wekimini_small.png"));
     private static boolean isKadenze = false;
-
+    private static int nextID = 1;
+    
+    public static int generateNextID() {
+        return nextID++;
+    }
+    
     public static WekiMiniRunner getInstance() {
         if (ref == null) {
             ref = new WekiMiniRunner();
@@ -107,17 +110,25 @@ public final class WekiMiniRunner {
     //TODO: remove unnecessary argument
     public void transferControl(Wekinator w, Closeable oldC, Closeable newC) {
         oldC.removeWindowListener(wl);
-        newC.addWindowListener(wl);
+        newC.addWindowListener(wl); //Danger: this won't be called if newC is last GUI open :/
         wekinatorCurrentMainFrames.put(w, newC);
     }
 
     public static void main(String[] args) {
         /* Create and display the form */
-        WekiMiniRunner.isKadenze = (args.length != 0);
+        //WekiMiniRunner.isKadenze = (args.length != 0);
+        WekiMiniRunner.isKadenze = true; //KADENZE SET
+        
+        aboutBox.setKadenze(isKadenze);
         //args.length == 0
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                WekiMiniRunner.getInstance().runNewProject();
+                if (WekiMiniRunner.isKadenze) {
+                     new KadenzePromptFrame().setVisible(true);
+                } else {
+                    KadenzeLogging.noLogging();
+                    WekiMiniRunner.getInstance().runNewProject();
+                }
             }
         });
     }
@@ -131,7 +142,8 @@ public final class WekiMiniRunner {
             public void run() {
 
                 try {
-                    Wekinator w = new Wekinator();
+                    Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
+                    KadenzeLogging.getLogger().newProjectStarted(w);
                     InitInputOutputFrame f = new InitInputOutputFrame(w);
                     f.setVisible(true);
                     wekinatorCurrentMainFrames.put(w, f);
@@ -248,6 +260,7 @@ public final class WekiMiniRunner {
     // General quit handler; fed to the OSXAdapter as the method to call when a system quit event occurs
     // A quit event is triggered by Cmd-Q, selecting Quit from the application or Dock menu, or logging out
     public boolean quitNicely() {
+        
         int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Quit Wekinator?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, myIcon);
         if (option == JOptionPane.YES_OPTION) {
             quitWithoutPrompt();
@@ -258,6 +271,9 @@ public final class WekiMiniRunner {
     public void quitWithoutPrompt() {
         //This is where we save logs, shutdown any OSC if needed, etc.
         //Notice that each Wekinator must do its own shutdown of OSC, logging, etc. separately (this is universal shutdown)
+        LoggingManager.closeUniversalLogs();
+        KadenzeLogging.getLogger().closeLog();
+        
         if (!wekinatorCurrentMainFrames.isEmpty()) {
             Wekinator[] stillOpen = wekinatorCurrentMainFrames.keySet().toArray(new Wekinator[0]);
             for (int i = 0; i < stillOpen.length; i++) {
@@ -269,7 +285,7 @@ public final class WekiMiniRunner {
              w.close();
              }  */
         }
-        LoggingManager.closeUniversalLogs();
+       
 
         System.exit(0);
     }

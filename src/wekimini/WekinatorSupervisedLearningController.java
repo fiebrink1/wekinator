@@ -3,7 +3,12 @@
  */
 package wekimini;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 
 /**
  *
@@ -31,7 +36,7 @@ public class WekinatorSupervisedLearningController {
         m.stopRecording();
         // setStatus("Examples recorded. Press \"Train\" to build models from data.");
         w.getStatusUpdateCenter().update(this, 
-                m.getNumExamplesThisRound() + " new examples recorded");
+        m.getNumExamplesThisRound() + " new examples recorded");
 
     }
 
@@ -65,12 +70,14 @@ public class WekinatorSupervisedLearningController {
         }
         if (m.getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING) {
            m.setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+           KadenzeLogging.getLogger().logStartRun(w);
            w.getStatusUpdateCenter().update(this, "Running - waiting for inputs to arrive");
         }
     }
 
     public void stopRun() {
         m.setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.RUN_STOP);
         w.getStatusUpdateCenter().update(this, "Running stopped");
     }
 

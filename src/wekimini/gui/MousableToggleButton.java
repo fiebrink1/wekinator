@@ -23,10 +23,10 @@ public class MousableToggleButton extends JToggleButton {
         this.x = x;
         this.y = y;
         // System.out.println("h");
-        setMinimumSize(new Dimension(40, 40));
-        setMaximumSize(new Dimension(40, 40));
-        setPreferredSize(new Dimension(40, 40));
-        setSize(new Dimension(40, 40));
+        setMinimumSize(new Dimension(50,50));
+        setMaximumSize(new Dimension(50, 50));
+        setPreferredSize(new Dimension(50, 50));
+        setSize(new Dimension(50,50));
         //setMaximumSize(new Dimension(80, 80)); //Doesn't seem to work
         this.addActionListener(new ActionListener() {
 

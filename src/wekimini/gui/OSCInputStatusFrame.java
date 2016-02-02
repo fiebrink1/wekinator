@@ -19,9 +19,10 @@ import wekimini.util.WeakListenerSupport;
  * @author rebecca
  */
 public class OSCInputStatusFrame extends javax.swing.JFrame {
+
     private final Wekinator w;
-   // private final PropertyChangeListener oscReceiverListener = this::oscReceiverPropertyChanged;
-        private final PropertyChangeListener oscReceiverListener = new PropertyChangeListener() {
+    // private final PropertyChangeListener oscReceiverListener = this::oscReceiverPropertyChanged;
+    private final PropertyChangeListener oscReceiverListener = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             oscReceiverPropertyChanged(evt);
@@ -43,24 +44,24 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
         this.w = w;
         updateGUIForConnectionState(w.getOSCReceiver().getConnectionState());
         w.getOSCReceiver().addPropertyChangeListener(wls.propertyChange(oscReceiverListener));
-        
+
         addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e){
+            public void windowClosing(WindowEvent e) {
                 w.getOSCReceiver().removePropertyChangeListener(oscReceiverListener);
             }
         });
-        
+
         int p = w.getOSCReceiver().getReceivePort();
         fieldOscPort.setText(Integer.toString(p));
     }
-    
+
     private void oscReceiverPropertyChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == OSCReceiver.PROP_CONNECTIONSTATE) {
             updateGUIForConnectionState((OSCReceiver.ConnectionState) evt.getNewValue());
         }
     }
-    
+
     private void updateGUIForConnectionState(OSCReceiver.ConnectionState cs) {
         if (cs == OSCReceiver.ConnectionState.CONNECTED) {
             labelOscStatus.setText("Listening on port " + w.getOSCReceiver().getReceivePort());
@@ -81,7 +82,6 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
         }
     }
 
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -194,7 +194,7 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
 
     private void buttonOscListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOscListenActionPerformed
         if (w.getOSCReceiver().getConnectionState()
-            == OSCReceiver.ConnectionState.CONNECTED) {
+                == OSCReceiver.ConnectionState.CONNECTED) {
             w.getOSCReceiver().stopListening();
         } else {
             int port;
@@ -212,6 +212,8 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
             w.getOSCReceiver().setReceivePort(port);
             w.getOSCReceiver().startListening();
         }
+        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)); //Necessary to be handled correctly by main gui!
+        this.dispose();
     }//GEN-LAST:event_buttonOscListenActionPerformed
 
     /**

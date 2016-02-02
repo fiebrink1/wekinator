@@ -35,6 +35,17 @@ public class SVMModelBuilder implements ClassificationModelBuilder {
     private boolean polyUseLowerOrder = false;
     private double rbfGamma = 0.;
     private double complexity = 1.0;
+    
+    @Override
+    public String toLogString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SVM,KERNEL=").append(kernelType);
+        sb.append(",PEXP=").append(polyExponent);
+        sb.append(",LOWER=").append(polyUseLowerOrder);
+        sb.append(",GAMMA=").append(rbfGamma);
+        sb.append(",C=").append(complexity);
+        return sb.toString();
+    }
 
     public SVMModelBuilder() {
         classifier = new SMO();

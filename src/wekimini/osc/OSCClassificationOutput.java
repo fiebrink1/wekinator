@@ -17,6 +17,7 @@ public class OSCClassificationOutput implements OSCSupervisedLearningOutput {
     private final String name;
     private final int numClasses;
     private final boolean isSendingDistribution;
+    //d
 
 
     public OSCClassificationOutput(String name, int numClasses, boolean isSendingDistribution) {
@@ -98,6 +99,15 @@ public class OSCClassificationOutput implements OSCSupervisedLearningOutput {
             which = numClasses;
         }
         return which;
+    }
+
+    @Override
+    public String toLogString() {
+        StringBuilder sb = new StringBuilder("CLASSIFICATION,");
+        sb.append(",NAME=").append(name);
+        sb.append(",NUM_CLASSES=").append(numClasses);
+        sb.append(",SENDING_DISTRIBUTION=").append(isSendingDistribution);
+        return sb.toString();
     }
     
 }

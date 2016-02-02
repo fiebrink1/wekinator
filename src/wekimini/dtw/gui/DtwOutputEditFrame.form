@@ -62,11 +62,6 @@
                               <Component id="fieldOutputName" min="-2" pref="147" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="fieldOutputOSCMessage" max="32767" attributes="0"/>
-                          </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -80,24 +75,14 @@
                           <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="fieldOutputName" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="fieldOutputOSCMessage" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="scrollParent" pref="219" max="32767" attributes="0"/>
+                      <Component id="scrollParent" pref="247" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="jLabel1">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="OSC message for sending vector of match values:"/>
-              </Properties>
-            </Component>
             <Container class="javax.swing.JScrollPane" name="scrollParent">
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
@@ -739,11 +724,6 @@
             <Component class="javax.swing.JTextField" name="fieldOutputName">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Output_2"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="fieldOutputOSCMessage">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="/wek/outputs"/>
               </Properties>
             </Component>
           </SubComponents>

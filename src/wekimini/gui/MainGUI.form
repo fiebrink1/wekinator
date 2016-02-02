@@ -94,12 +94,12 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem7ActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem3">
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemEvaluation">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Model evaluation"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem3ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemEvaluationActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="menuPerformanceCheck">
@@ -136,6 +136,26 @@
             </MenuItem>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="menuKadenze">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Kadenze"/>
+          </Properties>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="menuTemp">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Temp"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem3">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Flush logs"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem3ActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
       </SubComponents>
     </Menu>
   </NonVisualComponents>
@@ -167,12 +187,12 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="panelParent" alignment="0" max="32767" attributes="0"/>
+          <Component id="panelParent" alignment="0" pref="851" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="panelParent" alignment="0" max="32767" attributes="0"/>
+          <Component id="panelParent" alignment="0" pref="344" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -181,7 +201,15 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
       <SubComponents>
-        <Component class="wekimini.dtw.gui.DtwLearningPanel" name="dtwLearningPanel1">
+        <Component class="wekimini.gui.SupervisedLearningPanel" name="supervisedLearningPanel1">
+          <Properties>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[840, 313]"/>
+            </Property>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[840, 313]"/>
+            </Property>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

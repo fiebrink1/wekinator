@@ -20,6 +20,8 @@ import wekimini.Path;
 import wekimini.Wekinator;
 import wekimini.gui.path.ModelEditorFrame.ModelBuilderReceiver;
 import wekimini.gui.path.OutputEditFrame.OutputEditReceiver;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.Model;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCNumericOutput;
@@ -72,6 +74,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         for (int i = 0; i < inputNames.length; i++) {
             final int which = i;
             inputs[i] = new JCheckBox(inputNames[i]);
+            inputs[i].setBackground(new java.awt.Color(255, 255, 255));
             inputs[i].setSelected(p.isUsingInput(inputNames[i]));
             inputs[i].addMouseListener(new MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -301,6 +304,9 @@ public class PathEditorFrame extends javax.swing.JFrame {
         });
 
         labelModelType.setText("Neural network");
+        labelModelType.setMaximumSize(new java.awt.Dimension(259, 16));
+        labelModelType.setMinimumSize(new java.awt.Dimension(259, 16));
+        labelModelType.setPreferredSize(new java.awt.Dimension(259, 16));
 
         buttonPrintToConsole.setText("Display in console");
         buttonPrintToConsole.addActionListener(new java.awt.event.ActionListener() {
@@ -319,21 +325,22 @@ public class PathEditorFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(labelModelType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(96, 96, 96)
-                .addComponent(buttonPrintToConsole))
+                .addComponent(labelModelType, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonPrintToConsole)
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(labelModelType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(buttonEditModelType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(buttonPrintToConsole))
+                            .addComponent(buttonPrintToConsole)
+                            .addComponent(buttonEditModelType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -538,6 +545,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         } else {
             logger.log(LoggingManager.USER_INFO, m.getModelDescription());
         }
+        KadenzeLogging.getLogger().logModelPrintedToConsole(w, p);
     }//GEN-LAST:event_buttonPrintToConsoleActionPerformed
 
     /**

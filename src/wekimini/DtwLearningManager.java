@@ -8,6 +8,8 @@ package wekimini;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static wekimini.DtwLearningManager.RunningState.NOT_RUNNING;
 import wekimini.learning.dtw.DtwData;
-import wekimini.learning.dtw.DtwExample;
 import wekimini.learning.dtw.DtwModel;
 import wekimini.learning.dtw.DtwSettings;
 import wekimini.osc.OSCDtwOutput;
@@ -37,9 +38,12 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
     public static final String PROP_HAS_EXAMPLES = "hasExamples";
     private boolean hasExamples = false;
     private final List<InputOutputConnectionsListener> inputOutputConnectionsListeners = new LinkedList<>();
-
+    private final WekinatorDtwLearningController controller;
+    
     public DtwLearningManager(Wekinator w, OSCOutputGroup group) {
         this.w = w;
+        controller = new WekinatorDtwLearningController(this, w);
+
         if (group.getNumOutputs() != 1) {
             throw new IllegalArgumentException("Only one DTW output allowed right now");
         }
@@ -113,6 +117,11 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
             @Override
             public void notifyInputError() {
             }
+
+            @Override
+            public void updateBundle(List<List<Double>> values) {
+                updateInputBundle(values);
+            }
         });
     }
 
@@ -147,6 +156,39 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         }
         
         updateInputOutputConnections(selectionMatrix);
+    }
+
+    void startRecording(int whichGesture) {
+        model.startRecording(whichGesture);
+    }
+
+    void stopRecording() {
+        model.stopRecording();
+    }
+
+    public WekinatorDtwLearningController getDtwLearningController() {
+        return controller;
+    }
+
+    void writeDataToFile(File projectDir, String baseFilename) throws FileNotFoundException {
+        File f = new File(projectDir + baseFilename + ".csv");
+        model.writeDataToFile(f);
+    }
+
+    void saveModels(String directory, Wekinator w) throws IOException {
+        String location = directory + File.separator;
+        //for (int i = 0; i < models.size(); i++) {
+            String filename = location + "model1.xml";
+            model.writeToFile(filename);
+        //}
+    }
+    
+    void initializeFromExisting(String modelDirectory) throws IOException {
+        String filename = modelDirectory + File.separator + "model1.xml";
+        DtwModel modelToLoad = DtwModel.readFromFile(filename);
+        model.loadFromExisting(modelToLoad);
+        
+        //Update statuses...
     }
 
     public static enum RunningState {
@@ -219,6 +261,31 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
             model.runOnVector(vals);
         }
     }
+    
+    private void updateInputBundle(List<List<Double>> values) {
+       // int numPoints = (Integer) values.get(0);
+       // int numInputs = w.getInputManager().getNumInputs();
+        if (model.getRecordingState() == DtwModel.RecordingState.RECORDING) {
+            //int currentVal = 1; //starts at 1
+            for (List<Double> thisValue : values) {
+            //for (int i = 0; i < numPoints; i++) {
+                double[] theseVals = new double[thisValue.size()];
+                for (int j = 0; j < thisValue.size(); j++) {
+                    theseVals[j] = thisValue.get(j);
+                }
+                model.getData().addTrainingVector(theseVals);
+            }
+        } else if (runningState == RunningState.RUNNING) {
+            double[][] allOutputs = model.runOnBundle(values);
+            try {
+                w.getOSCSender().sendOutputBundleValuesMessage(w.getOutputManager().getOutputGroup().getOscMessage(), allOutputs);
+            } catch (IOException ex) {
+                Logger.getLogger(DtwLearningManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+    }
+    
 
     public boolean[][] getConnectionMatrix() {
         //For now, only have 1 output! (only 1 model)    

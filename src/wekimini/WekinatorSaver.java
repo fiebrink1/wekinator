@@ -16,6 +16,9 @@ import java.util.logging.Logger;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 import wekimini.Path.PathAndDataLoader;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
+import wekimini.learning.dtw.DtwModel;
 import wekimini.osc.OSCInputGroup;
 import wekimini.osc.OSCOutputGroup;
 import wekimini.util.Util;
@@ -33,7 +36,7 @@ public class WekinatorSaver {
     private final static String stashAppend = File.separator + "saved";
     private final static String inputFilename = File.separator + "inputConfig.xml";
     private final static String outputFilename = File.separator + "outputConfig.xml";
-    private final static String dataFilename = File.separator + currentAppend + File.separator + "currentData.arff";
+    private final static String dataFilename = File.separator + currentAppend + File.separator + "currentData"; //No extension: Will not be arff for DTW
 
     private static final Logger logger = Logger.getLogger(WekinatorSaver.class.getName());
 
@@ -44,14 +47,26 @@ public class WekinatorSaver {
         WekinatorFileData wfd = WekinatorFileData.readFromFile(wekFilename);
         OSCInputGroup ig = loadInputs(projectDir);
         OSCOutputGroup og = loadOutputs(projectDir);
-        Instances data = loadDataFromArff(projectDir);
-        List<Path> paths = loadPaths(projectDir, og.getNumOutputs());
-        Wekinator w = instantiateWekinator(wfd, ig, og, data, paths, projectDir);
+        
+        Wekinator w;
+        List<Path> paths = null;
+        boolean isSupervised = true;
+        try {
+           paths  = loadPaths(projectDir, og.getNumOutputs());
+        } catch (Exception ex) {
+            isSupervised = false;
+        }
+        if (isSupervised) {
+           Instances data = loadDataFromArff(projectDir);
+           w = instantiateSupervisedWekinator(wfd, ig, og, data, paths, projectDir);
+        } else {
+            //Temporal modeling
+            w = instantiateTemporalWekinator(wfd, ig, og, projectDir);
+        } 
         return w;
     }
 
     public static void createNewProject(String name, File projectDir, Wekinator w) throws IOException {
-
         createProjectFiles(projectDir);
         saveWekinatorFile(name, projectDir, w);
         if (w != null) {
@@ -64,8 +79,7 @@ public class WekinatorSaver {
     }
 
     private static void saveData(File projectDir, Wekinator w) throws IOException {
-        File f = new File(projectDir + dataFilename);
-        w.getDataManager().writeInstancesToArff(f);
+        w.getLearningManager().writeDataToFile(projectDir, dataFilename);
     }
 
     private static void saveInputs(File projectDir, Wekinator w) throws IOException {
@@ -87,21 +101,23 @@ public class WekinatorSaver {
             g.writeToFile(projectDir + outputFilename);
         } else {
             try {
-                Util.writeBlankFile(projectDir + inputFilename);
+                Util.writeBlankFile(projectDir + outputFilename);
             } catch (IOException ex) {
-                logger.log(Level.WARNING, "Could not write blank file to file{0}{1}", new Object[]{projectDir, inputFilename});
+                logger.log(Level.WARNING, "Could not write blank file to file{0}{1}", new Object[]{projectDir, outputFilename});
             }
         }
     }
 
-    //XXX Fix saving for DTW
     private static void saveModels(File projectDir, Wekinator w) throws IOException {
-        List<Path> paths = w.getSupervisedLearningManager().getPaths();
+        String directory = projectDir + modelsAppend;
+        w.getLearningManager().saveModels(directory, w);
+        
+        /* List<Path> paths = w.getSupervisedLearningManager().getPaths();
         String location = projectDir + modelsAppend + File.separator;
         for (int i = 0; i < paths.size(); i++) {
             String filename = location + "model" + i + ".xml";
             paths.get(i).writeToFile(filename);
-        }
+        } */
     }
     
     //MZ: added this to export C++ code
@@ -124,6 +140,7 @@ public class WekinatorSaver {
         }
         String filename = projectDir + File.separator + name + "." + WekinatorFileData.FILENAME_EXTENSION;
         wfd.writeToFile(filename);
+        KadenzeLogging.getLogger().projectSaved(w, wfd.getProjectName());
     }
 
     private static void createProjectFiles(File f) throws SecurityException {
@@ -159,19 +176,19 @@ public class WekinatorSaver {
     }
 
     //TODO: take care of this within object static load functions, not here
-    private static OSCInputGroup loadInputs(String projectDir) throws Exception {
+    private static OSCInputGroup loadInputs(String projectDir) throws IOException {
         OSCInputGroup loaded = OSCInputGroup.readFromFile(projectDir + inputFilename);
         return new OSCInputGroup(loaded);
     }
 
-    private static OSCOutputGroup loadOutputs(String projectDir) throws Exception {
+    private static OSCOutputGroup loadOutputs(String projectDir) throws IOException {
         OSCOutputGroup loaded = OSCOutputGroup.readFromFile(projectDir + outputFilename);
         return new OSCOutputGroup(loaded);
     }
 
     private static Instances loadDataFromArff(String projectDir) throws IOException {
         ArffLoader al = new ArffLoader();
-        al.setFile(new File(projectDir + dataFilename));
+        al.setFile(new File(projectDir + dataFilename + ".arff"));
         return al.getDataSet();
     }
 
@@ -190,24 +207,43 @@ public class WekinatorSaver {
         return paths;
     }
 
-    //TODO: XXX WON"T WORK ANYMORE: NEED TO SET LEARNING TYPE HERE!
-    private static Wekinator instantiateWekinator(WekinatorFileData wfd, OSCInputGroup ig, OSCOutputGroup og, Instances data, List<Path> tempPaths, String projectDir) throws IOException {
-        Wekinator w = new Wekinator();
+    private static Wekinator instantiateTemporalWekinator(WekinatorFileData wfd, OSCInputGroup ig, OSCOutputGroup og, String projectDir) throws IOException {
+        Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
+        KadenzeLogging.getLogger().loadedFromFile(w, wfd.getProjectName());
         w.setProjectLocation(projectDir);
         w.setHasSaveLocation(true);
         wfd.applySettings(w);
         w.getInputManager().setOSCInputGroup(ig);
         w.getOutputManager().setOSCOutputGroup(og);
+        w.getLearningManager().setDtw(og);//TEST THIS NOW!
+        w.getDtwLearningManager().initializeFromExisting(projectDir + modelsAppend + File.separator);
+        w.getOSCSender().setHostnameAndPort(InetAddress.getByName(og.getHostname()), og.getOutputPort());
+        w.getStatusUpdateCenter().update(null, "Successfully loaded Wekinator project from file.");
+        return w;
+    
+        
+    }
+    
+    //TODO: XXX WON"T WORK ANYMORE: NEED TO SET LEARNING TYPE HERE!
+    private static Wekinator instantiateSupervisedWekinator(WekinatorFileData wfd, OSCInputGroup ig, OSCOutputGroup og, Instances data, List<Path> tempPaths, String projectDir) throws IOException {
+        Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
+        KadenzeLogging.getLogger().loadedFromFile(w, wfd.getProjectName());
+        w.setProjectLocation(projectDir);
+        w.setHasSaveLocation(true);
+        wfd.applySettings(w);
+        w.getInputManager().setOSCInputGroup(ig);
+        w.getOutputManager().setOSCOutputGroup(og);
+        //w.getLearningManager().setSupervisedLearning(); //TEST THIS NOW!
         List<Path> paths = new LinkedList<>();
         for (Path t : tempPaths) {
             Path p = new Path(t, w);
             paths.add(p);
         }
+        
         w.getOSCSender().setHostnameAndPort(InetAddress.getByName(og.getHostname()), og.getOutputPort());
-        w.getSupervisedLearningManager().initializeInputsAndOutputsWithExisting(data, paths);
+        w.getLearningManager().setSupervisedLearningWithExisting(data, paths);
         // the above calls w.getDataManager().initialize(...) with data
         w.getStatusUpdateCenter().update(null, "Successfully loaded Wekinator project from file.");
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         return w;
     }
 }

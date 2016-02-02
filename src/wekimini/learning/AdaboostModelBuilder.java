@@ -25,8 +25,15 @@ public class AdaboostModelBuilder implements ClassificationModelBuilder {
     private transient Instances trainingData = null;
     private transient Classifier classifier = null;
     private static final int defaultNumRounds = 100;
-    private static final boolean isBaseTree = true;
     private int numRounds = defaultNumRounds;
+
+    @Override
+    public String toLogString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ADABOOST,NUM_ROUNDS=").append(numRounds);
+        sb.append(",BASELEARN=").append(baseLearnerType);
+        return sb.toString();
+    }
 
     public static enum BaseLearner {
 

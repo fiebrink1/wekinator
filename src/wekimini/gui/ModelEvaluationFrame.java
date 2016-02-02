@@ -6,6 +6,7 @@
 package wekimini.gui;
 
 import java.awt.CardLayout;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -20,6 +21,8 @@ import wekimini.learning.ModelEvaluator.EvaluationResultsReceiver;
 import wekimini.Path;
 import wekimini.SupervisedLearningManager.LearningState;
 import wekimini.Wekinator;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.util.Util;
 
 /**
@@ -39,6 +42,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
     int modelsComputed = 0;
     int singleModelOffset = 0;
     private boolean wasCancelled = false;
+
     /**
      * Creates new form PathEditorFrame
      */
@@ -338,7 +342,8 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
 
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        dispose();
+            this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)); //Necessary to be handled correctly by main gui!
+            this.dispose();
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void buttonComputeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonComputeActionPerformed
@@ -351,8 +356,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             return;
         }
         boolean isTraining = (comboMethod.getSelectedIndex() == 1);
-                
-        
+
         List<Path> paths;
         if (comboModelToEvaluate.getSelectedIndex() == 0) {
             paths = w.getSupervisedLearningManager().getPaths();
@@ -361,21 +365,21 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             Path p = w.getSupervisedLearningManager().getPaths().get(comboModelToEvaluate.getSelectedIndex() - 1);
             paths = new LinkedList<>();
             paths.add(p);
-            singleModelOffset = comboModelToEvaluate.getSelectedIndex()-1;
+            singleModelOffset = comboModelToEvaluate.getSelectedIndex() - 1;
         }
 
         int numFolds = 0;
         if (!isTraining) {
-        try {
-            numFolds = Integer.parseInt(textNumFolds.getText());
-        } catch (NumberFormatException ex) {
-            Util.showPrettyErrorPane(this, "Number of folds must be an integer greater than 1");
-            return;
-        }
-        if (numFolds <= 1) {
-            Util.showPrettyErrorPane(this, "Number of folds must be an integer greater than 1");
-            return;
-        }
+            try {
+                numFolds = Integer.parseInt(textNumFolds.getText());
+            } catch (NumberFormatException ex) {
+                Util.showPrettyErrorPane(this, "Number of folds must be an integer greater than 1");
+                return;
+            }
+            if (numFolds <= 1) {
+                Util.showPrettyErrorPane(this, "Number of folds must be an integer greater than 1");
+                return;
+            }
         }
         LearningState ls = w.getSupervisedLearningManager().getLearningState();
         if (ls == LearningState.NOT_READY_TO_TRAIN) {
@@ -387,13 +391,13 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             Util.showPrettyErrorPane(this, "Cannot compute evaluation: please supply some training examples first.");
             return;
         }
-        if (! isTraining) {
-        if (numFolds > numExamples) {
-            Util.showPrettyWarningPromptPane(this, "The number of folds you have chosen is greater than the number of training examples; Setting number of folds to " + numExamples);
-            numFolds = numExamples;
+        if (!isTraining) {
+            if (numFolds > numExamples) {
+                Util.showPrettyWarningPromptPane(this, "The number of folds you have chosen is greater than the number of training examples; Setting number of folds to " + numExamples);
+                numFolds = numExamples;
+            }
         }
-        }
-         e = new ModelEvaluator(w, new EvaluationResultsReceiver() {
+        e = new ModelEvaluator(w, new EvaluationResultsReceiver() {
 
             @Override
             public void finishedModel(int modelNum, String results) {
@@ -415,7 +419,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         buttonCompute.setText("Cancel");
         numModelsToCompute = paths.size();
         modelsComputed = 0;
-        progressBar.setMaximum(numModelsToCompute+1);
+        progressBar.setMaximum(numModelsToCompute + 1);
         progressBar.setValue(1);
         e.evaluateAll(paths, isTraining, numFolds, new PropertyChangeListener() {
 
@@ -435,10 +439,10 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         System.out.println("Model " + modelNum + ": " + results);
         modelsComputed++;
         rows.get(singleModelOffset + modelNum).setValue(results);
-        if (! wasCancelled) {
-            progressBar.setValue(modelsComputed+1);
+        if (!wasCancelled) {
+            progressBar.setValue(modelsComputed + 1);
         }
-        
+
     }
 
     private void cvCancelled() {
@@ -458,8 +462,8 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         System.out.println("CV Finished");
         isComputing = false;
         buttonCompute.setText("Compute now");
-        progressBar.setValue(numModelsToCompute+1);
-        
+        progressBar.setValue(numModelsToCompute + 1);
+
     }
 
     private void comboMethodActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboMethodActionPerformed

@@ -66,6 +66,8 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private final static int COMBO_ADABOOST_INDEX = 2;
     private final static int COMBO_SVM_INDEX = 1;
     private final static int COMBO_J48_INDEX = 3;
+    
+    private int lastNumOutputs = 5;
 
     private final ButtonGroup classificationRadioGroup = new ButtonGroup();
     private LearningModelBuilder[] classificationModelBuilders;
@@ -444,14 +446,14 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(labelOscStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fieldOscPort, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(fieldOscPort, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(buttonOscListen))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(buttonOscListen)
-                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -833,13 +835,13 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 570, Short.MAX_VALUE)
+            .addGap(0, 586, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 359, Short.MAX_VALUE)
+            .addGap(0, 325, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -860,7 +862,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         }
     }//GEN-LAST:event_fieldOscPortKeyTyped
 
-    private void buttonOscListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOscListenActionPerformed
+    private void tryToStartListening() {
         if (w.getOSCReceiver().getConnectionState()
                 == OSCReceiver.ConnectionState.CONNECTED) {
             w.getOSCReceiver().stopListening();
@@ -880,8 +882,15 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             w.getOSCReceiver().setReceivePort(port);
             w.getOSCReceiver().startListening();
         }
+    }
+    
+    private void buttonOscListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOscListenActionPerformed
+        tryToStartListening();
     }//GEN-LAST:event_buttonOscListenActionPerformed
 
+    
+    
+    
     private void fieldNumInputsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumInputsKeyTyped
         char enter = evt.getKeyChar();
         if (!(Character.isDigit(enter))) {
@@ -1042,18 +1051,30 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private void comboOutputTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboOutputTypeActionPerformed
         updateOutputCard();
         updateOutputOptions();
+        updateNumOutputsOption();
     }//GEN-LAST:event_comboOutputTypeActionPerformed
 
+    private void updateNumOutputsOption() {
+       int index = comboOutputType.getSelectedIndex();
+       CardLayout layout = (CardLayout) panelOutputTypes.getLayout();
+
+        if (index == COMBO_REGRESSION_INDEX || index == COMBO_CLASSIFICATION_INDEX) {
+          //  fieldNumOutputs.setText(Integer.toString(lastNumOutputs));
+            fieldNumOutputs.setEnabled(true);
+        } else {
+           /* try {
+                lastNumOutputs = Integer.parseInt(fieldNumOutputs.getText());
+            } catch (NumberFormatException ex) {
+                lastNumOutputs = 1;
+            } */
+            fieldNumOutputs.setText("1");
+            fieldNumOutputs.setEnabled(false);
+        }
+    }
+    
     private void updateOutputOptions() {
         int index = comboOutputType.getSelectedIndex();
         CardLayout layout = (CardLayout) panelOutputTypes.getLayout();
-        /*if (index == COMBO_REGRESSION_INDEX) {
-         menuChooseAlgorithm.setEnabled(false);
-         } else if (index == COMBO_CLASSIFICATION_INDEX) {
-         menuChooseAlgorithm.setEnabled(true);
-         } else {
-         menuChooseAlgorithm.setEnabled(false);
-         } */
 
         if (index == COMBO_REGRESSION_INDEX) {
             menuChooseAlgorithm.setEnabled(true);
@@ -1161,6 +1182,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             List<OSCOutput> outputs = new LinkedList<>();
             int numGestures = Integer.parseInt(fieldNumDtwTypes.getText());
             for (int i = 0; i < numOutputs; i++) {
+                if (currentOutputNames[i].equals("outputs-1")) {
+                    currentOutputNames[i] = "output";
+                }
+                
                 OSCDtwOutput o = new OSCDtwOutput(
                         currentOutputNames[i],
                         numGestures);
@@ -1236,7 +1261,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
     private void buttonNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonNextActionPerformed
         //TODO: have to do more if configuringOSC on next screen...
-        if (checkOSCReady() && checkInputReady() && checkOutputReady() && checkNamesUnique() && customConfigMatchesGUI()) {
+        //if (checkOSCReady() && checkInputReady() && checkOutputReady() && checkNamesUnique() && customConfigMatchesGUI()) {
+        if (checkInputReady() && checkOutputReady() && checkNamesUnique() && customConfigMatchesGUI()) {
+
             //System.out.println("READY TO GO");
             try {
                 configureOSCSenderFromForm();
@@ -1262,6 +1289,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                         initCustomNonTemporalModelBuilders();
                     }
                     finalizeSetup();
+                    if (w.getOSCReceiver().getConnectionState() != OSCReceiver.ConnectionState.CONNECTED) {
+                        tryToStartListening();
+                    } 
                 } else {
                     if (!fieldNumOutputs.getText().trim().equals("1")) {
                         Util.showPrettyErrorPane(this, "DTW is only working for 1 output right now, sorry!");
@@ -1275,6 +1305,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                         initForCustomDtw();
                     }
                     finalizeSetup();
+                    if (w.getOSCReceiver().getConnectionState() != OSCReceiver.ConnectionState.CONNECTED) {
+                        tryToStartListening();
+                    }   
                 }
 
             } catch (UnknownHostException ex) {
@@ -1520,7 +1553,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             public void run() {
                 Wekinator w;
                 try {
-                    w = new Wekinator();
+                    w = new Wekinator(WekiMiniRunner.generateNextID());
                     InitInputOutputFrame p = new InitInputOutputFrame(w);
                     p.setVisible(true);
                 } catch (IOException ex) {

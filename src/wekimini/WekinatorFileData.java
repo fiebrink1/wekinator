@@ -49,10 +49,10 @@ public class WekinatorFileData {
     
     @Override
     public String toString() {
-        return Util.toXMLString(this, "WekinatorSaveData", WekinatorFileData.class);
+        return Util.toXMLString(this, "WekinatorFileData", WekinatorFileData.class);
     }
     
-    public static WekinatorFileData readFromFile(String filename) throws Exception {
+    public static WekinatorFileData readFromFile(String filename) throws IOException {
         WekinatorFileData w = (WekinatorFileData) Util.readFromXMLFile("WekinatorFileData", WekinatorFileData.class, filename);
         return w;
         /*InputStream in = new FileInputStream(filename);
@@ -63,31 +63,7 @@ public class WekinatorFileData {
     }
     
     public void writeToFile(String filename) throws IOException {
-        Util.writeToXMLFile(this, "WekinatorFileData", WekinatorFileData.class, filename);
-
-        /*FileOutputStream fos = null;
-        try {
-            XStream xstream = new XStream();
-            xstream.alias("OSCInputGroup", OSCInputGroup.class);
-            //String xml = xstream.toXML(this);
-            //System.out.println(xml);
-            fos = new FileOutputStream(filename);
-            fos.write("<?xml version=\"1.0\"?>\n".getBytes("UTF-8")); //write XML header, as XStream doesn't do that for us
-            xstream.toXML(this, fos);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(OSCInputGroup.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(OSCInputGroup.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(OSCInputGroup.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } */
-        
+        Util.writeToXMLFile(this, "WekinatorFileData", WekinatorFileData.class, filename);        
     }
     
     

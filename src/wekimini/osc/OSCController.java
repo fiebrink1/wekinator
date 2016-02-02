@@ -4,12 +4,14 @@
  */
 package wekimini.osc;
 
+import com.illposed.osc.OSCMessage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import wekimini.LearningManager;
 import wekimini.LearningManager.LearningType;
 import wekimini.Wekinator;
 import wekimini.WekinatorController;
+import wekimini.WekinatorDtwLearningController;
 import wekimini.WekinatorSupervisedLearningController;
 
 /**
@@ -23,6 +25,7 @@ public class OSCController {
     private final OSCControlReceiver controlReceiver;
     private boolean oscControlEnabled = true;
     private WekinatorSupervisedLearningController supervisedController;
+    private WekinatorDtwLearningController dtwController;
     private WekinatorController wekController;
     private boolean isSupervised = false;
 
@@ -52,6 +55,10 @@ public class OSCController {
         if (learningType == LearningType.SUPERVISED_LEARNING) {
             isSupervised = true;
             supervisedController = w.getLearningManager().getSupervisedLearningManager().getSupervisedLearningController();
+        } else {
+            isSupervised = false;
+            dtwController = w.getLearningManager().getDtwLearningManager().getDtwLearningController();
+                    
         }
     }
 
@@ -111,19 +118,30 @@ public class OSCController {
     }
 
     public void startRun() {
+        //TODO: put start/stop run in wekinator controller
         if (checkEnabled() && isSupervised) {
             if (supervisedController.canRun()) {
                 supervisedController.startRun();
             } else {
                 w.getStatusUpdateCenter().warn(this, "Recieved OSC run command but cannot run in this state");
             }
-        }
+        } else if (checkEnabled() && !isSupervised) {
+            if (dtwController.canRun()) {
+                dtwController.startRun();
+            } else {
+                w.getStatusUpdateCenter().warn(this, "Recieved OSC run command but cannot run in this state");
+            }
+        } 
     }
 
     public void stopRun() {
         if (checkEnabled() && isSupervised) {
             if (supervisedController.isRunning()) {
                 supervisedController.stopRun();
+            }
+        } else if (checkEnabled() && !isSupervised) {
+            if (dtwController.isRunning()) {
+                dtwController.stopRun();
             }
         }
     }
@@ -162,6 +180,15 @@ public class OSCController {
     //Also requires inputs and outputs to already be set up
     public void setInputSelectionForOutput(int[] whichInputs, int outputNum) {
         w.getWekinatorController().setInputsForOutput(whichInputs, outputNum);
+    }
+
+    void startDtwRecord(int whichGesture) {
+        dtwController.startRecord(whichGesture);
+        
+    }
+
+    void stopDtwRecord() {
+        dtwController.stopRecord();
     }
 
 }

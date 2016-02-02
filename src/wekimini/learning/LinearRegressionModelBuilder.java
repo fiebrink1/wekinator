@@ -30,11 +30,21 @@ public class LinearRegressionModelBuilder implements RegressionModelBuilder {
         NONE, M5, GREEDY
     };
 
-    private transient FeatureSelectionType featureSelectionType;
+    private FeatureSelectionType featureSelectionType;
     private static final Logger logger = Logger.getLogger(LinearRegressionModelBuilder.class.getName());
     private int exponent = 1;
     private boolean removeColinear = false;
 
+    
+    @Override
+    public String toLogString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("LINPOLREG,EXPONENT=").append(exponent);
+        sb.append(",FEAT=").append(featureSelectionType);
+        sb.append(",REMOVE=").append(removeColinear);
+        return sb.toString();
+    }
+    
     public int getExponent() {
         return exponent;
     }

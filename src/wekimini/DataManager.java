@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini;
+package wekimini; //m22
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -34,6 +34,8 @@ import weka.filters.unsupervised.attribute.AddValues;
 import weka.filters.unsupervised.attribute.Reorder;
 import weka.filters.unsupervised.instance.RemoveWithValues;
 import wekimini.gui.DatasetViewer;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
@@ -485,7 +487,28 @@ public class DataManager {
         }
         setInitialized(true);
     }
-
+    
+    public Instances getDummyInstances() {
+        return dummyInstances;
+    }
+    
+    public int getNumMetaData() {
+        return numMetaData;
+    }
+    
+    /*public Filter getOutputFilter(int which) {
+        //return outputFilters[which];
+        //outputFilters[0].
+        Reorder r= new Reorder();
+        r = new Reorder();
+        r.s
+    } */
+    
+    public String getOutputFilterString(int which) {
+        Reorder r = (Reorder)outputFilters[which];
+        return r.getAttributeIndices();
+    }
+    
     private void initializeInstances() {
         //Set up instances
         FastVector ff = new FastVector(numInputs + numOutputs + numMetaData); //Include ID, timestamp, training round
@@ -788,6 +811,7 @@ public class DataManager {
             setNumExamplesPerOutput(i, 0);
             // outputInstanceCounts[i] = 0;
         }
+        KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.SUPERVISED_DELETE_ALL_EXAMPLES);
         fireStateChanged();
     }
 
@@ -937,33 +961,6 @@ public class DataManager {
     public void writeInstancesToArff(File file) throws IOException {
         ArffSaver saver = new ArffSaver();
         Instances temp = new Instances(allInstances);
-        //Attribute niceDate = new Attribute("Time", nullF); 
-      /*  Attribute niceDate = new Attribute("Time", prettyDateFormatString);
-         temp.insertAttributeAt(niceDate, timestampIndex);
-
-         Date d;
-         for (int i = 0; i < temp.numInstances(); i++) {
-         double ddate = temp.instance(i).value(timestampIndex+1);
-         String niceDecimal = decimalFormat.format(ddate);
-         try {
-         d = dateFormat.parse(niceDecimal);
-         String pretty = prettyDateFormat.format(d);
-         temp.instance(i).setValue(timestampIndex, niceDate.parseDate(pretty));
-
-         } catch (ParseException ex) {
-         temp.instance(i).setValue(timestampIndex, 0);
-         Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
-         } 
-           
-           
-         }
-        
-         temp.deleteAttributeAt(timestampIndex+1);
-         */
-
-        /*for (int i = 0; i < numFeatures; i++) {
-         temp.renameAttribute(i, featureNames[i]);
-         }*/
         saver.setInstances(temp);
         saver.setFile(file);
         saver.writeBatch();
@@ -1033,6 +1030,8 @@ public class DataManager {
          viewer.setVisible(true);
          viewer.toFront();
          */
+        
+        KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.SUPERVISED_DATA_VIEWED);
         if (viewer != null) {
             viewer.toFront();
             return;

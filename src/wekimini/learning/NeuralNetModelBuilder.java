@@ -35,7 +35,17 @@ public class NeuralNetModelBuilder implements RegressionModelBuilder {
     private int numNodesPerHiddenLayer = 1;
     
     private static final Logger logger = Logger.getLogger(NeuralNetModelBuilder.class.getName());
-        
+    
+    @Override
+    public String toLogString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("NEURALNET,NUM_HID=").append(numHiddenLayers);
+        sb.append(",HID_TYPE=").append(hiddenLayerType);
+        if (hiddenLayerType == HiddenLayerType.NUMBER) {
+            sb.append(",NUMPERHID=").append(numNodesPerHiddenLayer);
+        }
+        return sb.toString();
+    }
     
     public NeuralNetModelBuilder() {
         classifier = new MultilayerPerceptron();

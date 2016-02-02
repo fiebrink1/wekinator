@@ -5,6 +5,8 @@ package wekimini.osc;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Random;
 import wekimini.util.Util;
 
@@ -27,7 +29,9 @@ public class OSCDtwOutput implements OSCOutput {
     private String[] gestureOscMessages;
     public static final String PROP_GESTURE_OSC_MESSAGES = "gestureOscMessages";
     private String outputOscMessage;
-    
+    //Removed final for XML de-serialization support
+    private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
     public String getOutputOscMessage() {
         return outputOscMessage;
     }
@@ -37,7 +41,6 @@ public class OSCDtwOutput implements OSCOutput {
     }
             
 
-    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     
     public OSCDtwOutput(String name, int numGestures) {
@@ -49,18 +52,6 @@ public class OSCDtwOutput implements OSCOutput {
         this.outputOscMessage = name;
         populateOscMessagesFromNames();
     }
-    
-    /*public OSCDtwOutput(String name, String[] gestureNames, int numGestures) {
-        this.name = name;
-        this.numGestures = numGestures;
-        this.gestureOscMessages = new String[numGestures];
-        if (gestureNames == null || gestureNames.length != numGestures) {
-            throw new IllegalArgumentException("Gesture names must be same length as numGestures");
-        }
-        this.gestureNames = new String[numGestures];
-        populateNames();
-        populateOscMessagesFromNames();
-    } */
     
     /**
      * Get the value of gestureOscMessages
@@ -272,4 +263,24 @@ public class OSCDtwOutput implements OSCOutput {
         }
         return which;
     }
+    
+  
+    
+    private Object readResolve() {
+        propertyChangeSupport = new PropertyChangeSupport(this);
+        return this;
+  }
+
+    @Override
+    public String toLogString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("DTW,NAME=").append(name);
+        sb.append(",NUM_GEST=").append(numGestures);
+        sb.append(",GESTURE_NAMES=");
+        for (int i = 0; i < numGestures; i++) {
+            sb.append(gestureNames[i]).append(',');
+        }
+        return sb.toString();
+    }
+    
 }

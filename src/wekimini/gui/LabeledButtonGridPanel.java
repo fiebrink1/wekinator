@@ -7,6 +7,7 @@ package wekimini.gui;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -41,7 +42,7 @@ public class LabeledButtonGridPanel extends JPanel {
 
     public LabeledButtonGridPanel(String[] rowLabels, String[] colLabels, boolean[][] enabled) {
         super();
-
+        this.setBackground(new java.awt.Color(255, 255, 255));
         //Instantiate objects
         toggles = new MousableToggleButton[rowLabels.length][colLabels.length];
         columnToggles = new boolean[colLabels.length];
@@ -99,6 +100,13 @@ public class LabeledButtonGridPanel extends JPanel {
         JPanel pBottomLeft = new JPanel();
         JPanel pBottomRight = new JPanel();
 
+        pTop.setBackground(new java.awt.Color(255, 255, 255));
+        pBottom.setBackground(new java.awt.Color(255, 255, 255));
+        pTopLeft.setBackground(new java.awt.Color(255, 255, 255));
+        pTopRight.setBackground(new java.awt.Color(255, 255, 255));
+        pBottomLeft.setBackground(new java.awt.Color(255, 255, 255));
+        pBottomRight.setBackground(new java.awt.Color(255, 255, 255));
+        
         setPreferredSize(new java.awt.Dimension(leftColumnWidth + buttonPanelWidth + 10, topRowHeight + buttonPanelHeight + 20));
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.Y_AXIS));
 
@@ -151,6 +159,7 @@ public class LabeledButtonGridPanel extends JPanel {
                 final int y = j;
                 MousableToggleButton b = new MousableToggleButton(i, j);
                 b.setSize(buttonWidth, buttonHeight);
+                b.setMargin(new Insets(2,2,2,2));
                 b.addMouseListener(new java.awt.event.MouseAdapter() {
                     @Override
                     public void mouseExited(java.awt.event.MouseEvent evt) {

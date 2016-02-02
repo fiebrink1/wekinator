@@ -31,7 +31,7 @@ public class AdaboostModel implements SupervisedLearningModel {
     private static final Logger logger = Logger.getLogger(AdaboostModel.class.getName());
     public AdaboostModel(String name, AdaBoostM1 wmodel) { 
         this.prettyName = name;
-        Date d= new Date();
+        Date d = new Date();
         timestamp = Long.toString(d.getTime());
         this.wmodel = wmodel;
         myId = this.prettyName + "_" + timestamp;
@@ -64,7 +64,7 @@ public class AdaboostModel implements SupervisedLearningModel {
         xstream.alias("AdaboostModel", AdaboostModel.class);
         String xml = xstream.toXML(this);
         os.writeObject(xml);
-        os.writeObject(wmodel);
+        os.writeObject(wmodel); //Uses default java serialization
 //Util.writeToXMLFile(this, "Path", Path.class, filename);
     }
     
@@ -97,5 +97,4 @@ public class AdaboostModel implements SupervisedLearningModel {
     public Classifier getClassifier() {
         return wmodel;
     }
-    
 }

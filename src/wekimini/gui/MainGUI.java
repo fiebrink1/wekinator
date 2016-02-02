@@ -14,8 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import wekimini.DtwLearningManager;
 import wekimini.LearningManager;
 import wekimini.Path;
 import wekimini.WekiMiniRunner.Closeable;
@@ -26,6 +26,11 @@ import wekimini.Wekinator;
 import wekimini.WekinatorFileData;
 import wekimini.dtw.gui.DtwEditorFrame;
 import wekimini.dtw.gui.DtwLearningPanel;
+import wekimini.dtw.gui.DtwOutputEditor;
+import wekimini.kadenze.KadenzeAssignment;
+import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.dtw.DtwModel;
 
 /**
@@ -37,13 +42,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private OSCInputStatusFrame oscInputStatusFrame = null;
     private InputMonitor inputMonitorFrame = null;
     private OutputViewerTable outputTableWindow = null;
+    private DtwOutputEditor dtwOutputEditor = null;
     private ModelEvaluationFrame modelEvaluationFrame = null;
     private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
     private final Wekinator w;
     private boolean closeable = true; //flaseif this is the last window open
-    
-    
-    
+    private static final Logger logger = Logger.getLogger(MainGUI.class.getName());
+    private JMenuItem[] kadenzeMenuItems = new JMenuItem[0];
+    private DtwLearningPanel dtwLearningPanel1;
     /**
      * Creates new form MainGUI
      */
@@ -52,7 +58,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         if (type == LearningManager.LearningType.INITIALIZATION) {
             throw new IllegalStateException("GUI can only be created for Wekinator whose learning type is known");
         }
-        
+
         this.w = w;
         setGUIForWekinator(type);
         this.addWindowListener(new WindowAdapter() {
@@ -64,29 +70,189 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                 if (option == JOptionPane.YES_OPTION) {
                     finishUp();
                 }
-                
+
             }
         });
     }
 
     private void finishUp() {
+        KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.PROJECT_CLOSED);
+        KadenzeLogging.getLogger().flush(); //Imperfect: Log won't be closed if this is last GUI and we haven't submitted yet...
         w.close();
         this.dispose();
     }
 
     private void setGUIForWekinator(LearningManager.LearningType type) {
         this.setTitle(w.getProjectName());
+        menuItemSave.setEnabled(w.hasSaveLocation());
         w.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 wekinatorPropertyChanged(evt);
             }
         });
-        
+
         if (type == LearningManager.LearningType.SUPERVISED_LEARNING) {
             initializeForSupervisedLearning();
         } else if (type == LearningManager.LearningType.TEMPORAL_MODELING) {
             initializeForTemporalModeling();
+        }
+
+        initKadenzeMenu();
+
+    }
+
+    private void initKadenzeMenu() {
+        menuKadenze.setVisible(WekiMiniRunner.isKadenze());
+        if (!WekiMiniRunner.isKadenze()) {
+            return;
+        }
+
+        //Add sub-menus here
+        addKadenzeMenus();
+        updateKadenzeMenus();
+
+        //Add listeners
+        KadenzeLogging.addListener(new KadenzeLogging.KadenzeListener() {
+
+            //This is called when part changes as well
+            @Override
+            public void assignmentChanged(KadenzeAssignmentType ka) {
+                updateKadenzeMenus();
+            }
+
+            @Override
+            public void assignmentStarted(KadenzeAssignmentType ka) {
+            }
+
+            @Override
+            public void assignmentStopped() {
+                updateKadenzeMenus();
+            }
+        });
+    }
+
+    private void addKadenzeMenus() {
+        KadenzeAssignmentType ka = KadenzeLogging.getCurrentAssignmentType();
+        int whichMainAssignment = KadenzeAssignment.getAssignmentNumber(ka);
+
+        if (whichMainAssignment == 1) {
+            //Don't need any sub-menus
+            kadenzeMenuItems = new JMenuItem[2];
+            JMenuItem k1 = new JMenuItem("Doing Assignment 1, Part 1A");
+            k1.setEnabled(false);
+            menuKadenze.add(k1);
+            kadenzeMenuItems[0] = k1;
+
+            JMenuItem k2 = new JMenuItem("Create Kadenze Assignment 1 submission");
+            k2.addActionListener(new java.awt.event.ActionListener() {
+                @Override
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    createAssignmentSubmission();
+                }
+            });
+            menuKadenze.add(k2);
+            kadenzeMenuItems[1] = k2;
+        } else if (whichMainAssignment == 2) {
+            makeKadenzeAssignment2Menu(ka);
+        } else {
+            logger.log(Level.WARNING, "Unknown assignment :" + ka);
+        }
+    }
+
+    private void makeKadenzeAssignment2Menu(final KadenzeAssignmentType ka) {
+        kadenzeMenuItems = new JMenuItem[8];
+        int subPart = KadenzeAssignment.getAssignmentSubPart(ka); //1 through 7
+        for (int i = 0; i < 7; i++) {
+            String s;
+            if (i == (subPart - 1)) {
+                s = "Doing ";
+            } else {
+                s = "Start ";
+            }
+            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(2, i + 1));
+            kadenzeMenuItems[i] = new JMenuItem(s);
+            if (i == (subPart - 1)) {
+                kadenzeMenuItems[i].setEnabled(false);
+            }
+            /* kadenzeMenuItems[i].addActionListener(new java.awt.event.ActionListener() {
+             @Override
+             public void actionPerformed(java.awt.event.ActionEvent evt) {
+             switchToAssignment(KadenzeAssignment.getAssignmentNumber(ka), i);
+             }
+             }); */
+            menuKadenze.add(kadenzeMenuItems[i]);
+        }
+
+        addKadenzeListener(kadenzeMenuItems[0], KadenzeAssignmentType.ASSIGNMENT2_PART1A);
+        addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT2_PART1B);
+        addKadenzeListener(kadenzeMenuItems[2], KadenzeAssignmentType.ASSIGNMENT2_PART1C);
+        addKadenzeListener(kadenzeMenuItems[3], KadenzeAssignmentType.ASSIGNMENT2_PART1D);
+        addKadenzeListener(kadenzeMenuItems[4], KadenzeAssignmentType.ASSIGNMENT2_PART2);
+        addKadenzeListener(kadenzeMenuItems[5], KadenzeAssignmentType.ASSIGNMENT2_PART3A);
+        addKadenzeListener(kadenzeMenuItems[6], KadenzeAssignmentType.ASSIGNMENT2_PART3B);
+
+        kadenzeMenuItems[7] = new JMenuItem("Create Kadenze Assignment 2 submission");
+        kadenzeMenuItems[7].addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createAssignmentSubmission();
+            }
+        });
+        menuKadenze.add(kadenzeMenuItems[7]);
+    }
+
+    private void addKadenzeListener(final JMenuItem kadenzeMenuItem, final KadenzeAssignmentType kadenzeAssignmentType) {
+        kadenzeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                switchToAssignment(kadenzeAssignmentType);
+            }
+        });
+    }
+
+    private void switchToAssignment(KadenzeAssignmentType t) {
+        try {
+            KadenzeLogging.startLoggingForAssignment(t);
+        } catch (IOException ex) {
+            //Can we give a better error?
+            Util.showPrettyErrorPane(this, "Error encountered in creating log file! Please ensure that your Kadenze log location is writable, and that no other copies of Wekinator are also trying to log there.");
+        }
+    }
+
+    //Called when part changed or assignment stopped
+    //TODO:
+    private void updateKadenzeMenus() {
+        KadenzeAssignmentType ka = KadenzeLogging.getCurrentAssignmentType();
+        int which = KadenzeAssignment.getAssignmentNumber(ka);
+        if (which == 1) {
+            if (KadenzeLogging.isCurrentlyLogging()) {
+                kadenzeMenuItems[1].setEnabled(true);
+            } else {
+                kadenzeMenuItems[1].setEnabled(false);
+            }
+        } else if (which == 2) {
+            int subpart = KadenzeAssignment.getAssignmentSubPart(ka);
+            for (int i = 0; i < 7; i++) {
+                if (subpart == (i + 1)) {
+                    kadenzeMenuItems[i].setEnabled(false);
+                } else {
+                    kadenzeMenuItems[i].setEnabled(true);
+                }
+            }
+        } else {
+            System.out.println("NOT IMPLEMENTED YET");
+        }
+    }
+
+    private void createAssignmentSubmission() {
+        try {
+            String zipped = KadenzeLogging.createZipForAssignment();
+            Util.showPrettyInfoPane(this, "Your assignment is done! Please submit file " + zipped, "Success!");
+        } catch (Exception ex) {
+            //String dir = KadenzeLogging.getLogger().getCurrentLoggingDirectory();
+            String dir = KadenzeLogging.getLogger().getZipDirectoryNameForAssignment();
+            Util.showPrettyErrorPane(this, "Could not zip file. Please zip your " + dir + " directory manually.");
         }
     }
 
@@ -109,7 +275,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
         learningPanel1 = new wekimini.gui.SupervisedLearningPanel();
         panelParent = new javax.swing.JPanel();
-        dtwLearningPanel1 = new wekimini.dtw.gui.DtwLearningPanel();
+        supervisedLearningPanel1 = new wekimini.gui.SupervisedLearningPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         jMenuItem6 = new javax.swing.JMenuItem();
@@ -121,11 +287,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
+        menuItemEvaluation = new javax.swing.JMenuItem();
         menuPerformanceCheck = new javax.swing.JCheckBoxMenuItem();
         menuConsole = new javax.swing.JMenuItem();
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
+        menuKadenze = new javax.swing.JMenu();
+        menuTemp = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("New project");
@@ -139,7 +308,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
 
         panelParent.setLayout(new javax.swing.BoxLayout(panelParent, javax.swing.BoxLayout.LINE_AXIS));
-        panelParent.add(dtwLearningPanel1);
+
+        supervisedLearningPanel1.setMinimumSize(new java.awt.Dimension(840, 313));
+        supervisedLearningPanel1.setPreferredSize(new java.awt.Dimension(840, 313));
+        panelParent.add(supervisedLearningPanel1);
 
         menuFile.setMnemonic('F');
         menuFile.setText("File");
@@ -217,13 +389,13 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         jMenu2.add(jMenuItem7);
 
-        jMenuItem3.setText("Model evaluation");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+        menuItemEvaluation.setText("Model evaluation");
+        menuItemEvaluation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
+                menuItemEvaluationActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem3);
+        jMenu2.add(menuItemEvaluation);
 
         menuPerformanceCheck.setText("Performance mode view");
         menuPerformanceCheck.addActionListener(new java.awt.event.ActionListener() {
@@ -256,17 +428,32 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
         jMenuBar1.add(menuActions);
 
+        menuKadenze.setText("Kadenze");
+        jMenuBar1.add(menuKadenze);
+
+        menuTemp.setText("Temp");
+
+        jMenuItem3.setText("Flush logs");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        menuTemp.add(jMenuItem3);
+
+        jMenuBar1.add(menuTemp);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelParent, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(panelParent, javax.swing.GroupLayout.DEFAULT_SIZE, 851, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelParent, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(panelParent, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE)
         );
 
         pack();
@@ -345,51 +532,73 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         w.showConsole();
     }//GEN-LAST:event_menuConsoleActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+    private void menuItemEvaluationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemEvaluationActionPerformed
         showEvaluationWindow();
+    }//GEN-LAST:event_menuItemEvaluationActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        KadenzeLogging.getLogger().flush();
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void showEvaluationWindow() {
-       if (modelEvaluationFrame == null) {
-            modelEvaluationFrame = new ModelEvaluationFrame(w.getOutputManager().getOutputGroup().getOutputNames(), w);;
+        if (modelEvaluationFrame == null) {
+            modelEvaluationFrame = new ModelEvaluationFrame(w.getOutputManager().getOutputGroup().getOutputNames(), w);
             modelEvaluationFrame.setVisible(true);
 
-            
             Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
                 @Override
                 public void callMe() {
+                    System.out.println("Setting to null");
                     modelEvaluationFrame = null;
                 }
-            };    
+            };
             Util.callOnClosed(modelEvaluationFrame, callMe);
         } else {
             modelEvaluationFrame.toFront();
         }
     }
-    
+
     public void showOutputTable() {
         if (w.getLearningManager().getLearningType() == LearningManager.LearningType.TEMPORAL_MODELING) {
-            Util.showPrettyErrorPane(this, "Not yet implemented for DTW outputs");
-            return;
-        }
-        if (outputTableWindow == null) {
-            outputTableWindow = new OutputViewerTable(w);
-            outputTableWindow.setVisible(true);
+            if (dtwOutputEditor == null) {
+                dtwOutputEditor = new DtwOutputEditor(w);
+                dtwOutputEditor.setVisible(true);
 
-           /* Util.callOnClosed(outputTableWindow, (Callable) () -> {
-                outputTableWindow = null;
-                return null;
-            }); */
-            Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
-                @Override
-                public void callMe() {
-                    outputTableWindow = null;
-                }
-            };
-            Util.callOnClosed(outputTableWindow, callMe);
-            
+                /* Util.callOnClosed(outputTableWindow, (Callable) () -> {
+                 outputTableWindow = null;
+                 return null;
+                 }); */
+                Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                    @Override
+                    public void callMe() {
+                        dtwOutputEditor = null;
+                    }
+                };
+                Util.callOnClosed(dtwOutputEditor, callMe);
+
+            } else {
+                dtwOutputEditor.toFront();
+            }
         } else {
-            outputTableWindow.toFront();
+            if (outputTableWindow == null) {
+                outputTableWindow = new OutputViewerTable(w);
+                outputTableWindow.setVisible(true);
+
+                /* Util.callOnClosed(outputTableWindow, (Callable) () -> {
+                 outputTableWindow = null;
+                 return null;
+                 }); */
+                Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                    @Override
+                    public void callMe() {
+                        outputTableWindow = null;
+                    }
+                };
+                Util.callOnClosed(outputTableWindow, callMe);
+
+            } else {
+                outputTableWindow.toFront();
+            }
         }
     }
 
@@ -415,13 +624,12 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             inputMonitorFrame = new InputMonitor(w);
             inputMonitorFrame.setVisible(true);
 
-            
             Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
                 @Override
                 public void callMe() {
                     inputMonitorFrame = null;
                 }
-            };    
+            };
             Util.callOnClosed(inputMonitorFrame, callMe);
         } else {
             inputMonitorFrame.toFront();
@@ -434,14 +642,13 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             inputOutputConnectionsWindow.setVisible(true);
 
             //Problem: Won't call on button-triggered dispose...
-            
             Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
                 @Override
                 public void callMe() {
                     inputOutputConnectionsWindow = null;
                 }
-            }; 
-            
+            };
+
             Util.callOnClosed(inputOutputConnectionsWindow, callMe);
         } else {
             inputOutputConnectionsWindow.toFront();
@@ -493,7 +700,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem checkEnableOSCControl;
-    private wekimini.dtw.gui.DtwLearningPanel dtwLearningPanel1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
@@ -507,10 +713,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenu menuActions;
     private javax.swing.JMenuItem menuConsole;
     private javax.swing.JMenu menuFile;
+    private javax.swing.JMenuItem menuItemEvaluation;
     private javax.swing.JMenuItem menuItemSave;
     private javax.swing.JMenuItem menuItemSaveAs;
+    private javax.swing.JMenu menuKadenze;
     private javax.swing.JCheckBoxMenuItem menuPerformanceCheck;
+    private javax.swing.JMenu menuTemp;
     private javax.swing.JPanel panelParent;
+    private wekimini.gui.SupervisedLearningPanel supervisedLearningPanel1;
     // End of variables declaration//GEN-END:variables
 
     void displayEditOutput(String name) {
@@ -534,12 +744,12 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         panelParent.removeAll();
         panelParent.add(learningPanel1);
     }
-    
+
     private void initializeForTemporalModeling() {
-        
         panelParent.removeAll();
         dtwLearningPanel1 = new DtwLearningPanel(w);
         panelParent.add(dtwLearningPanel1);
+        menuItemEvaluation.setEnabled(false);
         //dtwLearningPanel1.setup(w);
         revalidate();
         repaint();

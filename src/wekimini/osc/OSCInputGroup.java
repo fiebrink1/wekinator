@@ -123,7 +123,7 @@ public class OSCInputGroup {
         } */
     }
 
-    public static OSCInputGroup readFromFile(String filename) throws Exception {
+    public static OSCInputGroup readFromFile(String filename) throws IOException {
       OSCInputGroup g = (OSCInputGroup) Util.readFromXMLFile("OSCInputGroup", OSCInputGroup.class, filename);
       return g;
         

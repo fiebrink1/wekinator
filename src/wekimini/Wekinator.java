@@ -20,6 +20,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import wekimini.LearningManager.LearningType;
 import wekimini.gui.Console;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.osc.OSCMonitor;
 import wekimini.osc.OSCReceiver;
 import wekimini.util.Util;
@@ -30,7 +32,7 @@ import wekimini.util.Util;
  */
 public class Wekinator {
 
-    public static final String version = "v2.0.1.0";
+    public static final String version = "v2.1.0.0";
 
 //TODO: Can make more efficient by initializing some of these on demand (e.g. gui, OSC Monitor)
    // private final Settings settings;
@@ -40,6 +42,7 @@ public class Wekinator {
     private final InputManager inputManager;
     private final OutputManager outputManager;
     private MainGUI mainGUI;
+    private final int id;
     
     //private final SupervisedLearningManager supervisedLearningManager;
     private final DataManager dataManager;
@@ -68,16 +71,9 @@ public class Wekinator {
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private static final Logger logger = Logger.getLogger(Wekinator.class.getName());
-
-    private boolean isKadenze = false;
-
-    /**
-     * Get the value of isKadenze
-     *
-     * @return the value of isKadenze
-     */
-    public boolean isIsKadenze() {
-        return isKadenze;
+    
+    public int getID() {
+        return id;
     }
     
     public void addCloseListener(ChangeListener l) {
@@ -101,6 +97,7 @@ public class Wekinator {
     }
 
     public void close() {
+        KadenzeLogging.getLogger().logEvent(this, KadenzeLogger.KEvent.PROJECT_CLOSED);
         prepareToDie();
         fireCloseEvent();
     }
@@ -219,7 +216,7 @@ public class Wekinator {
 
     //Use only for testing
     public static Wekinator TestingWekinator() throws IOException {
-        return new Wekinator();
+        return new Wekinator(WekiMiniRunner.generateNextID());
     }
 
     public LearningManager getLearningManager() {
@@ -230,7 +227,8 @@ public class Wekinator {
         return loggingManager;
     }
 
-    public Wekinator() throws IOException {
+    public Wekinator(int id) throws IOException {
+        this.id = id;
         loggingManager = new LoggingManager(this);
         loggingManager.startLoggingToFile();
 
@@ -262,6 +260,7 @@ public class Wekinator {
                 }
             }
         });
+       // KadenzeLogging.getLogger().newProjectStarted(this);
     }
 
     private void learningTypeChanged(LearningManager.LearningType learningType) {
