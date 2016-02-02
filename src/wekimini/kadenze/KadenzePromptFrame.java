@@ -126,7 +126,7 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
 
         labelVersion1.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         labelVersion1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelVersion1.setText("Last updated 17 January 2016");
+        labelVersion1.setText("Last updated 2 February 2016");
 
         jLabel2.setFont(new java.awt.Font("Lucida Grande", 2, 13)); // NOI18N
         jLabel2.setText("<html>This will be the parent directory for all Kadenze assignments. We recommend leaving this unchanged.</html>");

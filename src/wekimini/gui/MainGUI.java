@@ -74,6 +74,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
             }
         });
+        //menuTemp.setVisible(false); 
     }
 
     private void finishUp() {
@@ -294,8 +295,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
         menuKadenze = new javax.swing.JMenu();
-        menuTemp = new javax.swing.JMenu();
-        jMenuItem3 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("New project");
@@ -432,18 +431,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuKadenze.setText("Kadenze");
         jMenuBar1.add(menuKadenze);
 
-        menuTemp.setText("Temp");
-
-        jMenuItem3.setText("Flush logs");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
-            }
-        });
-        menuTemp.add(jMenuItem3);
-
-        jMenuBar1.add(menuTemp);
-
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -537,10 +524,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         showEvaluationWindow();
     }//GEN-LAST:event_menuItemEvaluationActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        KadenzeLogging.getLogger().flush();
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
-
+    private void flushLogs() {
+         KadenzeLogging.getLogger().flush();
+    }
+    
     private void showEvaluationWindow() {
         if (modelEvaluationFrame == null) {
             modelEvaluationFrame = new ModelEvaluationFrame(w.getOutputManager().getOutputGroup().getOutputNames(), w);
@@ -705,7 +692,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
@@ -719,7 +705,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuItem menuItemSaveAs;
     private javax.swing.JMenu menuKadenze;
     private javax.swing.JCheckBoxMenuItem menuPerformanceCheck;
-    private javax.swing.JMenu menuTemp;
     private javax.swing.JPanel panelParent;
     private wekimini.gui.SupervisedLearningPanel supervisedLearningPanel1;
     // End of variables declaration//GEN-END:variables
