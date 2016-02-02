@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import wekimini.LearningManager;
+import wekimini.LearningManager.LearningType;
 import wekimini.Path;
 import wekimini.WekiMiniRunner.Closeable;
 import wekimini.gui.path.PathEditorFrame;
@@ -730,7 +731,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     public void showExamplesViewer() {
         //String s = w.getDataManager().toString();
         //System.out.println(s);
-        w.getDataManager().showViewer();
+        //if (w.getLearningManager().getLearningType() == LearningType.SUPERVISED_LEARNING) {
+            w.getDataManager().showViewer();    
+        //} else {
+        //}
     }
 
     private void initializeForSupervisedLearning() {
@@ -772,20 +776,20 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }
 
     public void showDtwData(int gestureNum) {
-        //XXX
-        System.out.println("XXXXXXXXXXXXXXX\n\n");
+        w.getDtwLearningManager().getData().showViewer(gestureNum);        
+       /* System.out.println("XXXXXXXXXXXXXXX\n\n");
 
         w.getDtwLearningManager().getModel().dumpToConsole();
-        w.getDtwLearningManager().getModel().getData().dumpExamplesForGesture(gestureNum);
+        w.getDtwLearningManager().getModel().getData().dumpExamplesForGesture(gestureNum); */
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void showDtwExamplesViewer() {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        //XXX
-        System.out.println("XXXXXXXXXXXXXXX\n\n");
+        w.getDtwLearningManager().getData().showViewer();
+
+       /* System.out.println("XXXXXXXXXXXXXXX\n\n");
         w.getDtwLearningManager().getModel().dumpToConsole();
-        w.getDtwLearningManager().getModel().getData().dumpAllExamples();
+        w.getDtwLearningManager().getModel().getData().dumpAllExamples(); */
     }
 
     public void showDtwEditor(DtwModel model) {
