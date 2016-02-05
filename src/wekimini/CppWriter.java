@@ -121,3 +121,146 @@ public class CppWriter {
         cppPrint.close();
     }
 }
+
+/* neuralNetwork.h
+
+#ifndef neuralNetwork_h
+#define neuralNetwork_h
+
+//from Wekinator
+#define NUM_INPUTS 2
+#define NUM_HIDDEN 2
+#define NUM_OUTPUT 2
+
+class neuralNetwork {
+
+public:
+	
+	neuralNetwork();
+	~neuralNetwork();
+	
+	double* feedForwardPattern( double* pattern );
+	
+private:
+	
+	double* inputNeurons;
+	double* hiddenNeurons;
+	double* outputNeurons;
+	
+	double** wInputHidden;
+	double** wHiddenOutput;
+	
+	inline double activationFunction(double x);
+	void feedForward (double* pattern);
+};
+
+#endif
+
+*/
+
+/* neuralNetwork.cpp
+
+#include <math.h>
+#include "neuralNetwork.h"
+
+neuralNetwork::neuralNetwork() {
+	
+	//input neurons, including bias
+	inputNeurons = new(double[NUM_INPUTS + 1]);
+	for (int i=0; i < NUM_INPUTS; i++){
+		inputNeurons[i] = 0;
+	}
+	inputNeurons[NUM_INPUTS] = -1;
+	
+	//hidden neurons, including bias
+	hiddenNeurons = new(double[NUM_HIDDEN + 1]);
+	for (int i=0; i < NUM_HIDDEN; i++){
+		hiddenNeurons[i] = 0;
+	}
+	hiddenNeurons[NUM_HIDDEN] = -1;
+	
+	//outputNeurons
+	outputNeurons = new( double[NUM_OUTPUT + 1] );
+	for (int i=0; i < NUM_OUTPUT; i++){
+		hiddenNeurons[i] = 0;
+	}
+	
+	//weights between input and hidden
+	wInputHidden = new(double*[NUM_INPUTS + 1]);
+	for (int i = 0; i <= NUM_INPUTS; i++) {
+		wInputHidden[i] = new (double[NUM_HIDDEN]);
+		for (int j=0; j < NUM_HIDDEN; j++) {
+			wInputHidden[i][j] = 0;
+		}
+	}
+	wInputHidden[0][0] = 0.9;//FIXME: Arbitrary weights for testing. Populate from Wekinator
+	wInputHidden[0][1] = 0.1;
+	wInputHidden[1][0] = 0.1;
+	wInputHidden[1][1] = 0.9;
+	
+	//weights between hidden and output
+	wHiddenOutput = new(double*[NUM_HIDDEN + 1]);
+	for (int i = 0; i <= NUM_HIDDEN; i++) {
+		wHiddenOutput[i] = new (double[NUM_OUTPUT]);
+		for (int j=0; j < NUM_OUTPUT; j++) {
+			wHiddenOutput[i][j] = 0;
+		}
+	}
+	wHiddenOutput[0][0] = 0.9;//FIXME: Arbitrary weights for testing. Populate from Wekinator
+	wHiddenOutput[0][1] = 0.1;
+	wHiddenOutput[1][0] = 0.1;
+	wHiddenOutput[1][1] = 0.9;		
+}
+
+neuralNetwork::~neuralNetwork() {
+	delete[] inputNeurons;
+	delete[] hiddenNeurons;
+	delete[] outputNeurons;
+	
+	for (int i=0; i <= NUM_INPUTS; i++) {
+		delete[] wInputHidden[i];
+	}
+	delete[] wInputHidden;
+	
+	for (int j=0; j <= NUM_HIDDEN; j++) {
+		delete[] wHiddenOutput[j];
+	}
+	delete[] wHiddenOutput;
+}
+
+inline double neuralNetwork::activationFunction(double x) {
+	//sigmoid
+	return 1/(1 + exp(-x));
+}
+
+double* neuralNetwork::feedForwardPattern(double* pattern) {
+	feedForward(pattern);
+	return outputNeurons;
+}
+
+void neuralNetwork::feedForward(double* pattern) {
+	//set input layer
+	for (int i = 0; i < NUM_INPUTS; i++) {
+		inputNeurons[i] = pattern[i];
+	}
+	
+	//calculate hidden layer
+	for (int j=0; j < NUM_HIDDEN; j++) {
+		hiddenNeurons[j] = 0;
+		for (int i = 0; i < NUM_INPUTS; i++) {
+			hiddenNeurons[j] += inputNeurons[i] * wInputHidden[i][j];
+		}
+		hiddenNeurons[j] = activationFunction(hiddenNeurons[j]);
+	}
+	
+	//calculate output layer
+	for (int k=0; k < NUM_OUTPUT; k++){
+		outputNeurons[k] = 0;
+		for (int j = 0; j < NUM_HIDDEN; j++) {
+			outputNeurons[k] += hiddenNeurons[j] * wHiddenOutput[j][k];
+		}
+		
+	}
+}
+
+*/
