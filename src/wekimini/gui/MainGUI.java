@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import wekimini.LearningManager;
+import wekimini.LearningManager.LearningType;
 import wekimini.Path;
 import wekimini.WekiMiniRunner.Closeable;
 import wekimini.gui.path.PathEditorFrame;
@@ -73,6 +74,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
             }
         });
+        //menuTemp.setVisible(false); 
     }
 
     private void finishUp() {
@@ -293,11 +295,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
         menuKadenze = new javax.swing.JMenu();
-        menuTemp = new javax.swing.JMenu();
-        jMenuItem3 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("New project");
+        setMaximumSize(new java.awt.Dimension(851, 2147483647));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -431,18 +432,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuKadenze.setText("Kadenze");
         jMenuBar1.add(menuKadenze);
 
-        menuTemp.setText("Temp");
-
-        jMenuItem3.setText("Flush logs");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
-            }
-        });
-        menuTemp.add(jMenuItem3);
-
-        jMenuBar1.add(menuTemp);
-
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -536,10 +525,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         showEvaluationWindow();
     }//GEN-LAST:event_menuItemEvaluationActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        KadenzeLogging.getLogger().flush();
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
-
+    private void flushLogs() {
+         KadenzeLogging.getLogger().flush();
+    }
+    
     private void showEvaluationWindow() {
         if (modelEvaluationFrame == null) {
             modelEvaluationFrame = new ModelEvaluationFrame(w.getOutputManager().getOutputGroup().getOutputNames(), w);
@@ -704,7 +693,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
@@ -718,7 +706,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuItem menuItemSaveAs;
     private javax.swing.JMenu menuKadenze;
     private javax.swing.JCheckBoxMenuItem menuPerformanceCheck;
-    private javax.swing.JMenu menuTemp;
     private javax.swing.JPanel panelParent;
     private wekimini.gui.SupervisedLearningPanel supervisedLearningPanel1;
     // End of variables declaration//GEN-END:variables
@@ -730,7 +717,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     public void showExamplesViewer() {
         //String s = w.getDataManager().toString();
         //System.out.println(s);
-        w.getDataManager().showViewer();
+        //if (w.getLearningManager().getLearningType() == LearningType.SUPERVISED_LEARNING) {
+            w.getDataManager().showViewer();    
+        //} else {
+        //}
     }
 
     private void initializeForSupervisedLearning() {
@@ -772,20 +762,20 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }
 
     public void showDtwData(int gestureNum) {
-        //XXX
-        System.out.println("XXXXXXXXXXXXXXX\n\n");
+        w.getDtwLearningManager().getData().showViewer(gestureNum);        
+       /* System.out.println("XXXXXXXXXXXXXXX\n\n");
 
         w.getDtwLearningManager().getModel().dumpToConsole();
-        w.getDtwLearningManager().getModel().getData().dumpExamplesForGesture(gestureNum);
+        w.getDtwLearningManager().getModel().getData().dumpExamplesForGesture(gestureNum); */
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void showDtwExamplesViewer() {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        //XXX
-        System.out.println("XXXXXXXXXXXXXXX\n\n");
+        w.getDtwLearningManager().getData().showViewer();
+
+       /* System.out.println("XXXXXXXXXXXXXXX\n\n");
         w.getDtwLearningManager().getModel().dumpToConsole();
-        w.getDtwLearningManager().getModel().getData().dumpAllExamples();
+        w.getDtwLearningManager().getModel().getData().dumpAllExamples(); */
     }
 
     public void showDtwEditor(DtwModel model) {

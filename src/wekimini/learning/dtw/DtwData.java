@@ -7,6 +7,8 @@ package wekimini.learning.dtw;
 
 import com.timeseries.TimeSeries;
 import com.timeseries.TimeSeriesPoint;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
@@ -20,8 +22,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import wekimini.ConnectsInputsToOutputs;
+import wekimini.DataManager;
 import wekimini.DtwLearningManager;
 import wekimini.Wekinator;
+import wekimini.dtw.gui.DtwDataViewer;
+import wekimini.gui.DatasetViewer;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 
 /**
  *
@@ -61,9 +68,11 @@ public class DtwData {
     private transient ArrayDeque<DtwExample> deletedExamplesInOrder;
     //private DtwExample lastExample = null;
     //private DtwExample lastDeletedExample = null;
-    
+
     private transient int numDeletedAndCached;
     public static final String PROP_NUM_DELETED_AND_CACHED = "numDeletedAndCached";
+
+    private DtwDataViewer viewer = null;
 
     /**
      * Get the value of numDeletedAndCached
@@ -84,7 +93,6 @@ public class DtwData {
         this.numDeletedAndCached = numDeletedAndCached;
         propertyChangeSupport.firePropertyChange(PROP_NUM_DELETED_AND_CACHED, oldNumDeletedAndCached, numDeletedAndCached);
     }
-
 
     public int getDownsampleFactor() {
         return downsampleFactor;
@@ -205,11 +213,11 @@ public class DtwData {
         for (int i = 0; i < numGestures; i++) {
             allExamples.add(new LinkedList<DtwExample>());
         }
-       // exampleListForIds = new HashMap<>();
+        // exampleListForIds = new HashMap<>();
         examplesForIds = new HashMap<>();
         examplesInOrder = new ArrayDeque<>();
         deletedExamplesInOrder = new ArrayDeque<>();
-        
+
         learningManager.addConnectionsListener(new ConnectsInputsToOutputs.InputOutputConnectionsListener() {
 
             @Override
@@ -267,13 +275,12 @@ public class DtwData {
             maxDownsampledUpdated = true;
         }
 
-       // exampleListForIds.remove(id);
+        // exampleListForIds.remove(id);
         examplesForIds.remove(id);
         examplesInOrder.remove(matchingExample);
         deletedExamplesInOrder.addLast(matchingExample);
         setNumDeletedAndCached(deletedExamplesInOrder.size());
-        
-        
+
         //int whichClass = allExamples.indexOf(matchingList); // this breaks when element is empty list
         //int whichClass = removed.getGestureIndex();
         setNumTotalExamples(numTotalExamples - 1);
@@ -391,6 +398,14 @@ public class DtwData {
 
     public int getNumExamplesForGesture(int gesture) {
         return allExamples.get(gesture).size();
+    }
+
+    public int getNumGestures() {
+        return numGestures;
+    }
+
+    public String getGestureName(int which) {
+        return w.getDtwLearningManager().getModel().getGestureName(which);
     }
 
     public List<LinkedList<DtwExample>> getAllExamples() {
@@ -629,12 +644,12 @@ public class DtwData {
 
     public void reAddLastExample() {
         /*if (lastDeletedExample != null) {
-            int id = lastDeletedExample.getId();
-            addExample(lastDeletedExample, id);
+         int id = lastDeletedExample.getId();
+         addExample(lastDeletedExample, id);
 
-            lastExample = lastDeletedExample;
-            lastDeletedExample = null;
-        } */
+         lastExample = lastDeletedExample;
+         lastDeletedExample = null;
+         } */
         if (deletedExamplesInOrder.size() > 0) {
             DtwExample mostRecentlyDeleted = deletedExamplesInOrder.removeLast();
             addExample(mostRecentlyDeleted);
@@ -643,13 +658,13 @@ public class DtwData {
     }
 
     public void deleteLastExample() {
-       /* if (lastExample != null) {
-            int id = lastExample.getId();
-            delete(id);
+        /* if (lastExample != null) {
+         int id = lastExample.getId();
+         delete(id);
 
-            lastDeletedExample = lastExample;
-            lastExample = null;
-        } */
+         lastDeletedExample = lastExample;
+         lastExample = null;
+         } */
         if (examplesInOrder.size() > 0) {
             DtwExample mostRecentlyAdded = examplesInOrder.removeLast();
             delete(mostRecentlyAdded.getId());
@@ -665,7 +680,7 @@ public class DtwData {
             return;
         }
         if (newNumGestures < numGestures) {
-            for (int i = numGestures - 1; i > (numGestures-1); i--) {
+            for (int i = numGestures - 1; i > (numGestures - 1); i--) {
                 deleteExamplesForGesture(i);
                 deleteDeletedExamplesForGesture(i);
                 allExamples.remove(i);
@@ -698,7 +713,7 @@ public class DtwData {
             for (DtwExample ex : list) {
                 StringBuilder s = new StringBuilder();
                 s.append(ex.getTimeSeries().numOfDimensions()).append(",");
-                s.append(ex.getGestureClass()+1).append(","); //1 is first gesture class, for consistency with classification
+                s.append(ex.getGestureClass() + 1).append(","); //1 is first gesture class, for consistency with classification
                 TimeSeries ts = ex.getTimeSeries();
                 for (int i = 0; i < ts.numOfPts(); i++) {
                     double[] vals = ts.getMeasurementVector(i);
@@ -707,7 +722,7 @@ public class DtwData {
                     }
                 }
                 writer.println(s.toString());
-            } 
+            }
         }
         writer.close();
     }
@@ -718,22 +733,22 @@ public class DtwData {
         allExamples.clear();
         examplesForIds.clear();
         examplesInOrder.clear();
-        
+
         for (LinkedList<DtwExample> list : data.allExamples) {
-            allExamples.add(list); 
+            allExamples.add(list);
             for (DtwExample ex : list) {
                 examplesForIds.put(ex.getId(), ex);
                 examplesInOrder.addLast(ex);
-            }  
+            }
         }
         //numTotalExamples = data.numTotalExamples;
         setNumTotalExamples(data.numTotalExamples);
-        
+
         minSizeInExamples = data.minSizeInExamples;
         maxSizeInExamples = data.maxSizeInExamples;
         minSizeInDownsampledExamples = data.minSizeInDownsampledExamples;
         maxSizeInDownsampledExamples = data.maxSizeInDownsampledExamples;
-        
+
         for (int i = 0; i < numGestures; i++) {
             notifyExamplesChangedListeners(i, getNumExamplesForGesture(i));
         }
@@ -743,6 +758,131 @@ public class DtwData {
         downsampleFactor = data.downsampleFactor;
         downsampleToLength = data.downsampleToLength;
         downsampleCounter = 0;
+    }
+
+    public void showViewer() {
+        /*if (viewer == null) {
+         viewer = new DatasetViewer(this);
+         }
+         viewer.setVisible(true);
+         viewer.toFront();
+         */
+
+        showViewer(-1);
+    }
+
+    public void writeInstancesToCSV(File file) throws FileNotFoundException {
+        file.getParentFile().mkdirs();
+        try (PrintWriter pw = new PrintWriter(file)) {
+            String header = "EXAMPLE_ID,GESTURE,INPUT_NAME,NUM_SAMPLES,VALUES...";
+            pw.println(header);
+            for (int whichGesture = 0; whichGesture < numGestures; whichGesture++) {
+                String gestureName = getGestureName(whichGesture);
+                List<DtwExample> l = getExamplesForGesture(whichGesture);
+                int exampleNum = 1;
+                for (DtwExample e : l) {
+                    TimeSeries ts = e.getTimeSeries();
+                    int numSamples = ts.numOfPts();
+                    
+                    for (int input = 0; input < numInputs; input++) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(e.getId()).append(',').append(gestureName).append(',');
+                        sb.append(w.getInputManager().getInputNames()[input]).append(',');
+                        sb.append(numSamples).append(',');
+                        for (int t = 0; t < ts.numOfPts() - 1; t++) {
+                            sb.append(ts.getMeasurement(t, input)).append(',');
+                        }
+                        //Write out last one, no comma
+                        if (ts.numOfPts() != 0) {
+                            sb.append(ts.getMeasurement(ts.numOfPts() - 1, input));
+                        }
+                        pw.println(sb.toString());
+                    }
+                   
+                    exampleNum++;
+                }
+            }
+        }
+    }
+
+    public String toDataString(int whichGesture) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("*****GESTURE: ").append(getGestureName(whichGesture)).append("*****\n");
+        List<DtwExample> l = getExamplesForGesture(whichGesture);
+        int exampleNum = 1;
+        for (DtwExample e : l) {
+            TimeSeries ts = e.getTimeSeries();
+            sb.append("  Example ").append(exampleNum + 1).append(": ").append(ts.numOfPts()).append(" samples:\n");
+            for (int input = 0; input < numInputs; input++) {
+                sb.append("    ").append(w.getInputManager().getInputNames()[input]).append(": ");
+                for (int t = 0; t < ts.numOfPts() - 1; t++) {
+                    sb.append(ts.getMeasurement(t, input)).append(',');
+                }
+                //Write out last one, no comma but newline
+                if (ts.numOfPts() != 0) {
+                    sb.append(ts.getMeasurement(ts.numOfPts() - 1, input)).append('\n');
+                }
+            }
+            exampleNum++;
+        }
+        return sb.toString();
+    }
+
+    public String toDataString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < numGestures; i++) {
+            sb.append(toDataString(i));
+        }
+        return sb.toString();
+    }
+
+    public void showViewer(int gestureNum) {
+        KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.DTW_DATA_VIEWED);
+        if (viewer != null) {
+            viewer.toFront();
+            return;
+        }
+
+        viewer = new DtwDataViewer(this);
+        viewer.setVisible(true);
+        viewer.toFront();
+        if (gestureNum != -1) {
+            viewer.showOnlyGesture(gestureNum);
+        }
+        
+        viewer.addWindowListener(new WindowListener() {
+
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+                viewer = null;
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
+
+        
     }
 
     public interface DtwDataListener {

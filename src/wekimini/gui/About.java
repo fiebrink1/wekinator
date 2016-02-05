@@ -64,7 +64,7 @@ public class About extends javax.swing.JFrame {
         });
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("<html><div align=\"center\">Created by Rebecca Fiebrink, 2015<br><a href=\"http://www.wekinator.org\">www.wekinator.org</a><br><br>See website above for instructions and example code.<br>Help: post to the wekinator-users list at <a href=\"https://groups.google.com/forum/#!forum/wekinator-users\">https://groups.google.com/forum/#!forum/wekinator-users</a></div></html>");
+        jLabel1.setText("<html><div align=\"center\">Created by Rebecca Fiebrink, 2015<br><a href=\"http://www.wekinator.org\">www.wekinator.org</a><br><br>See website above for instructions and example code.<br>Help: post to the forum at <a href = \"http://www.wekinator.org/forums/forum/help/\">http://www.wekinator.org/forums/forum/help/</a></div></html>");
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/weka1.png"))); // NOI18N

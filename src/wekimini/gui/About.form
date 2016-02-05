@@ -90,7 +90,7 @@
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
             <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;div align=&quot;center&quot;&gt;Created by Rebecca Fiebrink, 2015&lt;br&gt;&lt;a href=&quot;http://www.wekinator.org&quot;&gt;www.wekinator.org&lt;/a&gt;&lt;br&gt;&lt;br&gt;See website above for instructions and example code.&lt;br&gt;Help: post to the wekinator-users list at &lt;a href=&quot;https://groups.google.com/forum/#!forum/wekinator-users&quot;&gt;https://groups.google.com/forum/#!forum/wekinator-users&lt;/a&gt;&lt;/div&gt;&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;div align=&quot;center&quot;&gt;Created by Rebecca Fiebrink, 2015&lt;br&gt;&lt;a href=&quot;http://www.wekinator.org&quot;&gt;www.wekinator.org&lt;/a&gt;&lt;br&gt;&lt;br&gt;See website above for instructions and example code.&lt;br&gt;Help: post to the forum at &lt;a href = &quot;http://www.wekinator.org/forums/forum/help/&quot;&gt;http://www.wekinator.org/forums/forum/help/&lt;/a&gt;&lt;/div&gt;&lt;/html&gt;"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
