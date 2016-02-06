@@ -5,6 +5,9 @@
  */
 package wekimini.kadenze;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author rebecca
@@ -12,14 +15,15 @@ package wekimini.kadenze;
 public class NotedCriterion {
     private final Criterion c;
     private Note n = null;
+    private static final Logger logger = Logger.getLogger(NotedCriterion.class.getName());
     
     public enum Outcome {
-
         SUCCESS,
         FAILURE,
         COULD_BE_BETTER,
         LOG_MISSING,
-        LOG_ERROR,
+        LOG_READ_ERROR,
+        LOG_FORMAT_ERROR,
         BAD_ZIP
     };
 
@@ -36,8 +40,10 @@ public class NotedCriterion {
                 return "could_be_better";
             case LOG_MISSING:
                 return "log_missing";
-            case LOG_ERROR:
-                return "log_error";
+            case LOG_READ_ERROR:
+                return "log_read_error";
+            case LOG_FORMAT_ERROR:
+                return "log_format_error";
             case BAD_ZIP:
                 return "bad_zip";
             default:
@@ -47,8 +53,8 @@ public class NotedCriterion {
 
     
     
-    public NotedCriterion(int id, String name) {
-        c = new Criterion(id, name);
+    public NotedCriterion(String name) {
+        c = new Criterion(name);
     }
     
     /*public void addNote(Note n) {
@@ -68,17 +74,39 @@ public class NotedCriterion {
     }
     
     public void setNote(Outcome o) {
-        n = new Note(prefix + "." + c.getName() + ".reporting." + getSuffix(o));
+        n = new Note(c.getName() + "." + getSuffix(o));
     }
 
     public void setNote(Outcome o, String value) {
-       n = new Note(prefix + "." + c.getName() + ".reporting." + getSuffix(o));
+       n = new Note(c.getName() + "." + getSuffix(o));
        n.addValue("val", value);
     }
+    
+    //Adds in order as val1, val2, val3, ...
+    void addVals(String[] vals) {
+        if (n == null) {
+            logger.log(Level.WARNING, "note is null");
+            return;
 
+        }
+        for (int i = 0; i < vals.length; i++) {
+            n.addValue("val" + (i+1), vals[i]);
+        }
+    }
+    
+    void setValue(String key, String val) {
+        if (n == null) {
+            logger.log(Level.WARNING, "note is null");
+            return;
+        }
+        n.addValue(key, val);
+    }
+
+    //If the outcome is an error, insert value into the error string
+    //e.g., value = "assignment 2 part a" : error can be "Error with {assignment} log"
     public void setNoteWithErrValue(Outcome o, String value) {
-        n = new Note(prefix + "." + c.getName() + ".reporting." + getSuffix(o));
-        if (o == Outcome.LOG_ERROR || o == Outcome.LOG_MISSING) {
+        n = new Note(c.getName() + "." + getSuffix(o));
+        if (o == Outcome.LOG_FORMAT_ERROR || o == Outcome.LOG_READ_ERROR || o == Outcome.LOG_MISSING) {
             n.addValue("val", value);
         }
     }

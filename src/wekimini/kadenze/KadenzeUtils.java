@@ -221,6 +221,10 @@ public class KadenzeUtils {
         }
         return vals;
     }
+
+    static String prettifyJSON(String toJSONString) {
+        return toJSONString.replaceAll("\\{", "\n\\{\n").replaceAll(",",",\n").replaceAll("\\}","\n\\}");
+    }
     
    
 
