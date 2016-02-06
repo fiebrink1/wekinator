@@ -18,6 +18,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import wekimini.gui.About;
@@ -118,6 +120,11 @@ public final class WekiMiniRunner {
         /* Create and display the form */
         //WekiMiniRunner.isKadenze = (args.length != 0);
         WekiMiniRunner.isKadenze = true; //KADENZE SET
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
+            Logger.getLogger(WekiMiniRunner.class.getName()).log(Level.WARNING, null, ex);
+        }
         
         aboutBox.setKadenze(isKadenze);
         //args.length == 0
