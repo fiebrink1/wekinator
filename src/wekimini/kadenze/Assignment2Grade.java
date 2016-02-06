@@ -103,7 +103,7 @@ public class Assignment2Grade {
         part1bQuality.setScore(score);
         part1bQuality.setNoteWithErrValue(o, "assignment2_1B");
         if (o == Outcome.SUCCESS) {
-            part1bQuality.setValue("val", KadenzeUtils.formatDouble(score));
+            part1bQuality.setValue("val", KadenzeUtils.formatDouble(score*100));
         }
     }
 
@@ -116,7 +116,7 @@ public class Assignment2Grade {
         part1cQuality.setScore(score);
         part1cQuality.setNoteWithErrValue(o, "assignment2_1C");
         if (o == Outcome.SUCCESS) {
-            part1cQuality.setValue("val", KadenzeUtils.formatDouble(score));
+            part1cQuality.setValue("val", KadenzeUtils.formatDouble(score*100));
         }
     }
 
@@ -129,7 +129,7 @@ public class Assignment2Grade {
         part1dQuality.setScore(score);
         part1dQuality.setNoteWithErrValue(o, "assignment2_1D");
         if (o == Outcome.SUCCESS) {
-            part1dQuality.setValue("val", KadenzeUtils.formatDouble(score));
+            part1dQuality.setValue("val", KadenzeUtils.formatDouble(score*100));
         }
     }
 
