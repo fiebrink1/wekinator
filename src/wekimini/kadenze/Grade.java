@@ -65,16 +65,6 @@ public class Grade {
         }
         return sb.toString();       
     }
-    
-    public static String generateValidationString(boolean valid) {
-        JSONStringer s = new JSONStringer();
-        s.object();
-        s.key("is_valid");
-        s.value(valid);
-        s.endObject();
-        return s.toString();
-
-    }
 
     //For testing
     public static void main(String[] args) {
