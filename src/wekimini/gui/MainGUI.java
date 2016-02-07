@@ -157,10 +157,55 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             kadenzeMenuItems[1] = k2;
         } else if (whichMainAssignment == 2) {
             makeKadenzeAssignment2Menu(ka);
-        } else {
+        } else if (whichMainAssignment == 3) {
+            makeKadenzeAssignment3Menu(ka);
+        }else {
             logger.log(Level.WARNING, "Unknown assignment :" + ka);
         }
     }
+    
+    private void makeKadenzeAssignment3Menu(final KadenzeAssignmentType ka) {
+        kadenzeMenuItems = new JMenuItem[7];
+        int subPart = KadenzeAssignment.getAssignmentSubPart(ka); //1 through 6
+        for (int i = 0; i < 6; i++) {
+            String s;
+            if (i == (subPart - 1)) {
+                s = "Doing ";
+            } else {
+                s = "Start ";
+            }
+            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(3, i + 1));
+            kadenzeMenuItems[i] = new JMenuItem(s);
+            if (i == (subPart - 1)) {
+                kadenzeMenuItems[i].setEnabled(false);
+            }
+            /* kadenzeMenuItems[i].addActionListener(new java.awt.event.ActionListener() {
+             @Override
+             public void actionPerformed(java.awt.event.ActionEvent evt) {
+             switchToAssignment(KadenzeAssignment.getAssignmentNumber(ka), i);
+             }
+             }); */
+            menuKadenze.add(kadenzeMenuItems[i]);
+        }
+
+        addKadenzeListener(kadenzeMenuItems[0], KadenzeAssignmentType.ASSIGNMENT3_PART1A);
+        addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT3_PART1B);
+        addKadenzeListener(kadenzeMenuItems[2], KadenzeAssignmentType.ASSIGNMENT3_PART1C);
+        addKadenzeListener(kadenzeMenuItems[3], KadenzeAssignmentType.ASSIGNMENT3_PART2);
+        addKadenzeListener(kadenzeMenuItems[4], KadenzeAssignmentType.ASSIGNMENT3_PART3A);
+        addKadenzeListener(kadenzeMenuItems[5], KadenzeAssignmentType.ASSIGNMENT3_PART3B);
+
+        kadenzeMenuItems[6] = new JMenuItem("Create Kadenze Assignment 3 submission");
+        kadenzeMenuItems[6].addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createAssignmentSubmission();
+            }
+        });
+        menuKadenze.add(kadenzeMenuItems[6]);
+    }
+
+  
 
     private void makeKadenzeAssignment2Menu(final KadenzeAssignmentType ka) {
         kadenzeMenuItems = new JMenuItem[8];
@@ -242,6 +287,15 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                     kadenzeMenuItems[i].setEnabled(true);
                 }
             }
+        } else if (which == 3) {
+            int subpart = KadenzeAssignment.getAssignmentSubPart(ka);
+            for (int i = 0; i < 6; i++) {
+                if (subpart == (i + 1)) {
+                    kadenzeMenuItems[i].setEnabled(false);
+                } else {
+                    kadenzeMenuItems[i].setEnabled(true);
+                }
+            }
         } else {
             System.out.println("NOT IMPLEMENTED YET");
         }
@@ -295,6 +349,8 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
         menuKadenze = new javax.swing.JMenu();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("New project");
@@ -432,6 +488,18 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuKadenze.setText("Kadenze");
         jMenuBar1.add(menuKadenze);
 
+        jMenu1.setText("Temp");
+
+        jMenuItem3.setText("flush");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem3);
+
+        jMenuBar1.add(jMenu1);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -524,6 +592,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private void menuItemEvaluationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemEvaluationActionPerformed
         showEvaluationWindow();
     }//GEN-LAST:event_menuItemEvaluationActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+       flushLogs();
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void flushLogs() {
          KadenzeLogging.getLogger().flush();
@@ -689,10 +761,12 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem checkEnableOSCControl;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;

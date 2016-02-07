@@ -82,8 +82,8 @@ public class Assignment3Grade {
         part1aExperimented.setNoteWithErrValue(o, "assignment3_1A");
     }
 
-    public void score1aExperimented_addValues(int numClassifiers, int numTrain, int numRun) {
-        String[] vals = {Integer.toString(numClassifiers), Integer.toString(numTrain), Integer.toString(numRun)};
+    public void score1aExperimented_addValues(String algorithmList, int numTrain, int numRun) {
+        String[] vals = {algorithmList, Integer.toString(numTrain), Integer.toString(numRun)};
         part1aExperimented.addVals(vals);
     }
 
@@ -175,7 +175,7 @@ public class Assignment3Grade {
         g.addNotedCriterion(validSubmission);
         g.addNotedCriterion(part1aCorrectSetup);
         g.addNotedCriterion(part1aExperimented);
-        g.addNotedCriterion(part1bUsedCorrectModel);
+       /* g.addNotedCriterion(part1bUsedCorrectModel);
         g.addNotedCriterion(part1bQuality);
         g.addNotedCriterion(part1bNumExamples);
         g.addNotedCriterion(part1cUsedCorrectModel);
@@ -183,7 +183,7 @@ public class Assignment3Grade {
         g.addNotedCriterion(part1cNumExamples);
         g.addNotedCriterion(part2Experimented);
         g.addNotedCriterion(part3aBuiltRegression);
-        g.addNotedCriterion(part3bModelAccuracy);
+        g.addNotedCriterion(part3bModelAccuracy); */
         return g;
     }
 
