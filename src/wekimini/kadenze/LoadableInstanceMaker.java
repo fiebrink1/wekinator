@@ -78,6 +78,25 @@ public class LoadableInstanceMaker {
         tmp.setClassIndex(tmp.numAttributes() - 1);
         return instance;
     }
+    
+    //When you have just 1 input
+    public Instance convertInputsToInstance(double val) {
+        double data[] = new double[numMetaData + numInputs + numOutputs];
+        data[numMetaData] = val;
+        Instance instance = new Instance(1.0, data);
+        Instances tmp = new Instances(dummyInstances);
+        tmp.add(instance);
+        try {
+            tmp = Filter.useFilter(tmp, outputFilter);
+            tmp.setClassIndex(tmp.numAttributes() - 1);
+            instance = tmp.firstInstance();
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Could not filter");
+            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        tmp.setClassIndex(tmp.numAttributes() - 1);
+        return instance;
+    }
 
     //TODO: NEED TO SAVE DATA TO ARFF, not this xml business :o
     //Or will have to re-create dummy in another way.

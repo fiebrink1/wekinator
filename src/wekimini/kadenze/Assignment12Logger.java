@@ -407,7 +407,9 @@ public class Assignment12Logger implements KadenzeLogger {
 
         //ONLY do this for certain assignemnts:
         if (currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART3A ||
-                currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART3B) {
+                currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART3B ||
+                currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT3_PART3A || 
+                currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT3_PART3B){
 
             StringBuilder sb = new StringBuilder();
             sb.append(ts());

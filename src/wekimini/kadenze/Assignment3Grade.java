@@ -44,12 +44,12 @@ public class Assignment3Grade {
                 score1aExperimented(outcome, 0.0);
                 break;
             case PART1B:
-                score1bModelQuality(outcome, 0.0);
+                score1bModelQuality(outcome, 0.0, 0);
                 score1bModelType(outcome, 0);
                 score1bNumExamples(outcome, 0, 0);
                 break;
             case PART1C:
-                score1cModelQuality(outcome, 0.0);
+                score1cModelQuality(outcome, 0.0, 0);
                 score1cModelType(outcome, 0);
                 score1cNumExamples(outcome, 0, 0);
                 break;
@@ -96,12 +96,17 @@ public class Assignment3Grade {
         part1bUsedCorrectModel.setScore(score);
         part1bUsedCorrectModel.setNoteWithErrValue(o, "assignment3_1B");
     }
+    
+    public void score1bModelType_addValues(String modelType, int numInputs, int numOutputs) {
+        String[] vals = {modelType, Integer.toString(numInputs), Integer.toString(numOutputs)};
+        part1bUsedCorrectModel.addVals(vals);
+    }
 
-    public void score1bModelQuality(Outcome o, double score) {
+    public void score1bModelQuality(Outcome o, double score, double RMS) {
         part1bQuality.setScore(score);
         part1bQuality.setNoteWithErrValue(o, "assignment3_1B");
         if (o == Outcome.SUCCESS) {
-            part1bQuality.setValue("val", KadenzeUtils.formatDouble(score*100));
+            part1bQuality.setValue("val", KadenzeUtils.formatDouble(RMS));
         }
     }
     
@@ -112,17 +117,24 @@ public class Assignment3Grade {
             part1bNumExamples.setValue("val", Integer.toString(numExamples));
         }
     }
+    
+    
 
     public void score1cModelType(Outcome o, double score) {
         part1cUsedCorrectModel.setScore(score);
         part1cUsedCorrectModel.setNoteWithErrValue(o, "assignment3_1C");
     }
+    
+    public void score1cModelType_addValues(String modelType, int numInputs, int numOutputs) {
+        String[] vals = {modelType, Integer.toString(numInputs), Integer.toString(numOutputs)};
+        part1cUsedCorrectModel.addVals(vals);
+    }
 
-    public void score1cModelQuality(Outcome o, double score) {
+    public void score1cModelQuality(Outcome o, double score, double RMS) {
         part1cQuality.setScore(score);
         part1cQuality.setNoteWithErrValue(o, "assignment3_1C");
         if (o == Outcome.SUCCESS) {
-            part1cQuality.setValue("val", KadenzeUtils.formatDouble(score*100));
+            part1cQuality.setValue("val", KadenzeUtils.formatDouble(RMS));
         }
     }
     
@@ -159,10 +171,10 @@ public class Assignment3Grade {
         validSubmission(o, 0.0);
         score1aSetup(Outcome.LOG_READ_ERROR, 0.0);
         score1aExperimented(Outcome.LOG_READ_ERROR, 0.0);
-        score1bModelQuality(Outcome.LOG_READ_ERROR, 0);
+        score1bModelQuality(Outcome.LOG_READ_ERROR, 0, 0);
         score1bModelType(Outcome.LOG_READ_ERROR,0);
         score1bNumExamples(Outcome.LOG_READ_ERROR, 0,0);
-        score1cModelQuality(Outcome.LOG_READ_ERROR, 0);
+        score1cModelQuality(Outcome.LOG_READ_ERROR, 0, 0);
         score1cModelType(Outcome.LOG_READ_ERROR,0);
         score1cNumExamples(Outcome.LOG_READ_ERROR, 0, 0);
         score2Experimented(Outcome.LOG_READ_ERROR, 0);
@@ -175,7 +187,7 @@ public class Assignment3Grade {
         g.addNotedCriterion(validSubmission);
         g.addNotedCriterion(part1aCorrectSetup);
         g.addNotedCriterion(part1aExperimented);
-       /* g.addNotedCriterion(part1bUsedCorrectModel);
+        g.addNotedCriterion(part1bUsedCorrectModel);
         g.addNotedCriterion(part1bQuality);
         g.addNotedCriterion(part1bNumExamples);
         g.addNotedCriterion(part1cUsedCorrectModel);
@@ -183,7 +195,7 @@ public class Assignment3Grade {
         g.addNotedCriterion(part1cNumExamples);
         g.addNotedCriterion(part2Experimented);
         g.addNotedCriterion(part3aBuiltRegression);
-        g.addNotedCriterion(part3bModelAccuracy); */
+        g.addNotedCriterion(part3bModelAccuracy);
         return g;
     }
 
