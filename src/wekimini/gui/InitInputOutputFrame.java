@@ -1058,7 +1058,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
        int index = comboOutputType.getSelectedIndex();
        CardLayout layout = (CardLayout) panelOutputTypes.getLayout();
 
-        if (index == COMBO_REGRESSION_INDEX || index == COMBO_CLASSIFICATION_INDEX) {
+        if (index == COMBO_REGRESSION_INDEX || index == COMBO_CLASSIFICATION_INDEX || index == COMBO_CUSTOM_INDEX) {
           //  fieldNumOutputs.setText(Integer.toString(lastNumOutputs));
             fieldNumOutputs.setEnabled(true);
         } else {
