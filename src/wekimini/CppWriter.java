@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.core.Instances;
 import wekimini.learning.KNNModelBuilder;
+import wekimini.learning.Model;
 import wekimini.learning.NeuralNetModelBuilder;
 import wekimini.osc.OSCOutput;
 
@@ -23,20 +24,17 @@ import wekimini.osc.OSCOutput;
 public class CppWriter {
 
     private static final Logger logger = Logger.getLogger(CppWriter.class.getName());
-    private int numNeighbours;
-    private int numClasses;
 
-    public void writeToFiles(String filename, int numExamples, int numFeatures, OSCOutput output, LearningModelBuilder modelBuilder, Instances insts) throws IOException {
-        //Get numNeighbours from modelBuilder and numClasses from output
+    public void writeToFiles(String filename, int numExamples, int numInputs, OSCOutput output, LearningModelBuilder modelBuilder, Instances insts, Model model) throws IOException {
         if (modelBuilder instanceof NeuralNetModelBuilder) {
             try {
-                writeNNModel(filename, numExamples, numFeatures, output, modelBuilder, insts);
+                writeNNModel(filename, numExamples, numInputs, modelBuilder, model);
             } catch (Exception ex) {
                 logger.log(Level.WARNING, "Could not write to NN model to Cpp file ", ex.getMessage());
             }
         } else if (modelBuilder instanceof KNNModelBuilder) {
             try {
-                writeKNNModel(filename, numExamples, numFeatures, output, modelBuilder, insts);
+                writeKNNModel(filename, numExamples, numInputs, output, modelBuilder, insts);
             } catch (Exception ex) {
                 logger.log(Level.WARNING, "Could not write kNN model to Cpp file ", ex.getMessage());
             }
@@ -45,7 +43,10 @@ public class CppWriter {
         }
     }
 
-    private void writeKNNModel(String filename, int numExamples, int numFeatures, OSCOutput output, LearningModelBuilder modelBuilder, Instances insts) throws IOException {
+    private void writeKNNModel(String filename, int numExamples, int numInputs, OSCOutput output, LearningModelBuilder modelBuilder, Instances insts) throws IOException {
+        //Get numNeighbours from modelBuilder and numClasses from output
+        int numNeighbours = 1;
+        int numClasses = 1;
         try {
             Method getNumNeighbors = modelBuilder.getClass().getMethod("getNumNeighbors", null);
             numNeighbours = (int) getNumNeighbors.invoke(modelBuilder, null);
@@ -63,7 +64,7 @@ public class CppWriter {
         headerPrint.printf("#define NUM_NEIGHBOURS " + numNeighbours + "\n");
         headerPrint.printf("#define NUM_CLASSES " + numClasses + "\n");
         headerPrint.printf("#define NUM_EXAMPLES " + numExamples + "\n");
-        headerPrint.printf("#define NUM_FEATURES " + numFeatures + "\n\n");
+        headerPrint.printf("#define NUM_FEATURES " + numInputs + "\n\n");
         headerPrint.printf("struct neighbour {\n");
         headerPrint.printf("	int classNum;\n");
         headerPrint.printf("	float features[NUM_FEATURES];\n");
@@ -91,7 +92,7 @@ public class CppWriter {
             String[] splitInstance = insts.instance(i).toString().split(",");
             cppPrint.printf("	neighbours[" + i + "] = {");
             cppPrint.printf(splitInstance[splitInstance.length - 1] + ", {");
-            for (int j = 3; j < numFeatures + 3; j++) {
+            for (int j = 3; j < numInputs + 3; j++) {
                 if (j > 3) {
                     cppPrint.printf(", ");
                 }
@@ -138,69 +139,61 @@ public class CppWriter {
         cppPrint.close();
     }
 
-    private void writeNNModel(String filename, int numExamples, int numFeatures, OSCOutput output, LearningModelBuilder modelBuilder, Instances insts) throws IOException {
+    private void writeNNModel(String filename, int numExamples, int numInputs, LearningModelBuilder modelBuilder, Model model) throws IOException {
+        int numHidden = 1;
+        String modelDescription = "";
         try {
-            Method getNumNeighbors = modelBuilder.getClass().getMethod("getNumNeighbors", null);
-            numNeighbours = (int) getNumNeighbors.invoke(modelBuilder, null);
-            Method getNumClasses = output.getClass().getMethod("getNumClasses", null);
-            numClasses = (int) getNumClasses.invoke(output, null);
+            Method getNumNodesPerHiddenLayer = modelBuilder.getClass().getMethod("getNumNodesPerHiddenLayer", null);
+            numHidden = (int) getNumNodesPerHiddenLayer.invoke(modelBuilder, null);
+            Method getModelDescription = model.getClass().getMethod("getModelDescription", null);
+            modelDescription = (String) getModelDescription.invoke(model, null);
         } catch (Exception ex) {
             logger.log(Level.WARNING, "Could not write to Cpp file ", ex.getMessage());
         }
+        
+        logger.log(Level.INFO, "model ", model);
+        logger.log(Level.INFO, "name ", model.getPrettyName());
         //Write header
         String headerName = filename + ".h";
         FileWriter headerWrite = new FileWriter(headerName, true);
         PrintWriter headerPrint = new PrintWriter(headerWrite);
         headerPrint.printf("#ifndef neuralNetwork_h\n");
-        headerPrint.printf("#define neuralNetwork_h\n");
-        headerPrint.printf("\n"
-                + "//from Wekinator\n"
-                + "#define NUM_INPUTS 2\n"
-                + "#define NUM_HIDDEN 2\n"
-                + "#define NUM_OUTPUT 2\n"
-                + "\n"
-                + "class neuralNetwork {\n"
-                + "\n"
-                + "public:\n"
-                + "	\n"
-                + "	neuralNetwork();\n"
-                + "	~neuralNetwork();\n"
-                + "	\n"
-                + "	double* feedForwardPattern( double* pattern );\n"
-                + "	\n"
-                + "private:\n"
-                + "	\n"
-                + "	double* inputNeurons;\n"
-                + "	double* hiddenNeurons;\n"
-                + "	double* outputNeurons;\n"
-                + "	\n"
-                + "	double** wInputHidden;\n"
-                + "	double** wHiddenOutput;\n"
-                + "	\n"
-                + "	inline double activationFunction(double x);\n"
-                + "	void feedForward (double* pattern);\n"
-                + "};\n"
-                + "\n"
-                + "#endif");
+        headerPrint.printf("#define neuralNetwork_h\n\n");
+        headerPrint.printf("#define NUM_INPUTS " + numInputs + "\n");
+        headerPrint.printf("#define NUM_HIDDEN " + numHidden + "\n");
+        headerPrint.printf("#define NUM_OUTPUT 1\n\n");
+        headerPrint.printf("class neuralNetwork {\n\n");
+        headerPrint.printf("public:\n\n");
+        headerPrint.printf("	neuralNetwork();\n");
+        headerPrint.printf("	~neuralNetwork();\n\n");
+        headerPrint.printf("	double* feedForwardPattern( double* pattern );\n\n");
+        headerPrint.printf("private:\n\n");
+        headerPrint.printf("	double* inputNeurons;\n");
+        headerPrint.printf("	double* hiddenNeurons;\n");
+        headerPrint.printf("	double* outputNeurons;\n\n");
+        headerPrint.printf("	double** wInputHidden;\n");
+        headerPrint.printf("	double** wHiddenOutput;\n\n");
+        headerPrint.printf("	inline double activationFunction(double x);\n");
+        headerPrint.printf("	void feedForward (double* pattern);\n");
+        headerPrint.printf("};\n\n");
+        headerPrint.printf("#endif\n");
         headerPrint.close();
 
         //Write cpp
         String cppName = filename + ".cpp";
         FileWriter cppWrite = new FileWriter(cppName, true);
         PrintWriter cppPrint = new PrintWriter(cppWrite);
-        cppPrint.printf("#include <math.h>\n"
-                + "#include \"neuralNetwork.h\"\n"
-                + "\n"
-                + "neuralNetwork::neuralNetwork() {\n"
-                + "	\n"
-                + "	//input neurons, including bias\n"
-                + "	inputNeurons = new(double[NUM_INPUTS + 1]);\n"
-                + "	for (int i=0; i < NUM_INPUTS; i++){\n"
-                + "		inputNeurons[i] = 0;\n"
-                + "	}\n"
-                + "	inputNeurons[NUM_INPUTS] = -1;\n"
-                + "	\n"
-                + "	//hidden neurons, including bias\n"
+        cppPrint.printf("model description " + modelDescription + "\n"); 
+        cppPrint.printf("#include <math.h>\n");
+        cppPrint.printf("#include \"neuralNetwork.h\"\n\n");
+        cppPrint.printf("neuralNetwork::neuralNetwork() {\n\n");
+        cppPrint.printf("	//input neurons, including bias\n");
+        cppPrint.printf("	inputNeurons = new(double[NUM_INPUTS + 1]);\n");
+        cppPrint.printf("	for (int i=0; i < NUM_INPUTS; i++){\n");
+        cppPrint.printf("		inputNeurons[i] = 0;\n");
+        cppPrint.printf("	}\n");
+        cppPrint.printf("	inputNeurons[NUM_INPUTS] = -1;\n\n");
+        cppPrint.printf("	//hidden neurons, including bias\n"
                 + "	hiddenNeurons = new(double[NUM_HIDDEN + 1]);\n"
                 + "	for (int i=0; i < NUM_HIDDEN; i++){\n"
                 + "		hiddenNeurons[i] = 0;\n"
@@ -220,13 +213,10 @@ public class CppWriter {
                 + "		for (int j=0; j < NUM_HIDDEN; j++) {\n"
                 + "			wInputHidden[i][j] = 0;\n"
                 + "		}\n"
-                + "	}\n"
-                + "	wInputHidden[0][0] = 0.9;//FIXME: Arbitrary weights for testing. Populate from Wekinator\n"
-                + "	wInputHidden[0][1] = 0.1;\n"
-                + "	wInputHidden[1][0] = 0.1;\n"
-                + "	wInputHidden[1][1] = 0.9;\n"
-                + "	\n"
-                + "	//weights between hidden and output\n"
+                + "	}\n");
+        cppPrint.printf("//MZ: I would rather not have to parse this string to get the weights");
+        cppPrint.printf("model description " + modelDescription + "\n"); 
+        cppPrint.printf("	//weights between hidden and output\n"
                 + "	wHiddenOutput = new(double*[NUM_HIDDEN + 1]);\n"
                 + "	for (int i = 0; i <= NUM_HIDDEN; i++) {\n"
                 + "		wHiddenOutput[i] = new (double[NUM_OUTPUT]);\n"
