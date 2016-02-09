@@ -46,6 +46,8 @@ public class Note {
     //Uses http://www.json.org/javadoc/org/json/JSONStringer.html
     public void appendToJSonStringer(JSONStringer s) {
         s.object();
+        //            System.out.println("About to output " + description );
+
         s.key("description");
         s.value(description);
         if (values.isEmpty()) {
@@ -53,10 +55,17 @@ public class Note {
             return;
         }
         s.key("values");
+        if (values.size() != 0) {
+             s.object();
+        }
         for (String valueKey : values.keySet()) {
-            s.object();
+           // System.out.println("About to output " description + " key " + valueKey);
+           
             s.key(valueKey);
             s.value(values.get(valueKey));
+            
+        }
+        if (values.size() != 0) {
             s.endObject();
         }
         s.endObject();

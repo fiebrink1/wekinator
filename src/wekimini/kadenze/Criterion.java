@@ -12,9 +12,8 @@ import org.json.JSONStringer;
  * @author rebecca
  */
 public class Criterion {
-    private final int id;
+    //private final int id;
     private final String name;
-    
     private double score = 0.0;
 
     public double getScore() {
@@ -25,14 +24,13 @@ public class Criterion {
         this.score = score;
     }
 
-    public Criterion(int id, String name) {
-        this.id = id;
+    public Criterion(String name) {
         this.name = name;
     }
 
-    public int getId() {
+  /*  public int getId() {
         return id;
-    }
+    } */
 
     public String getName() {
         return name;
@@ -43,8 +41,8 @@ public class Criterion {
     //Uses http://www.json.org/javadoc/org/json/JSONStringer.html
     public void appendToJSonStringer(JSONStringer s) {
         s.object();
-        s.key("grading_criterion_id");
-        s.value(id);
+       // s.key("grading_criterion_id");
+       // s.value(id);
         s.key("feature_id");
         s.value(name);
         s.key("score");
@@ -57,7 +55,7 @@ public class Criterion {
     }
     
     public static void main(String[] args) {
-        Criterion c = new Criterion(1, "valid_submission");
+        Criterion c = new Criterion("valid_submission");
         c.setScore(0.3);
         JSONStringer s = new JSONStringer();
         c.appendToJSonStringer(s);

@@ -57,7 +57,7 @@ public class LoggingManager {
             }
         } else {
             //TODO: test on linux
-            return "%t" + File.separator + "wekinator_main.log";
+            return System.getProperty("java.io.tmpdir") + File.separator + "wekinator_main.log";
         }
     }
     

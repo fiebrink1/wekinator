@@ -70,7 +70,15 @@ public class LinearRegressionModel implements SupervisedLearningModel {
     }
     
     public String getModelString() {
-        return wmodel.toString();
+        
+        double[] coeffs = wmodel.coefficients();
+        StringBuilder sb = new StringBuilder("\n\nNon-truncated coefficients:\n");
+        for (int i= 0; i < coeffs.length-2; i++) {
+            sb.append(coeffs[i]).append("\n");
+        }
+        sb.append(coeffs[coeffs.length-1]); //coeffs[length-2] seems to always be an unnecessary 0 - ? skip it.
+        
+        return wmodel.toString() + sb.toString(); 
     }
     
     public void writeToOutputStream(ObjectOutputStream os) throws IOException {
@@ -94,7 +102,15 @@ public class LinearRegressionModel implements SupervisedLearningModel {
     
     @Override
     public String getModelDescription() {
-        return wmodel.toString();
+        //return wmodel.toString();
+        double[] coeffs = wmodel.coefficients();
+        StringBuilder sb = new StringBuilder("\n\nNon-truncated coefficients:\n");
+        for (int i= 0; i < coeffs.length-2; i++) {
+            sb.append(coeffs[i]).append("\n");
+        }
+        sb.append(coeffs[coeffs.length-1]); //coeffs[length-2] seems to always be an unnecessary 0 - ? skip it.
+        
+        return wmodel.toString() + sb.toString(); 
     }
     
     @Override

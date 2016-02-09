@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
@@ -187,6 +188,10 @@ public class KadenzeUtils {
                 || modelString.startsWith("DECISIONSTUMP") || modelString.startsWith("ADABOOST")
                 || modelString.startsWith("NAIVEBAYES");
     }
+    
+    static boolean isModelStringRegression(String modelString) {
+        return modelString.startsWith("LINPOLREG") || modelString.startsWith("NEURALNET"); //TODO TEST THIS
+    }
 
     public static boolean deleteDirectory(File directory) {
     if(directory.exists()){
@@ -220,6 +225,25 @@ public class KadenzeUtils {
             }
         }
         return vals;
+    }
+
+    static String prettifyJSON(String toJSONString) {
+        return toJSONString.replaceAll("\\{", "\n\\{\n").replaceAll(",",",\n").replaceAll("\\}","\n\\}");
+    }
+
+    static String formatStringList(ArrayList<String> s) {
+        if (s.size() == 0) {
+            return "";
+        } else if (s.size() == 1) {
+            return s.get(0);
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.size()-1; i++) {
+            sb.append(s.get(i)).append(", ");
+        }
+        sb.append(s.get(s.size()-1));
+        return sb.toString();
     }
     
    

@@ -31,7 +31,13 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
                 "Assignment 2, Part 1D",
                 "Assignment 2, Part 2",
                 "Assignment 2, Part 3A",
-                "Assignment 2, Part 3B"
+                "Assignment 2, Part 3B",
+                "Assignment 3, Part 1A",
+                "Assignment 3, Part 1B",
+                "Assignment 3, Part 1C",
+                "Assignment 3, Part 2",
+                "Assignment 3, Part 3A",
+                "Assignment 3, Part 3B"
             };
 
     private final KadenzeAssignmentType[] assignmentTypes
@@ -43,7 +49,13 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
                 KadenzeAssignmentType.ASSIGNMENT2_PART1D,
                 KadenzeAssignmentType.ASSIGNMENT2_PART2,
                 KadenzeAssignmentType.ASSIGNMENT2_PART3A,
-                KadenzeAssignmentType.ASSIGNMENT2_PART3B
+                KadenzeAssignmentType.ASSIGNMENT2_PART3B,
+                KadenzeAssignmentType.ASSIGNMENT3_PART1A,
+                KadenzeAssignmentType.ASSIGNMENT3_PART1B,
+                KadenzeAssignmentType.ASSIGNMENT3_PART1C,
+                KadenzeAssignmentType.ASSIGNMENT3_PART2,
+                KadenzeAssignmentType.ASSIGNMENT3_PART3A,
+                KadenzeAssignmentType.ASSIGNMENT3_PART3B
             };
 
     /**
