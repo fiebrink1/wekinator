@@ -140,19 +140,23 @@ public class CppWriter {
     }
 
     private void writeNNModel(String filename, int numExamples, int numInputs, LearningModelBuilder modelBuilder, Model model) throws IOException {
-        int numHidden = 1;
+        int numHiddenNodes = 1;
+        int numHiddenLayers = 1;
         String modelDescription = "";
+        
         try {
+            Method getNumHiddenLayers = modelBuilder.getClass().getMethod("getNumHiddenLayers", null);
+            numHiddenLayers = (int) getNumHiddenLayers.invoke(modelBuilder, null);
+            
             Method getNumNodesPerHiddenLayer = modelBuilder.getClass().getMethod("getNumNodesPerHiddenLayer", null);
-            numHidden = (int) getNumNodesPerHiddenLayer.invoke(modelBuilder, null);
+            numHiddenNodes = (int) getNumNodesPerHiddenLayer.invoke(modelBuilder, null);
+            
             Method getModelDescription = model.getClass().getMethod("getModelDescription", null);
             modelDescription = (String) getModelDescription.invoke(model, null);
         } catch (Exception ex) {
             logger.log(Level.WARNING, "Could not write to Cpp file ", ex.getMessage());
         }
         
-        logger.log(Level.INFO, "model ", model);
-        logger.log(Level.INFO, "name ", model.getPrettyName());
         //Write header
         String headerName = filename + ".h";
         FileWriter headerWrite = new FileWriter(headerName, true);
@@ -160,7 +164,7 @@ public class CppWriter {
         headerPrint.printf("#ifndef neuralNetwork_h\n");
         headerPrint.printf("#define neuralNetwork_h\n\n");
         headerPrint.printf("#define NUM_INPUTS " + numInputs + "\n");
-        headerPrint.printf("#define NUM_HIDDEN " + numHidden + "\n");
+        headerPrint.printf("#define NUM_HIDDEN " + numHiddenNodes + "\n");
         headerPrint.printf("#define NUM_OUTPUT 1\n\n");
         headerPrint.printf("class neuralNetwork {\n\n");
         headerPrint.printf("public:\n\n");
@@ -214,8 +218,8 @@ public class CppWriter {
                 + "			wInputHidden[i][j] = 0;\n"
                 + "		}\n"
                 + "	}\n");
-        cppPrint.printf("//MZ: I would rather not have to parse this string to get the weights");
-        cppPrint.printf("model description " + modelDescription + "\n"); 
+        cppPrint.printf("//MZ: I would rather not have to parse this string to get the weights\n");
+        cppPrint.printf(modelDescription + "\n"); 
         cppPrint.printf("	//weights between hidden and output\n"
                 + "	wHiddenOutput = new(double*[NUM_HIDDEN + 1]);\n"
                 + "	for (int i = 0; i <= NUM_HIDDEN; i++) {\n"
@@ -265,19 +269,17 @@ public class CppWriter {
                 + "	//calculate hidden layer\n"
                 + "	for (int j=0; j < NUM_HIDDEN; j++) {\n"
                 + "		hiddenNeurons[j] = 0;\n"
-                + "		for (int i = 0; i < NUM_INPUTS; i++) {\n"
+                + "		for (int i = 0; i <= NUM_INPUTS; i++) {\n"
                 + "			hiddenNeurons[j] += inputNeurons[i] * wInputHidden[i][j];\n"
                 + "		}\n"
                 + "		hiddenNeurons[j] = activationFunction(hiddenNeurons[j]);\n"
-                + "	}\n"
-                + "	\n"
+                + "	}\n\n"
                 + "	//calculate output layer\n"
                 + "	for (int k=0; k < NUM_OUTPUT; k++){\n"
                 + "		outputNeurons[k] = 0;\n"
-                + "		for (int j = 0; j < NUM_HIDDEN; j++) {\n"
+                + "		for (int j = 0; j <= NUM_HIDDEN; j++) {\n"
                 + "			outputNeurons[k] += hiddenNeurons[j] * wHiddenOutput[j][k];\n"
-                + "		}\n"
-                + "		\n"
+                + "		}\n\n"
                 + "	}\n"
                 + "}\n");
         cppPrint.close();
