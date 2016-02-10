@@ -16,6 +16,8 @@ import weka.core.Instances;
 import wekimini.learning.KNNModelBuilder;
 import wekimini.learning.Model;
 import wekimini.learning.NeuralNetModelBuilder;
+import wekimini.learning.NeuralNetModelBuilder.HiddenLayerType;
+import wekimini.learning.NeuralNetworkModel;
 import wekimini.osc.OSCOutput;
 
 /**
@@ -31,13 +33,13 @@ public class CppWriter {
             try {
                 writeNNModel(filename, numExamples, numInputs, modelBuilder, model);
             } catch (Exception ex) {
-                logger.log(Level.WARNING, "Could not write to NN model to Cpp file ", ex.getMessage());
+                logger.log(Level.WARNING, "Could not write to NN model to Cpp file {0}", ex.getMessage());
             }
         } else if (modelBuilder instanceof KNNModelBuilder) {
             try {
                 writeKNNModel(filename, numExamples, numInputs, output, modelBuilder, insts);
             } catch (Exception ex) {
-                logger.log(Level.WARNING, "Could not write kNN model to Cpp file ", ex.getMessage());
+                logger.log(Level.WARNING, "Could not write kNN model to Cpp file {0}", ex.getMessage());
             }
         } else {
             logger.log(Level.INFO, "Cannot write C++ for this kind of model.");
@@ -49,13 +51,15 @@ public class CppWriter {
         int numNeighbours = 1;
         int numClasses = 1;
         try {
-            Method getNumNeighbors = modelBuilder.getClass().getMethod("getNumNeighbors", (Class<?>[]) null);
-            numNeighbours = (int) getNumNeighbors.invoke(modelBuilder, (Object[]) null);
+            KNNModelBuilder kmb = (KNNModelBuilder) modelBuilder;
+            numNeighbours = kmb.getNumNeighbors();
+            //FIXME: Use above syntax for this method. -MZ
             Method getNumClasses = output.getClass().getMethod("getNumClasses", (Class<?>[]) null);
             numClasses = (int) getNumClasses.invoke(output, (Object[]) null);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            logger.log(Level.WARNING, "Could not write to Cpp file ", ex.getMessage());
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "Could not write to Cpp file {0}", ex.getMessage());
         }
+        
         //Write header
         String headerName = filename + ".h";
         FileWriter headerWrite = new FileWriter(headerName, true);
@@ -146,18 +150,25 @@ public class CppWriter {
         String modelDescription = "";
 
         try {
-            Method getNumHiddenLayers = modelBuilder.getClass().getMethod("getNumHiddenLayers", (Class<?>[]) null);
-            numHiddenLayers = (int) getNumHiddenLayers.invoke(modelBuilder, (Object[]) null);
-
-            Method getNumNodesPerHiddenLayer = modelBuilder.getClass().getMethod("getNumNodesPerHiddenLayer", (Class<?>[]) null);
-            numHiddenNodes = (int) getNumNodesPerHiddenLayer.invoke(modelBuilder, (Object[]) null);
-
-            Method getModelDescription = model.getClass().getMethod("getModelDescription", (Class<?>[]) null);
-            modelDescription = (String) getModelDescription.invoke(model, (Object[]) null);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            logger.log(Level.WARNING, "Could not write to Cpp file ", ex.getMessage());
+            NeuralNetModelBuilder nmb = (NeuralNetModelBuilder) modelBuilder;
+            HiddenLayerType htp = nmb.getHiddenLayerType();
+            if (htp == HiddenLayerType.NUM_FEATURES) {
+                numHiddenNodes = numInputs;
+            } else {
+                numHiddenNodes = nmb.getNumNodesPerHiddenLayer();
+            }
+            numHiddenLayers = nmb.getNumHiddenLayers();
+            
+            NeuralNetworkModel nnm = (NeuralNetworkModel) model;
+            modelDescription = nnm.getModelDescription();
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "Could not write to Cpp file {0}", ex.getMessage());
         }
-        logger.log(Level.INFO, "Number of hidden layers: ", numHiddenLayers);
+           
+        if (numHiddenLayers > 1) {
+            logger.log(Level.WARNING, "Cannot write Cpp model with {0} layers.", numHiddenLayers);
+        }
+        
         //Write header
         String headerName = filename + ".h";
         FileWriter headerWrite = new FileWriter(headerName, true);
@@ -218,9 +229,6 @@ public class CppWriter {
             cppPrint.printf("		}\n");
             cppPrint.printf("	}\n");
             
-            if (numHiddenNodes == 0) {
-                numHiddenNodes = 5; //FIXME: Testing hack
-            }
             String modelDescriptionLines[] = modelDescription.split("\\r?\\n");
             for (int i = 0; i < numInputs; i++) {
                 for (int j = 0; j < numHiddenNodes; j++) {
