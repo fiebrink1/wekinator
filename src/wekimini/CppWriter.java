@@ -143,20 +143,20 @@ public class CppWriter {
         int numHiddenNodes = 1;
         int numHiddenLayers = 1;
         String modelDescription = "";
-        
+
         try {
             Method getNumHiddenLayers = modelBuilder.getClass().getMethod("getNumHiddenLayers", null);
             numHiddenLayers = (int) getNumHiddenLayers.invoke(modelBuilder, null);
-            
+
             Method getNumNodesPerHiddenLayer = modelBuilder.getClass().getMethod("getNumNodesPerHiddenLayer", null);
             numHiddenNodes = (int) getNumNodesPerHiddenLayer.invoke(modelBuilder, null);
-            
+
             Method getModelDescription = model.getClass().getMethod("getModelDescription", null);
             modelDescription = (String) getModelDescription.invoke(model, null);
         } catch (Exception ex) {
             logger.log(Level.WARNING, "Could not write to Cpp file ", ex.getMessage());
         }
-        
+
         //Write header
         String headerName = filename + ".h";
         FileWriter headerWrite = new FileWriter(headerName, true);
@@ -187,7 +187,6 @@ public class CppWriter {
         String cppName = filename + ".cpp";
         FileWriter cppWrite = new FileWriter(cppName, true);
         PrintWriter cppPrint = new PrintWriter(cppWrite);
-        cppPrint.printf("model description " + modelDescription + "\n"); 
         cppPrint.printf("#include <math.h>\n");
         cppPrint.printf("#include \"neuralNetwork.h\"\n\n");
         cppPrint.printf("neuralNetwork::neuralNetwork() {\n\n");
@@ -217,22 +216,39 @@ public class CppWriter {
                 + "		for (int j=0; j < NUM_HIDDEN; j++) {\n"
                 + "			wInputHidden[i][j] = 0;\n"
                 + "		}\n"
-                + "	}\n");
-        cppPrint.printf("//MZ: I would rather not have to parse this string to get the weights\n");
-        cppPrint.printf(modelDescription + "\n"); 
-        cppPrint.printf("	//weights between hidden and output\n"
-                + "	wHiddenOutput = new(double*[NUM_HIDDEN + 1]);\n"
-                + "	for (int i = 0; i <= NUM_HIDDEN; i++) {\n"
-                + "		wHiddenOutput[i] = new (double[NUM_OUTPUT]);\n"
-                + "		for (int j=0; j < NUM_OUTPUT; j++) {\n"
-                + "			wHiddenOutput[i][j] = 0;\n"
-                + "		}\n"
-                + "	}\n"
-                + "	wHiddenOutput[0][0] = 0.9;//FIXME: Arbitrary weights for testing. Populate from Wekinator\n"
-                + "	wHiddenOutput[0][1] = 0.1;\n"
-                + "	wHiddenOutput[1][0] = 0.1;\n"
-                + "	wHiddenOutput[1][1] = 0.9;		\n"
-                + "}\n"
+                + "	}\n\n");
+        if (numHiddenNodes == 0) {
+            numHiddenNodes = 5; //FIXME: Testing hack
+        }
+        String modelDescriptionLines[] = modelDescription.split("\\r?\\n");
+        for (int i = 0; i < numInputs; i++) {
+            for (int j = 0; j < numHiddenNodes; j++) {
+                int offset = (2 + numHiddenNodes) + (j * (3 + numInputs)) + 4 + i; //TODO: Make this look better. MZ
+                String nodeWeight[] = modelDescriptionLines[offset].split("\\s+");
+                cppPrint.printf("	wInputHidden[" + i + "][" + j + "] = " + nodeWeight[3] + ";\n");
+            }
+        }
+        for (int j = 0; j < numHiddenNodes; j++) {
+            int offset = (2 + numHiddenNodes) + (j * (3 + numInputs)) + 3; //TODO: Make this look better. MZ
+            String biasWeight[] = modelDescriptionLines[offset].split("\\s+");
+            cppPrint.printf("	wInputHidden[" + numInputs + "][" + j + "] = " + biasWeight[2] + ";\n");
+        }
+        cppPrint.printf("\n");
+        cppPrint.printf("	//weights between hidden and output\n");
+        cppPrint.printf("	wHiddenOutput = new(double*[NUM_HIDDEN + 1]);\n");
+        cppPrint.printf("	for (int i = 0; i <= NUM_HIDDEN; i++) {\n");
+        cppPrint.printf("		wHiddenOutput[i] = new (double[NUM_OUTPUT]);\n");
+        cppPrint.printf("		for (int j=0; j < NUM_OUTPUT; j++) {\n");
+        cppPrint.printf("			wHiddenOutput[i][j] = 0;\n");
+        cppPrint.printf("		}\n");
+        cppPrint.printf("	}\n\n");
+        for (int i = 0; i < numHiddenNodes; i++) {
+            String nodeWeight[] = modelDescriptionLines[i + 3].split("\\s+");
+            cppPrint.printf("	wHiddenOutput[0][" + i + "] = " + nodeWeight[3] + ";\n");
+        }
+        String biasWeight[] = modelDescriptionLines[2].split("\\s+");
+        cppPrint.printf("	wHiddenOutput[0][" + numHiddenNodes + "] = " + biasWeight[2] + ";\n");
+        cppPrint.printf("}\n"
                 + "\n"
                 + "neuralNetwork::~neuralNetwork() {\n"
                 + "	delete[] inputNeurons;\n"
@@ -282,6 +298,10 @@ public class CppWriter {
                 + "		}\n\n"
                 + "	}\n"
                 + "}\n");
+        cppPrint.printf("//MZ: Full model description\n");
+        cppPrint.printf("/*\n");
+        cppPrint.printf(modelDescription + "\n");
+        cppPrint.printf("*/\n");
         cppPrint.close();
     }
 }
