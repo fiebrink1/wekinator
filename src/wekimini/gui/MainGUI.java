@@ -286,8 +286,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             for (int i = 0; i < 7; i++) {
                 if (subpart == (i + 1)) {
                     kadenzeMenuItems[i].setEnabled(false);
+                    kadenzeMenuItems[i].setText("Doing " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(2, i + 1)));
                 } else {
                     kadenzeMenuItems[i].setEnabled(true);
+                    kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(2, i + 1)));
                 }
             }
         } else if (which == 3) {
@@ -295,8 +297,11 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             for (int i = 0; i < 6; i++) {
                 if (subpart == (i + 1)) {
                     kadenzeMenuItems[i].setEnabled(false);
+                    kadenzeMenuItems[i].setText("Doing " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(3, i + 1)));
+
                 } else {
                     kadenzeMenuItems[i].setEnabled(true);
+                    kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(3, i + 1)));
                 }
             }
         } else {
