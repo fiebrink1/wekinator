@@ -16,9 +16,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import wekimini.DtwLearningManager;
 import wekimini.LearningManager;
 import wekimini.LearningManager.LearningType;
 import wekimini.Path;
+import wekimini.SupervisedLearningManager;
+import wekimini.SupervisedLearningManager.RunningState;
 import wekimini.WekiMiniRunner.Closeable;
 import wekimini.gui.path.PathEditorFrame;
 import wekimini.util.Util;
@@ -303,6 +306,23 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     private void createAssignmentSubmission() {
         try {
+            //If running, should stop first! Otherwise, danger of not knowing 
+            // how long running happened before student submits logs (run start 
+            // will be last logged line)
+            if (w.getLearningManager().getLearningType() == LearningType.SUPERVISED_LEARNING) {
+                if (w.getSupervisedLearningManager().getRunningState() == RunningState.RUNNING) {
+                    KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.RUN_STOP);
+                    w.getSupervisedLearningManager().setRunningState(RunningState.NOT_RUNNING);
+                    w.getStatusUpdateCenter().update(this, "Running stopped");
+                }
+            } else if (w.getLearningManager().getLearningType() == LearningType.TEMPORAL_MODELING) {
+                if (w.getDtwLearningManager().getRunningState() == DtwLearningManager.RunningState.RUNNING) {
+                    KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.RUN_STOP); //TODO: DTW need to test this!
+                    w.getDtwLearningManager().stopRunning();
+                    w.getStatusUpdateCenter().update(this, "Running stopped");
+                }
+            }
+            
             String zipped = KadenzeLogging.createZipForAssignment();
             Util.showPrettyInfoPane(this, "Your assignment is done! Please submit file " + zipped, "Success!");
         } catch (Exception ex) {
