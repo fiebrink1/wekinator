@@ -46,7 +46,7 @@ import wekimini.osc.OSCOutputGroup;
 public class Assignment12Logger implements KadenzeLogger {
 
     private static final int version = 2;
-    private static final String dateString = "2016/01/22";
+    private static final String dateString = "2016/02/20";
     private FileOutputStream fos = null;
     private OutputStreamWriter osw = null;
     private PrintWriter pw = null;
@@ -608,7 +608,14 @@ public class Assignment12Logger implements KadenzeLogger {
     @Override
     public String getZipDirectoryNameForAssignment() {
         return parentDir + File.separator + "assignment" + KadenzeAssignment.getAssignmentNumber(currentAssignmentType);
-
     }
-
+    
+    @Override
+    public void logInputInformation(Wekinator w, String inputString, int difficulty, String difficultyString) {
+        String modInputString = inputString.replaceAll("\n", " NEWLINE ").replaceAll("\r", " NEWLINE "); //TODO TEST ON WINDOWS
+        String modDifficultyString = difficultyString.replaceAll("\n", " NEWLINE ").replaceAll("\r", " NEWLINE "); //TODO TEST ON WINDOWS
+        pw.println(ts() + "," + w.getID() + ",INPUT_DESCRIPTION_STRING," + modInputString);
+        pw.println(ts() + "," + w.getID() + ",ASSIGNMENT_DIFFICULTY_RATING," + difficulty);
+        pw.println(ts() + "," + w.getID() + ",ASSIGNMENT_DIFFICULTY_COMMENTS," + modDifficultyString);
+    }
 }

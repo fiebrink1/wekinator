@@ -101,4 +101,6 @@ public interface KadenzeLogger {
     
     void logModelPrintedToConsole(Wekinator w, Path p);
     
+    public void logInputInformation(Wekinator w, String inputString, int difficulty, String difficultyString);
+    
 }

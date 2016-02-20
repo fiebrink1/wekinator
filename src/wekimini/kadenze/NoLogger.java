@@ -147,4 +147,8 @@ public class NoLogger implements KadenzeLogger {
     public String getZipDirectoryNameForAssignment() {
         return "";
     }
+
+    @Override
+    public void logInputInformation(Wekinator w, String inputString, int difficulty, String difficultyString) {
+    }
 }
