@@ -160,14 +160,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             kadenzeMenuItems[1] = k2;
         } else if (whichMainAssignment == 2) {
             makeKadenzeAssignment2Menu(ka);
-        } else if (whichMainAssignment == 3) {
-            makeKadenzeAssignment3Menu(ka);
+        } else if (whichMainAssignment == 5) {
+            makeKadenzeAssignment5Menu(ka);
         }else {
             logger.log(Level.WARNING, "Unknown assignment :" + ka);
         }
     }
     
-    private void makeKadenzeAssignment3Menu(final KadenzeAssignmentType ka) {
+    private void makeKadenzeAssignment5Menu(final KadenzeAssignmentType ka) {
         kadenzeMenuItems = new JMenuItem[7];
         int subPart = KadenzeAssignment.getAssignmentSubPart(ka); //1 through 6
         for (int i = 0; i < 6; i++) {
@@ -177,7 +177,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             } else {
                 s = "Start ";
             }
-            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(3, i + 1));
+            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(5, i + 1));
             kadenzeMenuItems[i] = new JMenuItem(s);
             if (i == (subPart - 1)) {
                 kadenzeMenuItems[i].setEnabled(false);
@@ -191,14 +191,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             menuKadenze.add(kadenzeMenuItems[i]);
         }
 
-        addKadenzeListener(kadenzeMenuItems[0], KadenzeAssignmentType.ASSIGNMENT3_PART1A);
-        addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT3_PART1B);
-        addKadenzeListener(kadenzeMenuItems[2], KadenzeAssignmentType.ASSIGNMENT3_PART1C);
-        addKadenzeListener(kadenzeMenuItems[3], KadenzeAssignmentType.ASSIGNMENT3_PART2);
-        addKadenzeListener(kadenzeMenuItems[4], KadenzeAssignmentType.ASSIGNMENT3_PART3A);
-        addKadenzeListener(kadenzeMenuItems[5], KadenzeAssignmentType.ASSIGNMENT3_PART3B);
+        addKadenzeListener(kadenzeMenuItems[0], KadenzeAssignmentType.ASSIGNMENT5_PART1A);
+        addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT5_PART1B);
+        addKadenzeListener(kadenzeMenuItems[2], KadenzeAssignmentType.ASSIGNMENT5_PART1C);
+        addKadenzeListener(kadenzeMenuItems[3], KadenzeAssignmentType.ASSIGNMENT5_PART2);
+        addKadenzeListener(kadenzeMenuItems[4], KadenzeAssignmentType.ASSIGNMENT5_PART3A);
+        addKadenzeListener(kadenzeMenuItems[5], KadenzeAssignmentType.ASSIGNMENT5_PART3B);
 
-        kadenzeMenuItems[6] = new JMenuItem("Create Kadenze Assignment 3 submission");
+        kadenzeMenuItems[6] = new JMenuItem("Create Kadenze Assignment 5 submission");
         kadenzeMenuItems[6].addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -292,16 +292,16 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                     kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(2, i + 1)));
                 }
             }
-        } else if (which == 3) {
+        } else if (which == 5) {
             int subpart = KadenzeAssignment.getAssignmentSubPart(ka);
             for (int i = 0; i < 6; i++) {
                 if (subpart == (i + 1)) {
                     kadenzeMenuItems[i].setEnabled(false);
-                    kadenzeMenuItems[i].setText("Doing " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(3, i + 1)));
+                    kadenzeMenuItems[i].setText("Doing " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(5, i + 1)));
 
                 } else {
                     kadenzeMenuItems[i].setEnabled(true);
-                    kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(3, i + 1)));
+                    kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(5, i + 1)));
                 }
             }
         } else {
