@@ -13,9 +13,9 @@ import wekimini.kadenze.NotedCriterion.Outcome;
  *
  * @author rebecca
  */
-public class Assignment3Grade {
+public class Assignment5Grade {
 
-    public Assignment3Grade() {
+    public Assignment5Grade() {
     }
 
     private final NotedCriterion validSubmission = new NotedCriterion("valid_submission");
@@ -30,14 +30,14 @@ public class Assignment3Grade {
     private final NotedCriterion part2Experimented = new NotedCriterion("part2_experimented");
     private final NotedCriterion part3aBuiltRegression = new NotedCriterion("part3a_built_regression");
     private final NotedCriterion part3bModelAccuracy = new NotedCriterion("part3b_model_accuracy");
-    private static final Logger logger = Logger.getLogger(Assignment3Grade.class.getName());
+    private static final Logger logger = Logger.getLogger(Assignment5Grade.class.getName());
 
-    public static enum Assignment3Part {
+    public static enum Assignment5Part {
 
         PART1A, PART1B, PART1C, PART2, PART3A, PART3B
     };
 
-    void scorePartFail(Assignment3Part assignmentPart, Outcome outcome) {
+    void scorePartFail(Assignment5Part assignmentPart, Outcome outcome) {
         switch (assignmentPart) {
             case PART1A:
                 score1aSetup(outcome, 0.0);
