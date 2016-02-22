@@ -327,7 +327,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                 }
             }
 
-            //TODO: Show extra prompt here
+            //Show prompt for information about input device & difficulty
             KadenzeAssignmentType ka = KadenzeLogging.getCurrentAssignmentType();
             int which = KadenzeAssignment.getAssignmentNumber(ka);
             if (which == 5) {
