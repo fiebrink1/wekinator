@@ -989,6 +989,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         KadenzeLogging.getLogger().logModelBuilderUpdated(w, mb, i);
     }
 
+    //BUG: This doesn't update listeners from old p to new p
     public void updatePath(Path p, OSCOutput newOutput, LearningModelBuilder newModelBuilder, String[] selectedInputNames) {
         //Which path?
         int which = paths.indexOf(p);
@@ -999,11 +1000,28 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
         KadenzeLogging.getLogger().logPathUpdated(w, which, p.getOSCOutput(), newOutput, p.getModelBuilder(), newModelBuilder, p.getSelectedInputs(), selectedInputNames);
         
-        Path newP;
+        final Path newP;
         if (newOutput != null) {
             w.getOutputManager().updateOutput(newOutput, p.getOSCOutput()); //this triggers change in data manager
             newP = new Path(newOutput, selectedInputNames, w, this);
             newP.setNumExamples(p.getNumExamples());
+            
+            //TODO: Remove old property listeners!!
+            p.removeListeners();
+            PropertyChangeListener pChange = new PropertyChangeListener() {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    pathChanged(newP, evt);
+                }
+            };
+            newP.addPropertyChangeListener(wls.propertyChange(pChange));
+            newP.addInputSelectionChangeListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    pathInputsChanged((Path) e.getSource());
+                }
+            });
+            
             if (newModelBuilder != null) {
                 newP.inheritModel(p);
                 newP.setModelBuilder(newModelBuilder); //automatically indicates that re-training needed

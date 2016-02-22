@@ -261,7 +261,7 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
         buttonSendTestMessage = new javax.swing.JButton();
         buttonAdd = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Customise Output Types");
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.Y_AXIS));
 

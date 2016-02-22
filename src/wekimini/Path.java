@@ -81,6 +81,10 @@ public class Path {
         return model.computeDistribution(instance);
     }
 
+    void removeListeners() {
+       //TODO: Remove all listeners - property change & input changes.
+    }
+
     public static enum ModelState {
         NOT_READY, READY_FOR_BUILDING, BUILDING, BUILT, NEEDS_REBUILDING
     };
@@ -245,6 +249,7 @@ public class Path {
         } catch (Exception ex) {
             model = lastModel;
             setModelState(lastModelState);
+            logger.log(Level.WARNING, "Exception encountered in building: " + ex.getMessage());
             logger.log(Level.SEVERE, "Exception encountered in building : {0}", ex.getMessage());
             logger.log(Level.INFO, "Setting model state to {0}", lastModelState);
             trainingCompleted = true;
