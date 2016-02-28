@@ -103,4 +103,6 @@ public interface KadenzeLogger {
     
     public void logInputInformation(Wekinator w, String inputString, int difficulty, String difficultyString);
     
+    public void logWrittenQuestion(Wekinator w, String idString, String textString);
+    
 }

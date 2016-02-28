@@ -33,6 +33,8 @@ import wekimini.dtw.gui.DtwLearningPanel;
 import wekimini.dtw.gui.DtwOutputEditor;
 import wekimini.kadenze.KadenzeAssignment;
 import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
+import wekimini.kadenze.KadenzeAssn7SubmissionPrompt1;
+import wekimini.kadenze.KadenzeAssn7SubmissionPrompt2;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.dtw.DtwModel;
@@ -163,9 +165,50 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             makeKadenzeAssignment2Menu(ka);
         } else if (whichMainAssignment == 5) {
             makeKadenzeAssignment5Menu(ka);
+        } else if (whichMainAssignment == 7) {
+            makeKadenzeAssignment7Menu(ka);
         } else {
             logger.log(Level.WARNING, "Unknown assignment :" + ka);
         }
+    }
+
+    private void makeKadenzeAssignment7Menu(final KadenzeAssignmentType ka) {
+        kadenzeMenuItems = new JMenuItem[7];
+        int subPart = KadenzeAssignment.getAssignmentSubPart(ka); //1 through 6
+        for (int i = 0; i < 4; i++) {
+            String s;
+            if (i == (subPart - 1)) {
+                s = "Doing ";
+            } else {
+                s = "Start ";
+            }
+            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(7, i + 1));
+            kadenzeMenuItems[i] = new JMenuItem(s);
+            if (i == (subPart - 1)) {
+                kadenzeMenuItems[i].setEnabled(false);
+            }
+            /* kadenzeMenuItems[i].addActionListener(new java.awt.event.ActionListener() {
+             @Override
+             public void actionPerformed(java.awt.event.ActionEvent evt) {
+             switchToAssignment(KadenzeAssignment.getAssignmentNumber(ka), i);
+             }
+             }); */
+            menuKadenze.add(kadenzeMenuItems[i]);
+        }
+
+        addKadenzeListener(kadenzeMenuItems[0], KadenzeAssignmentType.ASSIGNMENT7_PART1A);
+        addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT7_PART1B);
+        addKadenzeListener(kadenzeMenuItems[2], KadenzeAssignmentType.ASSIGNMENT7_PART1C);
+        addKadenzeListener(kadenzeMenuItems[3], KadenzeAssignmentType.ASSIGNMENT7_PART2);
+
+        kadenzeMenuItems[4] = new JMenuItem("Create Kadenze Assignment 7 submission");
+        kadenzeMenuItems[4].addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createAssignmentSubmission();
+            }
+        });
+        menuKadenze.add(kadenzeMenuItems[4]);
     }
 
     private void makeKadenzeAssignment5Menu(final KadenzeAssignmentType ka) {
@@ -303,6 +346,18 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                     kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(5, i + 1)));
                 }
             }
+        } else if (which == 7) {
+            int subpart = KadenzeAssignment.getAssignmentSubPart(ka);
+            for (int i = 0; i < 4; i++) {
+                if (subpart == (i + 1)) {
+                    kadenzeMenuItems[i].setEnabled(false);
+                    kadenzeMenuItems[i].setText("Doing " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(7, i + 1)));
+
+                } else {
+                    kadenzeMenuItems[i].setEnabled(true);
+                    kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(7, i + 1)));
+                }
+            }
         } else {
             System.out.println("NOT IMPLEMENTED YET");
         }
@@ -347,6 +402,32 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                     }
                 });
                 kipf.setVisible(true);
+            } else if (which == 7) {
+                final MainGUI mg = this;
+                KadenzeAssn7SubmissionPrompt1.KadenzeAssn7Part1InputInfoReceiver ki1 = new KadenzeAssn7SubmissionPrompt1.KadenzeAssn7Part1InputInfoReceiver() {
+                    @Override
+                    public void infoLogged() {
+                        KadenzeAssn7SubmissionPrompt2.KadenzeAssn7Part2InputInfoReceiver ki2 = new KadenzeAssn7SubmissionPrompt2.KadenzeAssn7Part2InputInfoReceiver() {
+                            @Override
+                            public void infoLogged() {
+                                String zipped;
+                                try {
+                                    zipped = KadenzeLogging.createZipForAssignment();
+                                    Util.showPrettyInfoPane(mg, "Your assignment is done! Please submit file " + zipped, "Success!");
+                                } catch (IOException ex) {
+                                    String dir = KadenzeLogging.getLogger().getZipDirectoryNameForAssignment();
+                                    Util.showPrettyErrorPane(mg, "Could not zip file. Please zip your " + dir + " directory manually.");
+                                }
+
+                            }
+                        };
+                        KadenzeAssn7SubmissionPrompt2 prompt2 = new KadenzeAssn7SubmissionPrompt2(w, ki2);
+                        prompt2.setVisible(true);
+                    }
+                };
+                KadenzeAssn7SubmissionPrompt1 prompt = new KadenzeAssn7SubmissionPrompt1(w, ki1);
+                prompt.setVisible(true);
+
             } else {
                 String zipped = KadenzeLogging.createZipForAssignment();
                 Util.showPrettyInfoPane(this, "Your assignment is done! Please submit file " + zipped, "Success!");

@@ -610,6 +610,7 @@ public class Assignment12Logger implements KadenzeLogger {
         return parentDir + File.separator + "assignment" + KadenzeAssignment.getAssignmentNumber(currentAssignmentType);
     }
     
+    //Caution: this will be called in whatever sub-part of the assignment is open when it is submitted. May have multiple of these, will have to look for latest one in order to make sense of it!
     @Override
     public void logInputInformation(Wekinator w, String inputString, int difficulty, String difficultyString) {
         String modInputString = inputString.replaceAll("\n", " NEWLINE ").replaceAll("\r", " NEWLINE "); //TODO TEST ON WINDOWS
@@ -617,5 +618,12 @@ public class Assignment12Logger implements KadenzeLogger {
         pw.println(ts() + "," + w.getID() + ",INPUT_DESCRIPTION_STRING," + modInputString);
         pw.println(ts() + "," + w.getID() + ",ASSIGNMENT_DIFFICULTY_RATING," + difficulty);
         pw.println(ts() + "," + w.getID() + ",ASSIGNMENT_DIFFICULTY_COMMENTS," + modDifficultyString);
+    }
+
+    //Caution: this will be called in whatever sub-part of the assignment is open when it is submitted. May have multiple of these, will have to look for latest one in order to make sense of it!
+    @Override
+    public void logWrittenQuestion(Wekinator w, String idString, String textString) {
+        String modTextString = textString.replaceAll("\n", " NEWLINE ").replaceAll("\r", " NEWLINE "); //TODO TEST ON WINDOWS
+        pw.println(ts() + "," + w.getID() + ",WRITTEN_QUESTION," + idString + "," + textString);
     }
 }

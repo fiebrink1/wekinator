@@ -151,4 +151,8 @@ public class NoLogger implements KadenzeLogger {
     @Override
     public void logInputInformation(Wekinator w, String inputString, int difficulty, String difficultyString) {
     }
+
+    @Override
+    public void logWrittenQuestion(Wekinator w, String idString, String textString) {
+    }
 }
