@@ -14,8 +14,10 @@ import wekimini.util.Util;
  * @author rebecca
  */
 public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
+
     private Wekinator w = null;
     private KadenzeAssn7Part2InputInfoReceiver receiver = null;
+
     /**
      * Creates new form KadenzeInputPromptFrame
      */
@@ -28,7 +30,7 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
         this.w = w;
         this.receiver = r;
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -236,68 +238,68 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         boolean missing = false;
         int whichMissing = 0;
-        
+
         String s1 = replaceNewlines(text1.getText());
-        if (s1.length() ==0) {
-            missing= true;
+        if (s1.length() == 0 && !missing) {
+            missing = true;
             whichMissing = 1;
         }
         KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_1", s1);
-        
+
         String s2 = replaceNewlines(text2.getText());
-        if (s2.length() ==0) {
-            missing= true;
+        if (s2.length() == 0 && !missing) {
+            missing = true;
             whichMissing = 2;
         }
         KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_2", s2);
-        
+
         String s3 = replaceNewlines(text3.getText());
-        if (s3.length() ==0) {
-            missing= true;
+        if (s3.length() == 0 && !missing) {
+            missing = true;
             whichMissing = 3;
-        }        
+        }
         KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_3", s3);
-        
+
         String s4 = replaceNewlines(text4.getText());
-                if (s4.length() ==0) {
-            missing= true;
+        if (s4.length() == 0 && !missing) {
+            missing = true;
             whichMissing = 4;
         }
         KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_4", s4);
-        
+
         String s5 = replaceNewlines(text5.getText());
-                if (s5.length() ==0) {
-            missing= true;
+        if (s5.length() == 0 && !missing) {
+            missing = true;
             whichMissing = 5;
         }
         KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_5", s5);
-        
+
         int i = combo6.getSelectedIndex();
-         if (i ==0) {
-            missing= true;
+        if (i == 0 && !missing) {
+            missing = true;
             whichMissing = 6;
         }
         KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_6", Integer.toString(i));
-        
+
         String s7 = replaceNewlines(text7.getText());
-        if (s7.length() ==0) {
-            missing= true;
+        if (s7.length() == 0 && !missing) {
+            missing = true;
             whichMissing = 7;
         }
         KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_7", s7);
 
         if (missing) {
-            int result = Util.showPrettyOptionPane(this, "You are missing an answer to question " + whichMissing + ". Do you wish to continue anyway?", "Missing answers");
-            if (result != JOptionPane.OK_OPTION) {
+            int result = Util.showPrettyYesNoPane(this, "You are missing an answer to question " + whichMissing + ". Do you wish to continue anyway?", "Missing answers");
+            if (result != JOptionPane.YES_OPTION) {
                 return;
             }
         }
-        
-        int result = Util.showPrettyOptionPane(this, "We strongly recommend you save your answers to a file on your computer in case you have to resubmit. Hit YES if you've done this or want to live dangerously, or NO to go do this on your own first.", "Is your work saved on your computer?");
+
+        int result = Util.showPrettyOptionPane(this, "We strongly recommend you save your answers to a file on your computer in case you have to resubmit. Hit OK if you've done this or want to live dangerously, or Cancel to go do this on your own first.", "Is your work saved on your computer?");
         if (result != JOptionPane.OK_OPTION) {
-                return;
+            return;
         }
-        
+
         if (receiver != null) {
             this.setVisible(false);
             receiver.infoLogged();
@@ -350,15 +352,16 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
             }
         });
     }
-    
+
     public interface KadenzeAssn7Part2InputInfoReceiver {
+
         public void infoLogged();
     }
-    
+
     private String replaceNewlines(String s) {
         return s.replaceAll("\n", " NEWLINE ").replaceAll("\r", " NEWLINE "); //TODO TEST ON WINDOWS
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox combo6;
     private javax.swing.JButton jButton1;

@@ -23,6 +23,7 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -33,8 +34,8 @@ import javax.swing.filechooser.FileFilter;
  *
  * @author rebecca
  */
-public class Util {
-
+public class Util { 
+    
     public static String getCanonicalPath(File f) {
         String s;
         try {
@@ -57,11 +58,21 @@ public class Util {
     }
     
     public static int showPrettyOptionPane(Component caller, String msg, String title) {
-        Object[] options = { "OK", "CANCEL" };
+        Object[] options = { "OK", "Cancel" };
         return JOptionPane.showOptionDialog(caller,
                 "<html><body><p style='width: 200px;'>" + msg + "</p></body></html>",
                 title,
                 JOptionPane.OK_CANCEL_OPTION, 
+                JOptionPane.WARNING_MESSAGE,
+                null, options, options[0]);
+    }
+    
+    public static int showPrettyYesNoPane(Component caller, String msg, String title) {
+        Object[] options = { "Yes", "No" };
+        return JOptionPane.showOptionDialog(caller,
+                "<html><body><p style='width: 200px;'>" + msg + "</p></body></html>",
+                title,
+                JOptionPane.YES_NO_OPTION, 
                 JOptionPane.WARNING_MESSAGE,
                 null, options, options[0]);
     }
@@ -77,10 +88,14 @@ public class Util {
     }
     
     public static void showPrettyInfoPane(Component caller, String msg, String title) {
+        Class c = Util.class;
+        ImageIcon icon = new ImageIcon(c.getResource("/wekimini/icons/wekimini_small.png"));
+
         JOptionPane.showMessageDialog(caller,
                 "<html><body><p style='width: 200px;'>" + msg + "</p></body></html>",
                 title,
-                JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.INFORMATION_MESSAGE, 
+                icon);
     }
 
     public static int showPrettyWarningPromptPane(Component caller, String msg) {
