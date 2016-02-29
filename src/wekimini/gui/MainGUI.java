@@ -456,6 +456,8 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
         learningPanel1 = new wekimini.gui.SupervisedLearningPanel();
         panelParent = new javax.swing.JPanel();
         supervisedLearningPanel1 = new wekimini.gui.SupervisedLearningPanel();
@@ -476,8 +478,16 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
         menuKadenze = new javax.swing.JMenu();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem3 = new javax.swing.JMenuItem();
+
+        jMenu1.setText("Temp");
+
+        jMenuItem3.setText("flush");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem3);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("New project");
@@ -614,18 +624,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
         menuKadenze.setText("Kadenze");
         jMenuBar1.add(menuKadenze);
-
-        jMenu1.setText("Temp");
-
-        jMenuItem3.setText("flush");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem3);
-
-        jMenuBar1.add(jMenu1);
 
         setJMenuBar(jMenuBar1);
 
