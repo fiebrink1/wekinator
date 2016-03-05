@@ -49,6 +49,16 @@ public class Assignment7Grade {
 
     private static final Logger logger = Logger.getLogger(Assignment7Grade.class.getName());
 
+    private Outcome setQuestionOutcomeFromScore(double q1) {
+        if (q1 < 0.0001){
+            return Outcome.FAILURE;       
+        } else if (q1 > 0.999) {
+            return Outcome.SUCCESS;
+        } else {
+            return Outcome.COULD_BE_BETTER;
+        }
+    }
+
     public static enum Assignment7Part {
 
         PART1A, PART1B, PART1C, PART2
@@ -183,33 +193,41 @@ public class Assignment7Grade {
         part2Experimented.setScore(score);
         part2Experimented.setNoteWithErrValue(o, "assignment7_2");
     }
-    
+
     public void score2AddValues(int numTrain, int numRun, double numMinutes) {
         String[] vals = {Integer.toString(numTrain), Integer.toString(numRun), KadenzeUtils.formatDouble(numMinutes)};
         part2Experimented.addVals(vals);
     }
 
-    public void score2Questions(Outcome o, double q1, double q2, double q3,
+    public void score2Questions(double q1, double q2, double q3,
             double q4, double q5, double q6, double q7) {
         part2_Q1.setScore(q1);
+        Outcome o = setQuestionOutcomeFromScore(q1);
         part2_Q1.setNoteWithErrValue(o, "assignment7_2");
 
         part2_Q2.setScore(q2);
+        o = setQuestionOutcomeFromScore(q2);
+
         part2_Q2.setNoteWithErrValue(o, "assignment7_2");
 
         part2_Q3.setScore(q3);
+        o = setQuestionOutcomeFromScore(q3);
         part2_Q3.setNoteWithErrValue(o, "assignment7_2");
 
         part2_Q4.setScore(q4);
+        o = setQuestionOutcomeFromScore(q4);
         part2_Q4.setNoteWithErrValue(o, "assignment7_2");
 
         part2_Q5.setScore(q5);
+        o = setQuestionOutcomeFromScore(q5);
         part2_Q5.setNoteWithErrValue(o, "assignment7_2");
 
         part2_Q6.setScore(q6);
+        o = setQuestionOutcomeFromScore(q6);
         part2_Q6.setNoteWithErrValue(o, "assignment7_2");
 
         part2_Q7.setScore(q7);
+        o = setQuestionOutcomeFromScore(q7);
         part2_Q7.setNoteWithErrValue(o, "assignment7_2");
     }
 
@@ -233,7 +251,7 @@ public class Assignment7Grade {
         score1cDTreeAccuracy(o, 0.0);
         score1cSVMAccuracy(o, 0.0);
         score2Experimented(o, 0.0);
-        score2Questions(o, 0, 0, 0, 0, 0, 0, 0);
+        score2Questions(0, 0, 0, 0, 0, 0, 0);
     }
 
     public Grade getGrade() {
