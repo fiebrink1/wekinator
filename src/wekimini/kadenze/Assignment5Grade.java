@@ -168,6 +168,7 @@ public class Assignment5Grade {
     }
 
     public void setCompletelyInvalidSubmission(Outcome o) {
+        //TODO: Might want to change following outcomes to all be "o" instead of log_read_error
         validSubmission(o, 0.0);
         score1aSetup(Outcome.LOG_READ_ERROR, 0.0);
         score1aExperimented(Outcome.LOG_READ_ERROR, 0.0);
