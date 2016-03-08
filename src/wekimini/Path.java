@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import java.util.EventListener;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
@@ -81,8 +82,18 @@ public class Path {
         return model.computeDistribution(instance);
     }
 
+    //Call this if we're about to delete this path and don't want memory leak.
+    //Will have to repeat top section if we ever add things that aren't ChangeListeners
     void removeListeners() {
-       //TODO: Remove all listeners - property change & input changes.
+       ChangeListener[] listeners =listenerList.getListeners(ChangeListener.class);
+       for (int i =0 ; i < listeners.length; i++) {
+           listenerList.remove(ChangeListener.class, listeners[i]);
+       }
+       
+       PropertyChangeListener pls[] = propertyChangeSupport.getPropertyChangeListeners();
+       for (int i = 0; i < pls.length; i++) {
+           propertyChangeSupport.removePropertyChangeListener(pls[i]);
+       }
     }
 
     public static enum ModelState {

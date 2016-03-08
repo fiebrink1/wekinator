@@ -191,4 +191,10 @@ public class OSCController {
         dtwController.stopRecord();
     }
 
+    void deleteExamplesForOutput(Integer i) {
+        if (checkEnabled()) {
+            w.getWekinatorController().deleteExamplesForOutput(i);
+        }
+    }
+
 }

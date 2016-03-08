@@ -31,6 +31,8 @@ public class OSCControlReceiver {
     private final String startRunningMessage = "/wekinator/control/startRunning";
     private final String stopRunningMessage = "/wekinator/control/stopRunning";
     private final String deleteAllExamplesMessage = "/wekinator/control/deleteAllExamples";
+    private final String deleteExamplesForOutputMessage = "/wekinator/control/deleteExamplesForOutput";
+
     private final String enableModelRecordMessage = "/wekinator/control/enableModelRecording"; //List of model #s to enable (indexed from 1) 
     private final String disableModelRecordMessage = "/wekinator/control/disableModelRecording"; //List of model #s to disable (indexed from 1) 
     private final String enableModelRunMessage = "/wekinator/control/enableModelRunning"; //List of model #s to enable (indexed from 1) 
@@ -143,7 +145,23 @@ public class OSCControlReceiver {
                 controller.deleteAllExamples();
             }
         };
+        
+        OSCListener deleteAllExamplesForOutputListener = new OSCListener() {
+            @Override
+            public void acceptMessage(Date date, OSCMessage oscm) {
+                List<Object> o = oscm.getArguments();
+                if (o != null && o.size() > 0 && o.get(0) instanceof Integer) {
+                    controller.deleteExamplesForOutput((Integer)o.get(0)); 
+                } else {
+                    String msg = "Error: Expected message " + deleteExamplesForOutputMessage + " to be followed by 1 integer argument";
+                    w.getStatusUpdateCenter().warn(this, msg);
+                }
+            }
+        };
+        
         w.getOSCReceiver().addOSCListener(deleteAllExamplesMessage, deleteAllExamplesListener);
+        w.getOSCReceiver().addOSCListener(deleteExamplesForOutputMessage, deleteAllExamplesForOutputListener);
+
         w.getOSCReceiver().addOSCListener(enableModelRecordMessage, createModelChangeListener(true, true));
         w.getOSCReceiver().addOSCListener(disableModelRecordMessage, createModelChangeListener(true, false));
         w.getOSCReceiver().addOSCListener(enableModelRunMessage, createModelChangeListener(false, true));

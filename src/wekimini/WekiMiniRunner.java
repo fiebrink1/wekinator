@@ -35,7 +35,7 @@ import wekimini.util.Util;
  */
 public final class WekiMiniRunner {
 
-    private static final String versionString = "4 February 2016";
+    private static final String versionString = "29 February 2016";
     private static final Logger logger = Logger.getLogger(WekiMiniRunner.class.getName());
     // private static final List<Wekinator> runningWekinators = new LinkedList<>();
     private static WekiMiniRunner ref = null; //Singleton
@@ -122,6 +122,9 @@ public final class WekiMiniRunner {
         WekiMiniRunner.isKadenze = true; //KADENZE SET
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+             UIManager.put("Slider.paintValue", false);
+             //UIManager.put("Slider.thumbHeight", 5);
+
         } catch (Exception ex) {
             Logger.getLogger(WekiMiniRunner.class.getName()).log(Level.WARNING, null, ex);
         }

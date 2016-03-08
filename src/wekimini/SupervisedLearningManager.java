@@ -1005,6 +1005,8 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             w.getOutputManager().updateOutput(newOutput, p.getOSCOutput()); //this triggers change in data manager
             newP = new Path(newOutput, selectedInputNames, w, this);
             newP.setNumExamples(p.getNumExamples());
+            newP.setRecordEnabled(p.isRecordEnabled());
+            newP.setRunEnabled(p.isRunEnabled());
             
             //TODO: Remove old property listeners!!
             p.removeListeners();
@@ -1039,9 +1041,6 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                 //DO need update if # classes has changed (if not for model output safety, then at least for saving safety)
                 //DON'T need update if just NN doing int/real or hard/soft limits.
             }
-            // updateDataForPathChange(which, newP, p); 
-            //w.getDataManager().notifyOutputTypeChange(); //DataManager should listen to OutputManager for this
-
         } else { //keep old output; just apply input names and possibly modelBuilder
             newP = p;
             newP.setSelectedInputs(selectedInputNames);

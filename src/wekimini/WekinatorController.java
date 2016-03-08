@@ -6,6 +6,8 @@ package wekimini;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import wekimini.LearningManager.LearningType;
 import wekimini.osc.OSCController;
 
 /**
@@ -17,7 +19,7 @@ public class WekinatorController {
     private final OSCController oscController;
     private final List<NamesListener> inputNamesListeners;
     private final List<NamesListener> outputNamesListeners;
-    
+    private static final Logger logger = Logger.getLogger(WekinatorController.class.getName());
     public WekinatorController(Wekinator w) {
         this.w = w;
         oscController = new OSCController(w);
@@ -205,6 +207,23 @@ public class WekinatorController {
             l.newConnectionMatrix(connections);
         }
     } */
+
+    //Delete examples for model i, starting with i = 0
+    public void deleteExamplesForOutput(Integer i) {
+        if (w.getLearningManager().getLearningType() == LearningType.SUPERVISED_LEARNING) {
+           if (i >= 1 && i <= w.getSupervisedLearningManager().getPaths().size()) {
+                w.getSupervisedLearningManager().deleteExamplesForPath(w.getSupervisedLearningManager().getPaths().get(i-1));
+           } else {
+               logger.log(Level.WARNING, "Invalid output index {0}: index needs to be between 1 and number of outputs", i);
+           }
+        } else {
+            if (i >= 1 && i <= w.getDtwLearningManager().getModel().getNumGestures()) {
+                w.getDtwLearningManager().getModel().getData().deleteExamplesForGesture(i-1);
+            } else {
+                logger.log(Level.WARNING, "Invalid output index {0}: index needs to be between 1 and number of DTW gestures", i);
+            }
+        }
+    }
     
     
     public interface NamesListener {

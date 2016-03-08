@@ -88,7 +88,9 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
      */
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
+      if (propertyChangeSupport != null) {
         propertyChangeSupport.addPropertyChangeListener(listener);
+      }
     }
 
     /**

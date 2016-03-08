@@ -33,6 +33,8 @@ import wekimini.dtw.gui.DtwLearningPanel;
 import wekimini.dtw.gui.DtwOutputEditor;
 import wekimini.kadenze.KadenzeAssignment;
 import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
+import wekimini.kadenze.KadenzeAssn7SubmissionPrompt1;
+import wekimini.kadenze.KadenzeAssn7SubmissionPrompt2;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.dtw.DtwModel;
@@ -54,6 +56,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private static final Logger logger = Logger.getLogger(MainGUI.class.getName());
     private JMenuItem[] kadenzeMenuItems = new JMenuItem[0];
     private DtwLearningPanel dtwLearningPanel1;
+
     /**
      * Creates new form MainGUI
      */
@@ -162,11 +165,52 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             makeKadenzeAssignment2Menu(ka);
         } else if (whichMainAssignment == 5) {
             makeKadenzeAssignment5Menu(ka);
-        }else {
+        } else if (whichMainAssignment == 7) {
+            makeKadenzeAssignment7Menu(ka);
+        } else {
             logger.log(Level.WARNING, "Unknown assignment :" + ka);
         }
     }
-    
+
+    private void makeKadenzeAssignment7Menu(final KadenzeAssignmentType ka) {
+        kadenzeMenuItems = new JMenuItem[7];
+        int subPart = KadenzeAssignment.getAssignmentSubPart(ka); //1 through 6
+        for (int i = 0; i < 4; i++) {
+            String s;
+            if (i == (subPart - 1)) {
+                s = "Doing ";
+            } else {
+                s = "Start ";
+            }
+            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(7, i + 1));
+            kadenzeMenuItems[i] = new JMenuItem(s);
+            if (i == (subPart - 1)) {
+                kadenzeMenuItems[i].setEnabled(false);
+            }
+            /* kadenzeMenuItems[i].addActionListener(new java.awt.event.ActionListener() {
+             @Override
+             public void actionPerformed(java.awt.event.ActionEvent evt) {
+             switchToAssignment(KadenzeAssignment.getAssignmentNumber(ka), i);
+             }
+             }); */
+            menuKadenze.add(kadenzeMenuItems[i]);
+        }
+
+        addKadenzeListener(kadenzeMenuItems[0], KadenzeAssignmentType.ASSIGNMENT7_PART1A);
+        addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT7_PART1B);
+        addKadenzeListener(kadenzeMenuItems[2], KadenzeAssignmentType.ASSIGNMENT7_PART1C);
+        addKadenzeListener(kadenzeMenuItems[3], KadenzeAssignmentType.ASSIGNMENT7_PART2);
+
+        kadenzeMenuItems[4] = new JMenuItem("Create Kadenze Assignment 7 submission");
+        kadenzeMenuItems[4].addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createAssignmentSubmission();
+            }
+        });
+        menuKadenze.add(kadenzeMenuItems[4]);
+    }
+
     private void makeKadenzeAssignment5Menu(final KadenzeAssignmentType ka) {
         kadenzeMenuItems = new JMenuItem[7];
         int subPart = KadenzeAssignment.getAssignmentSubPart(ka); //1 through 6
@@ -207,8 +251,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         menuKadenze.add(kadenzeMenuItems[6]);
     }
-
-  
 
     private void makeKadenzeAssignment2Menu(final KadenzeAssignmentType ka) {
         kadenzeMenuItems = new JMenuItem[8];
@@ -304,6 +346,18 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                     kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(5, i + 1)));
                 }
             }
+        } else if (which == 7) {
+            int subpart = KadenzeAssignment.getAssignmentSubPart(ka);
+            for (int i = 0; i < 4; i++) {
+                if (subpart == (i + 1)) {
+                    kadenzeMenuItems[i].setEnabled(false);
+                    kadenzeMenuItems[i].setText("Doing " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(7, i + 1)));
+
+                } else {
+                    kadenzeMenuItems[i].setEnabled(true);
+                    kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(7, i + 1)));
+                }
+            }
         } else {
             System.out.println("NOT IMPLEMENTED YET");
         }
@@ -327,9 +381,57 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                     w.getStatusUpdateCenter().update(this, "Running stopped");
                 }
             }
-            
-            String zipped = KadenzeLogging.createZipForAssignment();
-            Util.showPrettyInfoPane(this, "Your assignment is done! Please submit file " + zipped, "Success!");
+
+            //Show prompt for information about input device & difficulty
+            KadenzeAssignmentType ka = KadenzeLogging.getCurrentAssignmentType();
+            int which = KadenzeAssignment.getAssignmentNumber(ka);
+            if (which == 5) {
+                //Show prompt
+                final MainGUI mg = this;
+                KadenzeInputPromptFrame kipf = new KadenzeInputPromptFrame(w, new KadenzeInputPromptFrame.KadenzeInputInfoReceiver() {
+                    @Override
+                    public void infoLogged() {
+                        String zipped;
+                        try {
+                            zipped = KadenzeLogging.createZipForAssignment();
+                            Util.showPrettyInfoPane(mg, "Your assignment is done! Please submit file " + zipped, "Success!");
+                        } catch (IOException ex) {
+                            String dir = KadenzeLogging.getLogger().getZipDirectoryNameForAssignment();
+                            Util.showPrettyErrorPane(mg, "Could not zip file. Please zip your " + dir + " directory manually.");
+                        }
+                    }
+                });
+                kipf.setVisible(true);
+            } else if (which == 7) {
+                final MainGUI mg = this;
+                KadenzeAssn7SubmissionPrompt1.KadenzeAssn7Part1InputInfoReceiver ki1 = new KadenzeAssn7SubmissionPrompt1.KadenzeAssn7Part1InputInfoReceiver() {
+                    @Override
+                    public void infoLogged() {
+                        KadenzeAssn7SubmissionPrompt2.KadenzeAssn7Part2InputInfoReceiver ki2 = new KadenzeAssn7SubmissionPrompt2.KadenzeAssn7Part2InputInfoReceiver() {
+                            @Override
+                            public void infoLogged() {
+                                String zipped;
+                                try {
+                                    zipped = KadenzeLogging.createZipForAssignment();
+                                    Util.showPrettyInfoPane(mg, "Your assignment is done! Please submit file " + zipped, "Success!");
+                                } catch (IOException ex) {
+                                    String dir = KadenzeLogging.getLogger().getZipDirectoryNameForAssignment();
+                                    Util.showPrettyErrorPane(mg, "Could not zip file. Please zip your " + dir + " directory manually.");
+                                }
+
+                            }
+                        };
+                        KadenzeAssn7SubmissionPrompt2 prompt2 = new KadenzeAssn7SubmissionPrompt2(w, ki2);
+                        prompt2.setVisible(true);
+                    }
+                };
+                KadenzeAssn7SubmissionPrompt1 prompt = new KadenzeAssn7SubmissionPrompt1(w, ki1);
+                prompt.setVisible(true);
+
+            } else {
+                String zipped = KadenzeLogging.createZipForAssignment();
+                Util.showPrettyInfoPane(this, "Your assignment is done! Please submit file " + zipped, "Success!");
+            }
         } catch (Exception ex) {
             //String dir = KadenzeLogging.getLogger().getCurrentLoggingDirectory();
             String dir = KadenzeLogging.getLogger().getZipDirectoryNameForAssignment();
@@ -354,6 +456,8 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
         learningPanel1 = new wekimini.gui.SupervisedLearningPanel();
         panelParent = new javax.swing.JPanel();
         supervisedLearningPanel1 = new wekimini.gui.SupervisedLearningPanel();
@@ -374,8 +478,16 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
         menuKadenze = new javax.swing.JMenu();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem3 = new javax.swing.JMenuItem();
+
+        jMenu1.setText("Temp");
+
+        jMenuItem3.setText("flush");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem3);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("New project");
@@ -513,18 +625,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuKadenze.setText("Kadenze");
         jMenuBar1.add(menuKadenze);
 
-        jMenu1.setText("Temp");
-
-        jMenuItem3.setText("flush");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem3);
-
-        jMenuBar1.add(jMenu1);
-
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -619,13 +719,13 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }//GEN-LAST:event_menuItemEvaluationActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-       flushLogs();
+        flushLogs();
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void flushLogs() {
-         KadenzeLogging.getLogger().flush();
+        KadenzeLogging.getLogger().flush();
     }
-    
+
     private void showEvaluationWindow() {
         if (modelEvaluationFrame == null) {
             modelEvaluationFrame = new ModelEvaluationFrame(w.getOutputManager().getOutputGroup().getOutputNames(), w);
@@ -817,7 +917,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         //String s = w.getDataManager().toString();
         //System.out.println(s);
         //if (w.getLearningManager().getLearningType() == LearningType.SUPERVISED_LEARNING) {
-            w.getDataManager().showViewer();    
+        w.getDataManager().showViewer();
         //} else {
         //}
     }
@@ -861,20 +961,20 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }
 
     public void showDtwData(int gestureNum) {
-        w.getDtwLearningManager().getData().showViewer(gestureNum);        
-       /* System.out.println("XXXXXXXXXXXXXXX\n\n");
+        w.getDtwLearningManager().getData().showViewer(gestureNum);
+        /* System.out.println("XXXXXXXXXXXXXXX\n\n");
 
-        w.getDtwLearningManager().getModel().dumpToConsole();
-        w.getDtwLearningManager().getModel().getData().dumpExamplesForGesture(gestureNum); */
+         w.getDtwLearningManager().getModel().dumpToConsole();
+         w.getDtwLearningManager().getModel().getData().dumpExamplesForGesture(gestureNum); */
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void showDtwExamplesViewer() {
         w.getDtwLearningManager().getData().showViewer();
 
-       /* System.out.println("XXXXXXXXXXXXXXX\n\n");
-        w.getDtwLearningManager().getModel().dumpToConsole();
-        w.getDtwLearningManager().getModel().getData().dumpAllExamples(); */
+        /* System.out.println("XXXXXXXXXXXXXXX\n\n");
+         w.getDtwLearningManager().getModel().dumpToConsole();
+         w.getDtwLearningManager().getModel().getData().dumpAllExamples(); */
     }
 
     public void showDtwEditor(DtwModel model) {

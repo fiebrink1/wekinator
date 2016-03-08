@@ -54,7 +54,9 @@ public class DtwLearningRow extends javax.swing.JPanel {
      * @param listener
      */
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
+        if (propertyChangeSupport != null) {
+            propertyChangeSupport.addPropertyChangeListener(listener);
+        }
     }
 
     /**
