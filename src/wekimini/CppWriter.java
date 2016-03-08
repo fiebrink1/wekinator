@@ -72,12 +72,12 @@ public class CppWriter {
             headerPrint.printf("#define NUM_FEATURES " + numInputs + "\n\n");
             headerPrint.printf("struct neighbour {\n");
             headerPrint.printf("	int classNum;\n");
-            headerPrint.printf("	float features[NUM_FEATURES];\n");
+            headerPrint.printf("	double features[NUM_FEATURES];\n");
             headerPrint.printf("};\n\n");
             headerPrint.printf("class knnClassification {\n\n");
             headerPrint.printf("public:\n");
             headerPrint.printf("	knnClassification();\n");
-            headerPrint.printf("	int getClass(neighbour inputVector);\n\n");
+            headerPrint.printf("	int getClass(double* inputVector);\n\n");
             headerPrint.printf("private:\n");
             headerPrint.printf("	neighbour neighbours[NUM_EXAMPLES];\n");
             headerPrint.printf("	int foundClass;\n");
@@ -106,7 +106,7 @@ public class CppWriter {
                 cppPrint.printf("}};\n");
             }
             cppPrint.printf("	foundClass = 0;\n}\n\n");
-            cppPrint.printf("int knnClassification::getClass(neighbour inputVector) {\n");
+            cppPrint.printf("int knnClassification::getClass(double* inputVector) {\n");
             cppPrint.printf("	std::pair<int, double> nearestNeighbours[NUM_NEIGHBOURS];\n");
             cppPrint.printf("	std::pair<int, double> farthestNN = {0, 0.};\n");
             cppPrint.printf("	//Find k nearest neighbours\n");
@@ -114,7 +114,7 @@ public class CppWriter {
             cppPrint.printf("		//find Euclidian distance for this neighbor\n");
             cppPrint.printf("		double euclidianDistance = 0;\n");
             cppPrint.printf("		for(int j = 0; j < NUM_EXAMPLES ; j++){\n");
-            cppPrint.printf("			euclidianDistance = euclidianDistance + pow((inputVector.features[j] - neighbours[i].features[j]),2);\n");
+            cppPrint.printf("			euclidianDistance = euclidianDistance + pow((inputVector[j] - neighbours[i].features[j]),2);\n");
             cppPrint.printf("		}\n");
             cppPrint.printf("		euclidianDistance = sqrt(euclidianDistance);\n");
             cppPrint.printf("		if (i < NUM_NEIGHBOURS) {\n");
