@@ -50,8 +50,8 @@ public class Assignment7Grade {
     private static final Logger logger = Logger.getLogger(Assignment7Grade.class.getName());
 
     private Outcome setQuestionOutcomeFromScore(double q1) {
-        if (q1 < 0.0001){
-            return Outcome.FAILURE;       
+        if (q1 < 0.0001) {
+            return Outcome.FAILURE;
         } else if (q1 > 0.999) {
             return Outcome.SUCCESS;
         } else {
@@ -132,21 +132,34 @@ public class Assignment7Grade {
     public void score1bKnnAccuracy(Outcome o, double score) {
         part1bKnnAccuracy.setScore(score);
         part1bKnnAccuracy.setNoteWithErrValue(o, "assignment7_1A");
+        if (o == Outcome.SUCCESS) {
+            part1bKnnAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+        }
     }
 
     public void score1bAdaBoostAccuracy(Outcome o, double score) {
         part1bAdaboostAccuracy.setScore(score);
         part1bAdaboostAccuracy.setNoteWithErrValue(o, "assignment7_1A");
+        if (o == Outcome.SUCCESS) {
+            part1bAdaboostAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+        }
+
     }
 
     public void score1bDTreeAccuracy(Outcome o, double score) {
         part1bDTreeAccuracy.setScore(score);
         part1bDTreeAccuracy.setNoteWithErrValue(o, "assignment7_1A");
+        if (o == Outcome.SUCCESS) {
+            part1bDTreeAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+        }
     }
 
     public void score1bSVMAccuracy(Outcome o, double score) {
         part1bSVMAccuracy.setScore(score);
         part1bSVMAccuracy.setNoteWithErrValue(o, "assignment7_1A");
+        if (o == Outcome.SUCCESS) {
+            part1bSVMAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+        }
     }
 
     public void score1cKnnSetup(Outcome o, double score) {
@@ -172,21 +185,33 @@ public class Assignment7Grade {
     public void score1cKnnAccuracy(Outcome o, double score) {
         part1cKnnAccuracy.setScore(score);
         part1cKnnAccuracy.setNoteWithErrValue(o, "assignment7_1A");
+        if (o == Outcome.SUCCESS) {
+            part1cKnnAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+        }
     }
 
     public void score1cAdaBoostAccuracy(Outcome o, double score) {
         part1cAdaboostAccuracy.setScore(score);
         part1cAdaboostAccuracy.setNoteWithErrValue(o, "assignment7_1A");
+        if (o == Outcome.SUCCESS) {
+            part1cAdaboostAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+        }
     }
 
     public void score1cDTreeAccuracy(Outcome o, double score) {
         part1cDTreeAccuracy.setScore(score);
         part1cDTreeAccuracy.setNoteWithErrValue(o, "assignment7_1A");
+        if (o == Outcome.SUCCESS) {
+            part1cDTreeAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+        }
     }
 
     public void score1cSVMAccuracy(Outcome o, double score) {
         part1cSVMAccuracy.setScore(score);
         part1cSVMAccuracy.setNoteWithErrValue(o, "assignment7_1A");
+        if (o == Outcome.SUCCESS) {
+            part1cSVMAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+        }
     }
 
     public void score2Experimented(Outcome o, double score) {
