@@ -199,7 +199,7 @@ public class CppWriter {
         FileWriter cppWrite = new FileWriter(cppName, true);
         try (PrintWriter cppPrint = new PrintWriter(cppWrite)) {
             cppPrint.printf("#include <math.h>\n");
-            cppPrint.printf("#include \"neuralNetwork.h\"\n\n");
+            cppPrint.printf("#include \"model-cpp.0.h\"\n\n"); //FIXME: Make this correct for every model. MZ
             cppPrint.printf("neuralNetwork::neuralNetwork() {\n\n");
             cppPrint.printf("	//input neurons, including bias\n");
             cppPrint.printf("	inputNeurons = new(double[NUM_INPUTS + 1]);\n");
