@@ -126,8 +126,7 @@ public class WekinatorSaver {
         List<Path> paths = w.getSupervisedLearningManager().getPaths();
         String location = projectDir + cppAppend + File.separator;
         for (int i = 0; i < paths.size(); i++) {
-            String filename = location + "model-cpp." + i;
-            paths.get(i).writeToCppFiles(filename, location);
+            paths.get(i).writeToCppFiles(i, location);
         }
     }
 
