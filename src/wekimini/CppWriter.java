@@ -240,7 +240,14 @@ public class CppWriter {
 
                 cppPrint.printf("inline double neuralNetwork::activationFunction(double x) {\n");
                 cppPrint.printf("	//sigmoid\n");
-                cppPrint.printf("	return 1/(1 + exp(-x));\n");
+                cppPrint.printf("       if (x < -45) { //from weka, to combat overflow\n");
+                cppPrint.printf("           x = 0;\n");
+                cppPrint.printf("       } else if (x > 45) {\n");
+                cppPrint.printf("           x = 1;\n");
+                cppPrint.printf("       } else {\n");
+                cppPrint.printf("           x = 1/(1 + exp(-x));\n");
+                cppPrint.printf("       }\n");
+                cppPrint.printf("       return x;\n");
                 cppPrint.printf("}\n\n");
 
                 cppPrint.printf("double neuralNetwork::feedForward(double* pattern) {\n");
