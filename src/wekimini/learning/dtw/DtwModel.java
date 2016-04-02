@@ -25,6 +25,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import wekimini.DtwLearningManager;
 import wekimini.Wekinator;
+import wekimini.kadenze.KadenzeLogger;
+import wekimini.kadenze.KadenzeLogging;
 import static wekimini.learning.dtw.DtwModel.RecordingState.NOT_RECORDING;
 import static wekimini.learning.dtw.DtwModel.RunningState.NOT_RUNNING;
 import wekimini.learning.dtw.DtwSettings.RunningType;
@@ -225,6 +227,7 @@ public class DtwModel implements Model {
         double oldMatchThreshold = this.matchThreshold;
         this.matchThreshold = matchThreshold;
         propertyChangeSupport.firePropertyChange(PROP_MATCHTHRESHOLD, oldMatchThreshold, matchThreshold);
+        KadenzeLogging.getLogger().dtwThresholdChanged(w, oldMatchThreshold, matchThreshold);
     }
 
     /**
@@ -356,6 +359,22 @@ public class DtwModel implements Model {
         updateExampleSizeStats();
         setMaxSliderValue(modelToLoad.maxSliderValue);
         setMatchThreshold(modelToLoad.matchThreshold);
+    }
+
+    public String toLogInfoString() {
+            //Describe as comma-separated description string
+        StringBuilder sb = new StringBuilder();
+        sb.append("NUM_GESTURES=").append(numGestures).append(",NUM_EXAMPLES={");
+        for (int i = 0; i < numGestures-1; i++) { //gestures go from 0 to num_gestures-1
+            sb.append(data.getNumExamplesForGesture(i)).append(',');
+        }
+        sb.append(data.getNumExamplesForGesture(numGestures-1)).append("}");
+        sb.append(",ACTIVE={");
+        for (int i = 0; i < numGestures-1; i++) { //gestures go from 0 to num_gestures-1
+            sb.append(isGestureActive[i] ? "1," : "0,");
+        }
+        sb.append(isGestureActive[numGestures-1] ? "1}" : "0}");
+        return sb.toString();
     }
 
     public static enum RecordingState {
@@ -607,6 +626,7 @@ public class DtwModel implements Model {
                 classifyLast();
             }
             setRunningState(RunningState.NOT_RUNNING);
+            KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.DTW_RUN_STOP);
         }
     }
 
@@ -614,6 +634,7 @@ public class DtwModel implements Model {
         boolean wasAdded = data.addRunningVector(inputs);
         if (settings.getRunningType() == RunningType.LABEL_CONTINUOUSLY && wasAdded) {
             classifyContinuous();
+            KadenzeLogging.getLogger().dtwRunData(w, inputs, closestDistances, currentMatch);
         }
     }
 
@@ -683,6 +704,7 @@ public class DtwModel implements Model {
         //}
         notifyUpdateListeners(closestDistances);
         computeAndNotifyNormalizedDistances();
+        KadenzeLogging.getLogger().dtwClassifiedLast(w, data.getCurrentTimeSeries(), closestDistances, closestClass);
     }
 
     /**

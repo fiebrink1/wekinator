@@ -545,7 +545,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         } else {
             logger.log(LoggingManager.USER_INFO, m.getModelDescription());
         }
-        KadenzeLogging.getLogger().logModelPrintedToConsole(w, p);
+        KadenzeLogging.getLogger().logSupervisedModelPrintedToConsole(w, p);
     }//GEN-LAST:event_buttonPrintToConsoleActionPerformed
 
     /**

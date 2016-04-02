@@ -5,11 +5,14 @@
  */
 package wekimini.kadenze;
 
+import com.timeseries.TimeSeries;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import wekimini.LearningModelBuilder;
 import wekimini.Path;
 import wekimini.Wekinator;
+import wekimini.learning.dtw.DtwModel;
+import wekimini.learning.dtw.DtwSettings;
 import wekimini.osc.OSCOutput;
 
 /**
@@ -42,15 +45,6 @@ public class NoLogger implements KadenzeLogger {
     @Override
     public void dtwRunData(Wekinator w, double[] inputs, double[] outputs, int recognizedGesture) {
     }
-
-    @Override
-    public void dtwRunStart(Wekinator w) {
-    }
-
-    @Override
-    public void dtwThresholdChanged(Wekinator w) {
-    }
-
     @Override
     public void examplesDeletedForModel(Wekinator w, int modelNum) {
     }
@@ -135,12 +129,12 @@ public class NoLogger implements KadenzeLogger {
     }
 
     @Override
-    public void logModelPrintedToConsole(Wekinator w, Path p) {
+    public void logSupervisedModelPrintedToConsole(Wekinator w, Path p) {
 
     }
 
     @Override
-    public void logStartRun(Wekinator w) {
+    public void logStartSupervisedRun(Wekinator w) {
     }
 
     @Override
@@ -154,5 +148,29 @@ public class NoLogger implements KadenzeLogger {
 
     @Override
     public void logWrittenQuestion(Wekinator w, String idString, String textString) {
+    }
+
+    @Override
+    public void logStartDtwRun(Wekinator w) {
+    }
+
+    @Override
+    public void dtwDeleteAllExamplesForGesture(Wekinator w, int gestureNum) {
+    }
+
+    @Override
+    public void dtwDeleteMostRecentExampleForGesture(Wekinator w, int gestureNum) {
+    }
+
+    @Override
+    public void dtwThresholdChanged(Wekinator w, double oldMatchThreshold, double matchThreshold) {
+    }
+
+    @Override
+    public void dtwClassifiedLast(Wekinator w, TimeSeries currentTimeSeries, double[] closestDistances, int closestClass) {
+    }
+
+    @Override
+    public void logDtwModelUpdated(Wekinator w, DtwModel m, DtwSettings oldSettings, DtwSettings newDtwSettings, boolean[] selectedInputs, boolean[] inputSelection) {
     }
 }

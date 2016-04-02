@@ -133,7 +133,7 @@ public class Assignment7Grade {
         part1bKnnAccuracy.setScore(score);
         part1bKnnAccuracy.setNoteWithErrValue(o, "assignment7_1A");
         if (o == Outcome.SUCCESS) {
-            part1bKnnAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+            part1bKnnAccuracy.setValue("val", KadenzeUtils.formatDouble(100.*score));
         }
     }
 
@@ -141,7 +141,7 @@ public class Assignment7Grade {
         part1bAdaboostAccuracy.setScore(score);
         part1bAdaboostAccuracy.setNoteWithErrValue(o, "assignment7_1A");
         if (o == Outcome.SUCCESS) {
-            part1bAdaboostAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+            part1bAdaboostAccuracy.setValue("val", KadenzeUtils.formatDouble(100.*score));
         }
 
     }
@@ -150,7 +150,7 @@ public class Assignment7Grade {
         part1bDTreeAccuracy.setScore(score);
         part1bDTreeAccuracy.setNoteWithErrValue(o, "assignment7_1A");
         if (o == Outcome.SUCCESS) {
-            part1bDTreeAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+            part1bDTreeAccuracy.setValue("val", KadenzeUtils.formatDouble(100.*score));
         }
     }
 
@@ -158,7 +158,7 @@ public class Assignment7Grade {
         part1bSVMAccuracy.setScore(score);
         part1bSVMAccuracy.setNoteWithErrValue(o, "assignment7_1A");
         if (o == Outcome.SUCCESS) {
-            part1bSVMAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+            part1bSVMAccuracy.setValue("val", KadenzeUtils.formatDouble(100.*score));
         }
     }
 
@@ -186,7 +186,7 @@ public class Assignment7Grade {
         part1cKnnAccuracy.setScore(score);
         part1cKnnAccuracy.setNoteWithErrValue(o, "assignment7_1A");
         if (o == Outcome.SUCCESS) {
-            part1cKnnAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+            part1cKnnAccuracy.setValue("val", KadenzeUtils.formatDouble(100.*score));
         }
     }
 
@@ -194,7 +194,7 @@ public class Assignment7Grade {
         part1cAdaboostAccuracy.setScore(score);
         part1cAdaboostAccuracy.setNoteWithErrValue(o, "assignment7_1A");
         if (o == Outcome.SUCCESS) {
-            part1cAdaboostAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+            part1cAdaboostAccuracy.setValue("val", KadenzeUtils.formatDouble(100.*score));
         }
     }
 
@@ -202,7 +202,7 @@ public class Assignment7Grade {
         part1cDTreeAccuracy.setScore(score);
         part1cDTreeAccuracy.setNoteWithErrValue(o, "assignment7_1A");
         if (o == Outcome.SUCCESS) {
-            part1cDTreeAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+            part1cDTreeAccuracy.setValue("val", KadenzeUtils.formatDouble(100.*score));
         }
     }
 
@@ -210,7 +210,7 @@ public class Assignment7Grade {
         part1cSVMAccuracy.setScore(score);
         part1cSVMAccuracy.setNoteWithErrValue(o, "assignment7_1A");
         if (o == Outcome.SUCCESS) {
-            part1cSVMAccuracy.setValue("val", KadenzeUtils.formatDouble(score));
+            part1cSVMAccuracy.setValue("val", KadenzeUtils.formatDouble(100.*score));
         }
     }
 

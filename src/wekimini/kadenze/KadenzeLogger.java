@@ -5,12 +5,15 @@
  */
 package wekimini.kadenze;
 
+import com.timeseries.TimeSeries;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import wekimini.LearningModelBuilder;
 import wekimini.Path;
 import wekimini.Wekinator;
 import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
+import wekimini.learning.dtw.DtwModel;
+import wekimini.learning.dtw.DtwSettings;
 import wekimini.osc.OSCOutput;
 
 /**
@@ -27,22 +30,34 @@ public interface KadenzeLogger {
 
     public String getZipDirectoryNameForAssignment();
 
+    public void logStartDtwRun(Wekinator w);
+
+    public void dtwDeleteAllExamplesForGesture(Wekinator w, int gestureNum);
+
+    public void dtwDeleteMostRecentExampleForGesture(Wekinator w, int gestureNum);
+
+    public void dtwThresholdChanged(Wekinator w, double oldMatchThreshold, double matchThreshold);
+
+    public void dtwClassifiedLast(Wekinator w, TimeSeries currentTimeSeries, double[] closestDistances, int closestClass);
+
+    public void logDtwModelUpdated(Wekinator w, DtwModel m, DtwSettings oldSettings, DtwSettings newDtwSettings, boolean[] selectedInputs, boolean[] inputSelection);
+
     public static enum KEvent {
-        TRAIN_START, //X
-        TRAIN_CANCEL, //X
-        //RUN_START, //X
-        RUN_STOP, //X
-        SUPERVISED_DELETE_ALL_EXAMPLES, //X
+        TRAIN_START,
+        TRAIN_CANCEL,
+        RUN_STOP,
+        SUPERVISED_DELETE_ALL_EXAMPLES,
         DTW_DELETE_ALL_EXAMPLES,
         DTW_DELETE_LAST_EXAMPLE,
-        DTW_RE_ADD_LAST_EXAMPLE,
-        RANDOMIZE,//X
-        SUPERVISED_DATA_VIEWED,//X
-        DTW_DATA_VIEWED,
-        PROJECT_CLOSED //Not called when AppleQ, but whatev
+        DTW_RE_ADD_LAST_EXAMPLE, 
+        RANDOMIZE,
+        SUPERVISED_DATA_VIEWED,
+        DTW_DATA_VIEWED, 
+        PROJECT_CLOSED, //Not called when AppleQ, but whatev
+        DTW_RUN_STOP 
     }
     
-    void logStartRun(Wekinator w);
+    void logStartSupervisedRun(Wekinator w);
     
     // public void beginLog(String assignmentDir, String assignmentSuffix) throws IOException {
     void beginLog(String parentDir, KadenzeAssignmentType a) throws IOException;
@@ -58,10 +73,6 @@ public interface KadenzeLogger {
     void dtwGestureAdded(Wekinator w, int gestureNum);
 
     void dtwRunData(Wekinator w, double[] inputs, double[] outputs, int recognizedGesture);
-
-    void dtwRunStart(Wekinator w);
-
-    void dtwThresholdChanged(Wekinator w);
 
     void examplesDeletedForModel(Wekinator w, int modelNum);
 
@@ -99,7 +110,7 @@ public interface KadenzeLogger {
     
     void loadedFromFile(Wekinator w, String projectName);
     
-    void logModelPrintedToConsole(Wekinator w, Path p);
+    void logSupervisedModelPrintedToConsole(Wekinator w, Path p);
     
     public void logInputInformation(Wekinator w, String inputString, int difficulty, String difficultyString);
     

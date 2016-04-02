@@ -21,16 +21,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipOutputStream;
-import weka.core.Instance;
 import weka.core.Instances;
-import weka.filters.Filter;
 import wekimini.GlobalSettings;
 import static wekimini.InputManager.PROP_INPUTGROUP;
 import wekimini.LearningManager;
 import wekimini.LearningModelBuilder;
 import wekimini.OutputManager;
 import wekimini.Path;
-import wekimini.SupervisedLearningManager;
 import wekimini.Wekinator;
 import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
 import wekimini.learning.ModelBuilder;
@@ -46,10 +43,10 @@ import wekimini.osc.OSCOutputGroup;
  *
  * @author rebecca
  */
-public class Assignment12Logger implements KadenzeLogger {
+public class AssignmentFinalLogger implements KadenzeLogger {
 
     private static final int version = 2;
-    private static final String dateString = "2016/02/20";
+    private static final String dateString = "2016/04/02";
     private FileOutputStream fos = null;
     private OutputStreamWriter osw = null;
     private PrintWriter pw = null;
@@ -58,7 +55,7 @@ public class Assignment12Logger implements KadenzeLogger {
     private String currentAssignmentDir = ""; //Directory for this assignment
     private int modelSetID = 1; //For choosing model xml file names
     private KadenzeAssignmentType currentAssignmentType;
-    private static final Logger logger = Logger.getLogger(Assignment12Logger.class.getName());
+    private static final Logger logger = Logger.getLogger(AssignmentFinalLogger.class.getName());
     private boolean hasLoggedModelsInThisAssignment = false;
 
     @Override
@@ -104,7 +101,7 @@ public class Assignment12Logger implements KadenzeLogger {
             osw.flush();
             fos.flush();
         } catch (IOException ex) {
-            Logger.getLogger(Assignment12Logger.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AssignmentFinalLogger.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -158,7 +155,6 @@ public class Assignment12Logger implements KadenzeLogger {
         });
 
         w.getLearningManager().addPropertyChangeListener(new PropertyChangeListener() {
-
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals(LearningManager.PROP_LEARNINGTYPE)) {
@@ -166,6 +162,8 @@ public class Assignment12Logger implements KadenzeLogger {
                 }
             }
         });
+
+        // KadenzeLogging.getLogger().newProjectStarted(this);
     }
 
     @Override
@@ -227,20 +225,7 @@ public class Assignment12Logger implements KadenzeLogger {
         }
     }
 
-    /* private void printOutputNames(Wekinator w) {
-     StringBuilder sb = new StringBuilder();
-     sb.append(ts()).append(",").append(w.getID()).append(",OUTPUT_NAMES_LIST");
-     try {
-     String[] outs = w.getOutputManager().getOutputGroup().getOutputNames();
-     for (String out : outs) {
-     sb.append(',').append(out);
-     }
-     pw.println(sb.toString());
-     } catch (Exception ex) {
-     sb.append("ERROR_ENCOUNTERED");
-     pw.println(sb.toString());
-     }
-     } */
+    //Not used anywhere...
     private void printModelInfo(Wekinator w) {
         StringBuilder sb = new StringBuilder();
         sb.append(ts()).append(",").append(w.getID()).append(",MODEL_INFO_LIST");
@@ -280,13 +265,9 @@ public class Assignment12Logger implements KadenzeLogger {
     }
 
     @Override
+    //DTWTESTED
     public void dtwGestureAdded(Wekinator w, int gestureNum) {
-        //TODO
-    }
-
-    //TODO
-    public void dtwExamplesDeletedForGesture() {
-
+        pw.println(ts() + "," + w.getID() + ",DTW_GESTURE_ADDED,GESTURE=" + gestureNum);
     }
 
     @Override //TODO
@@ -307,7 +288,8 @@ public class Assignment12Logger implements KadenzeLogger {
     public void selectedFeatures(Wekinator w, boolean[][] oldConnections, boolean[][] newConnections) {
         int numInputs = oldConnections.length;
         int numOutputs = oldConnections[0].length;
-        pw.println(ts() + "," + w.getID() + ",NUM_IN=" + numInputs + ",NUM_OUT=" + numOutputs
+        //NOTE: "FEATURES_SELECTED" was not added until 2 April in AssignmentFinalLogger version. Previously ID would be "NUM_IN"
+        pw.println(ts() + "," + w.getID() + ",FEATURES_SELECTED,NUM_IN=" + numInputs + ",NUM_OUT=" + numOutputs
                 + ",OLD=" + booleanMatrixToString(oldConnections)
                 + ",NEW=" + booleanMatrixToString(newConnections));
     }
@@ -341,7 +323,7 @@ public class Assignment12Logger implements KadenzeLogger {
         int numMetaData = w.getDataManager().getNumMetaData();
         for (Path p : paths) {
             String f = currentAssignmentDir + baseName + i + ".xml";
-           // pw.println(t + "," + w.getID() + ",MODEL_NUM=" + i + "," + baseName + i + ".xml");
+            // pw.println(t + "," + w.getID() + ",MODEL_NUM=" + i + "," + baseName + i + ".xml");
             pw.println(t + "," + w.getID() + ",MODEL_NUM=" + i + "," + baseName + i + ".xml," + p.getModelBuilder().toLogString());
 
             p.writeToFile(f);
@@ -356,9 +338,8 @@ public class Assignment12Logger implements KadenzeLogger {
                 String f2 = currentAssignmentDir + baseName + i + "_m.xml";
                 m.writeToFile(f2);
             } catch (Exception ex) {
-                Logger.getLogger(Assignment12Logger.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AssignmentFinalLogger.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
 
             i++;
         }
@@ -370,8 +351,7 @@ public class Assignment12Logger implements KadenzeLogger {
 
     //Call when these models are runnable but not logged in the current assignment
     //e.g., have been loaded from a saved project.
-    //TODO: MUST SAVE MODEL LOADER HERE TOO!
-    private void logFirstRunInAssignmentWithNewModels(Wekinator w) throws IOException {
+    private void logFirstSupervisedRunInAssignmentWithNewModels(Wekinator w) throws IOException {
         List<Path> paths = w.getSupervisedLearningManager().getPaths();
         Long t = ts();
         pw.println(t + "," + w.getID() + ",FIRST_ASSIGNMENT_MODEL_LOG,NUM_MODELS=" + paths.size() + ",MODEL_SET=" + modelSetID);
@@ -395,7 +375,7 @@ public class Assignment12Logger implements KadenzeLogger {
                 String f2 = currentAssignmentDir + baseName + i + "_m.xml";
                 m.writeToFile(f2);
             } catch (Exception ex) {
-                Logger.getLogger(Assignment12Logger.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AssignmentFinalLogger.class.getName()).log(Level.SEVERE, null, ex);
             }
             i++;
         }
@@ -409,10 +389,10 @@ public class Assignment12Logger implements KadenzeLogger {
     public void supervisedRunData(Wekinator w, double[] inputs, boolean[] computeMask, double[] outputs) {
 
         //ONLY do this for certain assignemnts:
-        if (currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART3A ||
-                currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART3B ||
-                currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT5_PART3A || 
-                currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT5_PART3B){
+        if (currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART3A
+                || currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART3B
+                || currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT5_PART3A
+                || currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT5_PART3B) {
 
             StringBuilder sb = new StringBuilder();
             sb.append(ts());
@@ -441,11 +421,24 @@ public class Assignment12Logger implements KadenzeLogger {
         return sb.toString();
     }
 
+    @Override
+    //DTW Tested
+    //TODO DTW: ONly log for particular sub-parts
+    public void dtwRunData(Wekinator w, double[] inputs, double[] outputs, int recognizedGesture) {
+        StringBuilder infoString = new StringBuilder();
+        infoString.append("REC_GEST=").append(recognizedGesture);
+        infoString.append(",NUM_IN=").append(inputs.length);
+        infoString.append(",INPUTS=").append(doubleArrayToBracketedStringList(inputs));
+        infoString.append(",NUM_OUT=").append(outputs.length);
+        infoString.append(",OUTPUTS=").append(doubleArrayToBracketedStringList(outputs));
+       
+        pw.println(ts() + "," + w.getID() + ",DTW_RUN_DATA," + infoString.toString());
+    }
 
     @Override
-    public void dtwRunData(Wekinator w, double[] inputs, double[] outputs, int recognizedGesture) {
-        //outputs are current match info (1 per gesture class), recognizedGesture is 0 if no match
-
+    //DTW Tested
+    public void dtwThresholdChanged(Wekinator w, double oldThreshold, double newThreshold) {
+        pw.println(ts() + "," + w.getID() + ",DTW_THRESHOLD_CHANGED,OLD=" + oldThreshold + ",NEW=" + newThreshold);
     }
 
     @Override
@@ -517,6 +510,7 @@ public class Assignment12Logger implements KadenzeLogger {
         pw.println(ts() + "," + w.getID() + ",MODEL_BUILDER_UPDATED," + i + "," + mb.toLogString());
     }
 
+    //For supervised learning only
     @Override
     public void logPathUpdated(Wekinator w, int which, OSCOutput oldOutput, OSCOutput newOutput, LearningModelBuilder oldModelBuilder, LearningModelBuilder newModelBuilder, String[] oldSelectedInputs, String[] newSelectedInputs) {
         //Which : which path
@@ -573,7 +567,6 @@ public class Assignment12Logger implements KadenzeLogger {
 
     }
 
-    //TODO: Do equivalent for DTW!
     @Override
     public void logSupervisedModelPrintedToConsole(Wekinator w, Path p) {
         List<Path> paths = w.getSupervisedLearningManager().getPaths();
@@ -586,9 +579,9 @@ public class Assignment12Logger implements KadenzeLogger {
         pw.println(ts() + "," + w.getID() + ",START_RUN");
         if (!hasLoggedModelsInThisAssignment) {
             try {
-                logFirstRunInAssignmentWithNewModels(w);
+                logFirstSupervisedRunInAssignmentWithNewModels(w);
             } catch (IOException ex) {
-                Logger.getLogger(Assignment12Logger.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AssignmentFinalLogger.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -597,7 +590,7 @@ public class Assignment12Logger implements KadenzeLogger {
     public String getZipDirectoryNameForAssignment() {
         return parentDir + File.separator + "assignment" + KadenzeAssignment.getAssignmentNumber(currentAssignmentType);
     }
-    
+
     //Caution: this will be called in whatever sub-part of the assignment is open when it is submitted. May have multiple of these, will have to look for latest one in order to make sense of it!
     @Override
     public void logInputInformation(Wekinator w, String inputString, int difficulty, String difficultyString) {
@@ -617,25 +610,110 @@ public class Assignment12Logger implements KadenzeLogger {
 
     @Override
     public void logStartDtwRun(Wekinator w) {
+        pw.println(ts() + "," + w.getID() + ",START_DTW_RUN");
+            try {
+                logDtwModel(w);
+            } catch (IOException ex) {
+                Logger.getLogger(AssignmentFinalLogger.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }
+
+    private void logDtwModel(Wekinator w) throws IOException {
+        Long t = ts();
+        pw.println(t + "," + w.getID() + ",LOG_DTW_MODEL,MODEL_SET=" + modelSetID);
+        String baseName = "model_" + modelSetID + ".xml";
+        String f = currentAssignmentDir + baseName;
+        pw.println(t + "," + w.getID() + ",DTW_MODEL_FILE=" + baseName + "," + w.getDtwLearningManager().getModel().toLogInfoString());
+        w.getDtwLearningManager().getModel().writeToFile(f);
+        GlobalSettings.getInstance().setIntValue("modelSetID", modelSetID);
+        modelSetID++;
+        hasLoggedModelsInThisAssignment = true;
     }
 
     @Override
+    //DTWTESTED
     public void dtwDeleteAllExamplesForGesture(Wekinator w, int gestureNum) {
+        pw.println(ts() + "," + w.getID() + ",DTW_DELETE_ALL_EXAMPLES_FOR_GESTURE,GESTURE=" + gestureNum);
     }
 
     @Override
+    //DTWTESTED
     public void dtwDeleteMostRecentExampleForGesture(Wekinator w, int gestureNum) {
+        pw.println(ts() + "," + w.getID() + ",DTW_DELETE_MOST_RECENT_EXAMPLE_FOR_GESTURE,GESTURE=" + gestureNum);
     }
 
     @Override
-    public void dtwThresholdChanged(Wekinator w, double oldMatchThreshold, double matchThreshold) {
-    }
-
-    @Override
+    //DTWTESTED
     public void dtwClassifiedLast(Wekinator w, TimeSeries currentTimeSeries, double[] closestDistances, int closestClass) {
+        StringBuilder distString = new StringBuilder();
+        distString.append("DISTS=");
+        distString.append(doubleArrayToBracketedStringList(closestDistances));
+        pw.println(ts() + "," + w.getID() + ",DTW_CLASSIFIED_LAST,CLOSEST=" + closestClass 
+                + "," + distString.toString() + "," + timeSeriesToSingleLine(currentTimeSeries));
     }
 
-    @Override
-    public void logDtwModelUpdated(Wekinator w, DtwModel m, DtwSettings oldSettings, DtwSettings newDtwSettings, boolean[] selectedInputs, boolean[] inputSelection) {
+    //DTWTESTED
+    private String timeSeriesToSingleLine(TimeSeries ts) {
+        int numSamples = ts.numOfPts();
+        int dim = ts.numOfDimensions();
+        StringBuilder sb = new StringBuilder();
+        sb.append("NUM_SAMPLES=").append(numSamples);
+        sb.append(",NUM_DIM=").append(dim);
+        sb.append(",DATA=");
+        for (int input = 0; input < dim; input++) {
+            sb.append("{");
+            for (int t = 0; t < ts.numOfPts() - 1; t++) {
+                sb.append(ts.getMeasurement(t, input)).append(',');
+            }
+            if (ts.numOfPts() != 0) {
+                sb.append(ts.getMeasurement(ts.numOfPts() - 1, input));
+            }
+            sb.append("}");
+            if (input != dim-1) {
+                sb.append(",");
+            }
+        }
+        return sb.toString();
     }
+    
+    private String doubleArrayToBracketedStringList(double[] a) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        for (int i = 0; i < a.length - 1; i++) {
+            sb.append(a[i]).append(",");
+        }
+        sb.append(a[a.length - 1]).append("}");
+        return sb.toString();
+    }
+    
+    private String booleanArrayToBracketedStringList(boolean[] a) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        for (int i = 0; i < a.length - 1; i++) {
+            sb.append(a[i] ? "1" : "0").append(",");
+        }
+        sb.append(a[a.length - 1] ? "1" : "0").append("}");
+        return sb.toString();
+    }
+    
+
+    @Override
+    //DTWTESTED
+    public void logDtwModelUpdated(Wekinator w, DtwModel m, DtwSettings oldSettings, DtwSettings newDtwSettings, boolean[] lastInputSelection, boolean[] currentInputSelection) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(ts() + "," + w.getID() + ",DTW_MODEL_UPDATED,");
+        sb.append(m.toLogInfoString());
+        sb.append(",OLD_SETTINGS={");
+        if (oldSettings != null) {
+            sb.append(oldSettings.toLogInfoString());
+        }
+        sb.append("},NEW_SETTINGS={");
+        if (newDtwSettings != null) {
+            sb.append(newDtwSettings.toLogInfoString());
+        }
+        sb.append("},OLD_FEATURES=").append(booleanArrayToBracketedStringList(lastInputSelection));
+        sb.append(",NEW_FEATURES=").append(booleanArrayToBracketedStringList(currentInputSelection));
+        pw.println(sb.toString());
+    }
+
 }
