@@ -46,8 +46,8 @@ public class WekinatorDtwLearningController {
     public void startRun() {
         if (m.getRunningState() == DtwLearningManager.RunningState.NOT_RUNNING) {
             m.startRunning();
-            KadenzeLogging.getLogger().logStartDtwRun(w);
-           w.getStatusUpdateCenter().update(this, "Running - waiting for inputs to arrive");
+           // KadenzeLogging.getLogger().logStartDtwRun(w);
+            w.getStatusUpdateCenter().update(this, "Running - waiting for inputs to arrive");
         }
     }
 

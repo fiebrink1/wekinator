@@ -73,25 +73,33 @@ public class Assignment11Grade {
         part1setup.setScore(score);
         part1setup.setNoteWithErrValue(o, "assignment11_1");
     }
-    
-    
+
     public void score1experimented(Outcome o, double score) {
         part1experimented.setScore(score);
         part1experimented.setNoteWithErrValue(o, "assignment11_1");
     }
-    
+
+    void score1experimented(Outcome o, double score, int totalGesturesSeen) {
+        part1experimented.setScore(score);
+        part1experimented.setNoteWithErrValue(o, "assignment11_1");
+        String[] vals = {Integer.toString(totalGesturesSeen)};
+        part1experimented.addVals(vals);
+    }
+
     public void score1has4gestures(Outcome o, double score) {
         part1has4gestures.setScore(score);
         part1has4gestures.setNoteWithErrValue(o, "assignment11_1");
     }
-    
+
     public void score2Experimented(Outcome o, double score) {
         part2Experimented.setScore(score);
         part2Experimented.setNoteWithErrValue(o, "assignment11_2");
     }
 
-    public void score2AddValues(int numExamplesAdded, int numRun, double numMinutes) {
-        String[] vals = {Integer.toString(numExamplesAdded), Integer.toString(numRun), KadenzeUtils.formatDouble(numMinutes)};
+    public void score2Experimented(Outcome o, double score, int numRuns) {
+        part2Experimented.setScore(score);
+        part2Experimented.setNoteWithErrValue(o, "assignment11_2");
+        String[] vals = {Integer.toString(numRuns)};
         part2Experimented.addVals(vals);
     }
 

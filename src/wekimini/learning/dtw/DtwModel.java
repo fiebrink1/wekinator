@@ -364,7 +364,8 @@ public class DtwModel implements Model {
     public String toLogInfoString() {
             //Describe as comma-separated description string
         StringBuilder sb = new StringBuilder();
-        sb.append("NUM_GESTURES=").append(numGestures).append(",NUM_EXAMPLES={");
+        sb.append("NUM_IN=").append(w.getInputManager().getNumInputs());
+        sb.append(",NUM_GESTURES=").append(numGestures).append(",NUM_EXAMPLES={");
         for (int i = 0; i < numGestures-1; i++) { //gestures go from 0 to num_gestures-1
             sb.append(data.getNumExamplesForGesture(i)).append(',');
         }
