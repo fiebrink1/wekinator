@@ -8,6 +8,8 @@ package wekimini.dtw.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,6 +59,16 @@ public class DtwEditorFrame extends javax.swing.JFrame {
         
         this.m = m;
         initFormForModel();
+        m.addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName().equals(DtwModel.PROP_SELECTED_INPUTS)) {
+                    updateInputSelection();
+                }
+            }
+        });
+        
         this.w = w;
         initInputsPanel(m, inputNames);
         setTitle("Editing " + m.getOSCOutput().getName());
@@ -76,6 +88,11 @@ public class DtwEditorFrame extends javax.swing.JFrame {
         existingNames = names.toArray(new String[0]);
     }
 
+    private void updateInputSelection() {
+        for (int i= 0; i < m.getSelectedInputs().length; i++) {
+            inputs[i].setSelected(m.getSelectedInputs()[i]);
+        }
+    }
     
     private void initInputsPanel(DtwModel m, String[] inputNames) {
         panelInputList.removeAll();
