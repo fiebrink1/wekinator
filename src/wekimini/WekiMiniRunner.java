@@ -44,7 +44,7 @@ public final class WekiMiniRunner {
     private final static About aboutBox = new About();
     private final static Preferences preferencesBox = new Preferences();
     private final ImageIcon myIcon = new ImageIcon(getClass().getResource("/wekimini/icons/wekimini_small.png"));
-    private static boolean isKadenze = false;
+    private static boolean isKadenze = true;
     private static int nextID = 1;
     
     public static int generateNextID() {

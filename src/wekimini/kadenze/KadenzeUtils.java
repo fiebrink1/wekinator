@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -211,6 +212,7 @@ public class KadenzeUtils {
     
     public static String formatDouble(double d) {
         DecimalFormat formatter = new DecimalFormat("#0.00");
+        formatter.setRoundingMode(RoundingMode.HALF_UP);
         return formatter.format(d);
     }
 

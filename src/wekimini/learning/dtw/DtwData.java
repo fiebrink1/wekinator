@@ -292,6 +292,7 @@ public class DtwData {
 
         notifyExamplesChangedListeners(whichClass, matchingList.size());
         notifyExampleDeletedListeners(whichClass);
+       // KadenzeLogging.getLogger().dtwDeleteMostRecentExampleForGesture(w, numGestures);
     }
 
     public void deleteAll() {
@@ -312,6 +313,7 @@ public class DtwData {
             notifyExamplesChangedListeners(i, 0);
         }
         notifyAllExamplesDeletedListeners();
+        KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.DTW_DELETE_ALL_EXAMPLES);
     }
 
     protected void startRecording(int currentClass) {
@@ -394,6 +396,7 @@ public class DtwData {
         setNumTotalExamples(numTotalExamples + 1);
         notifyExamplesChangedListeners(ex.getGestureClass(), list.size());
         notifyExampleAddedListeners(ex.getGestureClass());
+        KadenzeLogging.getLogger().dtwGestureAdded(w, ex.getGestureClass());
     }
 
     public int getNumExamplesForGesture(int gesture) {
@@ -419,12 +422,9 @@ public class DtwData {
     public void startRunning() {
         currentTime = 0;
         currentTimeSeries = new TimeSeries(numInputs); //Could just use active inputs here, but this is probably fine for many cases 
+        KadenzeLogging.getLogger().logStartDtwRun(w);
     }
-
-    public void stopRunning() {
-
-    }
-
+    
     public void dumpExamplesForGesture(int whichGesture) {
         List<DtwExample> examples = allExamples.get(whichGesture);
         System.out.println(examples.size() + " EXAMPLES FOR GESTURE " + whichGesture + ":");
@@ -604,12 +604,14 @@ public class DtwData {
         for (i = 0; i < idsToDelete.length; i++) {
             delete(idsToDelete[i]);
         }
+        KadenzeLogging.getLogger().dtwDeleteAllExamplesForGesture(w, gestureNum);
     }
 
     public void deleteMostRecentExample(int gestureNum) {
         DtwExample last = allExamples.get(gestureNum).getLast();
         if (last != null) {
             delete(last.getId());
+            KadenzeLogging.getLogger().dtwDeleteMostRecentExampleForGesture(w, gestureNum);
         }
 
         /*DtwExample removed = allExamples.get(gestureNum).removeLast();
@@ -617,6 +619,7 @@ public class DtwData {
          notifyExampleDeletedListeners(gestureNum);
          notifyExamplesChangedListeners(gestureNum, allExamples.get(gestureNum).size());
          } */
+        
     }
 
     public String getSummaryString() {
@@ -654,6 +657,7 @@ public class DtwData {
             DtwExample mostRecentlyDeleted = deletedExamplesInOrder.removeLast();
             addExample(mostRecentlyDeleted);
             setNumDeletedAndCached(deletedExamplesInOrder.size());
+            KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.DTW_RE_ADD_LAST_EXAMPLE);
         }
     }
 
@@ -668,6 +672,7 @@ public class DtwData {
         if (examplesInOrder.size() > 0) {
             DtwExample mostRecentlyAdded = examplesInOrder.removeLast();
             delete(mostRecentlyAdded.getId());
+            KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.DTW_DELETE_LAST_EXAMPLE);
         }
     }
 
@@ -881,8 +886,6 @@ public class DtwData {
             public void windowDeactivated(WindowEvent e) {
             }
         });
-
-        
     }
 
     public interface DtwDataListener {

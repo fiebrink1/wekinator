@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static wekimini.DtwLearningManager.RunningState.NOT_RUNNING;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.dtw.DtwData;
 import wekimini.learning.dtw.DtwModel;
 import wekimini.learning.dtw.DtwSettings;
@@ -145,6 +146,7 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
     }
 
     public void updateModel(DtwModel m, DtwSettings newDtwSettings, boolean[] inputSelection) {
+        DtwSettings oldSettings = m.getSettings();
         if (newDtwSettings != null) {
             m.setSettings(newDtwSettings);
             System.out.println("SEtting settings to: ");
@@ -152,9 +154,9 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         }
         boolean[][] selectionMatrix = new boolean[inputSelection.length][1];
         for (int i = 0; i < inputSelection.length; i++) {
-            selectionMatrix[i][0] = inputSelection[0];
+            selectionMatrix[i][0] = inputSelection[i];
         }
-        
+        KadenzeLogging.getLogger().logDtwModelUpdated(w, m, oldSettings, newDtwSettings, m.getSelectedInputs(), inputSelection);
         updateInputOutputConnections(selectionMatrix);
     }
 

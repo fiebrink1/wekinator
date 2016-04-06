@@ -54,6 +54,12 @@ public class KadenzeAssignment {
             return KadenzeAssignmentType.ASSIGNMENT7_PART1C;
         } else if (p == 7 && p2 == 4) {
             return KadenzeAssignmentType.ASSIGNMENT7_PART2;
+        } else if (p == 11 && p2 == 1) {
+            return KadenzeAssignmentType.ASSIGNMENT11_PART1;
+        } else if (p == 11 && p2 == 2) {
+            return KadenzeAssignmentType.ASSIGNMENT11_PART2;
+        } else if (p == 13) {
+            return KadenzeAssignmentType.ASSIGNMENT13;
         } else {
             logger.log(Level.WARNING, "NO ASSIGNMENT FOUND FOR " + p + "," + p2);
             return KadenzeAssignmentType.NONE;
@@ -80,7 +86,10 @@ public class KadenzeAssignment {
         ASSIGNMENT7_PART1A,
         ASSIGNMENT7_PART1B,
         ASSIGNMENT7_PART1C,
-        ASSIGNMENT7_PART2
+        ASSIGNMENT7_PART2,
+        ASSIGNMENT11_PART1,
+        ASSIGNMENT11_PART2,
+        ASSIGNMENT13
     }
 
     public static int getAssignmentNumber(KadenzeAssignmentType t) {
@@ -122,6 +131,12 @@ public class KadenzeAssignment {
             return 7;
         } else if (t == KadenzeAssignmentType.ASSIGNMENT7_PART2) {
             return 7;
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART1) {
+            return 11;
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART2) {
+            return 11;
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT13) {
+            return 13;
         } else {
             System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
             return -1;
@@ -167,6 +182,12 @@ public class KadenzeAssignment {
             return 3;
         } else if (t == KadenzeAssignmentType.ASSIGNMENT7_PART2) {
             return 4;
+        }else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART1) {
+            return 1;
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART2) {
+            return 2;
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT13) {
+            return 1;
         } else {
             System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
             return -1;
@@ -212,6 +233,12 @@ public class KadenzeAssignment {
             return "assignment7_1C.txt";
         } else if (t == KadenzeAssignmentType.ASSIGNMENT7_PART2) {
             return "assignment7_2.txt";
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART1) {
+            return "assignment11_1.txt";
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART2) {
+            return "assignment11_2.txt";
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT13) {
+            return "assignment13_1.txt";
         } else {
             System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
             return "tmp.txt";
@@ -257,6 +284,12 @@ public class KadenzeAssignment {
             return "Assignment 7, Part 1C";
         } else if (t == KadenzeAssignmentType.ASSIGNMENT7_PART2) {
             return "Assignment 7, Part 2";
+        }  else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART1) {
+            return "Assignment 11, Part 1";
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART2) {
+            return "Assignment 11, Part 2";
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT13) {
+            return "Assignment 13";
         } else {
             System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
             return "";
@@ -302,6 +335,12 @@ public class KadenzeAssignment {
             return "assignment7" + File.separator + "assignment7_1C";
         } else if (t == KadenzeAssignmentType.ASSIGNMENT7_PART2) {
             return "assignment7" + File.separator + "assignment7_2";
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART1) {
+            return "assignment11" + File.separator + "assignment11_1";
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART2) {
+            return "assignment11" + File.separator + "assignment11_2";
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT13) {
+            return "assignment13" + File.separator + "assignment13";
         } else {
             System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
             return "";
@@ -347,6 +386,12 @@ public class KadenzeAssignment {
             return new Assignment12Logger();
         } else if (t == KadenzeAssignmentType.ASSIGNMENT7_PART2) {
             return new Assignment12Logger();
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART1) {
+            return new AssignmentFinalLogger();
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART2) {
+            return new AssignmentFinalLogger();
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT13) {
+            return new AssignmentFinalLogger();
         } else {
             throw new Exception("No logger for this assignment!");
         }

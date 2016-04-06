@@ -70,7 +70,7 @@ public class WekinatorSupervisedLearningController {
         }
         if (m.getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING) {
            m.setRunningState(SupervisedLearningManager.RunningState.RUNNING);
-           KadenzeLogging.getLogger().logStartRun(w);
+           KadenzeLogging.getLogger().logStartSupervisedRun(w);
            w.getStatusUpdateCenter().update(this, "Running - waiting for inputs to arrive");
         }
     }

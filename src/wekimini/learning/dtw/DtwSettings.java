@@ -37,7 +37,20 @@ public class DtwSettings {
         System.out.println("Min allowed length: " + minAllowedGestureLength   );
         System.out.println("Downsample policy: " + downsamplePolicy);
         System.out.println("Downsample constant factor: " + downsampleFactor);
-        System.out.println("DOwnsample example length: " + downsampleMaxLength);
+        System.out.println("Downsample example length: " + downsampleMaxLength);
+    }
+
+    public Object toLogInfoString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("HOP=").append(hopSizeForContinuousSearch);
+        sb.append(",WIDTH=").append(matchWidth);
+        sb.append(",TYPE=").append(runningType);
+        sb.append(",MIN_LEN_R=").append(minimumLengthRestriction);
+        sb.append(",MIN_ALLOWED_LEN=").append(minAllowedGestureLength);
+        sb.append(",DOWN_POL=").append(downsamplePolicy);
+        sb.append(",DOWN_FACT=").append(downsampleFactor);
+        sb.append(",DOWN_EX_LEN=").append(downsampleMaxLength);
+        return sb.toString();
     }
     
     public static enum RunningType {
