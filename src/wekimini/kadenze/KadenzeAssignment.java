@@ -58,8 +58,8 @@ public class KadenzeAssignment {
             return KadenzeAssignmentType.ASSIGNMENT11_PART1;
         } else if (p == 11 && p2 == 2) {
             return KadenzeAssignmentType.ASSIGNMENT11_PART2;
-        } else if (p == 13) {
-            return KadenzeAssignmentType.ASSIGNMENT13;
+        } else if (p == 12) {
+            return KadenzeAssignmentType.ASSIGNMENT12;
         } else {
             logger.log(Level.WARNING, "NO ASSIGNMENT FOUND FOR " + p + "," + p2);
             return KadenzeAssignmentType.NONE;
@@ -89,7 +89,7 @@ public class KadenzeAssignment {
         ASSIGNMENT7_PART2,
         ASSIGNMENT11_PART1,
         ASSIGNMENT11_PART2,
-        ASSIGNMENT13
+        ASSIGNMENT12
     }
 
     public static int getAssignmentNumber(KadenzeAssignmentType t) {
@@ -135,8 +135,8 @@ public class KadenzeAssignment {
             return 11;
         } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART2) {
             return 11;
-        } else if (t == KadenzeAssignmentType.ASSIGNMENT13) {
-            return 13;
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT12) {
+            return 12;
         } else {
             System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
             return -1;
@@ -186,7 +186,7 @@ public class KadenzeAssignment {
             return 1;
         } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART2) {
             return 2;
-        } else if (t == KadenzeAssignmentType.ASSIGNMENT13) {
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT12) {
             return 1;
         } else {
             System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
@@ -237,8 +237,8 @@ public class KadenzeAssignment {
             return "assignment11_1.txt";
         } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART2) {
             return "assignment11_2.txt";
-        } else if (t == KadenzeAssignmentType.ASSIGNMENT13) {
-            return "assignment13_1.txt";
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT12) {
+            return "assignment12_1.txt";
         } else {
             System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
             return "tmp.txt";
@@ -288,8 +288,8 @@ public class KadenzeAssignment {
             return "Assignment 11, Part 1";
         } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART2) {
             return "Assignment 11, Part 2";
-        } else if (t == KadenzeAssignmentType.ASSIGNMENT13) {
-            return "Assignment 13";
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT12) {
+            return "Assignment 12";
         } else {
             System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
             return "";
@@ -339,8 +339,8 @@ public class KadenzeAssignment {
             return "assignment11" + File.separator + "assignment11_1";
         } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART2) {
             return "assignment11" + File.separator + "assignment11_2";
-        } else if (t == KadenzeAssignmentType.ASSIGNMENT13) {
-            return "assignment13" + File.separator + "assignment13";
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT12) {
+            return "assignment12" + File.separator + "assignment12";
         } else {
             System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
             return "";
@@ -390,7 +390,7 @@ public class KadenzeAssignment {
             return new AssignmentFinalLogger();
         } else if (t == KadenzeAssignmentType.ASSIGNMENT11_PART2) {
             return new AssignmentFinalLogger();
-        } else if (t == KadenzeAssignmentType.ASSIGNMENT13) {
+        } else if (t == KadenzeAssignmentType.ASSIGNMENT12) {
             return new AssignmentFinalLogger();
         } else {
             throw new Exception("No logger for this assignment!");

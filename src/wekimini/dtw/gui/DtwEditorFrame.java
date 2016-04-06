@@ -748,11 +748,11 @@ public class DtwEditorFrame extends javax.swing.JFrame {
     }
 
     private void loadModelFromFile() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void saveModelToFile() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      //  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void applyOutputSettings(OSCDtwOutput fromOutput, OSCDtwOutput toOutput) {
