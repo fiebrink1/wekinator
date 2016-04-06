@@ -333,6 +333,8 @@ public class CppWriter {
             cppPrint.printf("   //For normalization\n");
             double[] inMaxes = new double[numInputs];
             double[] inMins = new double[numInputs];
+            double outMax = Double.NEGATIVE_INFINITY;
+            double outMin = Double.POSITIVE_INFINITY;
             for (int i = 0; i < numInputs; i++) {
                 inMaxes[i] = Double.NEGATIVE_INFINITY;
                 inMins[i] = Double.POSITIVE_INFINITY;
@@ -340,12 +342,21 @@ public class CppWriter {
             for (int i = 0; i < numExamples; i++) {
                 String[] splitInstance = insts.instance(i).toString().split(",");
                 for (int j = 0; j < numInputs; j++) {
-                    if ( inMaxes[j] < Double.valueOf(splitInstance[j + 3])) {
-                        inMaxes[j] = Double.valueOf(splitInstance[j + 3]);
+                    double inValue = Double.valueOf(splitInstance[j + 3]);
+                    if (inMaxes[j] < inValue) {
+                        inMaxes[j] = inValue;
                     }
-                    if ( inMins[j] > Double.valueOf(splitInstance[j + 3])) {
-                        inMins[j] = Double.valueOf(splitInstance[j + 3]);
+                    if (inMins[j] > inValue) {
+                        inMins[j] = inValue;
                     }
+
+                }
+                double outValue = Double.valueOf(splitInstance[numInputs + 3]);
+                if (outMax < outValue) {
+                    outMax = outValue;
+                }
+                if (outMin > outValue) {
+                    outMin = outValue;
                 }
             }
             cppPrint.printf("   double inMaxes[" + numInputs + "] = { ");
@@ -364,8 +375,8 @@ public class CppWriter {
                 cppPrint.printf(Double.toString(inMins[i]));      
             }
             cppPrint.printf(" };\n\n");
-            cppPrint.printf("   double outMax = 1.;\n");
-            cppPrint.printf("   double outMin = 0.;\n\n");
+            cppPrint.printf("   double outMax = " + outMax + ";\n");
+            cppPrint.printf("   double outMin = " + outMin + ";\n\n");
             cppPrint.printf("   neuralNetwork neuralNetwork" + whichPath + " (wInputHidden, wHiddenOutput, inMaxes, inMins, outMax, outMin);\n\n");
             cppPrint.printf("   return neuralNetwork" + whichPath +";\n\n}");
             cppPrint.printf("/* Full model description\n");
