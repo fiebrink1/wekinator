@@ -274,7 +274,7 @@ public class KadenzeAssn12SubmissionPrompt extends javax.swing.JFrame {
         }
         KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_3", s3);
 
-        String s4 = replaceNewlines(text5.getText());
+        String s4 = replaceNewlines(text4.getText());
         if (s4.length() == 0 && !missing) {
             missing = true;
             whichMissing = 4;
@@ -282,26 +282,33 @@ public class KadenzeAssn12SubmissionPrompt extends javax.swing.JFrame {
         KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_4", s4);
 
 
-        String s5 = replaceNewlines(text7.getText());
+        String s5 = replaceNewlines(text5.getText());
         if (s5.length() == 0 && !missing) {
             missing = true;
             whichMissing = 5;
         }
         KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_5", s5);
         
-        String s6 = replaceNewlines(text8.getText());
-        if (s6.length() == 0 && !missing) {
+        String s6 = replaceNewlines(text6.getText());
+        /*if (s6.length() == 0 && !missing) {
             missing = true;
             whichMissing = 6;
-        }
+        } */
         KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_6", s6);
         
         String s7 = replaceNewlines(text7.getText());
-        if (s7.length() == 0 && !missing) {
+       /* if (s7.length() == 0 && !missing) {
             missing = true;
             whichMissing = 7;
+        } */
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_7", s7);
+        
+        String s8 = replaceNewlines(text8.getText());
+        if (s8.length() == 0 && !missing) {
+            missing = true;
+            whichMissing = 8;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_7", s6);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_8", s8);
         
         if (missing) {
             int result = Util.showPrettyYesNoPane(this, "You are missing an answer to question " + whichMissing + ". Do you wish to continue anyway?", "Missing answers");
