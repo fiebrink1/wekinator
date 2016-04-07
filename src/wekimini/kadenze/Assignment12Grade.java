@@ -26,6 +26,7 @@ public class Assignment12Grade {
     private final NotedCriterion my_q5 = new NotedCriterion("q5");
     private final NotedCriterion my_q6 = new NotedCriterion("q6");
     private final NotedCriterion my_q7 = new NotedCriterion("q7");
+    private final NotedCriterion my_q8 = new NotedCriterion("q8");
 
     private static final Logger logger = Logger.getLogger(Assignment12Grade.class.getName());
 
@@ -84,12 +85,16 @@ public class Assignment12Grade {
         my_q7.setScore(qs[6]);
         o = setQuestionOutcomeFromScore(qs[6]);
         my_q7.setNoteWithErrValue(o, "assignment12");
+        
+        my_q8.setScore(qs[7]);
+        o = setQuestionOutcomeFromScore(qs[7]);
+        my_q8.setNoteWithErrValue(o, "assignment12");
     }
 
     public void setCompletelyInvalidSubmission(Outcome o) {
         validSubmission(o, 0.0);
         scoreExperimented(o, 0.);
-        double[] qs = {0., 0., 0., 0., 0., 0., 0.};
+        double[] qs = {0., 0., 0., 0., 0., 0., 0., 0.};
         scoreQuestions(qs);
     }
 
@@ -104,6 +109,7 @@ public class Assignment12Grade {
         g.addNotedCriterion(my_q5);
         g.addNotedCriterion(my_q6);
         g.addNotedCriterion(my_q7);
+        g.addNotedCriterion(my_q8);
         return g;
     }
 }
