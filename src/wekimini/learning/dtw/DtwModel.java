@@ -738,7 +738,7 @@ public class DtwModel implements Model {
             //setMaxSliderValue((int) (100 * matchThreshold) + 1); //No longer updates matchThreshold; this effectively takes current match threshold and makes it slider max which is not so cool
             setMaxSliderValue((int) (500 * matchThreshold) + 1);
         }
-        System.out.println("Slider max set to " + getMaxSliderValue() * .01);
+       // System.out.println("Slider max set to " + getMaxSliderValue() * .01);
     }
 
     private void updateMaxDistance() {
@@ -817,7 +817,7 @@ public class DtwModel implements Model {
             }
             maxDist = maxDist * 10; // just in case
         }
-        System.out.println("MAX DIST updated to " + maxDist);
+       // System.out.println("MAX DIST updated to " + maxDist);
         setMaxDistance(maxDist);
     }
 
