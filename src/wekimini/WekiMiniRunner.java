@@ -44,7 +44,7 @@ public final class WekiMiniRunner {
     private final static About aboutBox = new About();
     private final static Preferences preferencesBox = new Preferences();
     private final ImageIcon myIcon = new ImageIcon(getClass().getResource("/wekimini/icons/wekimini_small.png"));
-    private static boolean isKadenze = true;
+    private static boolean isKadenze = false;
     private static int nextID = 1;
     
     public static int generateNextID() {
@@ -119,7 +119,7 @@ public final class WekiMiniRunner {
     public static void main(String[] args) {
         /* Create and display the form */
         //WekiMiniRunner.isKadenze = (args.length != 0);
-        WekiMiniRunner.isKadenze = true; //KADENZE SET
+        WekiMiniRunner.isKadenze = false; //KADENZE SET
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
              UIManager.put("Slider.paintValue", false);

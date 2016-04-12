@@ -423,16 +423,16 @@ public class AssignmentFinalLogger implements KadenzeLogger {
 
     @Override
     //DTW Tested
-    //TODO DTW: ONly log for particular sub-parts
     public void dtwRunData(Wekinator w, double[] inputs, double[] outputs, int recognizedGesture) {
-        StringBuilder infoString = new StringBuilder();
-        infoString.append("REC_GEST=").append(recognizedGesture);
-        infoString.append(",NUM_IN=").append(inputs.length);
-        infoString.append(",INPUTS=").append(doubleArrayToBracketedStringList(inputs));
-        infoString.append(",NUM_OUT=").append(outputs.length);
-        infoString.append(",OUTPUTS=").append(doubleArrayToBracketedStringList(outputs));
-       
-        pw.println(ts() + "," + w.getID() + ",DTW_RUN_DATA," + infoString.toString());
+        if (currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT11_PART1) {
+            StringBuilder infoString = new StringBuilder();
+            infoString.append("REC_GEST=").append(recognizedGesture);
+            infoString.append(",NUM_IN=").append(inputs.length);
+            infoString.append(",INPUTS=").append(doubleArrayToBracketedStringList(inputs));
+            infoString.append(",NUM_OUT=").append(outputs.length);
+            infoString.append(",OUTPUTS=").append(doubleArrayToBracketedStringList(outputs));
+            pw.println(ts() + "," + w.getID() + ",DTW_RUN_DATA," + infoString.toString());
+        }
     }
 
     @Override
@@ -611,11 +611,11 @@ public class AssignmentFinalLogger implements KadenzeLogger {
     @Override
     public void logStartDtwRun(Wekinator w) {
         pw.println(ts() + "," + w.getID() + ",START_DTW_RUN");
-            try {
-                logDtwModel(w);
-            } catch (IOException ex) {
-                Logger.getLogger(AssignmentFinalLogger.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        try {
+            logDtwModel(w);
+        } catch (IOException ex) {
+            Logger.getLogger(AssignmentFinalLogger.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void logDtwModel(Wekinator w) throws IOException {
@@ -623,7 +623,7 @@ public class AssignmentFinalLogger implements KadenzeLogger {
         pw.println(t + "," + w.getID() + ",LOG_DTW_MODEL,MODEL_SET=" + modelSetID);
         String baseName = "model_" + modelSetID + ".xml";
         String f = currentAssignmentDir + baseName;
-        pw.println(t + "," + w.getID() + ",DTW_MODEL_FILE=" + baseName + "," + w.getDtwLearningManager().getModel().toLogInfoString());
+        pw.println(t + "," + w.getID() + ",DTW_MODEL_FILE,F=" + baseName + "," + w.getDtwLearningManager().getModel().toLogInfoString());
         w.getDtwLearningManager().getModel().writeToFile(f);
         GlobalSettings.getInstance().setIntValue("modelSetID", modelSetID);
         modelSetID++;
@@ -648,7 +648,7 @@ public class AssignmentFinalLogger implements KadenzeLogger {
         StringBuilder distString = new StringBuilder();
         distString.append("DISTS=");
         distString.append(doubleArrayToBracketedStringList(closestDistances));
-        pw.println(ts() + "," + w.getID() + ",DTW_CLASSIFIED_LAST,CLOSEST=" + closestClass 
+        pw.println(ts() + "," + w.getID() + ",DTW_CLASSIFIED_LAST,CLOSEST=" + closestClass
                 + "," + distString.toString() + "," + timeSeriesToSingleLine(currentTimeSeries));
     }
 
@@ -669,13 +669,13 @@ public class AssignmentFinalLogger implements KadenzeLogger {
                 sb.append(ts.getMeasurement(ts.numOfPts() - 1, input));
             }
             sb.append("}");
-            if (input != dim-1) {
+            if (input != dim - 1) {
                 sb.append(",");
             }
         }
         return sb.toString();
     }
-    
+
     private String doubleArrayToBracketedStringList(double[] a) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
@@ -685,7 +685,7 @@ public class AssignmentFinalLogger implements KadenzeLogger {
         sb.append(a[a.length - 1]).append("}");
         return sb.toString();
     }
-    
+
     private String booleanArrayToBracketedStringList(boolean[] a) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
@@ -695,7 +695,6 @@ public class AssignmentFinalLogger implements KadenzeLogger {
         sb.append(a[a.length - 1] ? "1" : "0").append("}");
         return sb.toString();
     }
-    
 
     @Override
     //DTWTESTED

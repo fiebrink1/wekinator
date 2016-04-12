@@ -20,7 +20,7 @@ public class Assignment11Grade {
 
     private final NotedCriterion validSubmission = new NotedCriterion("valid_submission");
     private final NotedCriterion part1setup = new NotedCriterion("part1_setup");
-    private final NotedCriterion part1experimented = new NotedCriterion("part1_experimented");
+    private final NotedCriterion part1demonstrated = new NotedCriterion("part1_demonstrated");
     private final NotedCriterion part1has4gestures = new NotedCriterion("part1_has4gestures");
     private final NotedCriterion part2Experimented = new NotedCriterion("part2_experimentation");
     private final NotedCriterion part2_Q1 = new NotedCriterion("part2_q1");
@@ -73,25 +73,33 @@ public class Assignment11Grade {
         part1setup.setScore(score);
         part1setup.setNoteWithErrValue(o, "assignment11_1");
     }
-    
-    
+
     public void score1experimented(Outcome o, double score) {
-        part1experimented.setScore(score);
-        part1experimented.setNoteWithErrValue(o, "assignment11_1");
+        part1demonstrated.setScore(score);
+        part1demonstrated.setNoteWithErrValue(o, "assignment11_1");
     }
-    
+
+    void score1experimented(Outcome o, double score, int totalGesturesSeen) {
+        part1demonstrated.setScore(score);
+        part1demonstrated.setNoteWithErrValue(o, "assignment11_1");
+        String[] vals = {Integer.toString(totalGesturesSeen)};
+        part1demonstrated.addVals(vals);
+    }
+
     public void score1has4gestures(Outcome o, double score) {
         part1has4gestures.setScore(score);
         part1has4gestures.setNoteWithErrValue(o, "assignment11_1");
     }
-    
+
     public void score2Experimented(Outcome o, double score) {
         part2Experimented.setScore(score);
         part2Experimented.setNoteWithErrValue(o, "assignment11_2");
     }
 
-    public void score2AddValues(int numExamplesAdded, int numRun, double numMinutes) {
-        String[] vals = {Integer.toString(numExamplesAdded), Integer.toString(numRun), KadenzeUtils.formatDouble(numMinutes)};
+    public void score2Experimented(Outcome o, double score, int numRuns) {
+        part2Experimented.setScore(score);
+        part2Experimented.setNoteWithErrValue(o, "assignment11_2");
+        String[] vals = {Integer.toString(numRuns)};
         part2Experimented.addVals(vals);
     }
 
@@ -136,7 +144,7 @@ public class Assignment11Grade {
         Grade g = new Grade();
         g.addNotedCriterion(validSubmission);
         g.addNotedCriterion(part1setup);
-        g.addNotedCriterion(part1experimented);
+        g.addNotedCriterion(part1demonstrated);
         g.addNotedCriterion(part1has4gestures);
         g.addNotedCriterion(part2Experimented);
         g.addNotedCriterion(part2_Q1);

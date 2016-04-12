@@ -106,7 +106,7 @@ public class SVMModelBuilder implements ClassificationModelBuilder {
             if (k instanceof PolyKernel) {
                 ((PolyKernel) k).setExponent(polyExponent);
                 ((PolyKernel) k).setUseLowerOrder(polyUseLowerOrder);
-                return;
+                //return;
             } else {
                 PolyKernel nk = new PolyKernel();
                 nk.setExponent(polyExponent);
@@ -117,7 +117,7 @@ public class SVMModelBuilder implements ClassificationModelBuilder {
             Kernel k = getClassifier().getKernel();
             if (k instanceof RBFKernel) {
                 ((RBFKernel) k).setGamma(rbfGamma);
-                return;
+               // return;
             } else {
                 RBFKernel nk = new RBFKernel();
                 nk.setGamma(rbfGamma);

@@ -328,9 +328,10 @@ public class Path {
         return output;
     }
 
+    //not called anywhere...
     public void prepareToDie() {
         //TODO: Remove all of my listeners
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**

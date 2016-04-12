@@ -44,7 +44,7 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
                 "Assignment 7, Part 2",
                 "Assignment 11, Part 1",
                 "Assignment 11, Part 2",
-                "Assignment 13"
+                "Assignment 12"
             };
 
     private final KadenzeAssignmentType[] assignmentTypes
@@ -69,7 +69,7 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
                 KadenzeAssignmentType.ASSIGNMENT7_PART2,
                 KadenzeAssignmentType.ASSIGNMENT11_PART1,
                 KadenzeAssignmentType.ASSIGNMENT11_PART2,
-                KadenzeAssignmentType.ASSIGNMENT13
+                KadenzeAssignmentType.ASSIGNMENT12
             };
 
     /**
@@ -152,7 +152,7 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
 
         labelVersion1.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
         labelVersion1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelVersion1.setText("Last updated 29 February 2016");
+        labelVersion1.setText("Last updated 7 April 2016");
 
         jLabel2.setFont(new java.awt.Font("Lucida Grande", 2, 13)); // NOI18N
         jLabel2.setText("<html>This will be the parent directory for all Kadenze assignments. We recommend leaving this unchanged.</html>");
