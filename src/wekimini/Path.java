@@ -539,14 +539,14 @@ public class Path {
     /*
     MZ: In progress 
     */
-   public void writeToCppFiles(int whichPath, String location) throws IOException {
+   public void writeToCppFiles(int whichPath, String location, String[] allInputNames) throws IOException {
         boolean success = false;
         IOException myEx = new IOException();
         
         try {
             CppWriter Cpp = new CppWriter();
             Instances insts = w.getSupervisedLearningManager().getTrainingDataForPath(this, true);
-            Cpp.writeToFiles(whichPath, numExamples, inputNames.size(), output, modelBuilder, insts, model, location);
+            Cpp.writeToFiles(whichPath, numExamples, inputNames, allInputNames, output, modelBuilder, insts, model, location);
             success = true;
         } catch (IOException ex) {
             success = false;

@@ -125,8 +125,9 @@ public class WekinatorSaver {
         CppWriter Cpp = new CppWriter(); 
         List<Path> paths = w.getSupervisedLearningManager().getPaths();
         String location = projectDir + cppAppend + File.separator;
+        String[] allInputNames = w.getInputManager().getInputNames();
         for (int i = 0; i < paths.size(); i++) {
-            paths.get(i).writeToCppFiles(i, location);
+            paths.get(i).writeToCppFiles(i, location, allInputNames);
         }
     }
 
