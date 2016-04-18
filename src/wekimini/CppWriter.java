@@ -183,8 +183,6 @@ public class CppWriter {
             
             NeuralNetworkModel nnm = (NeuralNetworkModel) model;
             modelDescription = nnm.getModelDescription();
-           // MultilayerPerceptron modelClassifier = nnm.getClassifier();
-           // logger.log(Level.INFO, modelClassifier.m_inputlist);
         } catch (Exception ex) {
             logger.log(Level.WARNING, "Could not write to Cpp file {0}", ex.getMessage());
         }
@@ -204,16 +202,16 @@ public class CppWriter {
 
                 headerPrint.printf("class neuralNetwork {\n\n");
                 headerPrint.printf("public:\n\n");
-                headerPrint.printf("	neuralNetwork(int, int*, int, double**, double*, double*, double*, double, double);\n");
+                headerPrint.printf("	neuralNetwork(int, int*, int, double***, double*, double*, double*, double, double);\n");
                 headerPrint.printf("	~neuralNetwork();\n\n");
                 headerPrint.printf("	double feedForward(double* pattern);\n\n");
                 headerPrint.printf("private:\n\n");
                 headerPrint.printf("	int numInputs;\n");
                 headerPrint.printf("    int* whichInputs;\n\n");
-                headerPrint.printf("	int numHidden;\n\n");
+                headerPrint.printf("	int numHiddenNodes;\n\n");
                 headerPrint.printf("	double* inputNeurons;\n");
                 headerPrint.printf("	double* hiddenNeurons;\n");
-                headerPrint.printf("	double** wInputHidden;\n");
+                headerPrint.printf("	double*** weights;\n");
                 headerPrint.printf("	double* wHiddenOutput;\n\n");
                 headerPrint.printf("    double* inRanges;\n");
                 headerPrint.printf("    double* inBases;\n");
@@ -237,11 +235,12 @@ public class CppWriter {
             FileWriter cppWrite = new FileWriter(cppName, true);
             try (PrintWriter cppPrint = new PrintWriter(cppWrite)) {
                 cppPrint.printf("#include <math.h>\n");
+                cppPrint.printf("#include <algorithm>\n");
                 cppPrint.printf("#include \"neuralNetwork.h\"\n\n");
                 cppPrint.printf("neuralNetwork::neuralNetwork(int num_inputs, \n");
                 cppPrint.printf("                             int* which_inputs,\n");
-                cppPrint.printf("                             int num_hidden,\n");
-                cppPrint.printf("                             double** w_input_hidden,\n");
+                cppPrint.printf("                             int num_hidden_nodes,\n");
+                cppPrint.printf("                             double*** _weights,\n");
                 cppPrint.printf("                             double* w_hidden_output,\n");
                 cppPrint.printf("                             double* in_max,\n");
                 cppPrint.printf("                             double* in_min,\n");
@@ -249,7 +248,7 @@ public class CppWriter {
                 cppPrint.printf("                             double out_min) {\n");
                 cppPrint.printf("	numInputs = num_inputs;\n");
                 cppPrint.printf("	whichInputs = which_inputs;\n");
-                cppPrint.printf("	numHidden = num_hidden;\n");
+                cppPrint.printf("	numHiddenNodes = num_hidden_nodes;\n");
                 cppPrint.printf("	//input neurons, including bias\n");
                 cppPrint.printf("	inputNeurons = new double[numInputs + 1];\n");
                 cppPrint.printf("	for (int i=0; i < numInputs; i++){\n");
@@ -257,13 +256,13 @@ public class CppWriter {
                 cppPrint.printf("	}\n");
                 cppPrint.printf("	inputNeurons[numInputs] = 1;\n\n");
                 cppPrint.printf("	//hidden neurons, including bias\n");
-                cppPrint.printf("	hiddenNeurons = new double[numHidden + 1];\n");
-                cppPrint.printf("	for (int i=0; i < numHidden; i++){\n");
+                cppPrint.printf("	hiddenNeurons = new double[numHiddenNodes + 1];\n");
+                cppPrint.printf("	for (int i=0; i < numHiddenNodes; i++){\n");
                 cppPrint.printf("		hiddenNeurons[i] = 0;\n");
                 cppPrint.printf("	}\n");
-                cppPrint.printf("	hiddenNeurons[numHidden] = 1;\n\n");
+                cppPrint.printf("	hiddenNeurons[numHiddenNodes] = 1;\n\n");
                 cppPrint.printf("	output = 0;\n\n");
-                cppPrint.printf("	wInputHidden = w_input_hidden;\n");
+                cppPrint.printf("	weights = _weights;\n");
                 cppPrint.printf("	wHiddenOutput = w_hidden_output;\n\n");
                 cppPrint.printf("	inRanges = new double[numInputs];\n");
                 cppPrint.printf("	inBases = new double[numInputs];\n\n");
@@ -278,10 +277,14 @@ public class CppWriter {
                 cppPrint.printf("neuralNetwork::~neuralNetwork() {\n");
                 cppPrint.printf("	delete[] inputNeurons;\n");
                 cppPrint.printf("	delete[] hiddenNeurons;\n\n");
+                cppPrint.printf("	int maxNodes = std::max(numInputs, numHiddenNodes);\n");
                 cppPrint.printf("	for (int i=0; i <= numInputs; i++) {\n");
-                cppPrint.printf("		delete[] wInputHidden[i];\n");
+                cppPrint.printf("		for (int j=0; j <=maxNodes; j++) {\n");
+                cppPrint.printf("                   delete[] weights[i][j];\n");
+                cppPrint.printf("		}\n");
+                cppPrint.printf("		delete[] weights[i];\n");
                 cppPrint.printf("	}\n");
-                cppPrint.printf("	delete[] wInputHidden;\n\n");
+                cppPrint.printf("	delete[] weights;\n\n");
                 cppPrint.printf("	delete[] wHiddenOutput;\n");
                 cppPrint.printf("}\n\n");
 
@@ -307,16 +310,16 @@ public class CppWriter {
                 cppPrint.printf("		inputNeurons[i] = (pattern[i] - inBases[i]) / inRanges[i];\n");
                 cppPrint.printf("	}\n\n");
                 cppPrint.printf("	//calculate hidden layer\n");
-                cppPrint.printf("	for (int j=0; j < numHidden; j++) {\n");
+                cppPrint.printf("	for (int j=0; j < numHiddenNodes; j++) {\n");
                 cppPrint.printf("		hiddenNeurons[j] = 0;\n");
                 cppPrint.printf("		for (int i = 0; i <= numInputs; i++) {\n");
-                cppPrint.printf("			hiddenNeurons[j] += inputNeurons[i] * wInputHidden[i][j];\n");
+                cppPrint.printf("			hiddenNeurons[j] += inputNeurons[i] * weights[0][i][j];\n");
                 cppPrint.printf("		}\n");
                 cppPrint.printf("		hiddenNeurons[j] = activationFunction(hiddenNeurons[j]);\n");
                 cppPrint.printf("	}\n");
                 cppPrint.printf("	//calculate output\n");
                 cppPrint.printf("	output = 0;\n");
-                cppPrint.printf("	for (int k=0; k <= numHidden; k++){\n");
+                cppPrint.printf("	for (int k=0; k <= numHiddenNodes; k++){\n");
                 cppPrint.printf("           output += hiddenNeurons[k] * wHiddenOutput[k];\n");
                 cppPrint.printf("	}\n");
                 cppPrint.printf("       output = (output * outRange) + outBase;");
@@ -327,11 +330,6 @@ public class CppWriter {
         }
         FileWriter cppWrite = new FileWriter(cppName, true);
         try (PrintWriter cppPrint = new PrintWriter(cppWrite)) {
-            for (int i = 0; i < allInputNames.length; i++) {
-                if (inputNames.contains(allInputNames[i])){
-                    cppPrint.printf("//This model contains: " + i + "\n");
-                }
-            }
             cppPrint.printf("neuralNetwork setup_network" + whichPath + "() {\n");
             int inputsPlusOne = numInputs + 1;
             int hiddenPlusOne = numHiddenNodes + 1;
@@ -348,29 +346,51 @@ public class CppWriter {
                 }
             }
             cppPrint.printf("};\n");
-            cppPrint.printf("    double **wInputHidden = new double *[" + inputsPlusOne + "];\n\n");
-            cppPrint.printf("    double *wHiddenOutput = new(double[" + hiddenPlusOne + "]);\n");        
+            int totalLayers = numHiddenLayers + 1;
+            int maxNodes = Math.max(numInputs, numHiddenNodes) + 1;
+            cppPrint.printf("    int totalLayers = " + totalLayers + ";\n");
+            cppPrint.printf("    int maxNodes = " + maxNodes + ";\n");
+            cppPrint.printf("    double ***weights = new double **[totalLayers];\n");
+            cppPrint.printf("    for (int i = 0; i < totalLayers; ++i) {;\n");
+            cppPrint.printf("       weights[i] = new double*[maxNodes];\n");
+            cppPrint.printf("       for (int j = 0; j < maxNodes; ++j) {\n");
+            cppPrint.printf("           weights[i][j] = new double[maxNodes];\n");
+            cppPrint.printf("       }\n");
+            cppPrint.printf("    }\n");
+            
+            cppPrint.printf("    double *wHiddenOutput = new(double[" + hiddenPlusOne + "]);\n\n");        
             cppPrint.printf("	//weights between input and hidden\n");
-            cppPrint.printf("	wInputHidden = new(double*[" + inputsPlusOne + "]);\n");
-            cppPrint.printf("	for (int i = 0; i <= " + numInputs + "; i++) {\n");
-            cppPrint.printf("		wInputHidden[i] = new (double[" + numHiddenNodes + "]);\n");
-            cppPrint.printf("		for (int j=0; j < " + numHiddenNodes + "; j++) {\n");
-            cppPrint.printf("			wInputHidden[i][j] = 0;\n");
-            cppPrint.printf("		}\n");
-            cppPrint.printf("	}\n");
 
             String modelDescriptionLines[] = modelDescription.split("\\r?\\n");
             for (int i = 0; i < numInputs; i++) {
                 for (int j = 0; j < numHiddenNodes; j++) {
-                    int offset = (2 + numHiddenNodes) + (j * (3 + numInputs)) + 4 + i; //TODO: Make this look better. MZ
+                    int offset = (6 + numHiddenNodes + i) + (j * (3 + numInputs)); //TODO: Make this look better. MZ
                     String nodeWeight[] = modelDescriptionLines[offset].split("\\s+");
-                    cppPrint.printf("	wInputHidden[" + i + "][" + j + "] = " + nodeWeight[3] + ";\n");
+                    cppPrint.printf("	weights[0][" + i + "][" + j + "] = " + nodeWeight[3] + ";\n");
                 }
             }
             for (int j = 0; j < numHiddenNodes; j++) {
-                int offset = (2 + numHiddenNodes) + (j * (3 + numInputs)) + 3; //TODO: Make this look better. MZ
+                int offset = (5 + numHiddenNodes) + (j * (3 + numInputs)); //TODO: Make this look better. MZ
                 String biasWeight[] = modelDescriptionLines[offset].split("\\s+");
-                cppPrint.printf("	wInputHidden[" + numInputs + "][" + j + "] = " + biasWeight[2] + ";\n");
+                cppPrint.printf("	weights[0][" + numInputs + "][" + j + "] = " + biasWeight[2] + ";\n");
+            }
+            cppPrint.printf("\n");
+            if (numHiddenLayers > 1) {
+                cppPrint.printf("	//weights between hidden layers\n");
+                for (int k = 1; k < numHiddenLayers; k++) {
+                    for (int i = 0; i < numHiddenNodes; i++) {
+                        for (int j = 0; j < numHiddenNodes; j++) {
+                            int offset = (6 + numHiddenNodes + i) + ((j + (numHiddenNodes * k)) * (3 + numHiddenNodes));
+                            String nodeWeight[] = modelDescriptionLines[offset].split("\\s+");
+                            cppPrint.printf("	weights[" + k + "][" + i + "][" + j + "] = " + nodeWeight[3] + ";\n");
+                        }
+                    }
+                    for (int j = 0; j < numHiddenNodes; j++) {
+                        int offset = (5 + numHiddenNodes) + ((j + (numHiddenNodes * k)) * (3 + numInputs));
+                        String biasWeight[] = modelDescriptionLines[offset].split("\\s+");
+                        cppPrint.printf("	weights[" + k + "][" + numInputs + "][" + j + "] = " + biasWeight[2] + ";\n");
+                    }
+                }
             }
 
             cppPrint.printf("\n");
@@ -434,7 +454,7 @@ public class CppWriter {
             cppPrint.printf("   double outMin = " + outMin + ";\n\n");
             cppPrint.printf("   neuralNetwork neuralNetwork" + whichPath);
             cppPrint.printf(" (" + numInputs + ", whichInputs, " + numHiddenNodes);
-            cppPrint.printf(", wInputHidden, wHiddenOutput, inMaxes, inMins, outMax, outMin);\n\n");
+            cppPrint.printf(", weights, wHiddenOutput, inMaxes, inMins, outMax, outMin);\n\n");
             cppPrint.printf("   return neuralNetwork" + whichPath +";\n\n}");
             cppPrint.printf("/* Full model description\n");
             cppPrint.printf(modelDescription + "\n");
