@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.core.Instances;
@@ -28,16 +29,26 @@ public class CppWriter {
 
     private static final Logger logger = Logger.getLogger(CppWriter.class.getName());
 
-    public void writeToFiles(int whichPath, int numExamples, int numInputs, OSCOutput output, LearningModelBuilder modelBuilder, Instances insts, Model model, String location) throws IOException {
+    public void writeToFiles(
+            int whichPath,
+            int numExamples,
+            List<String> inputNames,
+            String[] allInputNames,
+            OSCOutput output,
+            LearningModelBuilder modelBuilder,
+            Instances insts,
+            Model model,
+            String location
+    ) throws IOException {
         if (modelBuilder instanceof NeuralNetModelBuilder) {
             try {
-                writeNNModel(whichPath, numExamples, numInputs, modelBuilder, model, insts, location);
+                writeNNModel(whichPath, numExamples, inputNames, allInputNames, modelBuilder, model, insts, location);
             } catch (Exception ex) {
                 logger.log(Level.WARNING, "Could not write to NN model to Cpp file {0}", ex.getMessage());
             }
         } else if (modelBuilder instanceof KNNModelBuilder) {
             try {
-                writeKNNModel(whichPath, numExamples, numInputs, output, modelBuilder, insts);
+                writeKNNModel(whichPath, numExamples, inputNames.size(), output, modelBuilder, insts);
             } catch (Exception ex) {
                 logger.log(Level.WARNING, "Could not write kNN model to Cpp file {0}", ex.getMessage());
             }
@@ -145,7 +156,17 @@ public class CppWriter {
         }
     }
 
-    private void writeNNModel(int whichPath, int numExamples, int numInputs, LearningModelBuilder modelBuilder, Model model, Instances insts, String location) throws IOException {
+    private void writeNNModel(
+            int whichPath, 
+            int numExamples, 
+            List<String> inputNames, 
+            String[] allInputNames,
+            LearningModelBuilder modelBuilder, 
+            Model model, 
+            Instances insts, 
+            String location
+    ) throws IOException {
+        int numInputs = inputNames.size();
         int numHiddenNodes = 1;
         int numHiddenLayers = 1;
         String modelDescription = "";
@@ -162,6 +183,8 @@ public class CppWriter {
             
             NeuralNetworkModel nnm = (NeuralNetworkModel) model;
             modelDescription = nnm.getModelDescription();
+           // MultilayerPerceptron modelClassifier = nnm.getClassifier();
+           // logger.log(Level.INFO, modelClassifier.m_inputlist);
         } catch (Exception ex) {
             logger.log(Level.WARNING, "Could not write to Cpp file {0}", ex.getMessage());
         }
@@ -181,11 +204,12 @@ public class CppWriter {
 
                 headerPrint.printf("class neuralNetwork {\n\n");
                 headerPrint.printf("public:\n\n");
-                headerPrint.printf("	neuralNetwork(int, int, double**, double*, double*, double*, double, double);\n");
+                headerPrint.printf("	neuralNetwork(int, int*, int, double**, double*, double*, double*, double, double);\n");
                 headerPrint.printf("	~neuralNetwork();\n\n");
                 headerPrint.printf("	double feedForward(double* pattern);\n\n");
                 headerPrint.printf("private:\n\n");
-                headerPrint.printf("	int numInputs;\n\n");
+                headerPrint.printf("	int numInputs;\n");
+                headerPrint.printf("    int* whichInputs;\n\n");
                 headerPrint.printf("	int numHidden;\n\n");
                 headerPrint.printf("	double* inputNeurons;\n");
                 headerPrint.printf("	double* hiddenNeurons;\n");
@@ -215,6 +239,7 @@ public class CppWriter {
                 cppPrint.printf("#include <math.h>\n");
                 cppPrint.printf("#include \"neuralNetwork.h\"\n\n");
                 cppPrint.printf("neuralNetwork::neuralNetwork(int num_inputs, \n");
+                cppPrint.printf("                             int* which_inputs,\n");
                 cppPrint.printf("                             int num_hidden,\n");
                 cppPrint.printf("                             double** w_input_hidden,\n");
                 cppPrint.printf("                             double* w_hidden_output,\n");
@@ -222,10 +247,11 @@ public class CppWriter {
                 cppPrint.printf("                             double* in_min,\n");
                 cppPrint.printf("                             double out_max,\n");
                 cppPrint.printf("                             double out_min) {\n");
-                cppPrint.printf("	numInputs = num_inputs");
-                cppPrint.printf("	numHidden = num_hidden");
+                cppPrint.printf("	numInputs = num_inputs;\n");
+                cppPrint.printf("	whichInputs = which_inputs;\n");
+                cppPrint.printf("	numHidden = num_hidden;\n");
                 cppPrint.printf("	//input neurons, including bias\n");
-                cppPrint.printf("	inputNeurons = new(double[numInputs + 1]);\n");
+                cppPrint.printf("	inputNeurons = new double[numInputs + 1];\n");
                 cppPrint.printf("	for (int i=0; i < numInputs; i++){\n");
                 cppPrint.printf("		inputNeurons[i] = 0;\n");
                 cppPrint.printf("	}\n");
@@ -271,7 +297,11 @@ public class CppWriter {
                 cppPrint.printf("       return x;\n");
                 cppPrint.printf("}\n\n");
 
-                cppPrint.printf("double neuralNetwork::feedForward(double* pattern) {\n");
+                cppPrint.printf("double neuralNetwork::feedForward(double* inputPattern) {\n");
+                cppPrint.printf("	double pattern[numInputs];\n");
+                cppPrint.printf("	for (int h = 0; h < numInputs; h++) {\n");
+                cppPrint.printf("		pattern[h] = inputPattern[whichInputs[h]];\n");
+                cppPrint.printf("	}\n\n");
                 cppPrint.printf("	//set input layer\n");
                 cppPrint.printf("	for (int i = 0; i < numInputs; i++) {\n");
                 cppPrint.printf("		inputNeurons[i] = (pattern[i] - inBases[i]) / inRanges[i];\n");
@@ -297,9 +327,27 @@ public class CppWriter {
         }
         FileWriter cppWrite = new FileWriter(cppName, true);
         try (PrintWriter cppPrint = new PrintWriter(cppWrite)) {
+            for (int i = 0; i < allInputNames.length; i++) {
+                if (inputNames.contains(allInputNames[i])){
+                    cppPrint.printf("//This model contains: " + i + "\n");
+                }
+            }
             cppPrint.printf("neuralNetwork setup_network" + whichPath + "() {\n");
             int inputsPlusOne = numInputs + 1;
             int hiddenPlusOne = numHiddenNodes + 1;
+            cppPrint.printf("    int whichInputs[" + numInputs +"] = {");
+            boolean needComma = false;
+            for (int i = 0; i < allInputNames.length; i++) {
+                if (inputNames.contains(allInputNames[i])){
+                    if (needComma) {
+                        cppPrint.printf(", ");
+                    } else {
+                        needComma = true;
+                    }
+                    cppPrint.printf(String.valueOf(i));    
+                }
+            }
+            cppPrint.printf("};\n");
             cppPrint.printf("    double **wInputHidden = new double *[" + inputsPlusOne + "];\n\n");
             cppPrint.printf("    double *wHiddenOutput = new(double[" + hiddenPlusOne + "]);\n");        
             cppPrint.printf("	//weights between input and hidden\n");
@@ -384,8 +432,9 @@ public class CppWriter {
             cppPrint.printf(" };\n\n");
             cppPrint.printf("   double outMax = " + outMax + ";\n");
             cppPrint.printf("   double outMin = " + outMin + ";\n\n");
-            cppPrint.printf("   neuralNetwork neuralNetwork" + whichPath + " (" + numInputs + ", "
-                    + numHiddenNodes + ", wInputHidden, wHiddenOutput, inMaxes, inMins, outMax, outMin);\n\n");
+            cppPrint.printf("   neuralNetwork neuralNetwork" + whichPath);
+            cppPrint.printf(" (" + numInputs + ", whichInputs, " + numHiddenNodes);
+            cppPrint.printf(", wInputHidden, wHiddenOutput, inMaxes, inMins, outMax, outMin);\n\n");
             cppPrint.printf("   return neuralNetwork" + whichPath +";\n\n}");
             cppPrint.printf("/* Full model description\n");
             cppPrint.printf(modelDescription + "\n");
