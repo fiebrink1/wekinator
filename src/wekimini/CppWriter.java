@@ -48,7 +48,7 @@ public class CppWriter {
             }
         } else if (modelBuilder instanceof KNNModelBuilder) {
             try {
-                writeKNNModel(whichPath, numExamples, inputNames.size(), output, modelBuilder, insts);
+                writeKNNModel(whichPath, numExamples, inputNames.size(), output, modelBuilder, insts, location);
             } catch (Exception ex) {
                 logger.log(Level.WARNING, "Could not write kNN model to Cpp file {0}", ex.getMessage());
             }
@@ -57,7 +57,14 @@ public class CppWriter {
         }
     }
 
-    private void writeKNNModel(int whichPath, int numExamples, int numInputs, OSCOutput output, LearningModelBuilder modelBuilder, Instances insts) throws IOException {
+    private void writeKNNModel(int whichPath,
+            int numExamples, 
+            int numInputs, 
+            OSCOutput output, 
+            LearningModelBuilder modelBuilder, 
+            Instances insts, 
+            String location) 
+            throws IOException {
         //Get numNeighbours from modelBuilder and numClasses from output
         int numNeighbours = 1;
         int numClasses = 1;
@@ -72,39 +79,92 @@ public class CppWriter {
         }
         
         //Write header
-        String headerName = "knn_model." + whichPath + ".h";
-        
+        String headerName = location + "knnClassification.h";
+        File h = new File(headerName);
+        if (!h.exists()) {
+            FileWriter headerWrite = new FileWriter(headerName, true);
+            try (PrintWriter headerPrint = new PrintWriter(headerWrite)) {
+                headerPrint.printf("#ifndef knnClassification_h\n");
+                headerPrint.printf("#define knnClassification_h\n\n");
+                headerPrint.printf("#define NUM_NEIGHBOURS " + numNeighbours + "\n");
+                headerPrint.printf("#define NUM_CLASSES " + numClasses + "\n");
+                headerPrint.printf("#define NUM_EXAMPLES " + numExamples + "\n");
+                headerPrint.printf("#define NUM_FEATURES " + numInputs + "\n\n");
+                headerPrint.printf("struct neighbour {\n");
+                headerPrint.printf("	int classNum;\n");
+                headerPrint.printf("	double features[NUM_FEATURES];\n");
+                headerPrint.printf("};\n\n");
+                headerPrint.printf("class knnClassification {\n\n");
+                headerPrint.printf("public:\n");
+                headerPrint.printf("	knnClassification(neighbour*);\n");
+                headerPrint.printf("	~knnClassification();\n\n");
+                headerPrint.printf("	int getClass(double* inputVector);\n\n");
+                headerPrint.printf("private:\n");
+                headerPrint.printf("	neighbour* neighbours;\n");
+                headerPrint.printf("};\n\n");
+                headerPrint.printf("#endif\n\n");
+            }
+        }
         FileWriter headerWrite = new FileWriter(headerName, true);
         try (PrintWriter headerPrint = new PrintWriter(headerWrite)) {
-            headerPrint.printf("#ifndef classify_h\n");
-            headerPrint.printf("#define classify_h\n\n");
-            headerPrint.printf("#define NUM_NEIGHBOURS " + numNeighbours + "\n");
-            headerPrint.printf("#define NUM_CLASSES " + numClasses + "\n");
-            headerPrint.printf("#define NUM_EXAMPLES " + numExamples + "\n");
-            headerPrint.printf("#define NUM_FEATURES " + numInputs + "\n\n");
-            headerPrint.printf("struct neighbour {\n");
-            headerPrint.printf("	int classNum;\n");
-            headerPrint.printf("	double features[NUM_FEATURES];\n");
-            headerPrint.printf("};\n\n");
-            headerPrint.printf("class knnClassification {\n\n");
-            headerPrint.printf("public:\n");
-            headerPrint.printf("	knnClassification();\n");
-            headerPrint.printf("	int getClass(double* inputVector);\n\n");
-            headerPrint.printf("private:\n");
-            headerPrint.printf("	neighbour neighbours[NUM_EXAMPLES];\n");
-            headerPrint.printf("	int foundClass;\n");
-            headerPrint.printf("};\n\n");
-            headerPrint.printf("#endif");
+            headerPrint.printf("knnClassification setup_knn" + whichPath + "();\n");
         }
 
         //Write cpp
-        String cppName = "knnModel." + whichPath + ".cpp";
+        String cppName = location + "knnClassification.cpp";
+        File c = new File(cppName);
+        if (!c.exists()) {
+            FileWriter cppWrite = new FileWriter(cppName, true);
+            try (PrintWriter cppPrint = new PrintWriter(cppWrite)) {
+                cppPrint.printf("#include <math.h>\n");
+                cppPrint.printf("#include <utility>\n");
+                cppPrint.printf("#include \"knnClassification.h\"\n\n");
+                cppPrint.printf("knnClassification::knnClassification(neighbour* _neighbours) {\n");
+                cppPrint.printf("	neighbours = _neighbours;\n}\n\n");
+                cppPrint.printf("knnClassification::~knnClassification() {\n");
+                cppPrint.printf("	delete neighbours;\n}\n\n");
+                cppPrint.printf("int knnClassification::getClass(double* inputVector) {\n");
+                cppPrint.printf("	std::pair<int, double> nearestNeighbours[NUM_NEIGHBOURS];\n");
+                cppPrint.printf("	std::pair<int, double> farthestNN = {0, 0.};\n\n");
+                cppPrint.printf("	//Find k nearest neighbours\n");
+                cppPrint.printf("	for (int i = 0; i < NUM_EXAMPLES; i++) {\n");
+                cppPrint.printf("		//find Euclidian distance for this neighbor\n");
+                cppPrint.printf("		double euclidianDistance = 0;\n");
+                cppPrint.printf("		for(int j = 0; j < NUM_FEATURES ; j++){\n");
+                cppPrint.printf("			euclidianDistance = euclidianDistance + pow((inputVector[j] - neighbours[i].features[j]),2);\n");
+                cppPrint.printf("		}\n");
+                cppPrint.printf("		euclidianDistance = sqrt(euclidianDistance);\n");
+                cppPrint.printf("		if (i < NUM_NEIGHBOURS) {\n");
+                cppPrint.printf("			//save the first k neighbours\n");
+                cppPrint.printf("			nearestNeighbours[i] = {i, euclidianDistance};\n");
+                cppPrint.printf("			if (euclidianDistance > farthestNN.second) {\n");
+                cppPrint.printf("				farthestNN = {i, euclidianDistance};\n}\n");
+                cppPrint.printf("		} else if (euclidianDistance < farthestNN.second) {\n");
+                cppPrint.printf("			//replace farthest, if new neighbour is closer\n");
+                cppPrint.printf("			nearestNeighbours[farthestNN.first] = {i, euclidianDistance};\n");
+                cppPrint.printf("			farthestNN = {i, euclidianDistance};\n}\n}\n");
+                cppPrint.printf("	//majority vote on nearest neighbours\n");
+                cppPrint.printf("	int numVotesPerClass[NUM_CLASSES] = {};\n");
+                cppPrint.printf("	for (int i = 0; i < NUM_NEIGHBOURS; i++){\n");
+                cppPrint.printf("		numVotesPerClass[neighbours[nearestNeighbours[i].first].classNum - 1]++;\n");
+                cppPrint.printf("	}\n");
+                cppPrint.printf("	int foundClass = 0;\n");
+                cppPrint.printf("	int mostVotes = 0;\n");
+                cppPrint.printf("	for (int i = 0; i < NUM_CLASSES; i++) {\n");
+                cppPrint.printf("		if (numVotesPerClass[i] > mostVotes) { //TODO: Handle ties the same way Wekinator does\n");
+                cppPrint.printf("			mostVotes = numVotesPerClass[i];\n");
+                cppPrint.printf("			foundClass = i + 1;\n");
+                cppPrint.printf("		}\n");
+                cppPrint.printf("	}\n");
+                cppPrint.printf("	return foundClass;\n");
+                cppPrint.printf("}\n\n");
+                cppPrint.printf("// Setup models ------------------------------------------------------------------------------\n\n");
+            }
+        }
         FileWriter cppWrite = new FileWriter(cppName, true);
         try (PrintWriter cppPrint = new PrintWriter(cppWrite)) {
-            cppPrint.printf("#include <math.h>\n");
-            cppPrint.printf("#include <utility>\n");
-            cppPrint.printf("#include \"classify.h\"\n\n");
-            cppPrint.printf("knnClassification::knnClassification() {\n");
+            cppPrint.printf("knnClassification setup_knn" + whichPath + "() {\n\n");
+            cppPrint.printf("	neighbour *neighbours = new(neighbour[" + numExamples + "]);\n");
             for (int i = 0; i < numExamples; i++) {
                 String[] splitInstance = insts.instance(i).toString().split(",");
                 cppPrint.printf("	neighbours[" + i + "] = {");
@@ -117,42 +177,10 @@ public class CppWriter {
                 }
                 cppPrint.printf("}};\n");
             }
-            cppPrint.printf("	foundClass = 0;\n}\n\n");
-            cppPrint.printf("int knnClassification::getClass(double* inputVector) {\n");
-            cppPrint.printf("	std::pair<int, double> nearestNeighbours[NUM_NEIGHBOURS];\n");
-            cppPrint.printf("	std::pair<int, double> farthestNN = {0, 0.};\n");
-            cppPrint.printf("	//Find k nearest neighbours\n");
-            cppPrint.printf("	for (int i = 0; i < NUM_EXAMPLES; i++) {\n");
-            cppPrint.printf("		//find Euclidian distance for this neighbor\n");
-            cppPrint.printf("		double euclidianDistance = 0;\n");
-            cppPrint.printf("		for(int j = 0; j < NUM_EXAMPLES ; j++){\n");
-            cppPrint.printf("			euclidianDistance = euclidianDistance + pow((inputVector[j] - neighbours[i].features[j]),2);\n");
-            cppPrint.printf("		}\n");
-            cppPrint.printf("		euclidianDistance = sqrt(euclidianDistance);\n");
-            cppPrint.printf("		if (i < NUM_NEIGHBOURS) {\n");
-            cppPrint.printf("			//save the first k neighbours\n");
-            cppPrint.printf("			nearestNeighbours[i] = {i, euclidianDistance};\n");
-            cppPrint.printf("			if (euclidianDistance > farthestNN.second) {\n");
-            cppPrint.printf("				farthestNN = {i, euclidianDistance};\n}\n");
-            cppPrint.printf("		} else if (euclidianDistance < farthestNN.second) {\n");
-            cppPrint.printf("			//replace farthest, if new neighbour is closer\n");
-            cppPrint.printf("			nearestNeighbours[farthestNN.first] = {i, euclidianDistance};\n");
-            cppPrint.printf("			farthestNN = {i, euclidianDistance};\n}\n}\n");
-            cppPrint.printf("	//majority vote on nearest neighbours\n");
-            cppPrint.printf("	int numVotesPerClass[NUM_CLASSES] = {};\n");
-            cppPrint.printf("	for (int i = 0; i < NUM_NEIGHBOURS; i++){\n");
-            cppPrint.printf("		numVotesPerClass[neighbours[nearestNeighbours[i].first].classNum - 1]++;\n");
-            cppPrint.printf("	}\n");
-            cppPrint.printf("	foundClass = 0;\n");
-            cppPrint.printf("	int mostVotes = 0;\n");
-            cppPrint.printf("	for (int i = 0; i < NUM_CLASSES; i++) {\n");
-            cppPrint.printf("		if (numVotesPerClass[i] > mostVotes) { //TODO: Handle ties the same way Wekinator does\n");
-            cppPrint.printf("			mostVotes = numVotesPerClass[i];\n");
-            cppPrint.printf("			foundClass = i + 1;\n");
-            cppPrint.printf("		}\n");
-            cppPrint.printf("	}\n");
-            cppPrint.printf("	return foundClass;\n");
-            cppPrint.printf("}\n");
+            
+            cppPrint.printf("\n	knnClassification knn" + whichPath + "(neighbours);\n");
+            cppPrint.printf("	return knn" + whichPath + ";\n");
+            cppPrint.printf("}\n\n");
         }
     }
 
