@@ -63,14 +63,14 @@ public class Assignment12Grade {
         my_q1.setNoteWithErrValue(o, "assignment12");
 
         my_q2.setScore(qs[1]);
-        o = setQuestionOutcomeFromScore(qs[2]);
+        o = setQuestionOutcomeFromScore(qs[1]);
         my_q2.setNoteWithErrValue(o, "assignment12");
 
         my_q3.setScore(qs[2]);
         o = setQuestionOutcomeFromScore(qs[2]);
         my_q3.setNoteWithErrValue(o, "assignment12");
 
-        my_q4.setScore(qs[2]);
+        my_q4.setScore(qs[3]);
         o = setQuestionOutcomeFromScore(qs[3]);
         my_q4.setNoteWithErrValue(o, "assignment12");
 
