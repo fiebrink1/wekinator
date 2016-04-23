@@ -24,8 +24,8 @@ public class Assignment12Grade {
     private final NotedCriterion my_q3 = new NotedCriterion("q3");
     private final NotedCriterion my_q4 = new NotedCriterion("q4");
     private final NotedCriterion my_q5 = new NotedCriterion("q5");
-    private final NotedCriterion my_q6 = new NotedCriterion("q6");
-    private final NotedCriterion my_q7 = new NotedCriterion("q7");
+    //private final NotedCriterion my_q6 = new NotedCriterion("q6"); //Q6 and Q7 are optional
+    //private final NotedCriterion my_q7 = new NotedCriterion("q7");
     private final NotedCriterion my_q8 = new NotedCriterion("q8");
 
     private static final Logger logger = Logger.getLogger(Assignment12Grade.class.getName());
@@ -78,13 +78,13 @@ public class Assignment12Grade {
         o = setQuestionOutcomeFromScore(qs[4]);
         my_q5.setNoteWithErrValue(o, "assignment12");
 
-        my_q6.setScore(qs[5]);
+       /* my_q6.setScore(qs[5]);
         o = setQuestionOutcomeFromScore(qs[5]);
         my_q6.setNoteWithErrValue(o, "assignment12");
         
         my_q7.setScore(qs[6]);
         o = setQuestionOutcomeFromScore(qs[6]);
-        my_q7.setNoteWithErrValue(o, "assignment12");
+        my_q7.setNoteWithErrValue(o, "assignment12"); */
         
         my_q8.setScore(qs[7]);
         o = setQuestionOutcomeFromScore(qs[7]);
@@ -107,8 +107,8 @@ public class Assignment12Grade {
         g.addNotedCriterion(my_q3);
         g.addNotedCriterion(my_q4);
         g.addNotedCriterion(my_q5);
-        g.addNotedCriterion(my_q6);
-        g.addNotedCriterion(my_q7);
+       // g.addNotedCriterion(my_q6);
+       // g.addNotedCriterion(my_q7);
         g.addNotedCriterion(my_q8);
         return g;
     }
