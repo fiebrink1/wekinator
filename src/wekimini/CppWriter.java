@@ -138,7 +138,7 @@ public class CppWriter {
             cppPrint.printf("   std::vector<double> inMins;\n");
             cppPrint.printf("   double outMax;\n");
             cppPrint.printf("   double outMin;\n");
-            cppPrint.printf("   neighbour *neighbours;\n");
+            cppPrint.printf("   std::vector<neighbour> neighbours;\n");
             cppPrint.printf("   int numExamples;\n");
             cppPrint.printf("   int k;\n");
             cppPrint.printf("   int numClasses;\n\n");           
@@ -195,16 +195,17 @@ public class CppWriter {
                 headerPrint.printf("};\n\n");
                 headerPrint.printf("class knnClassification : public baseModel {\n\n");
                 headerPrint.printf("public:\n");
-                headerPrint.printf("	knnClassification(int, std::vector<int>, neighbour*, int, int, int);\n");
+                headerPrint.printf("	knnClassification(int, std::vector<int>, std::vector<neighbour>, int, int, int);\n");
                 headerPrint.printf("	~knnClassification();\n\n");
                 headerPrint.printf("	double processInput(double*);\n\n");
                 headerPrint.printf("private:\n");
                 headerPrint.printf("	int numInputs;\n");
                 headerPrint.printf("	std::vector<int> whichInputs;\n");
-                headerPrint.printf("	neighbour* neighbours;\n");
+                headerPrint.printf("	std::vector<neighbour> neighbours;\n");
                 headerPrint.printf("	int numExamples;\n");
                 headerPrint.printf("	int numNeighbours; //aka \"k\"\n");
                 headerPrint.printf("	int numClasses;\n");
+                headerPrint.printf("	std::pair<int, double>* nearestNeighbours;\n");
                 headerPrint.printf("};\n\n");
                 headerPrint.printf("#endif\n\n");
             }
@@ -219,18 +220,20 @@ public class CppWriter {
                 cppPrint.printf("#include <math.h>\n");
                 cppPrint.printf("#include <utility>\n");
                 cppPrint.printf("#include \"knnClassification.h\"\n\n");
-                cppPrint.printf("knnClassification::knnClassification(int num_inputs, std::vector<int> which_inputs, neighbour* _neighbours, int num_examples, int k, int num_classes) {\n");
+                cppPrint.printf("knnClassification::knnClassification(int num_inputs, std::vector<int> which_inputs, std::vector<neighbour> _neighbours, int num_examples, int k, int num_classes) {\n");
                 cppPrint.printf("	numInputs = num_inputs;\n");
                 cppPrint.printf("	whichInputs = which_inputs;\n");
                 cppPrint.printf("	numExamples = num_examples;\n");
                 cppPrint.printf("	neighbours = _neighbours;\n");
                 cppPrint.printf("	numNeighbours = k;\n");
+                cppPrint.printf("	nearestNeighbours = new std::pair<int, double>[numNeighbours];\n");
                 cppPrint.printf("	numClasses = num_classes;\n}\n\n");
                 cppPrint.printf("knnClassification::~knnClassification() {\n");
-                cppPrint.printf("	delete neighbours;\n}\n\n");
+                cppPrint.printf("	//delete neighbours;\n}\n\n");
                 cppPrint.printf("double knnClassification::processInput(double* inputVector) {\n");
-                cppPrint.printf("	std::pair<int, double>* nearestNeighbours;\n");
-                cppPrint.printf("	nearestNeighbours = new std::pair<int, double>[numNeighbours];\n");
+                cppPrint.printf("	for (int i = 0; i < numNeighbours; i++) {\n");
+                cppPrint.printf("           nearestNeighbours[i] = {0, 0.};\n");
+                cppPrint.printf("       };\n");
                 cppPrint.printf("	std::pair<int, double> farthestNN = {0, 0.};\n\n");
                 cppPrint.printf("	double pattern[numInputs];\n");
                 cppPrint.printf("       for (int h = 0; h < numInputs; h++) {\n");
@@ -319,10 +322,10 @@ public class CppWriter {
                 }
             }
             cppPrint.printf("};\n");
-            cppPrint.printf("	neighbours = new(neighbour[" + numExamples + "]);\n");
+            cppPrint.printf("	neighbours.clear();\n");
             for (int i = 0; i < numExamples; i++) {
                 String[] splitInstance = insts.instance(i).toString().split(",");
-                cppPrint.printf("	neighbours[" + i + "] = {");
+                cppPrint.printf("	neighbours.push_back({");
                 cppPrint.printf(splitInstance[splitInstance.length - 1] + ", {");
                 for (int j = 3; j < numInputs + 3; j++) {
                     if (j > 3) {
@@ -330,7 +333,7 @@ public class CppWriter {
                     }
                     cppPrint.printf(splitInstance[j]);
                 }
-                cppPrint.printf("}};\n");
+                cppPrint.printf("}});\n");
             }
             cppPrint.printf("	numExamples = " + numExamples + ";\n");
             cppPrint.printf("	k = " + numNeighbours + ";\n");
