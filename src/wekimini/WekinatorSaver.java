@@ -125,10 +125,12 @@ public class WekinatorSaver {
         CppWriter Cpp = new CppWriter(); 
         List<Path> paths = w.getSupervisedLearningManager().getPaths();
         String location = projectDir + cppAppend + File.separator;
+        Cpp.writeStaticFiles(location);
         String[] allInputNames = w.getInputManager().getInputNames();
         for (int i = 0; i < paths.size(); i++) {
             paths.get(i).writeToCppFiles(i, location, allInputNames);
         }
+        Cpp.writeModelSetEnd(location);
     }
 
     private static void saveWekinatorFile(String name, File projectDir, Wekinator w) throws IOException {
