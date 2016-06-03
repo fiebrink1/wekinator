@@ -244,7 +244,7 @@ public class CppWriter {
                 cppPrint.printf("		//find Euclidian distance for this neighbor\n");
                 cppPrint.printf("		double euclidianDistance = 0;\n");
                 cppPrint.printf("		for(int j = 0; j < numInputs ; j++){\n");
-                cppPrint.printf("			euclidianDistance = euclidianDistance + pow((inputVector[j] - neighbours[i].features[j]),2);\n");
+                cppPrint.printf("			euclidianDistance = euclidianDistance + pow((pattern[j] - neighbours[i].features[j]),2);\n");
                 cppPrint.printf("		}\n");
                 cppPrint.printf("		euclidianDistance = sqrt(euclidianDistance);\n");
                 cppPrint.printf("		if (i < numNeighbours) {\n");
@@ -255,7 +255,17 @@ public class CppWriter {
                 cppPrint.printf("		} else if (euclidianDistance < farthestNN.second) {\n");
                 cppPrint.printf("			//replace farthest, if new neighbour is closer\n");
                 cppPrint.printf("			nearestNeighbours[farthestNN.first] = {i, euclidianDistance};\n");
-                cppPrint.printf("			farthestNN = {i, euclidianDistance};\n}\n}\n");
+                cppPrint.printf("			int currentFarthest = 0;\n" +
+"            double currentFarthestDistance = 0.;\n" +
+"            for (int n = 0; n < numNeighbours; n++) {\n" +
+"                if (nearestNeighbours[n].second > currentFarthestDistance) {\n" +
+"                    currentFarthest = n;\n" +
+"                    currentFarthestDistance = nearestNeighbours[n].second;\n" +
+"                }\n" +
+"            }\n" +
+"            farthestNN = {currentFarthest, currentFarthestDistance};\n" +
+"        }\n" +
+"    }");
                 cppPrint.printf("	//majority vote on nearest neighbours\n");
                 cppPrint.printf("	int* numVotesPerClass;\n");
                 cppPrint.printf("	numVotesPerClass = new int[numClasses];\n");
@@ -309,19 +319,15 @@ public class CppWriter {
             cppPrint.printf("    ///////////////////////////////////////////\n");
             cppPrint.printf("    //model " + whichPath + " - kNN\n");
             cppPrint.printf("    ///////////////////////////////////////////\n\n");
-            cppPrint.printf("    whichInputs = {");
-            boolean needComma = false;
+            cppPrint.printf("    whichInputs.clear();\n");
             for (int i = 0; i < allInputNames.length; i++) {
                 if (inputNames.contains(allInputNames[i])) {
-                    if (needComma) {
-                        cppPrint.printf(", ");
-                    } else {
-                        needComma = true;
-                    }
+                    cppPrint.printf("    whichInputs.push_back(");
                     cppPrint.printf(String.valueOf(i));
+                    cppPrint.printf(");\n");
                 }
             }
-            cppPrint.printf("};\n");
+            cppPrint.printf("\n");
             cppPrint.printf("	neighbours.clear();\n");
             for (int i = 0; i < numExamples; i++) {
                 String[] splitInstance = insts.instance(i).toString().split(",");
@@ -521,19 +527,15 @@ public class CppWriter {
             cppPrint.printf("    ///////////////////////////////////////////\n\n");
             int inputsPlusOne = numInputs + 1;
             int hiddenPlusOne = numHiddenNodes + 1;
-            cppPrint.printf("    whichInputs = {");
-            boolean needComma = false;
+            cppPrint.printf("    whichInputs.clear();\n");
             for (int i = 0; i < allInputNames.length; i++) {
                 if (inputNames.contains(allInputNames[i])) {
-                    if (needComma) {
-                        cppPrint.printf(", ");
-                    } else {
-                        needComma = true;
-                    }
+                    cppPrint.printf("    whichInputs.push_back(");
                     cppPrint.printf(String.valueOf(i));
+                    cppPrint.printf(");\n");
                 }
             }
-            cppPrint.printf("};\n");
+            cppPrint.printf("\n");
             int totalLayers = numHiddenLayers + 1;
             int maxNodes = Math.max(numInputs, numHiddenNodes) + 1;
             cppPrint.printf("    totalLayers = " + totalLayers + ";\n");
@@ -619,22 +621,20 @@ public class CppWriter {
                     outMin = outValue;
                 }
             }
-            cppPrint.printf("   inMaxes = { ");
+            cppPrint.printf("   inMaxes.clear()\n");
             for (int i = 0; i < numInputs; i++) {
-                if (i > 0) {
-                    cppPrint.printf(", ");
-                }
+                cppPrint.printf("   inMaxes.push_back(");
                 cppPrint.printf(Double.toString(inMaxes[i]));
+                cppPrint.printf(");\n");
             }
-            cppPrint.printf(" };\n");
-            cppPrint.printf("   inMins = { ");
+            cppPrint.printf("\n");
+            cppPrint.printf("   inMins.clear();");
             for (int i = 0; i < numInputs; i++) {
-                if (i > 0) {
-                    cppPrint.printf(", ");
-                }
+                cppPrint.printf("   inMins.push_back(");
                 cppPrint.printf(Double.toString(inMins[i]));
+                cppPrint.printf(");\n");
             }
-            cppPrint.printf(" };\n\n");
+            cppPrint.printf("\n");
             cppPrint.printf("   outMax = " + outMax + ";\n");
             cppPrint.printf("   outMin = " + outMin + ";\n\n");
             cppPrint.printf("   myModelSet.push_back(new neuralNetwork");
