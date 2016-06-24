@@ -87,7 +87,7 @@ public class CppWriter {
             headerPrint.printf("#define baseModel_h\n\n");
             headerPrint.printf("class baseModel {\n");
             headerPrint.printf("public:\n");
-            headerPrint.printf("    virtual double processInput(double*) {};\n");
+            headerPrint.printf("    virtual double processInput(double*) = 0;\n");
             headerPrint.printf("    virtual ~baseModel() {};\n");
             headerPrint.printf("};\n\n");
             headerPrint.printf("#endif");
@@ -109,7 +109,7 @@ public class CppWriter {
             headerPrint.printf("class wekiModelSet {\n");
             headerPrint.printf("public:\n");
             headerPrint.printf("    wekiModelSet();\n");
-            headerPrint.printf("    //TODO: add destructor\n");
+            headerPrint.printf("    ~wekiModelSet();\n");
             headerPrint.printf("    void initModelSet();\n");
             headerPrint.printf("    double* passInputToModels(double*);\n\n");
             headerPrint.printf("private:\n");
@@ -128,6 +128,10 @@ public class CppWriter {
             cppPrint.printf("wekiModelSet::wekiModelSet() {\n");
             cppPrint.printf("    std::vector<baseModel*> myModelSet;\n");
             cppPrint.printf("};\n\n");
+            cppPrint.printf("wekiModelSet::~wekiModelSet() {\n");
+            cppPrint.printf("    for (std::vector<baseModel*>::iterator i = myModelSet.begin(); i != myModelSet.end(); ++i) {\n");
+            cppPrint.printf("    delete *i\n");
+            cppPrint.printf("}\n};\n\n");
             cppPrint.printf("void wekiModelSet::initModelSet() {\n");
             cppPrint.printf("   std::vector<int> whichInputs;\n");
             cppPrint.printf("   int totalLayers;\n");
@@ -154,7 +158,7 @@ public class CppWriter {
             cppPrint.printf("double* wekiModelSet::passInputToModels(double* input) {\n");
             cppPrint.printf("    int setSize = myModelSet.size();\n");
             cppPrint.printf("    double* output = new double[setSize];\n");
-            cppPrint.printf("    for (int i = 0; i < setSize; i++) {\n");
+            cppPrint.printf("    for (int i = 0; i < setSize; ++i) {\n");
             cppPrint.printf("        output[i] = myModelSet[i]->processInput(input);\n");
             cppPrint.printf("    }\n");
             cppPrint.printf("    return output;\n");
@@ -229,9 +233,9 @@ public class CppWriter {
                 cppPrint.printf("	nearestNeighbours = new std::pair<int, double>[numNeighbours];\n");
                 cppPrint.printf("	numClasses = num_classes;\n}\n\n");
                 cppPrint.printf("knnClassification::~knnClassification() {\n");
-                cppPrint.printf("	//delete neighbours;\n}\n\n");
+                cppPrint.printf("	delete[] nearestNeighbours;\n}\n\n");
                 cppPrint.printf("double knnClassification::processInput(double* inputVector) {\n");
-                cppPrint.printf("	for (int i = 0; i < numNeighbours; i++) {\n");
+                cppPrint.printf("	for (int i = 0; i < numNeighbours; ++i) {\n");
                 cppPrint.printf("           nearestNeighbours[i] = {0, 0.};\n");
                 cppPrint.printf("       };\n");
                 cppPrint.printf("	std::pair<int, double> farthestNN = {0, 0.};\n\n");
@@ -240,10 +244,10 @@ public class CppWriter {
                 cppPrint.printf("           pattern[h] = inputVector[whichInputs[h]];\n");
                 cppPrint.printf("        }\n\n");
                 cppPrint.printf("	//Find k nearest neighbours\n");
-                cppPrint.printf("	for (int i = 0; i < numExamples; i++) {\n");
+                cppPrint.printf("	for (int i = 0; i < numExamples; ++i) {\n");
                 cppPrint.printf("		//find Euclidian distance for this neighbor\n");
                 cppPrint.printf("		double euclidianDistance = 0;\n");
-                cppPrint.printf("		for(int j = 0; j < numInputs ; j++){\n");
+                cppPrint.printf("		for(int j = 0; j < numInputs ; ++j){\n");
                 cppPrint.printf("			euclidianDistance = euclidianDistance + pow((pattern[j] - neighbours[i].features[j]),2);\n");
                 cppPrint.printf("		}\n");
                 cppPrint.printf("		euclidianDistance = sqrt(euclidianDistance);\n");
@@ -269,15 +273,15 @@ public class CppWriter {
                 cppPrint.printf("	//majority vote on nearest neighbours\n");
                 cppPrint.printf("	int* numVotesPerClass;\n");
                 cppPrint.printf("	numVotesPerClass = new int[numClasses];\n");
-                cppPrint.printf("	for (int i=0; i < numClasses; i++) {\n");
+                cppPrint.printf("	for (int i=0; i < numClasses; ++i) {\n");
                 cppPrint.printf("           numVotesPerClass[i] = 0;\n");
                 cppPrint.printf("	}\n");
-                cppPrint.printf("	for (int i = 0; i < numNeighbours; i++){\n");
+                cppPrint.printf("	for (int i = 0; i < numNeighbours; ++i){\n");
                 cppPrint.printf("		numVotesPerClass[neighbours[nearestNeighbours[i].first].classNum - 1]++;\n");
                 cppPrint.printf("	}\n");
                 cppPrint.printf("	double foundClass = 0;\n");
                 cppPrint.printf("	int mostVotes = 0;\n");
-                cppPrint.printf("	for (int i = 0; i < numClasses; i++) {\n");
+                cppPrint.printf("	for (int i = 0; i < numClasses; ++i) {\n");
                 cppPrint.printf("		if (numVotesPerClass[i] > mostVotes) { //TODO: Handle ties the same way Wekinator does\n");
                 cppPrint.printf("			mostVotes = numVotesPerClass[i];\n");
                 cppPrint.printf("			foundClass = i + 1;\n");
@@ -320,7 +324,7 @@ public class CppWriter {
             cppPrint.printf("    //model " + whichPath + " - kNN\n");
             cppPrint.printf("    ///////////////////////////////////////////\n\n");
             cppPrint.printf("    whichInputs.clear();\n");
-            for (int i = 0; i < allInputNames.length; i++) {
+            for (int i = 0; i < allInputNames.length; ++i) {
                 if (inputNames.contains(allInputNames[i])) {
                     cppPrint.printf("    whichInputs.push_back(");
                     cppPrint.printf(String.valueOf(i));
@@ -329,11 +333,11 @@ public class CppWriter {
             }
             cppPrint.printf("\n");
             cppPrint.printf("	neighbours.clear();\n");
-            for (int i = 0; i < numExamples; i++) {
+            for (int i = 0; i < numExamples; ++i) {
                 String[] splitInstance = insts.instance(i).toString().split(",");
                 cppPrint.printf("	neighbours.push_back({");
                 cppPrint.printf(splitInstance[splitInstance.length - 1] + ", {");
-                for (int j = 3; j < numInputs + 3; j++) {
+                for (int j = 3; j < numInputs + 3; ++j) {
                     if (j > 3) {
                         cppPrint.printf(", ");
                     }
@@ -406,13 +410,13 @@ public class CppWriter {
                 cppPrint.printf("	numHiddenNodes = num_hidden_nodes;\n");
                 cppPrint.printf("	//input neurons, including bias\n");
                 cppPrint.printf("	inputNeurons = new double[numInputs + 1];\n");
-                cppPrint.printf("	for (int i=0; i < numInputs; i++){\n");
+                cppPrint.printf("	for (int i=0; i < numInputs; ++i){\n");
                 cppPrint.printf("		inputNeurons[i] = 0;\n");
                 cppPrint.printf("	}\n");
                 cppPrint.printf("	inputNeurons[numInputs] = 1;\n\n");
                 cppPrint.printf("	//hidden neurons, including bias\n");
                 cppPrint.printf("	hiddenNeurons = new double[numHiddenNodes + 1];\n");
-                cppPrint.printf("	for (int i=0; i < numHiddenNodes; i++){\n");
+                cppPrint.printf("	for (int i=0; i < numHiddenNodes; ++i){\n");
                 cppPrint.printf("		hiddenNeurons[i] = 0;\n");
                 cppPrint.printf("	}\n");
                 cppPrint.printf("	hiddenNeurons[numHiddenNodes] = 1;\n\n");
@@ -420,7 +424,7 @@ public class CppWriter {
                 cppPrint.printf("	wHiddenOutput = w_hidden_output;\n\n");
                 cppPrint.printf("	inRanges = new double[numInputs];\n");
                 cppPrint.printf("	inBases = new double[numInputs];\n\n");
-                cppPrint.printf("	for (int i = 0; i < numInputs; i++) {\n");
+                cppPrint.printf("	for (int i = 0; i < numInputs; ++i) {\n");
                 cppPrint.printf("           inRanges[i] = (in_max[i] - in_min[i])/ 2;\n");
                 cppPrint.printf("           inBases[i] = (in_max[i] + in_min[i])/ 2;\n");
                 cppPrint.printf("	}\n\n");
@@ -432,14 +436,16 @@ public class CppWriter {
                 cppPrint.printf("	delete[] inputNeurons;\n");
                 cppPrint.printf("	delete[] hiddenNeurons;\n\n");
                 cppPrint.printf("	int maxNodes = std::max(numInputs, numHiddenNodes);\n");
-                cppPrint.printf("	for (int i=0; i <= numInputs; i++) {\n");
-                cppPrint.printf("		for (int j=0; j <=maxNodes; j++) {\n");
+                cppPrint.printf("	for (int i=0; i <= numInputs; ++i) {\n");
+                cppPrint.printf("		for (int j=0; j <=maxNodes; ++j) {\n");
                 cppPrint.printf("                   delete[] weights[i][j];\n");
                 cppPrint.printf("		}\n");
                 cppPrint.printf("		delete[] weights[i];\n");
                 cppPrint.printf("	}\n");
                 cppPrint.printf("	delete[] weights;\n\n");
                 cppPrint.printf("	delete[] wHiddenOutput;\n");
+                cppPrint.printf("	delete[] inRanges;\n");
+                cppPrint.printf("	delete[] inBases;\n");
                 cppPrint.printf("}\n\n");
 
                 cppPrint.printf("inline double neuralNetwork::activationFunction(double x) {\n");
@@ -460,20 +466,20 @@ public class CppWriter {
                 cppPrint.printf("		pattern[h] = inputVector[whichInputs[h]];\n");
                 cppPrint.printf("	}\n\n");
                 cppPrint.printf("	//set input layer\n");
-                cppPrint.printf("	for (int i = 0; i < numInputs; i++) {\n");
+                cppPrint.printf("	for (int i = 0; i < numInputs; ++i) {\n");
                 cppPrint.printf("		inputNeurons[i] = (pattern[i] - inBases[i]) / inRanges[i];\n");
                 cppPrint.printf("	}\n\n");
                 cppPrint.printf("	//calculate hidden layer\n");
-                cppPrint.printf("	for (int j=0; j < numHiddenNodes; j++) {\n");
+                cppPrint.printf("	for (int j=0; j < numHiddenNodes; ++j) {\n");
                 cppPrint.printf("		hiddenNeurons[j] = 0;\n");
-                cppPrint.printf("		for (int i = 0; i <= numInputs; i++) {\n");
+                cppPrint.printf("		for (int i = 0; i <= numInputs; ++i) {\n");
                 cppPrint.printf("			hiddenNeurons[j] += inputNeurons[i] * weights[0][i][j];\n");
                 cppPrint.printf("		}\n");
                 cppPrint.printf("		hiddenNeurons[j] = activationFunction(hiddenNeurons[j]);\n");
                 cppPrint.printf("	}\n");
                 cppPrint.printf("	//calculate output\n");
                 cppPrint.printf("	double output = 0;\n");
-                cppPrint.printf("	for (int k=0; k <= numHiddenNodes; k++){\n");
+                cppPrint.printf("	for (int k=0; k <= numHiddenNodes; ++k){\n");
                 cppPrint.printf("           output += hiddenNeurons[k] * wHiddenOutput[k];\n");
                 cppPrint.printf("	}\n");
                 cppPrint.printf("       output = (output * outRange) + outBase;\n");
@@ -528,7 +534,7 @@ public class CppWriter {
             int inputsPlusOne = numInputs + 1;
             int hiddenPlusOne = numHiddenNodes + 1;
             cppPrint.printf("    whichInputs.clear();\n");
-            for (int i = 0; i < allInputNames.length; i++) {
+            for (int i = 0; i < allInputNames.length; ++i) {
                 if (inputNames.contains(allInputNames[i])) {
                     cppPrint.printf("    whichInputs.push_back(");
                     cppPrint.printf(String.valueOf(i));
@@ -549,14 +555,14 @@ public class CppWriter {
             cppPrint.printf("    }\n");
             cppPrint.printf("	//weights between input and hidden\n");
             String modelDescriptionLines[] = modelDescription.split("\\r?\\n");
-            for (int i = 0; i < numInputs; i++) {
-                for (int j = 0; j < numHiddenNodes; j++) {
+            for (int i = 0; i < numInputs; ++i) {
+                for (int j = 0; j < numHiddenNodes; ++j) {
                     int offset = (6 + numHiddenNodes + i) + (j * (3 + numInputs)); //TODO: Make this look better. MZ
                     String nodeWeight[] = modelDescriptionLines[offset].split("\\s+");
                     cppPrint.printf("	weights[0][" + i + "][" + j + "] = " + nodeWeight[3] + ";\n");
                 }
             }
-            for (int j = 0; j < numHiddenNodes; j++) {
+            for (int j = 0; j < numHiddenNodes; ++j) {
                 int offset = (5 + numHiddenNodes) + (j * (3 + numInputs)); //TODO: Make this look better. MZ
                 String biasWeight[] = modelDescriptionLines[offset].split("\\s+");
                 cppPrint.printf("	weights[0][" + numInputs + "][" + j + "] = " + biasWeight[2] + ";\n");
@@ -564,15 +570,15 @@ public class CppWriter {
             cppPrint.printf("\n");
             if (numHiddenLayers > 1) {
                 cppPrint.printf("	//weights between hidden layers\n");
-                for (int k = 1; k < numHiddenLayers; k++) {
-                    for (int i = 0; i < numHiddenNodes; i++) {
-                        for (int j = 0; j < numHiddenNodes; j++) {
+                for (int k = 1; k < numHiddenLayers; ++k) {
+                    for (int i = 0; i < numHiddenNodes; ++i) {
+                        for (int j = 0; j < numHiddenNodes; ++j) {
                             int offset = (6 + numHiddenNodes + i) + ((j + (numHiddenNodes * k)) * (3 + numHiddenNodes));
                             String nodeWeight[] = modelDescriptionLines[offset].split("\\s+");
                             cppPrint.printf("	weights[" + k + "][" + i + "][" + j + "] = " + nodeWeight[3] + ";\n");
                         }
                     }
-                    for (int j = 0; j < numHiddenNodes; j++) {
+                    for (int j = 0; j < numHiddenNodes; ++j) {
                         int offset = (5 + numHiddenNodes) + ((j + (numHiddenNodes * k)) * (3 + numInputs));
                         String biasWeight[] = modelDescriptionLines[offset].split("\\s+");
                         cppPrint.printf("	weights[" + k + "][" + numInputs + "][" + j + "] = " + biasWeight[2] + ";\n");
@@ -583,10 +589,10 @@ public class CppWriter {
             cppPrint.printf("\n");
             cppPrint.printf("	//weights between hidden and output\n");
             cppPrint.printf("	wHiddenOutput = new double[" + hiddenPlusOne + "];\n");
-            cppPrint.printf("	for (int i = 0; i <= " + numHiddenNodes + "; i++) {\n");
+            cppPrint.printf("	for (int i = 0; i <= " + numHiddenNodes + "; ++i) {\n");
             cppPrint.printf("		 wHiddenOutput[i] = 0;\n");
             cppPrint.printf("	}\n");
-            for (int i = 0; i < numHiddenNodes; i++) {
+            for (int i = 0; i < numHiddenNodes; ++i) {
                 String nodeWeight[] = modelDescriptionLines[i + 3].split("\\s+");
                 cppPrint.printf("	wHiddenOutput[" + i + "] = " + nodeWeight[3] + ";\n");
             }
@@ -597,13 +603,13 @@ public class CppWriter {
             double[] inMins = new double[numInputs];
             double outMax = Double.NEGATIVE_INFINITY;
             double outMin = Double.POSITIVE_INFINITY;
-            for (int i = 0; i < numInputs; i++) {
+            for (int i = 0; i < numInputs; ++i) {
                 inMaxes[i] = Double.NEGATIVE_INFINITY;
                 inMins[i] = Double.POSITIVE_INFINITY;
             }
-            for (int i = 0; i < numExamples; i++) {
+            for (int i = 0; i < numExamples; ++i) {
                 String[] splitInstance = insts.instance(i).toString().split(",");
-                for (int j = 0; j < numInputs; j++) {
+                for (int j = 0; j < numInputs; ++j) {
                     double inValue = Double.valueOf(splitInstance[j + 3]);
                     if (inMaxes[j] < inValue) {
                         inMaxes[j] = inValue;
@@ -622,14 +628,14 @@ public class CppWriter {
                 }
             }
             cppPrint.printf("   inMaxes.clear()\n");
-            for (int i = 0; i < numInputs; i++) {
+            for (int i = 0; i < numInputs; ++i) {
                 cppPrint.printf("   inMaxes.push_back(");
                 cppPrint.printf(Double.toString(inMaxes[i]));
                 cppPrint.printf(");\n");
             }
             cppPrint.printf("\n");
             cppPrint.printf("   inMins.clear();");
-            for (int i = 0; i < numInputs; i++) {
+            for (int i = 0; i < numInputs; ++i) {
                 cppPrint.printf("   inMins.push_back(");
                 cppPrint.printf(Double.toString(inMins[i]));
                 cppPrint.printf(");\n");
