@@ -229,28 +229,28 @@ public class KadenzeAssn6SubmissionPrompt extends javax.swing.JFrame {
             missing = true;
             whichMissing = 1;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN11_2_1", s1);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN6_2_1", s1);
 
         String s2 = replaceNewlines(text2.getText());
         if (s2.length() == 0 && !missing) {
             missing = true;
             whichMissing = 2;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN11_2_2", s2);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN6_2_2", s2);
 
         String s3 = replaceNewlines(text3.getText());
         if (s3.length() == 0 && !missing) {
             missing = true;
             whichMissing = 3;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN11_2_3", s3);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN6_2_3", s3);
 
         String s4 = replaceNewlines(text4.getText());
         if (s4.length() == 0 && !missing) {
             missing = true;
             whichMissing = 4;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN11_2_4", s4);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN6_2_4", s4);
 
 
         int i = combo5.getSelectedIndex();
@@ -258,14 +258,14 @@ public class KadenzeAssn6SubmissionPrompt extends javax.swing.JFrame {
             missing = true;
             whichMissing = 5;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN11_2_5", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN6_2_5", Integer.toString(i));
         
         String s6 = replaceNewlines(text6.getText());
         if (s6.length() == 0 && !missing) {
             missing = true;
             whichMissing = 6;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN11_2_6", s6);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN6_2_6", s6);
         
         if (missing) {
             int result = Util.showPrettyYesNoPane(this, "You are missing an answer to question " + whichMissing + ". Do you wish to continue anyway?", "Missing answers");

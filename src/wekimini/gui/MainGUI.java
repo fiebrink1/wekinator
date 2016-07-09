@@ -458,7 +458,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                 KadenzeAssn4SubmissionPrompt1.KadenzeAssn4Part1InputInfoReceiver ki1 = new KadenzeAssn4SubmissionPrompt1.KadenzeAssn4Part1InputInfoReceiver() {
                     @Override
                     public void infoLogged() {
-                        KadenzeAssn4SubmissionPrompt2.KadenzeAssn7Part2InputInfoReceiver ki2 = new KadenzeAssn4SubmissionPrompt2.KadenzeAssn7Part2InputInfoReceiver() {
+                        KadenzeAssn4SubmissionPrompt2.KadenzeAssn4Part2InputInfoReceiver ki2 = new KadenzeAssn4SubmissionPrompt2.KadenzeAssn4Part2InputInfoReceiver() {
                             @Override
                             public void infoLogged() {
                                 String zipped;

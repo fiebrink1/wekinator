@@ -16,7 +16,7 @@ import wekimini.util.Util;
 public class KadenzeAssn4SubmissionPrompt2 extends javax.swing.JFrame {
 
     private Wekinator w = null;
-    private KadenzeAssn7Part2InputInfoReceiver receiver = null;
+    private KadenzeAssn4Part2InputInfoReceiver receiver = null;
 
     /**
      * Creates new form KadenzeInputPromptFrame
@@ -25,7 +25,7 @@ public class KadenzeAssn4SubmissionPrompt2 extends javax.swing.JFrame {
         initComponents();
     }
 
-    public KadenzeAssn4SubmissionPrompt2(Wekinator w, KadenzeAssn7Part2InputInfoReceiver r) {
+    public KadenzeAssn4SubmissionPrompt2(Wekinator w, KadenzeAssn4Part2InputInfoReceiver r) {
         initComponents();
         this.w = w;
         this.receiver = r;
@@ -244,49 +244,49 @@ public class KadenzeAssn4SubmissionPrompt2 extends javax.swing.JFrame {
             missing = true;
             whichMissing = 1;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_1", s1);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_2_1", s1);
 
         String s2 = replaceNewlines(text2.getText());
         if (s2.length() == 0 && !missing) {
             missing = true;
             whichMissing = 2;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_2", s2);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_2_2", s2);
 
         String s3 = replaceNewlines(text3.getText());
         if (s3.length() == 0 && !missing) {
             missing = true;
             whichMissing = 3;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_3", s3);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_2_3", s3);
 
         String s4 = replaceNewlines(text4.getText());
         if (s4.length() == 0 && !missing) {
             missing = true;
             whichMissing = 4;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_4", s4);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_2_4", s4);
 
         String s5 = replaceNewlines(text5.getText());
         if (s5.length() == 0 && !missing) {
             missing = true;
             whichMissing = 5;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_5", s5);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_2_5", s5);
 
         int i = combo6.getSelectedIndex();
         if (i == 0 && !missing) {
             missing = true;
             whichMissing = 6;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_6", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_2_6", Integer.toString(i));
 
         String s7 = replaceNewlines(text7.getText());
         if (s7.length() == 0 && !missing) {
             missing = true;
             whichMissing = 7;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_7", s7);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_2_7", s7);
 
         if (missing) {
             int result = Util.showPrettyYesNoPane(this, "You are missing an answer to question " + whichMissing + ". Do you wish to continue anyway?", "Missing answers");
@@ -361,7 +361,7 @@ public class KadenzeAssn4SubmissionPrompt2 extends javax.swing.JFrame {
         });
     }
 
-    public interface KadenzeAssn7Part2InputInfoReceiver {
+    public interface KadenzeAssn4Part2InputInfoReceiver {
 
         public void infoLogged();
     }

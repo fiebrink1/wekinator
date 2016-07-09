@@ -243,28 +243,28 @@ public class KadenzeAssn4SubmissionPrompt1 extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         int i = comboKnn1B.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1B_KNN", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1B_KNN", Integer.toString(i));
         
         i = comboAdaboost1B.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1B_ADABOOST", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1B_ADABOOST", Integer.toString(i));
         
         i = comboDTree1B.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1B_DTREE", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1B_DTREE", Integer.toString(i));
         
         i = comboSVM1B.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1B_SVM", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1B_SVM", Integer.toString(i));
         
         i = comboKnn1C.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1C_KNN", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1C_KNN", Integer.toString(i));
         
         i = comboAdaboost1C.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1C_ADABOOST", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1C_ADABOOST", Integer.toString(i));
         
         i = comboDTree1C.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1C_DTREE", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1C_DTREE", Integer.toString(i));
         
         i = comboSVM1C.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1C_SVM", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1C_SVM", Integer.toString(i));
 
         if (receiver != null) {
              this.setVisible(false);
