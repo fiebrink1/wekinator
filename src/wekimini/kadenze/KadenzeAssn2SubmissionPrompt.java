@@ -3,27 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.gui;
+package wekimini.kadenze;
 
 import wekimini.Wekinator;
-import wekimini.kadenze.KadenzeLogging;
 import wekimini.util.Util;
 
 /**
  *
  * @author rebecca
  */
-public class KadenzeInputPromptFrame extends javax.swing.JFrame {
+public class KadenzeAssn2SubmissionPrompt extends javax.swing.JFrame {
     private Wekinator w = null;
-    private KadenzeInputInfoReceiver receiver = null;
+    private KadenzeAssn2InputInfoReceiver receiver = null;
     /**
      * Creates new form KadenzeInputPromptFrame
      */
-    public KadenzeInputPromptFrame() {
+    public KadenzeAssn2SubmissionPrompt() {
         initComponents();
     }
 
-    public KadenzeInputPromptFrame(Wekinator w, KadenzeInputInfoReceiver r) {
+    public KadenzeAssn2SubmissionPrompt(Wekinator w, KadenzeAssn2InputInfoReceiver r) {
         initComponents();
         this.w = w;
         this.receiver = r;
@@ -184,25 +183,28 @@ public class KadenzeInputPromptFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(KadenzeInputPromptFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn2SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(KadenzeInputPromptFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn2SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(KadenzeInputPromptFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn2SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(KadenzeInputPromptFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn2SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new KadenzeInputPromptFrame().setVisible(true);
+                new KadenzeAssn2SubmissionPrompt().setVisible(true);
             }
         });
     }
     
-    public interface KadenzeInputInfoReceiver {
+    public interface KadenzeAssn2InputInfoReceiver {
         public void infoLogged();
     }
 

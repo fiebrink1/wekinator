@@ -5,6 +5,7 @@
  */
 package wekimini.gui;
 
+import wekimini.kadenze.KadenzeAssn3SubmissionPrompt;
 import wekimini.kadenze.KadenzeAssignmentSummaryFrame;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
@@ -35,6 +36,8 @@ import wekimini.dtw.gui.DtwLearningPanel;
 import wekimini.dtw.gui.DtwOutputEditor;
 import wekimini.kadenze.KadenzeAssignment;
 import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
+import wekimini.kadenze.KadenzeAssn1SubmissionPrompt;
+import wekimini.kadenze.KadenzeAssn2SubmissionPrompt;
 import wekimini.kadenze.KadenzeAssn6SubmissionPrompt;
 import wekimini.kadenze.KadenzeAssn7SubmissionPrompt;
 import wekimini.kadenze.KadenzeAssn4SubmissionPrompt1;
@@ -455,10 +458,44 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             //Show prompt for information about input device & difficulty
             KadenzeAssignmentType ka = KadenzeLogging.getCurrentAssignmentType();
             int which = KadenzeAssignment.getAssignmentNumber(ka);
-            if (which == 3) {
+            if (which == 1) {
                 //Show prompt
                 final MainGUI mg = this;
-                KadenzeInputPromptFrame kipf = new KadenzeInputPromptFrame(w, new KadenzeInputPromptFrame.KadenzeInputInfoReceiver() {
+                KadenzeAssn1SubmissionPrompt kipf = new KadenzeAssn1SubmissionPrompt(w, new KadenzeAssn1SubmissionPrompt.KadenzeAssn1InputInfoReceiver() {
+                    @Override
+                    public void infoLogged() {
+                        String zipped;
+                        try {
+                            zipped = KadenzeLogging.createZipForAssignment();
+                            Util.showPrettyInfoPane(mg, "Your assignment is done! Please submit file " + zipped, "Success!");
+                        } catch (IOException ex) {
+                            String dir = KadenzeLogging.getLogger().getZipDirectoryNameForAssignment();
+                            Util.showPrettyErrorPane(mg, "Could not zip file. Please zip your " + dir + " directory manually.");
+                        }
+                    }
+                });
+                kipf.setVisible(true);
+            } else if (which == 2) {
+                //Show prompt
+                final MainGUI mg = this;
+                KadenzeAssn2SubmissionPrompt kipf = new KadenzeAssn2SubmissionPrompt(w, new KadenzeAssn2SubmissionPrompt.KadenzeAssn2InputInfoReceiver() {
+                    @Override
+                    public void infoLogged() {
+                        String zipped;
+                        try {
+                            zipped = KadenzeLogging.createZipForAssignment();
+                            Util.showPrettyInfoPane(mg, "Your assignment is done! Please submit file " + zipped, "Success!");
+                        } catch (IOException ex) {
+                            String dir = KadenzeLogging.getLogger().getZipDirectoryNameForAssignment();
+                            Util.showPrettyErrorPane(mg, "Could not zip file. Please zip your " + dir + " directory manually.");
+                        }
+                    }
+                });
+                kipf.setVisible(true);
+            } else if (which == 3) {
+                //Show prompt
+                final MainGUI mg = this;
+                KadenzeAssn3SubmissionPrompt kipf = new KadenzeAssn3SubmissionPrompt(w, new KadenzeAssn3SubmissionPrompt.KadenzeAssn3InputInfoReceiver() {
                     @Override
                     public void infoLogged() {
                         String zipped;
