@@ -57,19 +57,19 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
                 KadenzeAssignmentType.ASSIGNMENT2_PART2,
                 KadenzeAssignmentType.ASSIGNMENT2_PART3A,
                 KadenzeAssignmentType.ASSIGNMENT2_PART3B,
-                KadenzeAssignmentType.ASSIGNMENT5_PART1A,
-                KadenzeAssignmentType.ASSIGNMENT5_PART1B,
-                KadenzeAssignmentType.ASSIGNMENT5_PART1C,
-                KadenzeAssignmentType.ASSIGNMENT5_PART2,
-                KadenzeAssignmentType.ASSIGNMENT5_PART3A,
-                KadenzeAssignmentType.ASSIGNMENT5_PART3B,
-                KadenzeAssignmentType.ASSIGNMENT7_PART1A,
-                KadenzeAssignmentType.ASSIGNMENT7_PART1B,
-                KadenzeAssignmentType.ASSIGNMENT7_PART1C,
-                KadenzeAssignmentType.ASSIGNMENT7_PART2,
-                KadenzeAssignmentType.ASSIGNMENT11_PART1,
-                KadenzeAssignmentType.ASSIGNMENT11_PART2,
-                KadenzeAssignmentType.ASSIGNMENT12
+                KadenzeAssignmentType.ASSIGNMENT3_PART1A,
+                KadenzeAssignmentType.ASSIGNMENT3_PART1B,
+                KadenzeAssignmentType.ASSIGNMENT3_PART1C,
+                KadenzeAssignmentType.ASSIGNMENT3_PART2,
+                KadenzeAssignmentType.ASSIGNMENT3_PART3A,
+                KadenzeAssignmentType.ASSIGNMENT3_PART3B,
+                KadenzeAssignmentType.ASSIGNMENT4_PART1A,
+                KadenzeAssignmentType.ASSIGNMENT4_PART1B,
+                KadenzeAssignmentType.ASSIGNMENT4_PART1C,
+                KadenzeAssignmentType.ASSIGNMENT4_PART2,
+                KadenzeAssignmentType.ASSIGNMENT6_PART1,
+                KadenzeAssignmentType.ASSIGNMENT6_PART2,
+                KadenzeAssignmentType.ASSIGNMENT7
             };
 
     /**

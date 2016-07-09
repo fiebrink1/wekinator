@@ -33,10 +33,10 @@ import wekimini.dtw.gui.DtwLearningPanel;
 import wekimini.dtw.gui.DtwOutputEditor;
 import wekimini.kadenze.KadenzeAssignment;
 import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
-import wekimini.kadenze.KadenzeAssn11SubmissionPrompt;
-import wekimini.kadenze.KadenzeAssn12SubmissionPrompt;
-import wekimini.kadenze.KadenzeAssn7SubmissionPrompt1;
-import wekimini.kadenze.KadenzeAssn7SubmissionPrompt2;
+import wekimini.kadenze.KadenzeAssn6SubmissionPrompt;
+import wekimini.kadenze.KadenzeAssn7SubmissionPrompt;
+import wekimini.kadenze.KadenzeAssn4SubmissionPrompt1;
+import wekimini.kadenze.KadenzeAssn4SubmissionPrompt2;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.dtw.DtwModel;
@@ -165,20 +165,20 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             kadenzeMenuItems[1] = k2;
         } else if (whichMainAssignment == 2) {
             makeKadenzeAssignment2Menu(ka);
-        } else if (whichMainAssignment == 5) {
-            makeKadenzeAssignment5Menu(ka);
+        } else if (whichMainAssignment == 3) {
+            makeKadenzeAssignment3Menu(ka);
+        } else if (whichMainAssignment == 4) {
+            makeKadenzeAssignment4Menu(ka);
+        } else if (whichMainAssignment == 6) {
+            makeKadenzeAssignment6Menu(ka);
         } else if (whichMainAssignment == 7) {
             makeKadenzeAssignment7Menu(ka);
-        } else if (whichMainAssignment == 11) {
-            makeKadenzeAssignment11Menu(ka);
-        } else if (whichMainAssignment == 12) {
-            makeKadenzeAssignment12Menu(ka);
         } else {
             logger.log(Level.WARNING, "Unknown assignment :" + ka);
         }
     }
 
-    private void makeKadenzeAssignment11Menu(final KadenzeAssignmentType ka) {
+    private void makeKadenzeAssignment6Menu(final KadenzeAssignmentType ka) {
         kadenzeMenuItems = new JMenuItem[3];
         int subPart = KadenzeAssignment.getAssignmentSubPart(ka); //1 through 6
         for (int i = 0; i < 2; i++) {
@@ -188,7 +188,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             } else {
                 s = "Start ";
             }
-            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(11, i + 1));
+            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(6, i + 1));
             kadenzeMenuItems[i] = new JMenuItem(s);
             if (i == (subPart - 1)) {
                 kadenzeMenuItems[i].setEnabled(false);
@@ -196,10 +196,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             menuKadenze.add(kadenzeMenuItems[i]);
         }
 
-        addKadenzeListener(kadenzeMenuItems[0], KadenzeAssignmentType.ASSIGNMENT11_PART1);
-        addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT11_PART2);
+        addKadenzeListener(kadenzeMenuItems[0], KadenzeAssignmentType.ASSIGNMENT6_PART1);
+        addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT6_PART2);
 
-        kadenzeMenuItems[2] = new JMenuItem("Create Kadenze Assignment 11 submission");
+        kadenzeMenuItems[2] = new JMenuItem("Create Kadenze Assignment 6 submission");
         kadenzeMenuItems[2].addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -209,7 +209,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuKadenze.add(kadenzeMenuItems[2]);
     }
 
-    private void makeKadenzeAssignment7Menu(final KadenzeAssignmentType ka) {
+    private void makeKadenzeAssignment4Menu(final KadenzeAssignmentType ka) {
         kadenzeMenuItems = new JMenuItem[7];
         int subPart = KadenzeAssignment.getAssignmentSubPart(ka); //1 through 6
         for (int i = 0; i < 4; i++) {
@@ -219,7 +219,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             } else {
                 s = "Start ";
             }
-            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(7, i + 1));
+            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(4, i + 1));
             kadenzeMenuItems[i] = new JMenuItem(s);
             if (i == (subPart - 1)) {
                 kadenzeMenuItems[i].setEnabled(false);
@@ -233,12 +233,12 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             menuKadenze.add(kadenzeMenuItems[i]);
         }
 
-        addKadenzeListener(kadenzeMenuItems[0], KadenzeAssignmentType.ASSIGNMENT7_PART1A);
-        addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT7_PART1B);
-        addKadenzeListener(kadenzeMenuItems[2], KadenzeAssignmentType.ASSIGNMENT7_PART1C);
-        addKadenzeListener(kadenzeMenuItems[3], KadenzeAssignmentType.ASSIGNMENT7_PART2);
+        addKadenzeListener(kadenzeMenuItems[0], KadenzeAssignmentType.ASSIGNMENT4_PART1A);
+        addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT4_PART1B);
+        addKadenzeListener(kadenzeMenuItems[2], KadenzeAssignmentType.ASSIGNMENT4_PART1C);
+        addKadenzeListener(kadenzeMenuItems[3], KadenzeAssignmentType.ASSIGNMENT4_PART2);
 
-        kadenzeMenuItems[4] = new JMenuItem("Create Kadenze Assignment 7 submission");
+        kadenzeMenuItems[4] = new JMenuItem("Create Kadenze Assignment 4 submission");
         kadenzeMenuItems[4].addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -248,7 +248,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuKadenze.add(kadenzeMenuItems[4]);
     }
 
-    private void makeKadenzeAssignment5Menu(final KadenzeAssignmentType ka) {
+    private void makeKadenzeAssignment3Menu(final KadenzeAssignmentType ka) {
         kadenzeMenuItems = new JMenuItem[7];
         int subPart = KadenzeAssignment.getAssignmentSubPart(ka); //1 through 6
         for (int i = 0; i < 6; i++) {
@@ -258,7 +258,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             } else {
                 s = "Start ";
             }
-            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(5, i + 1));
+            s = s + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(3, i + 1));
             kadenzeMenuItems[i] = new JMenuItem(s);
             if (i == (subPart - 1)) {
                 kadenzeMenuItems[i].setEnabled(false);
@@ -272,14 +272,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             menuKadenze.add(kadenzeMenuItems[i]);
         }
 
-        addKadenzeListener(kadenzeMenuItems[0], KadenzeAssignmentType.ASSIGNMENT5_PART1A);
-        addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT5_PART1B);
-        addKadenzeListener(kadenzeMenuItems[2], KadenzeAssignmentType.ASSIGNMENT5_PART1C);
-        addKadenzeListener(kadenzeMenuItems[3], KadenzeAssignmentType.ASSIGNMENT5_PART2);
-        addKadenzeListener(kadenzeMenuItems[4], KadenzeAssignmentType.ASSIGNMENT5_PART3A);
-        addKadenzeListener(kadenzeMenuItems[5], KadenzeAssignmentType.ASSIGNMENT5_PART3B);
+        addKadenzeListener(kadenzeMenuItems[0], KadenzeAssignmentType.ASSIGNMENT3_PART1A);
+        addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT3_PART1B);
+        addKadenzeListener(kadenzeMenuItems[2], KadenzeAssignmentType.ASSIGNMENT3_PART1C);
+        addKadenzeListener(kadenzeMenuItems[3], KadenzeAssignmentType.ASSIGNMENT3_PART2);
+        addKadenzeListener(kadenzeMenuItems[4], KadenzeAssignmentType.ASSIGNMENT3_PART3A);
+        addKadenzeListener(kadenzeMenuItems[5], KadenzeAssignmentType.ASSIGNMENT3_PART3B);
 
-        kadenzeMenuItems[6] = new JMenuItem("Create Kadenze Assignment 5 submission");
+        kadenzeMenuItems[6] = new JMenuItem("Create Kadenze Assignment 3 submission");
         kadenzeMenuItems[6].addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -371,45 +371,47 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                     kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(2, i + 1)));
                 }
             }
-        } else if (which == 5) {
+        } else if (which == 3) {
             int subpart = KadenzeAssignment.getAssignmentSubPart(ka);
             for (int i = 0; i < 6; i++) {
                 if (subpart == (i + 1)) {
                     kadenzeMenuItems[i].setEnabled(false);
-                    kadenzeMenuItems[i].setText("Doing " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(5, i + 1)));
+                    kadenzeMenuItems[i].setText("Doing " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(3, i + 1)));
 
                 } else {
                     kadenzeMenuItems[i].setEnabled(true);
-                    kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(5, i + 1)));
+                    kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(3, i + 1)));
                 }
             }
-        } else if (which == 7) {
+        } else if (which == 4) {
             int subpart = KadenzeAssignment.getAssignmentSubPart(ka);
             for (int i = 0; i < 4; i++) {
                 if (subpart == (i + 1)) {
                     kadenzeMenuItems[i].setEnabled(false);
-                    kadenzeMenuItems[i].setText("Doing " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(7, i + 1)));
+                    kadenzeMenuItems[i].setText("Doing " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(4, i + 1)));
 
                 } else {
                     kadenzeMenuItems[i].setEnabled(true);
-                    kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(7, i + 1)));
+                    kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(4, i + 1)));
                 }
             }
-        } else if (which == 11) {
+        } else if (which == 6) {
             int subpart = KadenzeAssignment.getAssignmentSubPart(ka);
             for (int i = 0; i < 2; i++) {
                 if (subpart == (i + 1)) {
                     kadenzeMenuItems[i].setEnabled(false);
-                    kadenzeMenuItems[i].setText("Doing " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(11, i + 1)));
+                    kadenzeMenuItems[i].setText("Doing " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(6, i + 1)));
 
                 } else {
                     kadenzeMenuItems[i].setEnabled(true);
-                    kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(11, i + 1)));
+                    kadenzeMenuItems[i].setText("Start " + KadenzeAssignment.getReadableName(KadenzeAssignment.getAssignment(6, i + 1)));
                 }
             }
-        } else if (which == 12) {
+        } else if (which == 7) {
            // System.out.println("NOT IMPLEMENTED YET");
-        } 
+        } else {
+            System.out.println("ERROR: no assignment for " + which);
+        }
     }
 
     private void createAssignmentSubmission() {
@@ -434,7 +436,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             //Show prompt for information about input device & difficulty
             KadenzeAssignmentType ka = KadenzeLogging.getCurrentAssignmentType();
             int which = KadenzeAssignment.getAssignmentNumber(ka);
-            if (which == 5) {
+            if (which == 3) {
                 //Show prompt
                 final MainGUI mg = this;
                 KadenzeInputPromptFrame kipf = new KadenzeInputPromptFrame(w, new KadenzeInputPromptFrame.KadenzeInputInfoReceiver() {
@@ -451,12 +453,12 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                     }
                 });
                 kipf.setVisible(true);
-            } else if (which == 7) {
+            } else if (which == 4) {
                 final MainGUI mg = this;
-                KadenzeAssn7SubmissionPrompt1.KadenzeAssn7Part1InputInfoReceiver ki1 = new KadenzeAssn7SubmissionPrompt1.KadenzeAssn7Part1InputInfoReceiver() {
+                KadenzeAssn4SubmissionPrompt1.KadenzeAssn4Part1InputInfoReceiver ki1 = new KadenzeAssn4SubmissionPrompt1.KadenzeAssn4Part1InputInfoReceiver() {
                     @Override
                     public void infoLogged() {
-                        KadenzeAssn7SubmissionPrompt2.KadenzeAssn7Part2InputInfoReceiver ki2 = new KadenzeAssn7SubmissionPrompt2.KadenzeAssn7Part2InputInfoReceiver() {
+                        KadenzeAssn4SubmissionPrompt2.KadenzeAssn7Part2InputInfoReceiver ki2 = new KadenzeAssn4SubmissionPrompt2.KadenzeAssn7Part2InputInfoReceiver() {
                             @Override
                             public void infoLogged() {
                                 String zipped;
@@ -470,16 +472,16 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
                             }
                         };
-                        KadenzeAssn7SubmissionPrompt2 prompt2 = new KadenzeAssn7SubmissionPrompt2(w, ki2);
+                        KadenzeAssn4SubmissionPrompt2 prompt2 = new KadenzeAssn4SubmissionPrompt2(w, ki2);
                         prompt2.setVisible(true);
                     }
                 };
-                KadenzeAssn7SubmissionPrompt1 prompt = new KadenzeAssn7SubmissionPrompt1(w, ki1);
+                KadenzeAssn4SubmissionPrompt1 prompt = new KadenzeAssn4SubmissionPrompt1(w, ki1);
                 prompt.setVisible(true);
 
-            } else if (which == 11) {
+            } else if (which == 6) {
                 final MainGUI mg = this;
-                KadenzeAssn11SubmissionPrompt.KadenzeAssn11Part2InputInfoReceiver ki2 = new KadenzeAssn11SubmissionPrompt.KadenzeAssn11Part2InputInfoReceiver() {
+                KadenzeAssn6SubmissionPrompt.KadenzeAssn6Part2InputInfoReceiver ki2 = new KadenzeAssn6SubmissionPrompt.KadenzeAssn6Part2InputInfoReceiver() {
                     @Override
                     public void infoLogged() {
                         String zipped;
@@ -493,12 +495,12 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                     }
                 };
 
-                KadenzeAssn11SubmissionPrompt prompt = new KadenzeAssn11SubmissionPrompt(w, ki2);
+                KadenzeAssn6SubmissionPrompt prompt = new KadenzeAssn6SubmissionPrompt(w, ki2);
                 prompt.setVisible(true);
 
-            } else if (which == 12) {
+            } else if (which == 7) {
                 final MainGUI mg = this;
-                KadenzeAssn12SubmissionPrompt.KadenzeAssn12InputInfoReceiver ki2 = new KadenzeAssn12SubmissionPrompt.KadenzeAssn12InputInfoReceiver() {
+                KadenzeAssn7SubmissionPrompt.KadenzeAssn7InputInfoReceiver ki2 = new KadenzeAssn7SubmissionPrompt.KadenzeAssn7InputInfoReceiver() {
                     @Override
                     public void infoLogged() {
                         String zipped;
@@ -512,7 +514,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                     }
                 };
 
-                KadenzeAssn12SubmissionPrompt prompt = new KadenzeAssn12SubmissionPrompt(w, ki2);
+                KadenzeAssn7SubmissionPrompt prompt = new KadenzeAssn7SubmissionPrompt(w, ki2);
                 prompt.setVisible(true);
             
             } else {
@@ -1070,14 +1072,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         f.toFront();
     }
 
-    private void makeKadenzeAssignment12Menu(KadenzeAssignmentType ka) {
+    private void makeKadenzeAssignment7Menu(KadenzeAssignmentType ka) {
         kadenzeMenuItems = new JMenuItem[2];
-        String s = "Doing Assignment 12";
+        String s = "Doing Assignment 7";
         kadenzeMenuItems[0] = new JMenuItem(s);
         kadenzeMenuItems[0].setEnabled(false);
         menuKadenze.add(kadenzeMenuItems[0]);
 
-        kadenzeMenuItems[1] = new JMenuItem("Create Kadenze Assignment 12 submission");
+        kadenzeMenuItems[1] = new JMenuItem("Create Kadenze Assignment 7 submission");
         kadenzeMenuItems[1].addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {

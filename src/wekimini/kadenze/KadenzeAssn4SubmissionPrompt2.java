@@ -13,7 +13,7 @@ import wekimini.util.Util;
  *
  * @author rebecca
  */
-public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
+public class KadenzeAssn4SubmissionPrompt2 extends javax.swing.JFrame {
 
     private Wekinator w = null;
     private KadenzeAssn7Part2InputInfoReceiver receiver = null;
@@ -21,11 +21,11 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
     /**
      * Creates new form KadenzeInputPromptFrame
      */
-    public KadenzeAssn7SubmissionPrompt2() {
+    public KadenzeAssn4SubmissionPrompt2() {
         initComponents();
     }
 
-    public KadenzeAssn7SubmissionPrompt2(Wekinator w, KadenzeAssn7Part2InputInfoReceiver r) {
+    public KadenzeAssn4SubmissionPrompt2(Wekinator w, KadenzeAssn7Part2InputInfoReceiver r) {
         initComponents();
         this.w = w;
         this.receiver = r;
@@ -328,14 +328,22 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn4SubmissionPrompt2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn4SubmissionPrompt2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn4SubmissionPrompt2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn4SubmissionPrompt2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -348,7 +356,7 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new KadenzeAssn7SubmissionPrompt2().setVisible(true);
+                new KadenzeAssn4SubmissionPrompt2().setVisible(true);
             }
         });
     }
