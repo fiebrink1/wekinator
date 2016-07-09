@@ -32,19 +32,19 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
                 "Assignment 2, Part 2",
                 "Assignment 2, Part 3A",
                 "Assignment 2, Part 3B",
-                "Assignment 5, Part 1A",
-                "Assignment 5, Part 1B",
-                "Assignment 5, Part 1C",
-                "Assignment 5, Part 2",
-                "Assignment 5, Part 3A",
-                "Assignment 5, Part 3B",
-                "Assignment 7, Part 1A",
-                "Assignment 7, Part 1B",
-                "Assignment 7, Part 1C",
-                "Assignment 7, Part 2",
-                "Assignment 11, Part 1",
-                "Assignment 11, Part 2",
-                "Assignment 12"
+                "Assignment 3, Part 1A",
+                "Assignment 3, Part 1B",
+                "Assignment 3, Part 1C",
+                "Assignment 3, Part 2",
+                "Assignment 3, Part 3A",
+                "Assignment 3, Part 3B",
+                "Assignment 4, Part 1A",
+                "Assignment 4, Part 1B",
+                "Assignment 4, Part 1C",
+                "Assignment 4, Part 2",
+                "Assignment 6, Part 1",
+                "Assignment 6, Part 2",
+                "Assignment 7"
             };
 
     private final KadenzeAssignmentType[] assignmentTypes

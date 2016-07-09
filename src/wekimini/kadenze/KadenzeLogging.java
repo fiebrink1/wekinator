@@ -5,9 +5,12 @@
  */
 package wekimini.kadenze;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.IIOException;
 import wekimini.GlobalSettings;
 import wekimini.kadenze.KadenzeAssignment.KadenzeAssignmentType;
@@ -20,7 +23,8 @@ public class KadenzeLogging {
 
     protected static List<KadenzeListener> listenerList = new LinkedList<>();
     private static KadenzeLogger logger = new NoLogger();
-
+    private static final Logger logger2 = Logger.getLogger(KadenzeLogging.class.getName());
+    
     private static boolean isCurrentlyLogging = false;
 
     private static KadenzeAssignmentType currentAssignmentType = KadenzeAssignmentType.NONE;
@@ -130,6 +134,25 @@ public class KadenzeLogging {
     public static KadenzeLogger getLogger() {
         return logger;
     }
+
+    static String getAssignmentSummaryString() {
+        KadenzeAssignmentType ka = KadenzeLogging.getCurrentAssignmentType();
+        KadenzeLogger l = KadenzeLogging.getLogger();
+        String childDir = l.getCurrentLoggingDirectory();
+        File f = new File(childDir);
+        File parent = f.getParentFile();
+        String dir = parent.getAbsolutePath();
+        
+        int which = KadenzeAssignment.getAssignmentNumber(ka);
+        if (which == 2 || which == 3 || which == 4 || which == 6) {
+            return KadenzeUtils.getAssignmentSummaryString(dir, which);
+        } else{
+            logger2.log(Level.WARNING, "Error, no summary available for " + ka.name());
+            return "No assignment information available";
+        }
+    }
+    
+    
 
     public interface KadenzeListener {
         public void assignmentChanged(KadenzeAssignmentType ka);
