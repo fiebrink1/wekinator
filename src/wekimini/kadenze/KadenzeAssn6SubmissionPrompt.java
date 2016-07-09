@@ -89,7 +89,7 @@ public class KadenzeAssn6SubmissionPrompt extends javax.swing.JFrame {
         text3.setRows(4);
         jScrollPane4.setViewportView(text3);
 
-        jLabel6.setText("<html>4. What was the biggest challenge you encountered in making this system work the way you wanted it to? And how did you try to overcome this challenge?</html>");
+        jLabel6.setText("<html>4. What was the biggest challenge you encountered in making this system work the way you wanted it to? And how did you try to overcome this challenge? (Please provide a minimum of 25 words.)</html>");
 
         text4.setColumns(20);
         text4.setRows(4);
@@ -99,7 +99,7 @@ public class KadenzeAssn6SubmissionPrompt extends javax.swing.JFrame {
 
         combo5.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Choose an answer...", "1 - Not at all successful", "2", "3", "4", "5 - Somewhat successful", "6", "7", "8", "9", "10 - Very successful" }));
 
-        jLabel8.setText("<html>6. If you were to give advice to another student trying to build a similar system, what advice would you give?</html>");
+        jLabel8.setText("<html>6. If you were to give advice to another student trying to build a similar system, what advice would you give? (Please provide a minimum of 25 words; more is great!)</html>");
 
         text6.setColumns(20);
         text6.setRows(5);

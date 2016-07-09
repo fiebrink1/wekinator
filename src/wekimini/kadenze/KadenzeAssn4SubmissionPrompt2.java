@@ -92,13 +92,13 @@ public class KadenzeAssn4SubmissionPrompt2 extends javax.swing.JFrame {
         text2.setRows(2);
         jScrollPane3.setViewportView(text2);
 
-        jLabel5.setText("<html>4. Describe in a few sentences how you intend your classification system to be used, and why you find it useful and/or interesting.</html>");
+        jLabel5.setText("<html>4. Describe in a few sentences how you intend your classification system to be used, and why you find it useful and/or interesting. (Please provide a minimum of 25 words.)</html>");
 
         text4.setColumns(20);
         text4.setRows(4);
         jScrollPane4.setViewportView(text4);
 
-        jLabel6.setText("<html>5. What was the biggest challenge you encountered in making this system work the way you wanted it to? And how did you try to overcome this challenge?</html>");
+        jLabel6.setText("<html>5. What was the biggest challenge you encountered in making this system work the way you wanted it to? And how did you try to overcome this challenge? (Please provide a minimum of 25 words.)</html>");
 
         text5.setColumns(20);
         text5.setRows(4);
@@ -108,7 +108,7 @@ public class KadenzeAssn4SubmissionPrompt2 extends javax.swing.JFrame {
 
         combo6.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Choose an answer...", "1 - Not at all successful", "2", "3", "4", "5 - Somewhat successful", "6", "7", "8", "9", "10 - Very successful" }));
 
-        jLabel8.setText("<html>7. If you were to give advice to another student trying to build a similar system, what advice would you give?</html>");
+        jLabel8.setText("<html>7. If you were to give advice to another student trying to build a similar system, what advice would you give? (Please provide a minimum of 25 words, but longer is great!)</html>");
 
         text7.setColumns(20);
         text7.setRows(5);
