@@ -13,9 +13,9 @@ import wekimini.kadenze.NotedCriterion.Outcome;
  *
  * @author rebecca
  */
-public class Assignment11Grade {
+public class Assignment6Grade {
 
-    public Assignment11Grade() {
+    public Assignment6Grade() {
     }
 
     private final NotedCriterion validSubmission = new NotedCriterion("valid_submission");
@@ -30,7 +30,7 @@ public class Assignment11Grade {
     private final NotedCriterion part2_Q5 = new NotedCriterion("part2_q5");
     private final NotedCriterion part2_Q6 = new NotedCriterion("part2_q6");
 
-    private static final Logger logger = Logger.getLogger(Assignment11Grade.class.getName());
+    private static final Logger logger = Logger.getLogger(Assignment6Grade.class.getName());
 
     private Outcome setQuestionOutcomeFromScore(double q1) {
         if (q1 < 0.0001) {
@@ -42,13 +42,13 @@ public class Assignment11Grade {
         }
     }
 
-    public static enum Assignment11Part {
+    public static enum Assignment6Part {
 
         PART1, PART2
     };
 
     //TODO
-    void scorePartFail(Assignment11Part assignmentPart, Outcome outcome) {
+    void scorePartFail(Assignment6Part assignmentPart, Outcome outcome) {
         switch (assignmentPart) {
             case PART1:
                 score1setup(outcome, 0.0);
@@ -66,39 +66,39 @@ public class Assignment11Grade {
 
     public void validSubmission(Outcome o, double score) {
         validSubmission.setScore(score);
-        validSubmission.setNoteWithErrValue(o, "assignment11");
+        validSubmission.setNoteWithErrValue(o, "assignment6");
     }
 
     public void score1setup(Outcome o, double score) {
         part1setup.setScore(score);
-        part1setup.setNoteWithErrValue(o, "assignment11_1");
+        part1setup.setNoteWithErrValue(o, "assignment6_1");
     }
 
     public void score1experimented(Outcome o, double score) {
         part1demonstrated.setScore(score);
-        part1demonstrated.setNoteWithErrValue(o, "assignment11_1");
+        part1demonstrated.setNoteWithErrValue(o, "assignment6_1");
     }
 
     void score1experimented(Outcome o, double score, int totalGesturesSeen) {
         part1demonstrated.setScore(score);
-        part1demonstrated.setNoteWithErrValue(o, "assignment11_1");
+        part1demonstrated.setNoteWithErrValue(o, "assignment6_1");
         String[] vals = {Integer.toString(totalGesturesSeen)};
         part1demonstrated.addVals(vals);
     }
 
     public void score1has4gestures(Outcome o, double score) {
         part1has4gestures.setScore(score);
-        part1has4gestures.setNoteWithErrValue(o, "assignment11_1");
+        part1has4gestures.setNoteWithErrValue(o, "assignment6_1");
     }
 
     public void score2Experimented(Outcome o, double score) {
         part2Experimented.setScore(score);
-        part2Experimented.setNoteWithErrValue(o, "assignment11_2");
+        part2Experimented.setNoteWithErrValue(o, "assignment6_2");
     }
 
     public void score2Experimented(Outcome o, double score, int numRuns) {
         part2Experimented.setScore(score);
-        part2Experimented.setNoteWithErrValue(o, "assignment11_2");
+        part2Experimented.setNoteWithErrValue(o, "assignment6_2");
         String[] vals = {Integer.toString(numRuns)};
         part2Experimented.addVals(vals);
     }
@@ -107,28 +107,28 @@ public class Assignment11Grade {
             double q4, double q5, double q6) {
         part2_Q1.setScore(q1);
         Outcome o = setQuestionOutcomeFromScore(q1);
-        part2_Q1.setNoteWithErrValue(o, "assignment11_2");
+        part2_Q1.setNoteWithErrValue(o, "assignment6_2");
 
         part2_Q2.setScore(q2);
         o = setQuestionOutcomeFromScore(q2);
 
-        part2_Q2.setNoteWithErrValue(o, "assignment11_2");
+        part2_Q2.setNoteWithErrValue(o, "assignment6_2");
 
         part2_Q3.setScore(q3);
         o = setQuestionOutcomeFromScore(q3);
-        part2_Q3.setNoteWithErrValue(o, "assignment11_2");
+        part2_Q3.setNoteWithErrValue(o, "assignment6_2");
 
         part2_Q4.setScore(q4);
         o = setQuestionOutcomeFromScore(q4);
-        part2_Q4.setNoteWithErrValue(o, "assignment11_2");
+        part2_Q4.setNoteWithErrValue(o, "assignment6_2");
 
         part2_Q5.setScore(q5);
         o = setQuestionOutcomeFromScore(q5);
-        part2_Q5.setNoteWithErrValue(o, "assignment11_2");
+        part2_Q5.setNoteWithErrValue(o, "assignment6_2");
 
         part2_Q6.setScore(q6);
         o = setQuestionOutcomeFromScore(q6);
-        part2_Q6.setNoteWithErrValue(o, "assignment11_2");
+        part2_Q6.setNoteWithErrValue(o, "assignment6_2");
     }
 
     public void setCompletelyInvalidSubmission(Outcome o) {

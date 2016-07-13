@@ -29,7 +29,7 @@ public class WekinatorDtwLearningController {
             stopRun();
         }
         m.startRecording(whichGesture-1);
-        w.getStatusUpdateCenter().update(this, "Recording for gesture " + whichGesture + ": waiting for inputs to arrive");
+        w.getStatusUpdateCenter().update(this, "Recording for gesture " + whichGesture + "...");
     }
     
     public void stopRecord() {
@@ -47,7 +47,7 @@ public class WekinatorDtwLearningController {
         if (m.getRunningState() == DtwLearningManager.RunningState.NOT_RUNNING) {
             m.startRunning();
            // KadenzeLogging.getLogger().logStartDtwRun(w);
-            w.getStatusUpdateCenter().update(this, "Running - waiting for inputs to arrive");
+            w.getStatusUpdateCenter().update(this, "Running...");
         }
     }
 

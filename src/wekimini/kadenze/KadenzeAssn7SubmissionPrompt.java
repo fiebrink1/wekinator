@@ -13,19 +13,19 @@ import wekimini.util.Util;
  *
  * @author rebecca
  */
-public class KadenzeAssn12SubmissionPrompt extends javax.swing.JFrame {
+public class KadenzeAssn7SubmissionPrompt extends javax.swing.JFrame {
 
     private Wekinator w = null;
-    private KadenzeAssn12InputInfoReceiver receiver = null;
+    private KadenzeAssn7InputInfoReceiver receiver = null;
 
     /**
      * Creates new form KadenzeInputPromptFrame
      */
-    public KadenzeAssn12SubmissionPrompt() {
+    public KadenzeAssn7SubmissionPrompt() {
         initComponents();
     }
 
-    public KadenzeAssn12SubmissionPrompt(Wekinator w, KadenzeAssn12InputInfoReceiver r) {
+    public KadenzeAssn7SubmissionPrompt(Wekinator w, KadenzeAssn7InputInfoReceiver r) {
         initComponents();
         this.w = w;
         this.receiver = r;
@@ -258,28 +258,28 @@ public class KadenzeAssn12SubmissionPrompt extends javax.swing.JFrame {
             missing = true;
             whichMissing = 1;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_1", s1);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1", s1);
 
         String s2 = replaceNewlines(text2.getText());
         if (s2.length() == 0 && !missing) {
             missing = true;
             whichMissing = 2;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_2", s2);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2", s2);
 
         String s3 = replaceNewlines(text3.getText());
         if (s3.length() == 0 && !missing) {
             missing = true;
             whichMissing = 3;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_3", s3);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_3", s3);
 
         String s4 = replaceNewlines(text4.getText());
         if (s4.length() == 0 && !missing) {
             missing = true;
             whichMissing = 4;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_4", s4);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_4", s4);
 
 
         String s5 = replaceNewlines(text5.getText());
@@ -287,28 +287,28 @@ public class KadenzeAssn12SubmissionPrompt extends javax.swing.JFrame {
             missing = true;
             whichMissing = 5;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_5", s5);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_5", s5);
         
         String s6 = replaceNewlines(text6.getText());
         /*if (s6.length() == 0 && !missing) {
             missing = true;
             whichMissing = 6;
         } */
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_6", s6);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_6", s6);
         
         String s7 = replaceNewlines(text7.getText());
        /* if (s7.length() == 0 && !missing) {
             missing = true;
             whichMissing = 7;
         } */
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_7", s7);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_7", s7);
         
         String s8 = replaceNewlines(text8.getText());
         if (s8.length() == 0 && !missing) {
             missing = true;
             whichMissing = 8;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN12_8", s8);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_8", s8);
         
         if (missing) {
             int result = Util.showPrettyYesNoPane(this, "You are missing an answer to question " + whichMissing + ". Do you wish to continue anyway?", "Missing answers");
@@ -350,14 +350,142 @@ public class KadenzeAssn12SubmissionPrompt extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn12SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn12SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn12SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn12SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -490,12 +618,12 @@ public class KadenzeAssn12SubmissionPrompt extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new KadenzeAssn12SubmissionPrompt().setVisible(true);
+                new KadenzeAssn7SubmissionPrompt().setVisible(true);
             }
         });
     }
 
-    public interface KadenzeAssn12InputInfoReceiver {
+    public interface KadenzeAssn7InputInfoReceiver {
 
         public void infoLogged();
     }

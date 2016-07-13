@@ -14,17 +14,17 @@ import wekimini.util.Util;
  *
  * @author rebecca
  */
-public class KadenzeAssn7SubmissionPrompt1 extends javax.swing.JFrame {
+public class KadenzeAssn4SubmissionPrompt1 extends javax.swing.JFrame {
     private Wekinator w = null;
-    private KadenzeAssn7Part1InputInfoReceiver receiver = null;
+    private KadenzeAssn4Part1InputInfoReceiver receiver = null;
     /**
      * Creates new form KadenzeInputPromptFrame
      */
-    public KadenzeAssn7SubmissionPrompt1() {
+    public KadenzeAssn4SubmissionPrompt1() {
         initComponents();
     }
 
-    public KadenzeAssn7SubmissionPrompt1(Wekinator w, KadenzeAssn7Part1InputInfoReceiver r) {
+    public KadenzeAssn4SubmissionPrompt1(Wekinator w, KadenzeAssn4Part1InputInfoReceiver r) {
         initComponents();
         this.w = w;
         this.receiver = r;
@@ -243,28 +243,28 @@ public class KadenzeAssn7SubmissionPrompt1 extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         int i = comboKnn1B.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1B_KNN", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1B_KNN", Integer.toString(i));
         
         i = comboAdaboost1B.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1B_ADABOOST", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1B_ADABOOST", Integer.toString(i));
         
         i = comboDTree1B.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1B_DTREE", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1B_DTREE", Integer.toString(i));
         
         i = comboSVM1B.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1B_SVM", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1B_SVM", Integer.toString(i));
         
         i = comboKnn1C.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1C_KNN", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1C_KNN", Integer.toString(i));
         
         i = comboAdaboost1C.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1C_ADABOOST", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1C_ADABOOST", Integer.toString(i));
         
         i = comboDTree1C.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1C_DTREE", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1C_DTREE", Integer.toString(i));
         
         i = comboSVM1C.getSelectedIndex();
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_1C_SVM", Integer.toString(i));
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN4_1C_SVM", Integer.toString(i));
 
         if (receiver != null) {
              this.setVisible(false);
@@ -290,14 +290,18 @@ public class KadenzeAssn7SubmissionPrompt1 extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn4SubmissionPrompt1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn4SubmissionPrompt1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn4SubmissionPrompt1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn4SubmissionPrompt1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -306,12 +310,12 @@ public class KadenzeAssn7SubmissionPrompt1 extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new KadenzeAssn7SubmissionPrompt1().setVisible(true);
+                new KadenzeAssn4SubmissionPrompt1().setVisible(true);
             }
         });
     }
     
-    public interface KadenzeAssn7Part1InputInfoReceiver {
+    public interface KadenzeAssn4Part1InputInfoReceiver {
         public void infoLogged();
     }
 

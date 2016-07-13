@@ -391,8 +391,8 @@ public class AssignmentFinalLogger implements KadenzeLogger {
         //ONLY do this for certain assignemnts:
         if (currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART3A
                 || currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART3B
-                || currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT5_PART3A
-                || currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT5_PART3B) {
+                || currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT3_PART3A
+                || currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT3_PART3B) {
 
             StringBuilder sb = new StringBuilder();
             sb.append(ts());
@@ -424,7 +424,7 @@ public class AssignmentFinalLogger implements KadenzeLogger {
     @Override
     //DTW Tested
     public void dtwRunData(Wekinator w, double[] inputs, double[] outputs, int recognizedGesture) {
-        if (currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT11_PART1) {
+        if (currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT6_PART1) {
             StringBuilder infoString = new StringBuilder();
             infoString.append("REC_GEST=").append(recognizedGesture);
             infoString.append(",NUM_IN=").append(inputs.length);

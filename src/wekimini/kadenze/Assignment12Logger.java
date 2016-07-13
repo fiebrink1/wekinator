@@ -49,7 +49,7 @@ import wekimini.osc.OSCOutputGroup;
 public class Assignment12Logger implements KadenzeLogger {
 
     private static final int version = 2;
-    private static final String dateString = "2016/02/20";
+    private static final String dateString = "2016/07/09";
     private FileOutputStream fos = null;
     private OutputStreamWriter osw = null;
     private PrintWriter pw = null;
@@ -411,8 +411,8 @@ public class Assignment12Logger implements KadenzeLogger {
         //ONLY do this for certain assignemnts:
         if (currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART3A ||
                 currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT2_PART3B ||
-                currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT5_PART3A || 
-                currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT5_PART3B){
+                currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT3_PART3A || 
+                currentAssignmentType == KadenzeAssignmentType.ASSIGNMENT3_PART3B){
 
             StringBuilder sb = new StringBuilder();
             sb.append(ts());

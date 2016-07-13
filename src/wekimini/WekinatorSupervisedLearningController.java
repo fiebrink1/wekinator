@@ -3,12 +3,10 @@
  */
 package wekimini;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
+import wekimini.kadenze.KadenzeUtils;
 
 /**
  *
@@ -17,6 +15,8 @@ import wekimini.kadenze.KadenzeLogging;
 public class WekinatorSupervisedLearningController {
     private final SupervisedLearningManager m;
     private final Wekinator w;
+    private long start =0;
+
     
     public WekinatorSupervisedLearningController(SupervisedLearningManager m, Wekinator w) {
         this.m = m;
@@ -29,7 +29,7 @@ public class WekinatorSupervisedLearningController {
             stopRun();
         }
         m.startRecording();
-        w.getStatusUpdateCenter().update(this, "Recording - waiting for inputs to arrive");
+        w.getStatusUpdateCenter().update(this, "Recording...");
     }
     
     public void stopRecord() {
@@ -71,15 +71,34 @@ public class WekinatorSupervisedLearningController {
         if (m.getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING) {
            m.setRunningState(SupervisedLearningManager.RunningState.RUNNING);
            KadenzeLogging.getLogger().logStartSupervisedRun(w);
-           w.getStatusUpdateCenter().update(this, "Running - waiting for inputs to arrive");
+           if (WekiMiniRunner.isKadenze()) {
+               startRunTimer();
+           }
+           w.getStatusUpdateCenter().update(this, "Running...");
         }
     }
 
     public void stopRun() {
         m.setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.RUN_STOP);
-        w.getStatusUpdateCenter().update(this, "Running stopped");
+        if (WekiMiniRunner.isKadenze()) {
+            String s = "Running stopped (Run time = " + getRunTime() + "s)";
+            w.getStatusUpdateCenter().update(this, s);
+        } else {
+            w.getStatusUpdateCenter().update(this, "Running stopped");
+        }
     }
+    
+    public void startRunTimer() {
+        start = System.currentTimeMillis();
+    }
+
+    public String getRunTime() {
+        long now = System.currentTimeMillis();
+        double runTime = (now - start) / 1000.0;
+        return KadenzeUtils.formatDouble(runTime);
+    }
+  
 
     /*public void deleteAllExamples() {
         m.deleteAllExamples();

@@ -13,19 +13,19 @@ import wekimini.util.Util;
  *
  * @author rebecca
  */
-public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
+public class KadenzeAssn6SubmissionPrompt extends javax.swing.JFrame {
 
     private Wekinator w = null;
-    private KadenzeAssn7Part2InputInfoReceiver receiver = null;
+    private KadenzeAssn6Part2InputInfoReceiver receiver = null;
 
     /**
      * Creates new form KadenzeInputPromptFrame
      */
-    public KadenzeAssn7SubmissionPrompt2() {
+    public KadenzeAssn6SubmissionPrompt() {
         initComponents();
     }
 
-    public KadenzeAssn7SubmissionPrompt2(Wekinator w, KadenzeAssn7Part2InputInfoReceiver r) {
+    public KadenzeAssn6SubmissionPrompt(Wekinator w, KadenzeAssn6Part2InputInfoReceiver r) {
         initComponents();
         this.w = w;
         this.receiver = r;
@@ -47,22 +47,19 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         text1 = new javax.swing.JTextArea();
         jLabel3 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        text3 = new javax.swing.JTextArea();
-        jLabel4 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         text2 = new javax.swing.JTextArea();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        text4 = new javax.swing.JTextArea();
+        text3 = new javax.swing.JTextArea();
         jLabel6 = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
-        text5 = new javax.swing.JTextArea();
+        text4 = new javax.swing.JTextArea();
         jLabel7 = new javax.swing.JLabel();
-        combo6 = new javax.swing.JComboBox();
+        combo5 = new javax.swing.JComboBox();
         jLabel8 = new javax.swing.JLabel();
         jScrollPane6 = new javax.swing.JScrollPane();
-        text7 = new javax.swing.JTextArea();
+        text6 = new javax.swing.JTextArea();
         jPanel3 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
@@ -82,37 +79,31 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
 
         jLabel3.setText("<html>2. What output(s) did you use for Part 2? (Briefly describe programming environment and effects controlled)</html>");
 
-        text3.setColumns(20);
-        text3.setRows(1);
-        jScrollPane2.setViewportView(text3);
-
-        jLabel4.setText("<html>3. What classification algorithm(s) did you end up using in your final version?</html>");
-
         text2.setColumns(20);
         text2.setRows(2);
         jScrollPane3.setViewportView(text2);
 
-        jLabel5.setText("<html>4. Describe in a few sentences how you intend your classification system to be used, and why you find it useful and/or interesting.</html>");
+        jLabel5.setText("<html>3. Describe in a few sentences how you intend your DTW system to be used, and why you find it useful and/or interesting.</html>");
+
+        text3.setColumns(20);
+        text3.setRows(4);
+        jScrollPane4.setViewportView(text3);
+
+        jLabel6.setText("<html>4. What was the biggest challenge you encountered in making this system work the way you wanted it to? And how did you try to overcome this challenge? (Please provide a minimum of 25 words.)</html>");
 
         text4.setColumns(20);
         text4.setRows(4);
-        jScrollPane4.setViewportView(text4);
+        jScrollPane5.setViewportView(text4);
 
-        jLabel6.setText("<html>5. What was the biggest challenge you encountered in making this system work the way you wanted it to? And how did you try to overcome this challenge?</html>");
+        jLabel7.setText("5. How successful were you in building a DTW recognition system that worked the way you wanted it to?");
 
-        text5.setColumns(20);
-        text5.setRows(4);
-        jScrollPane5.setViewportView(text5);
+        combo5.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Choose an answer...", "1 - Not at all successful", "2", "3", "4", "5 - Somewhat successful", "6", "7", "8", "9", "10 - Very successful" }));
 
-        jLabel7.setText("6. How successful were you in building a classifier that worked the way you wanted it to?");
+        jLabel8.setText("<html>6. If you were to give advice to another student trying to build a similar system, what advice would you give? (Please provide a minimum of 25 words; more is great!)</html>");
 
-        combo6.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Choose an answer...", "1 - Not at all successful", "2", "3", "4", "5 - Somewhat successful", "6", "7", "8", "9", "10 - Very successful" }));
-
-        jLabel8.setText("<html>7. If you were to give advice to another student trying to build a similar system, what advice would you give?</html>");
-
-        text7.setColumns(20);
-        text7.setRows(5);
-        jScrollPane6.setViewportView(text7);
+        text6.setColumns(20);
+        text6.setRows(5);
+        jScrollPane6.setViewportView(text6);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -121,7 +112,6 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2)
                     .addComponent(jScrollPane4)
                     .addComponent(jScrollPane1)
                     .addComponent(jScrollPane3)
@@ -132,13 +122,12 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
                                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 612, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 612, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 612, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 612, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 612, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 612, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(combo6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(combo5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 612, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 27, Short.MAX_VALUE))
                     .addComponent(jScrollPane6))
                 .addContainerGap())
         );
@@ -154,10 +143,6 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -165,15 +150,15 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(combo6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(combo5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jScrollPane7.setViewportView(jPanel1);
@@ -226,7 +211,7 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 406, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))
@@ -244,50 +229,44 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
             missing = true;
             whichMissing = 1;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_1", s1);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN6_2_1", s1);
 
         String s2 = replaceNewlines(text2.getText());
         if (s2.length() == 0 && !missing) {
             missing = true;
             whichMissing = 2;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_2", s2);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN6_2_2", s2);
 
         String s3 = replaceNewlines(text3.getText());
         if (s3.length() == 0 && !missing) {
             missing = true;
             whichMissing = 3;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_3", s3);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN6_2_3", s3);
 
         String s4 = replaceNewlines(text4.getText());
         if (s4.length() == 0 && !missing) {
             missing = true;
             whichMissing = 4;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_4", s4);
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN6_2_4", s4);
 
-        String s5 = replaceNewlines(text5.getText());
-        if (s5.length() == 0 && !missing) {
+
+        int i = combo5.getSelectedIndex();
+        if (i == 0 && !missing) {
             missing = true;
             whichMissing = 5;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_5", s5);
-
-        int i = combo6.getSelectedIndex();
-        if (i == 0 && !missing) {
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN6_2_5", Integer.toString(i));
+        
+        String s6 = replaceNewlines(text6.getText());
+        if (s6.length() == 0 && !missing) {
             missing = true;
             whichMissing = 6;
         }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_6", Integer.toString(i));
-
-        String s7 = replaceNewlines(text7.getText());
-        if (s7.length() == 0 && !missing) {
-            missing = true;
-            whichMissing = 7;
-        }
-        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN7_2_7", s7);
-
+        KadenzeLogging.getLogger().logWrittenQuestion(w, "ASSN6_2_6", s6);
+        
         if (missing) {
             int result = Util.showPrettyYesNoPane(this, "You are missing an answer to question " + whichMissing + ". Do you wish to continue anyway?", "Missing answers");
             if (result != JOptionPane.YES_OPTION) {
@@ -328,14 +307,38 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn6SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn6SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn6SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(KadenzeAssn7SubmissionPrompt2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KadenzeAssn6SubmissionPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -348,12 +351,12 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new KadenzeAssn7SubmissionPrompt2().setVisible(true);
+                new KadenzeAssn6SubmissionPrompt().setVisible(true);
             }
         });
     }
 
-    public interface KadenzeAssn7Part2InputInfoReceiver {
+    public interface KadenzeAssn6Part2InputInfoReceiver {
 
         public void infoLogged();
     }
@@ -363,12 +366,11 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox combo6;
+    private javax.swing.JComboBox combo5;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -377,7 +379,6 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
@@ -387,7 +388,6 @@ public class KadenzeAssn7SubmissionPrompt2 extends javax.swing.JFrame {
     private javax.swing.JTextArea text2;
     private javax.swing.JTextArea text3;
     private javax.swing.JTextArea text4;
-    private javax.swing.JTextArea text5;
-    private javax.swing.JTextArea text7;
+    private javax.swing.JTextArea text6;
     // End of variables declaration//GEN-END:variables
 }

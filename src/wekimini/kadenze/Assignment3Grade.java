@@ -13,9 +13,9 @@ import wekimini.kadenze.NotedCriterion.Outcome;
  *
  * @author rebecca
  */
-public class Assignment5Grade {
+public class Assignment3Grade {
 
-    public Assignment5Grade() {
+    public Assignment3Grade() {
     }
 
     private final NotedCriterion validSubmission = new NotedCriterion("valid_submission");
@@ -30,14 +30,14 @@ public class Assignment5Grade {
     private final NotedCriterion part2Experimented = new NotedCriterion("part2_experimented");
     private final NotedCriterion part3aBuiltRegression = new NotedCriterion("part3a_built_regression");
     private final NotedCriterion part3bModelAccuracy = new NotedCriterion("part3b_model_accuracy");
-    private static final Logger logger = Logger.getLogger(Assignment5Grade.class.getName());
+    private static final Logger logger = Logger.getLogger(Assignment3Grade.class.getName());
 
-    public static enum Assignment5Part {
+    public static enum Assignment3Part {
 
         PART1A, PART1B, PART1C, PART2, PART3A, PART3B
     };
 
-    void scorePartFail(Assignment5Part assignmentPart, Outcome outcome) {
+    void scorePartFail(Assignment3Part assignmentPart, Outcome outcome) {
         switch (assignmentPart) {
             case PART1A:
                 score1aSetup(outcome, 0.0);
@@ -69,17 +69,17 @@ public class Assignment5Grade {
 
     public void validSubmission(Outcome o, double score) {
         validSubmission.setScore(score);
-        validSubmission.setNoteWithErrValue(o, "assignment5");
+        validSubmission.setNoteWithErrValue(o, "assignment3");
     }
 
     public void score1aSetup(Outcome o, double score) {
         part1aCorrectSetup.setScore(score);
-        part1aCorrectSetup.setNoteWithErrValue(o, "assignment5_1A");
+        part1aCorrectSetup.setNoteWithErrValue(o, "assignment3_1A");
     }
 
     public void score1aExperimented(Outcome o, double score) {
         part1aExperimented.setScore(score);
-        part1aExperimented.setNoteWithErrValue(o, "assignment5_1A");
+        part1aExperimented.setNoteWithErrValue(o, "assignment3_1A");
     }
 
     public void score1aExperimented_addValues(String algorithmList, int numTrain, int numRun) {
@@ -94,7 +94,7 @@ public class Assignment5Grade {
 
     public void score1bModelType(Outcome o, double score) {
         part1bUsedCorrectModel.setScore(score);
-        part1bUsedCorrectModel.setNoteWithErrValue(o, "assignment5_1B");
+        part1bUsedCorrectModel.setNoteWithErrValue(o, "assignment3_1B");
     }
     
     public void score1bModelType_addValues(String modelType, int numInputs, int numOutputs) {
@@ -104,7 +104,7 @@ public class Assignment5Grade {
 
     public void score1bModelQuality(Outcome o, double score, double RMS) {
         part1bQuality.setScore(score);
-        part1bQuality.setNoteWithErrValue(o, "assignment5_1B");
+        part1bQuality.setNoteWithErrValue(o, "assignment3_1B");
         if (o == Outcome.SUCCESS) {
             part1bQuality.setValue("val", KadenzeUtils.formatDouble(RMS));
         }
@@ -112,7 +112,7 @@ public class Assignment5Grade {
     
     public void score1bNumExamples(Outcome o, double score, int numExamples) {
         part1bNumExamples.setScore(score);
-        part1bNumExamples.setNoteWithErrValue(o, "assignment5_1B");
+        part1bNumExamples.setNoteWithErrValue(o, "assignment3_1B");
         if (o == Outcome.SUCCESS) { //TODO: HELP HERE!
             part1bNumExamples.setValue("val", Integer.toString(numExamples));
         }
@@ -122,7 +122,7 @@ public class Assignment5Grade {
 
     public void score1cModelType(Outcome o, double score) {
         part1cUsedCorrectModel.setScore(score);
-        part1cUsedCorrectModel.setNoteWithErrValue(o, "assignment5_1C");
+        part1cUsedCorrectModel.setNoteWithErrValue(o, "assignment3_1C");
     }
     
     public void score1cModelType_addValues(String modelType, int numInputs, int numOutputs) {
@@ -132,7 +132,7 @@ public class Assignment5Grade {
 
     public void score1cModelQuality(Outcome o, double score, double RMS) {
         part1cQuality.setScore(score);
-        part1cQuality.setNoteWithErrValue(o, "assignment5_1C");
+        part1cQuality.setNoteWithErrValue(o, "assignment3_1C");
         if (o == Outcome.SUCCESS) {
             part1cQuality.setValue("val", KadenzeUtils.formatDouble(RMS));
         }
@@ -141,7 +141,7 @@ public class Assignment5Grade {
         
     public void score1cNumExamples(Outcome o, double score, int numExamples) {
         part1cNumExamples.setScore(score);
-        part1cNumExamples.setNoteWithErrValue(o, "assignment5_1C");
+        part1cNumExamples.setNoteWithErrValue(o, "assignment3_1C");
         if (o == Outcome.SUCCESS) {
             part1cNumExamples.setValue("val", Integer.toString(numExamples));
         }
@@ -149,12 +149,12 @@ public class Assignment5Grade {
 
     public void score2Experimented(Outcome o, double score) {
         part2Experimented.setScore(score);
-        part2Experimented.setNoteWithErrValue(o, "assignment5_2");
+        part2Experimented.setNoteWithErrValue(o, "assignment3_2");
     }
 
     public void score3ABuiltRegression(Outcome o, double score) {
         part3aBuiltRegression.setScore(score);
-        part3aBuiltRegression.setNoteWithErrValue(o, "assignment5_3a");
+        part3aBuiltRegression.setNoteWithErrValue(o, "assignment3_3a");
     }
 
     public void score3bModelQuality(Outcome o, double score) {
@@ -163,7 +163,7 @@ public class Assignment5Grade {
         if (o == Outcome.COULD_BE_BETTER || o == Outcome.SUCCESS) {
             part3bModelAccuracy.setNote(o, KadenzeUtils.formatDouble(score * 100));
         } else {
-            part3bModelAccuracy.setNoteWithErrValue(o, "assignment5_3b");
+            part3bModelAccuracy.setNoteWithErrValue(o, "assignment3_3b");
         }
     }
 
