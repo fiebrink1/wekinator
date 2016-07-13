@@ -118,19 +118,7 @@ public class CppWriter {
             cppPrint.printf("    delete *i;\n");
             cppPrint.printf("}\n};\n\n");
             cppPrint.printf("void wekiModelSet::initModelSet() {\n");
-            cppPrint.printf("   std::vector<int> whichInputs;\n");
-            cppPrint.printf("   int totalLayers;\n");
-            cppPrint.printf("   int maxNodes;\n");
-            cppPrint.printf("   double ***weights;\n");
-            cppPrint.printf("   double *wHiddenOutput;\n");
-            cppPrint.printf("   std::vector<double> inMaxes;\n");
-            cppPrint.printf("   std::vector<double> inMins;\n");
-            cppPrint.printf("   double outMax;\n");
-            cppPrint.printf("   double outMin;\n");
-            cppPrint.printf("   std::vector<neighbour> neighbours;\n");
-            cppPrint.printf("   int numExamples;\n");
-            cppPrint.printf("   int k;\n");
-            cppPrint.printf("   int numClasses;\n\n");           
+            cppPrint.printf("   std::vector<int> whichInputs;\n");     
         }
     }
  
@@ -266,17 +254,17 @@ public class CppWriter {
                 cppPrint.printf("		} else if (euclidianDistance < farthestNN.second) {\n");
                 cppPrint.printf("			//replace farthest, if new neighbour is closer\n");
                 cppPrint.printf("			nearestNeighbours[farthestNN.first] = {i, euclidianDistance};\n");
-                cppPrint.printf("			int currentFarthest = 0;\n" +
-"            double currentFarthestDistance = 0.;\n" +
-"            for (int n = 0; n < numNeighbours; n++) {\n" +
-"                if (nearestNeighbours[n].second > currentFarthestDistance) {\n" +
-"                    currentFarthest = n;\n" +
-"                    currentFarthestDistance = nearestNeighbours[n].second;\n" +
-"                }\n" +
-"            }\n" +
-"            farthestNN = {currentFarthest, currentFarthestDistance};\n" +
-"        }\n" +
-"    }");
+                cppPrint.printf("			int currentFarthest = 0;\n");
+                cppPrint.printf("            double currentFarthestDistance = 0.;\n");
+                cppPrint.printf("            for (int n = 0; n < numNeighbours; n++) {\n");
+                cppPrint.printf("                if (nearestNeighbours[n].second > currentFarthestDistance) {\n");
+                cppPrint.printf("                    currentFarthest = n;\n");
+                cppPrint.printf("                    currentFarthestDistance = nearestNeighbours[n].second;\n");
+                cppPrint.printf("                }\n");
+                cppPrint.printf("            }\n");
+                cppPrint.printf("            farthestNN = {currentFarthest, currentFarthestDistance};\n");
+                cppPrint.printf("        }\n");
+                cppPrint.printf("    }\n\n");
                 cppPrint.printf("	//majority vote on nearest neighbours\n");
                 cppPrint.printf("	int* numVotesPerClass;\n");
                 cppPrint.printf("	numVotesPerClass = new int[numClasses];\n");
@@ -297,7 +285,16 @@ public class CppWriter {
                 cppPrint.printf("	return foundClass;\n");
                 cppPrint.printf("}\n");
             }
-        }     
+            //append to model set code
+            String mscName = location + "wekiModelSet.cpp";
+            FileWriter mscWrite = new FileWriter(mscName, true);
+            try (PrintWriter cppPrint = new PrintWriter(mscWrite)) {
+                cppPrint.printf("   std::vector<neighbour> neighbours;\n");
+                cppPrint.printf("   int numExamples;\n");
+                cppPrint.printf("   int k;\n");
+                cppPrint.printf("   int numClasses;\n\n");
+            }
+        }
     }
     
     private void writeKnnSetup(int whichPath,
@@ -499,6 +496,19 @@ public class CppWriter {
                 cppPrint.printf("       output = (output * outRange) + outBase;\n");
                 cppPrint.printf("	return output;\n");
                 cppPrint.printf("}\n\n");
+            }
+            //append to model set code
+            String mscName = location + "wekiModelSet.cpp";
+            FileWriter mscWrite = new FileWriter(mscName, true);
+            try (PrintWriter cppPrint = new PrintWriter(mscWrite)) {
+                cppPrint.printf("   int totalLayers;\n");
+                cppPrint.printf("   int maxNodes;\n");
+                cppPrint.printf("   double ***weights;\n");
+                cppPrint.printf("   double *wHiddenOutput;\n");
+                cppPrint.printf("   std::vector<double> inMaxes;\n");
+                cppPrint.printf("   std::vector<double> inMins;\n");
+                cppPrint.printf("   double outMax;\n");
+                cppPrint.printf("   double outMin;\n\n");
             }
         }
     }
