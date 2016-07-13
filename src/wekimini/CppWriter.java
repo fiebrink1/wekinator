@@ -130,7 +130,7 @@ public class CppWriter {
             cppPrint.printf("};\n\n");
             cppPrint.printf("wekiModelSet::~wekiModelSet() {\n");
             cppPrint.printf("    for (std::vector<baseModel*>::iterator i = myModelSet.begin(); i != myModelSet.end(); ++i) {\n");
-            cppPrint.printf("    delete *i\n");
+            cppPrint.printf("    delete *i;\n");
             cppPrint.printf("}\n};\n\n");
             cppPrint.printf("void wekiModelSet::initModelSet() {\n");
             cppPrint.printf("   std::vector<int> whichInputs;\n");
@@ -138,7 +138,7 @@ public class CppWriter {
             cppPrint.printf("   int maxNodes;\n");
             cppPrint.printf("   double ***weights;\n");
             cppPrint.printf("   double *wHiddenOutput;\n");
-            cppPrint.printf("   std::vector <double> inMaxes;\n");
+            cppPrint.printf("   std::vector<double> inMaxes;\n");
             cppPrint.printf("   std::vector<double> inMins;\n");
             cppPrint.printf("   double outMax;\n");
             cppPrint.printf("   double outMin;\n");
@@ -167,7 +167,7 @@ public class CppWriter {
     }
 
     private void writeReadMe(String location) throws IOException {
-        String readMeName = location + "read_me.cpp";
+        String readMeName = location + "read_me.txt";
         File r = new File(readMeName);
         FileWriter readMeWrite = new FileWriter(readMeName, true);
         try (PrintWriter readMePrint = new PrintWriter(readMeWrite)) {
@@ -627,7 +627,7 @@ public class CppWriter {
                     outMin = outValue;
                 }
             }
-            cppPrint.printf("   inMaxes.clear()\n");
+            cppPrint.printf("   inMaxes.clear();\n");
             for (int i = 0; i < numInputs; ++i) {
                 cppPrint.printf("   inMaxes.push_back(");
                 cppPrint.printf(Double.toString(inMaxes[i]));
