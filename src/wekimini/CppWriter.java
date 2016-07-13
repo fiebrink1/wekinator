@@ -80,7 +80,6 @@ public class CppWriter {
     private void writeBaseModelHeader(String location) throws IOException {
         //write header
         String headerName = location + "baseModel.h";
-        File h = new File(headerName);
         FileWriter headerWrite = new FileWriter(headerName, true);
         try (PrintWriter headerPrint = new PrintWriter(headerWrite)) {
             headerPrint.printf("#ifndef baseModel_h\n");
@@ -97,30 +96,16 @@ public class CppWriter {
     private void writeModelSet(String location) throws IOException {
         //write header
         String headerName = location + "wekiModelSet.h";
-        File h = new File(headerName);
         FileWriter headerWrite = new FileWriter(headerName, true);
         try (PrintWriter headerPrint = new PrintWriter(headerWrite)) {
             headerPrint.printf("#ifndef modelSet_h\n");
             headerPrint.printf("#define modelSet_h\n\n");
             headerPrint.printf("#include <vector>\n");
             headerPrint.printf("#include \"baseModel.h\"\n");
-            headerPrint.printf("#include \"knnClassification.h\"\n");
-            headerPrint.printf("#include \"neuralNetwork.h\"\n\n");
-            headerPrint.printf("class wekiModelSet {\n");
-            headerPrint.printf("public:\n");
-            headerPrint.printf("    wekiModelSet();\n");
-            headerPrint.printf("    ~wekiModelSet();\n");
-            headerPrint.printf("    void initModelSet();\n");
-            headerPrint.printf("    double* passInputToModels(double*);\n\n");
-            headerPrint.printf("private:\n");
-            headerPrint.printf("    std::vector<baseModel*> myModelSet;\n");
-            headerPrint.printf("};\n\n");
-            headerPrint.printf("#endif");
         }
         
         //write cpp
         String cppName = location + "wekiModelSet.cpp";
-        File c = new File(cppName);
         FileWriter cppWrite = new FileWriter(cppName, true);
         try (PrintWriter cppPrint = new PrintWriter(cppWrite)) {
             cppPrint.printf("#include <vector>\n");
@@ -150,8 +135,24 @@ public class CppWriter {
     }
  
     public void writeModelSetEnd(String location) throws IOException {
+        //write header
+        String headerName = location + "wekiModelSet.h";
+        FileWriter headerWrite = new FileWriter(headerName, true);
+        try (PrintWriter headerPrint = new PrintWriter(headerWrite)) {
+            headerPrint.printf("\nclass wekiModelSet {\n");
+            headerPrint.printf("public:\n");
+            headerPrint.printf("    wekiModelSet();\n");
+            headerPrint.printf("    ~wekiModelSet();\n");
+            headerPrint.printf("    void initModelSet();\n");
+            headerPrint.printf("    double* passInputToModels(double*);\n\n");
+            headerPrint.printf("private:\n");
+            headerPrint.printf("    std::vector<baseModel*> myModelSet;\n");
+            headerPrint.printf("};\n\n");
+            headerPrint.printf("#endif");
+        }
+        
+        //write cpp
         String cppName = location + "wekiModelSet.cpp";
-        File c = new File(cppName);
         FileWriter cppWrite = new FileWriter(cppName, true);
         try (PrintWriter cppPrint = new PrintWriter(cppWrite)) {
             cppPrint.printf("}\n\n");
@@ -168,7 +169,6 @@ public class CppWriter {
 
     private void writeReadMe(String location) throws IOException {
         String readMeName = location + "read_me.txt";
-        File r = new File(readMeName);
         FileWriter readMeWrite = new FileWriter(readMeName, true);
         try (PrintWriter readMePrint = new PrintWriter(readMeWrite)) {
             readMePrint.printf("//To use Wekinator models, insert the following code into your project\n\n");
@@ -212,6 +212,13 @@ public class CppWriter {
                 headerPrint.printf("	std::pair<int, double>* nearestNeighbours;\n");
                 headerPrint.printf("};\n\n");
                 headerPrint.printf("#endif\n\n");
+            }
+            //append to modelSet header
+            String mshName = location + "wekiModelSet.h";
+            File msh = new File(mshName);
+            FileWriter mshWrite = new FileWriter(mshName, true);
+            try (PrintWriter headerPrint = new PrintWriter(mshWrite)) {
+                headerPrint.printf("#include \"knnClassification.h\"\n");
             }
         }
 
@@ -384,6 +391,13 @@ public class CppWriter {
                 headerPrint.printf("	inline double activationFunction(double);\n");
                 headerPrint.printf("};\n\n");
                 headerPrint.printf("#endif\n\n");
+            }
+             //append to modelSet header
+            String mshName = location + "wekiModelSet.h";
+            File msh = new File(mshName);
+            FileWriter mshWrite = new FileWriter(mshName, true);
+            try (PrintWriter headerPrint = new PrintWriter(mshWrite)) {
+                headerPrint.printf("#include \"neuralNetwork.h\"\n");
             }
         }
 
