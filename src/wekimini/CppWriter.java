@@ -266,8 +266,7 @@ public class CppWriter {
                 cppPrint.printf("        }\n");
                 cppPrint.printf("    }\n\n");
                 cppPrint.printf("	//majority vote on nearest neighbours\n");
-                cppPrint.printf("	int* numVotesPerClass;\n");
-                cppPrint.printf("	numVotesPerClass = new int[numClasses];\n");
+                cppPrint.printf("	std::vector<int> numVotesPerClass;\n");
                 cppPrint.printf("	for (int i=0; i < numClasses; ++i) {\n");
                 cppPrint.printf("           numVotesPerClass[i] = 0;\n");
                 cppPrint.printf("	}\n");

@@ -200,7 +200,7 @@ public class JsonFileWriter {
         //Start JSON Object
         s.object();
         s.key("modelType");
-        s.value("Neural Network");
+        s.value("kNN classification");
         s.key("numInputs");
         s.value(numInputs);
         s.key("inputNames");

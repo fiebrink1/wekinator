@@ -37,7 +37,7 @@ public class WekinatorSaver {
     private final static String inputFilename = File.separator + "inputConfig.xml";
     private final static String outputFilename = File.separator + "outputConfig.xml";
     private final static String dataFilename = File.separator + currentAppend + File.separator + "currentData"; //No extension: Will not be arff for DTW
-    private final static String jsonFilename = File.separator + currentAppend + File.separator + "modelSetDescription.txt";
+    private final static String jsonFilename = File.separator + currentAppend + File.separator + "modelSetDescription.json";
 
     private static final Logger logger = Logger.getLogger(WekinatorSaver.class.getName());
 
