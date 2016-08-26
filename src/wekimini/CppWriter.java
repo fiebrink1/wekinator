@@ -115,8 +115,8 @@ public class CppWriter {
             cppPrint.printf("};\n\n");
             cppPrint.printf("wekiModelSet::~wekiModelSet() {\n");
             cppPrint.printf("    for (std::vector<baseModel*>::iterator i = myModelSet.begin(); i != myModelSet.end(); ++i) {\n");
-            cppPrint.printf("    delete *i;\n");
-            cppPrint.printf("}\n};\n\n");
+            cppPrint.printf("        delete *i;\n");
+            cppPrint.printf("    }\n};\n\n");
             cppPrint.printf("void wekiModelSet::initModelSet() {\n");
             cppPrint.printf("   std::vector<int> whichInputs;\n");     
         }
@@ -658,7 +658,7 @@ public class CppWriter {
                 cppPrint.printf(");\n");
             }
             cppPrint.printf("\n");
-            cppPrint.printf("   inMins.clear();");
+            cppPrint.printf("   inMins.clear();\n");
             for (int i = 0; i < numInputs; ++i) {
                 cppPrint.printf("   inMins.push_back(");
                 cppPrint.printf(Double.toString(inMins[i]));

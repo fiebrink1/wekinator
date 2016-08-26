@@ -1,0 +1,261 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package wekimini;
+
+import java.io.FileWriter;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONStringer;
+import weka.core.Instances;
+import wekimini.learning.KNNModelBuilder;
+import wekimini.learning.Model;
+import wekimini.learning.NeuralNetModelBuilder;
+import wekimini.learning.NeuralNetModelBuilder.HiddenLayerType;
+import wekimini.learning.NeuralNetworkModel;
+import wekimini.osc.OSCOutput;
+
+/**
+ *
+ * @author mzed
+ */
+public class JsonFileWriter {
+
+    private final JSONStringer s;
+
+    public JsonFileWriter() {
+        this.s = new JSONStringer();
+    }
+
+    private static final Logger logger = Logger.getLogger(JsonFileWriter.class.getName());
+
+    public void setup(String[] allInputNames) {
+        try {
+            setupJSON(allInputNames);
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "Could not write json head {0}", ex.getMessage());
+        }
+    }
+
+    public void writePath(
+            int whichPath,
+            String fileName,
+            List<String> inputNames,
+            LearningModelBuilder modelBuilder,
+            Model model,
+            Instances insts) throws IOException {
+        if (modelBuilder instanceof NeuralNetModelBuilder) {
+            try {
+                writeNnModel(whichPath, fileName, inputNames, modelBuilder, model);
+            } catch (Exception ex) {
+                logger.log(Level.WARNING, "Could not write to NN model to JSON file {0}", ex.getMessage());
+            }
+        } else if (modelBuilder instanceof KNNModelBuilder) {
+            try {
+                // writekNnModel(whichPath, fileName, model);
+            } catch (Exception ex) {
+                logger.log(Level.WARNING, "Could not write kNN model to JSON file {0}", ex.getMessage());
+            }
+        } else {
+            logger.log(Level.INFO, "Cannot write C++ for this kind of model.");
+        }
+    }
+
+    public void writeFoot(String fileName) throws IOException {
+        try {
+            closeAndWrite(fileName);
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "Could not write json foot {0}", ex.getMessage());
+        }
+    }
+
+    private void writeNnModel(
+            int whichPath,
+            String fileName,
+            List<String> inputNames,
+            LearningModelBuilder modelBuilder,
+            Model model) throws IOException {
+        String thisName = fileName;
+        int numInputs = inputNames.size();
+        int numHiddenNodes = 1;
+        int numHiddenLayers = 1;
+
+        NeuralNetModelBuilder nmb = (NeuralNetModelBuilder) modelBuilder;
+        HiddenLayerType htp = nmb.getHiddenLayerType();
+        if (htp == HiddenLayerType.NUM_FEATURES) {
+            numHiddenNodes = numInputs;
+        } else {
+            numHiddenNodes = nmb.getNumNodesPerHiddenLayer();
+        }
+        numHiddenLayers = nmb.getNumHiddenLayers();
+        NeuralNetworkModel nnm = (NeuralNetworkModel) model;
+        String modelDescription = nnm.getModelDescription();
+        String modelDescriptionLines[] = modelDescription.split("\\r?\\n");
+
+        //Start JSON Object
+        s.object();
+        s.key("modelType");
+        s.value("Neural Network");
+        s.key("numInputs");
+        s.value(numInputs);
+        s.key("inputNames");
+        s.value(inputNames);
+        s.key("numHiddenLayers");
+        s.value(numHiddenLayers);
+        s.key("numHiddenNodes");
+        s.value(numHiddenNodes);
+        s.key("numOutputs");
+        s.value(1);
+        /////////////////////////////////////////////////
+        s.key("nodes");
+        s.array();
+        // Output Node NB: This assumes one output node
+        s.object();
+        s.key("name");
+        s.value(modelDescriptionLines[0]);
+        String threshWeight[] = modelDescriptionLines[2].split("\\s+");
+        s.key(threshWeight[1]);
+        s.value(threshWeight[2]);
+        for (int i = 3; i < numHiddenNodes + 3; ++i) {
+            String nodeWeight[] = modelDescriptionLines[i].split("\\s+");
+            s.key(nodeWeight[1] + " " + nodeWeight[2]);
+            s.value(nodeWeight[3]);
+        }
+        s.endObject();
+
+        //Nodes between input and first hidden layer
+        int hiddenNodeSize = numHiddenNodes + 3;
+        int inputNodeSize = numInputs + 3;
+        for (int i = 0; i < numHiddenNodes; ++i) {
+            int startLine = (i * inputNodeSize) + hiddenNodeSize;
+            s.object();
+            s.key("name");
+            s.value(modelDescriptionLines[startLine]);
+            String inputThreshWeight[] = modelDescriptionLines[startLine + 2].split("\\s+");
+            s.key(inputThreshWeight[1]);
+            s.value(inputThreshWeight[2]);
+            for (int j = 3; j < numInputs + 3; ++j) {
+                String inputWeight[] = modelDescriptionLines[startLine + j].split("\\s+");
+                s.key(inputWeight[1] + " " + inputWeight[2]);
+                s.value(inputWeight[3]);
+            }
+            s.endObject();
+        }
+
+        //Nodes between hidden layers
+        if (numHiddenLayers > 1) {
+            int hiddenOffset = hiddenNodeSize + (numHiddenNodes * inputNodeSize);
+            for (int k = 1; k < numHiddenLayers; ++k) {
+                int layerOffset = hiddenOffset + ((k - 1) * (hiddenNodeSize) * numHiddenNodes);
+                for (int i = 0; i < numHiddenNodes; ++i) {
+                    int nodeOffset = layerOffset + (i * (hiddenNodeSize));
+                    s.object();
+                    s.key("name");
+                    s.value(modelDescriptionLines[nodeOffset]);
+                    String hiddenThreshWeight[] = modelDescriptionLines[nodeOffset + 2].split("\\s+");
+                    s.key(hiddenThreshWeight[1]);
+                    s.value(hiddenThreshWeight[2]);
+                    for (int j = 3; j < numHiddenNodes + 3; ++j) {
+                        String hiddenWeight[] = modelDescriptionLines[layerOffset + j].split("\\s+");
+                        s.key(hiddenWeight[1] + " " + hiddenWeight[2]);
+                        s.value(hiddenWeight[3]);
+                    }
+                    s.endObject();
+                }
+            }
+        }
+        
+         
+        s.endArray();
+        s.endObject();
+        ////////////////////////
+        /*     FileWriter modelWrite = new FileWriter(thisName, true);
+        try (PrintWriter modelPrint = new PrintWriter(modelWrite)) { 
+           
+            modelPrint.printf(modelDescription);
+                
+
+            for (int i = 0; i < numInputs; ++i) {
+                for (int j = 0; j < numHiddenNodes; ++j) {
+                    int offset = (6 + numHiddenNodes + i) + (j * (3 + numInputs)); //TODO: Make this look better. MZ
+                    String nodeWeight[] = modelDescriptionLines[offset].split("\\s+");
+                    modelPrint.printf("	weights[0][" + i + "][" + j + "] = " + nodeWeight[3] + ";\n");
+                }
+            }
+            for (int j = 0; j < numHiddenNodes; ++j) {
+                int offset = (5 + numHiddenNodes) + (j * (3 + numInputs)); //TODO: Make this look better. MZ
+                String biasWeight[] = modelDescriptionLines[offset].split("\\s+");
+                modelPrint.printf("	weights[0][" + numInputs + "][" + j + "] = " + biasWeight[2] + ";\n");
+            }
+            modelPrint.printf("\n");
+            
+            
+            
+            if (numHiddenLayers > 1) {
+                modelPrint.printf("	//weights between hidden layers\n");
+                for (int k = 1; k < numHiddenLayers; ++k) {
+                    for (int i = 0; i < numHiddenNodes; ++i) {
+                        for (int j = 0; j < numHiddenNodes; ++j) {
+                            int offset = (6 + numHiddenNodes + i) + ((j + (numHiddenNodes * k)) * (3 + numHiddenNodes));
+                            String nodeWeight[] = modelDescriptionLines[offset].split("\\s+");
+                            modelPrint.printf("	weights[" + k + "][" + i + "][" + j + "] = " + nodeWeight[3] + ";\n");
+                        }
+                    }
+                    for (int j = 0; j < numHiddenNodes; ++j) {
+                        int offset = (5 + numHiddenNodes) + ((j + (numHiddenNodes * k)) * (3 + numInputs));
+                        String biasWeight[] = modelDescriptionLines[offset].split("\\s+");
+                        modelPrint.printf("	weights[" + k + "][" + numInputs + "][" + j + "] = " + biasWeight[2] + ";\n");
+                    }
+                }
+            }
+        }
+         */
+    }
+
+    private void writeKnnModel(int whichPath, String fileName, Model model, Instances insts) throws IOException {
+        String thisName = fileName;
+        NeuralNetworkModel nnm = (NeuralNetworkModel) model;
+        String modelDescription = nnm.getModelDescription();
+        FileWriter modelWrite = new FileWriter(thisName, true);
+        try (PrintWriter modelPrint = new PrintWriter(modelWrite)) {
+            modelPrint.printf("I'm a model number " + whichPath + "\n");
+            modelPrint.printf(modelDescription);
+        }
+    }
+
+    private void setupJSON(String[] allInputNames) {
+        s.object();
+        //Insert metadata into JSON
+        s.key("metadata");
+        s.object();
+        s.key("creator");
+        s.value("Wekinator");
+        s.key("version");
+        s.value("the one you have");
+        s.key("inputNames");
+        s.value(allInputNames);
+        s.endObject();
+        //Start model set 
+        s.key("modelSet");
+        s.array();
+
+    }
+
+    private void closeAndWrite(String location) throws IOException {
+        s.endArray();
+        s.endObject();
+        String fileName = location;
+        FileWriter fnWrite = new FileWriter(fileName, true);
+        try (PrintWriter fPrint = new PrintWriter(fnWrite)) {
+            fPrint.printf(s.toString());
+        }
+    }
+}

@@ -37,6 +37,7 @@ public class WekinatorSaver {
     private final static String inputFilename = File.separator + "inputConfig.xml";
     private final static String outputFilename = File.separator + "outputConfig.xml";
     private final static String dataFilename = File.separator + currentAppend + File.separator + "currentData"; //No extension: Will not be arff for DTW
+    private final static String jsonFilename = File.separator + currentAppend + File.separator + "modelSetDescription.txt";
 
     private static final Logger logger = Logger.getLogger(WekinatorSaver.class.getName());
 
@@ -75,6 +76,7 @@ public class WekinatorSaver {
             saveData(projectDir, w);
             saveModels(projectDir, w);
             saveCppSource(projectDir, w);
+            saveJSONDescription(projectDir, w);
         }
     }
 
@@ -131,6 +133,19 @@ public class WekinatorSaver {
             paths.get(i).writeToCppFiles(i, location, allInputNames);
         }
         Cpp.writeModelSetEnd(location);
+    }
+    
+     //MZ: added this to export a JSON description for RAPID-MIX
+    private static void saveJSONDescription (File projectDir, Wekinator w) throws IOException {
+        JsonFileWriter JSON = new JsonFileWriter(); 
+        List<Path> paths = w.getSupervisedLearningManager().getPaths();
+        String fullPath = projectDir + jsonFilename;
+        String[] allInputNames = w.getInputManager().getInputNames();
+        JSON.setup(allInputNames);
+        for (int i = 0; i < paths.size(); i++) {
+            paths.get(i).modelJson(i, JSON, fullPath);
+        }
+        JSON.writeFoot(fullPath);
     }
 
     private static void saveWekinatorFile(String name, File projectDir, Wekinator w) throws IOException {

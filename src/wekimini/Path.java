@@ -537,7 +537,7 @@ public class Path {
         //Util.writeToXMLFile(this, "Path", Path.class, filename);
     }
     /*
-    MZ: In progress 
+    MZ: For C++ output, RAPID-MIX 
     */
    public void writeToCppFiles(int whichPath, String location, String[] allInputNames) throws IOException {
         boolean success = false;
@@ -552,6 +552,27 @@ public class Path {
             success = false;
             myEx = ex;
             logger.log(Level.WARNING, "Could not write to Cpp file {0", ex.getMessage());
+        }
+        
+        if (!success) {
+            throw myEx;
+        }
+   }
+    /*
+    MZ: In progress 
+    */
+   public void modelJson(int whichPath, JsonFileWriter JSON, String location) throws IOException {
+        boolean success = false;
+        IOException myEx = new IOException();
+        
+        try {
+            Instances insts = w.getSupervisedLearningManager().getTrainingDataForPath(this, true);
+            JSON.writePath(whichPath, location, inputNames, modelBuilder, model, insts);
+            success = true;
+        } catch (IOException ex) {
+            success = false;
+            myEx = ex;
+            logger.log(Level.WARNING, "Could not write path to JSON file {0", ex.getMessage());
         }
         
         if (!success) {
