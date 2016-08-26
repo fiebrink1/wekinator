@@ -143,9 +143,9 @@ public class WekinatorSaver {
         String[] allInputNames = w.getInputManager().getInputNames();
         JSON.setup(allInputNames);
         for (int i = 0; i < paths.size(); i++) {
-            paths.get(i).modelJson(i, JSON, fullPath);
+            paths.get(i).modelJson(i, JSON);
         }
-        JSON.writeFoot(fullPath);
+        JSON.write(fullPath);
     }
 
     private static void saveWekinatorFile(String name, File projectDir, Wekinator w) throws IOException {

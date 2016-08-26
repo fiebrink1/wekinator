@@ -559,15 +559,15 @@ public class Path {
         }
    }
     /*
-    MZ: In progress 
+    MZ: For JSON output RAPID-MIX
     */
-   public void modelJson(int whichPath, JsonFileWriter JSON, String location) throws IOException {
+   public void modelJson(int whichPath, JsonFileWriter JSON) throws IOException {
         boolean success = false;
         IOException myEx = new IOException();
         
         try {
             Instances insts = w.getSupervisedLearningManager().getTrainingDataForPath(this, true);
-            JSON.writePath(whichPath, location, inputNames, modelBuilder, model, insts);
+            JSON.writePath(whichPath, numExamples, inputNames, output, modelBuilder, model, insts);
             success = true;
         } catch (IOException ex) {
             success = false;
