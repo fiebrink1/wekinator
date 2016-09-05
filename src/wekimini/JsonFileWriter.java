@@ -55,7 +55,7 @@ public class JsonFileWriter {
             Instances insts) throws IOException {
         if (modelBuilder instanceof NeuralNetModelBuilder) {
             try {
-                writeNnModel(whichPath, inputNames, modelBuilder, model);
+                writeNnModel(whichPath, inputNames, modelBuilder, model, numExamples, insts);
             } catch (Exception ex) {
                 logger.log(Level.WARNING, "Could not write to NN model to JSON file {0}", ex.getMessage());
             }
@@ -82,7 +82,9 @@ public class JsonFileWriter {
             int whichPath,
             List<String> inputNames,
             LearningModelBuilder modelBuilder,
-            Model model) throws IOException {
+            Model model,
+            int numExamples,
+            Instances insts) throws IOException {
         int numInputs = inputNames.size();
         int numHiddenNodes = 1;
         int numHiddenLayers = 1;
@@ -113,6 +115,45 @@ public class JsonFileWriter {
         s.value(numHiddenNodes);
         s.key("numOutputs");
         s.value(1);
+        
+        //for normalization
+        double[] inMaxes = new double[numInputs];
+        double[] inMins = new double[numInputs];
+        double outMax = Double.NEGATIVE_INFINITY;
+        double outMin = Double.POSITIVE_INFINITY;
+        for (int i = 0; i < numInputs; ++i) {
+            inMaxes[i] = Double.NEGATIVE_INFINITY;
+            inMins[i] = Double.POSITIVE_INFINITY;
+        }
+        for (int i = 0; i < numExamples; ++i) {
+            String[] splitInstance = insts.instance(i).toString().split(",");
+            for (int j = 0; j < numInputs; ++j) {
+                double inValue = Double.valueOf(splitInstance[j + 3]);
+                if (inMaxes[j] < inValue) {
+                    inMaxes[j] = inValue;
+                }
+                if (inMins[j] > inValue) {
+                    inMins[j] = inValue;
+                }
+
+            }
+            double outValue = Double.valueOf(splitInstance[numInputs + 3]);
+            if (outMax < outValue) {
+                outMax = outValue;
+            }
+            if (outMin > outValue) {
+                outMin = outValue;
+            }
+        }
+        s.key("inMaxes");
+        s.value(inMaxes);
+        s.key("inMins");
+        s.value(inMins);
+        s.key("outMax");
+        s.value(outMax);
+        s.key("outMin");
+        s.value(outMin);
+             
         /////////////////////////////////////////////////
         s.key("nodes");
         s.array();
