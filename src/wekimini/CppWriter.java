@@ -472,15 +472,15 @@ public class CppWriter {
 
                 cppPrint.printf("double neuralNetwork::processInput(double* inputVector) {\n");
                 cppPrint.printf("	double pattern[numInputs];\n");
-                cppPrint.printf("	for (int h = 0; h < numInputs; h++) {\n");
-                cppPrint.printf("		pattern[h] = inputVector[whichInputs[h]];\n");
+                cppPrint.printf("	for (int i = 0; i < numInputs; ++i) {\n");
+                cppPrint.printf("		pattern[i] = inputVector[whichInputs[i]];\n");
                 cppPrint.printf("	}\n\n");
                 cppPrint.printf("	//set input layer\n");
                 cppPrint.printf("	for (int i = 0; i < numInputs; ++i) {\n");
                 cppPrint.printf("		inputNeurons[i] = (pattern[i] - inBases[i]) / inRanges[i];\n");
                 cppPrint.printf("	}\n\n");
                 cppPrint.printf("	//calculate hidden layer\n");
-                cppPrint.printf("	for (int j=0; j < numHiddenNodes; ++j) {\n");
+                cppPrint.printf("	for (int j = 0; j < numHiddenNodes; ++j) {\n");
                 cppPrint.printf("		hiddenNeurons[j] = 0;\n");
                 cppPrint.printf("		for (int i = 0; i <= numInputs; ++i) {\n");
                 cppPrint.printf("			hiddenNeurons[j] += inputNeurons[i] * weights[0][i][j];\n");
@@ -542,9 +542,9 @@ public class CppWriter {
             logger.log(Level.WARNING, "Could not write to Cpp file {0}", ex.getMessage());
         }
 
-        if (numHiddenLayers > 1) {
-            logger.log(Level.WARNING, "Cannot write Cpp model with {0} layers.", numHiddenLayers);
-        }
+        //if (numHiddenLayers > 1) {
+        //    logger.log(Level.WARNING, "Cannot write Cpp model with {0} layers.", numHiddenLayers);
+        //}
 
         //Write cpp
         String cppName = location + "wekiModelSet.cpp";
