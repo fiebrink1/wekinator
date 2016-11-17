@@ -145,14 +145,20 @@ public class JsonFileWriter {
                 outMin = outValue;
             }
         }
-        s.key("inMaxes");
-        s.value(inMaxes);
-        s.key("inMins");
-        s.value(inMins);
-        s.key("outMax");
-        s.value(outMax);
-        s.key("outMin");
-        s.value(outMin);
+        double[] inRanges = new double[numInputs];
+        double[] inBases = new double[numInputs];
+        for (int i = 0; i < numInputs; ++i) {
+            inRanges[i] = inMaxes[i] - inMins[i];
+            inBases[i] = inMaxes[i] + inMins[i];
+        }
+        s.key("inBases");
+        s.value(inBases);
+        s.key("inRanges");
+        s.value(inRanges);
+        s.key("outRange");
+        s.value(outMax - outMin);
+        s.key("outBase");
+        s.value(outMax + outMin);
              
         /////////////////////////////////////////////////
         s.key("nodes");
