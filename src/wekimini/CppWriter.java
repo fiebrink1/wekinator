@@ -435,11 +435,12 @@ public class CppWriter {
                 cppPrint.printf("	inRanges = new double[numInputs];\n");
                 cppPrint.printf("	inBases = new double[numInputs];\n\n");
                 cppPrint.printf("	for (int i = 0; i < numInputs; ++i) {\n");
-                cppPrint.printf("           inRanges[i] = (in_max[i] - in_min[i])/ 2;\n");
-                cppPrint.printf("           inBases[i] = (in_max[i] + in_min[i])/ 2;\n");
+                cppPrint.printf("           double currentRange = (in_max[i] - in_min[i]) * 0.5;\n");
+                cppPrint.printf("           inRanges[i] = (currentRange == 0) ? 1.0 : currentRange;\n");
+                cppPrint.printf("           inBases[i] = (in_max[i] + in_min[i]) * 0.5;\n");
                 cppPrint.printf("	}\n\n");
-                cppPrint.printf("       outRange = (out_max - out_min)/ 2;\n");
-                cppPrint.printf("       outBase = (out_max + out_min)/ 2;");
+                cppPrint.printf("       outRange = (out_max - out_min) * 0.5;\n");
+                cppPrint.printf("       outBase = (out_max + out_min) * 0.5;\n");
                 cppPrint.printf("}\n\n");
 
                 cppPrint.printf("neuralNetwork::~neuralNetwork() {\n");
