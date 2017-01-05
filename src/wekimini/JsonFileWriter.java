@@ -190,8 +190,12 @@ public class JsonFileWriter {
             s.value(inputThreshWeight[2]);
             for (int j = 3; j < numInputs + 3; ++j) {
                 String inputWeight[] = modelDescriptionLines[startLine + j].split("\\s+");
-                s.key(inputWeight[1] + " " + inputWeight[2]);
-                s.value(inputWeight[3]);
+                String inputName = inputWeight[1];
+                for (int k = 2; k < (inputWeight.length - 1); ++k) {
+                    inputName = inputName + " " + inputWeight[k];
+                }
+                s.key(inputName);
+                s.value(inputWeight[inputWeight.length - 1]); // the last one is always the weight
             }
             s.endObject();
         }

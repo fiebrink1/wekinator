@@ -582,7 +582,7 @@ public class CppWriter {
                 for (int j = 0; j < numHiddenNodes; ++j) {
                     int offset = (6 + numHiddenNodes + i) + (j * (3 + numInputs)); //TODO: Make this look better. MZ
                     String nodeWeight[] = modelDescriptionLines[offset].split("\\s+");
-                    cppPrint.printf("	weights[0][" + i + "][" + j + "] = " + nodeWeight[3] + ";\n");
+                    cppPrint.printf("	weights[0][" + i + "][" + j + "] = " + nodeWeight[nodeWeight.length - 1] + ";\n"); //Last item is the weight, name could have spaces.
                 }
             }
             for (int j = 0; j < numHiddenNodes; ++j) {
