@@ -348,7 +348,6 @@ public class DataManager {
     }
 
     public void addToTraining(double[] inputs, double[] outputs, boolean[] recordingMask, int recordingRound) {
-
         int thisId = nextID;
         nextID++;
 
@@ -603,6 +602,7 @@ public class DataManager {
         savingFilters[output] = s;
     }
 
+    //This sets up filters in basic case, when no input reordering must be done.
     private void setupFilters() throws Exception {
         outputFilters = new Reorder[numOutputs];
         savingFilters = new Reorder[numOutputs];

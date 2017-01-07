@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
-import wekimini.Path.PathAndDataLoader;
+import wekimini.PathAndDataLoader;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.dtw.DtwModel;
@@ -61,7 +61,7 @@ public class WekinatorSaver {
         } else {
             //Temporal modeling
             w = instantiateTemporalWekinator(wfd, ig, og, projectDir);
-        } 
+        }  
         return w;
     }
 
@@ -230,5 +230,10 @@ public class WekinatorSaver {
         // the above calls w.getDataManager().initialize(...) with data
         w.getStatusUpdateCenter().update(null, "Successfully loaded Wekinator project from file.");
         return w;
+    }
+
+    //Get stash location for an existing project
+    public static String getStashLocation(String projectLocation) {
+        return projectLocation + stashAppend;
     }
 }

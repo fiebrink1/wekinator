@@ -231,11 +231,9 @@ public class Util {
     public static void logWarning(Object o, String msg) {
         Logger.getLogger(o.getClass().getName()).log(Level.WARNING, msg);
     }
-
-    public static File findSaveFile(String ext, String defaultName, String description, Component c) {
-        String homeDir = System.getProperty("user.home");
-        File defaultFile = new File(homeDir + File.separator + defaultName + "." + ext);
-
+    
+    public static File findSaveFile(String startingDirectory, String ext, String defaultName, String description, Component c) {
+        File defaultFile = new File(startingDirectory + File.separator + defaultName + "." + ext);
         FileChooserWithExtension fc = new FileChooserWithExtension(
                 ext,
                 description,
@@ -250,13 +248,43 @@ public class Util {
             // fc.getCu
         }
         return file;
+    }
 
+    public static File findSaveFile(String ext, String defaultName, String description, Component c) {
+        String homeDir = System.getProperty("user.home");
+        return findSaveFile(homeDir, ext, defaultName, description, c);
     }
 
     public static boolean isInteger(double d) {
         return d == Math.floor(d);
     }
 
+    public static File findLoadFileWithDefaultFile(String ext, String description, String defFile, Component c) {
+        File defaultFile = null;
+        File defaultDir = null;
+        
+        try {
+            defaultFile = new File(defFile);
+            defaultDir = defaultFile.getParentFile();
+        } catch (Exception ex) {
+            //Don't really care
+        }
+
+        FileChooserWithExtension fc = new FileChooserWithExtension(
+                ext,
+                description,
+                defaultFile,
+                defaultDir,
+                false);
+
+        File file = null;
+        int returnVal = fc.showOpenDialog(c);
+        if (returnVal == FileChooserWithExtension.APPROVE_OPTION) {
+            file = fc.getSelectedFile();
+        }
+        return file;
+    }
+    
     public static File findLoadFile(String ext, String description, String defDir, Component c) {
         /* File defaultFile = null;
          if (defFile != null)

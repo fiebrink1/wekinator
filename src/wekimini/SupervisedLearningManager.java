@@ -22,8 +22,11 @@ import javax.swing.event.ChangeListener;
 import org.jdesktop.swingworker.SwingWorker;
 import weka.core.Instances;
 import weka.core.Instance;
+import wekimini.Path.ModelState;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
+import wekimini.learning.Model;
+import wekimini.learning.SupervisedLearningModel;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCReceiver;
@@ -165,6 +168,23 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         for (int i = 0; i < paths.size(); i++) {
             String filename = location + "model" + i + ".xml";
             paths.get(i).writeToFile(filename);
+        }
+    }
+
+    private void updateLearningStateFromPathStates() {
+        boolean anyTrained = false;
+        for (Path p : paths) {
+            if (p.canCompute()) {
+                anyTrained = true;
+                break;
+            }
+        }
+        if (anyTrained) {
+            setLearningState(LearningState.DONE_TRAINING);
+        } else if (w.getDataManager().getNumExamples() > 0) {
+            setLearningState(LearningState.READY_TO_TRAIN);
+        } else {
+            setLearningState(LearningState.NOT_READY_TO_TRAIN);
         }
     }
 
@@ -546,20 +566,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         w.getDataManager().initialize(inputNames, w.getOutputManager().getOutputGroup(), data);
         notifyPathsOfDatasetChange = true;
 
-        boolean anyTrained = false;
-        for (Path p : paths) {
-            if (p.canCompute()) {
-                anyTrained = true;
-                break;
-            }
-        }
-        if (anyTrained) {
-            setLearningState(LearningState.DONE_TRAINING);
-        } else if (w.getDataManager().getNumExamples() > 0) {
-            setLearningState(LearningState.READY_TO_TRAIN);
-        } else {
-            setLearningState(LearningState.NOT_READY_TO_TRAIN);
-        }
+        updateLearningStateFromPathStates();
 
         for (int i = 0; i < paths.size(); i++) {
             Path p = paths.get(i);
@@ -990,6 +997,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     }
 
     //BUG: This doesn't update listeners from old p to new p
+    /*
     public void updatePath(Path p, OSCOutput newOutput, LearningModelBuilder newModelBuilder, String[] selectedInputNames) {
         //Which path?
         int which = paths.indexOf(p);
@@ -1059,7 +1067,94 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             notifyPathEditedListeners(which, newP, p);
         }
     }
+*/
+    public void updatePathWithModel(Path p, OSCOutput newOutput, LearningModelBuilder newModelBuilder, String[] selectedInputNames, SupervisedLearningModel model, ModelState state) {
+        //Which path?
+        int which = paths.indexOf(p);
+        if (which == -1) {
+            logger.log(Level.WARNING, "Trying to update path that does not exist");
+            throw new IllegalArgumentException("Trying to update path that does not exist");
+        }
 
+        KadenzeLogging.getLogger().logPathUpdated(w, which, p.getOSCOutput(), newOutput, p.getModelBuilder(), newModelBuilder, p.getSelectedInputs(), selectedInputNames);
+        
+        final Path newP;
+        if (newOutput != null) {
+            w.getOutputManager().updateOutput(newOutput, p.getOSCOutput()); //this triggers change in data manager
+            newP = new Path(newOutput, selectedInputNames, w, this);
+            newP.setNumExamples(p.getNumExamples());
+            newP.setRecordEnabled(p.isRecordEnabled());
+            newP.setRunEnabled(p.isRunEnabled());
+            
+            //TODO: Remove old property listeners!!
+            p.removeListeners();
+            PropertyChangeListener pChange = new PropertyChangeListener() {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    pathChanged(newP, evt);
+                }
+            };
+            newP.addPropertyChangeListener(wls.propertyChange(pChange));
+            newP.addInputSelectionChangeListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    pathInputsChanged((Path) e.getSource());
+                }
+            });
+            
+            
+            if (newModelBuilder != null) {
+                //newP.inheritModel(p);
+                newP.setModelBuilder(newModelBuilder); //automatically indicates that re-training needed
+            } else {
+                //newP.inheritModelAndBuilder(p);
+                newP.setModelBuilder(p.getModelBuilder());
+            }
+            
+            if (model != null) {
+                newP.setModel(model);
+                newP.setModelState(state);
+            } else {
+                newP.inheritModel(p);
+            }
+            
+            //Have we changed the output type but not the model? We need to rebuild.
+            if (newP.getModelState() == Path.ModelState.BUILT) {
+                if (newOutput instanceof OSCClassificationOutput && p.getOSCOutput() instanceof OSCClassificationOutput) {
+                    if (model == null && ((OSCClassificationOutput) newOutput).getNumClasses() != ((OSCClassificationOutput) p.getOSCOutput()).getNumClasses()) {
+                            newP.setModelState(Path.ModelState.NEEDS_REBUILDING);
+                            //Don't currently have a good way of comparing Model itself with Output to see if rebuilding necessary
+                    }
+                }
+            }
+            //If only output has changed, and not model builder, we may or may not need to update model state
+            //DO need update if # classes has changed (if not for model output safety, then at least for saving safety)
+            //DON'T need update if just NN doing int/real or hard/soft limits.
+            
+            
+           // asggghghh what's going on'
+        } else { //keep old output; just apply input names and possibly modelBuilder
+            newP = p;
+            newP.setSelectedInputs(selectedInputNames);
+            if (newModelBuilder != null) {
+                newP.setModelBuilder(newModelBuilder);
+            }
+        }
+
+        //Finally: Only do this when path object has changed:
+        if (newOutput != null) {
+            //Update path here, then fire change 
+            paths.remove(p);
+            paths.add(which, newP);
+            pathsToOutputIndices.remove(p);
+            pathsToOutputIndices.put(newP, which);
+            notifyPathEditedListeners(which, newP, p);
+            //May need to update learning state, depending on models...
+            updateLearningStateFromPathStates();
+        }
+    }
+
+    
     private void notifyPathEditedListeners(int which, Path newPath, Path oldPath) {
         for (PathOutputTypeEditedListener l : pathEditedListeners) {
             l.pathOutputTypeEdited(which, newPath, oldPath);
