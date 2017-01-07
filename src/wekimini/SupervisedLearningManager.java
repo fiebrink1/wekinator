@@ -770,6 +770,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                 try {
                     myComputedOutputs[i] = paths.get(i).compute(instance);
                 } catch (Exception ex) {
+                    w.getStatusUpdateCenter().update(this, "Error encountered in running: Try re-training models");
                     logger.log(Level.SEVERE, "Error encountered in computing: {0}", ex.getMessage());
                 }
             } else {
@@ -1150,6 +1151,8 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             pathsToOutputIndices.put(newP, which);
             notifyPathEditedListeners(which, newP, p);
             //May need to update learning state, depending on models...
+            newP.setSelectedInputs(new String[0]);
+            newP.setSelectedInputs(selectedInputNames); //This doesn't seem to be working... 
             updateLearningStateFromPathStates();
         }
     }
@@ -1162,7 +1165,6 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     }
 
     public interface PathOutputTypeEditedListener {
-
         public void pathOutputTypeEdited(int which, Path newPath, Path oldPath);
     }
 
