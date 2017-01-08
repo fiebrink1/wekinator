@@ -3,11 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.gui;
+package wekimini.gui.path;
 
 import java.util.ArrayList;
 import java.util.List;
+import wekimini.Path.ModelState;
 import wekimini.Wekinator;
+import wekimini.gui.NameDropdownRow;
+import wekimini.gui.path.PathEditorFrame;
+import wekimini.learning.Model;
+import wekimini.learning.ModelBuilder;
+import wekimini.osc.OSCOutput;
 import wekimini.util.Util;
 
 /**
@@ -22,6 +28,7 @@ public class InputReMapper extends javax.swing.JFrame {
     
     private final InputRemappingReceiver inputMappingReceiver;
 
+    private final int outputNumber;
     
     /**
      * Creates new form OSCInputStatusFrame
@@ -30,14 +37,30 @@ public class InputReMapper extends javax.swing.JFrame {
         initComponents();
         this.w = null;
         inputMappingReceiver = null;
+        outputNumber = -1;
     }
 
-    public InputReMapper(final Wekinator w, String[] loadedNames, String[] currentProjectNames, int[] selectedIndices, InputRemappingReceiver recv) {
+    public InputReMapper(final Wekinator w, 
+            OSCOutput oscOutput,
+            ModelBuilder modelBuilder,
+            Model model,
+            ModelState modelState,
+            String[] loadedNames, 
+            String[] currentProjectNames, 
+            int[] selectedIndices,
+            int outputNumber,
+            InputRemappingReceiver recv) {
         initComponents();
         inputMappingReceiver = recv;
         this.w = w;
         int numInputs = loadedNames.length;
+        this.outputNumber = outputNumber;
+        
         panelInputsParent.removeAll();
+        
+        labelOutputName.setText(model.getPrettyName());
+        labelOutputType1.setText(PathEditorFrame.getOscOutputDescription(oscOutput));
+        labelModelType.setText(modelBuilder.getPrettyName());
         
         for (int i = 0; i < numInputs; i++) {
             NameDropdownRow r = new NameDropdownRow(loadedNames[i], currentProjectNames);
@@ -75,6 +98,13 @@ public class InputReMapper extends javax.swing.JFrame {
         buttonApply = new javax.swing.JButton();
         checkImportData = new javax.swing.JCheckBox();
         buttonCancel = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        labelOutputType1 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        labelModelType = new javax.swing.JLabel();
+        labelOutputName = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -88,7 +118,7 @@ public class InputReMapper extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Input Monitor");
+        setTitle("Finish model loading");
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -113,7 +143,7 @@ public class InputReMapper extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
         );
 
         buttonApply.setText("OK");
@@ -138,18 +168,32 @@ public class InputReMapper extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setText("Output name: ");
+
+        jLabel2.setText("Output type:");
+
+        jLabel3.setText("       ");
+
+        labelOutputType1.setText("Numeric output, real values");
+
+        jLabel6.setText("Model type:");
+
+        labelModelType.setText("Neural Network");
+
+        labelOutputName.setText("jLabel4");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(buttonCancel)
@@ -157,13 +201,46 @@ public class InputReMapper extends javax.swing.JFrame {
                         .addComponent(buttonApply))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(checkImportData, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                        .addComponent(checkImportData, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addGap(18, 18, 18)
+                                .addComponent(labelModelType))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(labelOutputType1))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(labelOutputName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(labelOutputName))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(0, 0, 0)
+                        .addComponent(jLabel3))
+                    .addComponent(labelOutputType1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(labelModelType))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -172,8 +249,7 @@ public class InputReMapper extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonApply)
-                    .addComponent(buttonCancel))
-                .addContainerGap())
+                    .addComponent(buttonCancel)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -197,6 +273,21 @@ public class InputReMapper extends javax.swing.JFrame {
             selectedIndices[i] = rows.get(i).getSelectedIndex();
             selectedNames[i] = rows.get(i).getSelectedItem();
         }
+        
+/*        String outputText = textOutputName.getText();
+        if (outputText.isEmpty()) {
+            Util.showPrettyErrorPane(this, "Please provide a name for this output.");
+            return;
+        }
+        
+        String[] existingOutputs = w.getOutputManager().getOutputGroup().getOutputNames();
+        for (int i = 0; i < existingOutputs.length; i++) {
+            if (i != outputNumber && outputText.equals(existingOutputs[i])) {
+                Util.showPrettyErrorPane(this, "The output name \'"
+                        + outputText + "\' is already used for a different output in this project.");
+                return;
+            }
+        } */
         
         for (int i = 0; i < rows.size(); i++) {
             for (int j = i+1; j < rows.size(); j++) {
@@ -263,11 +354,18 @@ public class InputReMapper extends javax.swing.JFrame {
     private javax.swing.JButton buttonApply;
     private javax.swing.JButton buttonCancel;
     private javax.swing.JCheckBox checkImportData;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel label1;
+    private javax.swing.JLabel labelModelType;
+    private javax.swing.JLabel labelOutputName;
+    private javax.swing.JLabel labelOutputType1;
     private wekimini.gui.NameDropdownRow nameDropdownRow1;
     private wekimini.gui.NameDropdownRow nameDropdownRow2;
     private wekimini.gui.NameDropdownRow nameDropdownRow3;

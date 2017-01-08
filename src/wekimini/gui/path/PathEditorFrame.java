@@ -24,7 +24,6 @@ import wekimini.Path;
 import wekimini.PathAndDataLoader;
 import wekimini.Wekinator;
 import wekimini.WekinatorSaver;
-import wekimini.gui.InputReMapper;
 import wekimini.gui.path.ModelEditorFrame.ModelBuilderReceiver;
 import wekimini.gui.path.OutputEditFrame.OutputEditReceiver;
 import wekimini.kadenze.KadenzeLogging;
@@ -112,9 +111,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         labelConnectedInputs.setText(getNumberInputsSelected() + " connected inputs:");
     }
 
-    private void updateFormForOutput(OSCOutput o) {
-        labelOutputName.setText("Name: " + o.getName());
-
+    protected static String getOscOutputDescription(OSCOutput o) {
         StringBuilder sb = new StringBuilder("<html>");
         if (o instanceof OSCNumericOutput) {
             OSCNumericOutput no = (OSCNumericOutput) o;
@@ -147,7 +144,13 @@ public class PathEditorFrame extends javax.swing.JFrame {
             sb.append("Unknown type</html>");
             logger.log(Level.SEVERE, "Uknown output type: {0}", o.getClass().getCanonicalName());
         }
-        labelOutputType.setText(sb.toString());
+        return sb.toString();
+    }
+    
+    private void updateFormForOutput(OSCOutput o) {
+        labelOutputName.setText("Name: " + o.getName());
+        String s = getOscOutputDescription(o);
+        labelOutputType.setText(s);
     }
 
     public static boolean pathEditorExists(Path p) {
@@ -826,10 +829,18 @@ public class PathEditorFrame extends javax.swing.JFrame {
             
             int[] initialMatches = proposeInitialMatches(loadedPath.getSelectedInputs(), w.getInputManager().getInputNames());
             
+            int pathIndex = w.getSupervisedLearningManager().getPaths().indexOf(p);
+            
             InputReMapper m = new InputReMapper(w, 
-                    loadedPath.getSelectedInputs(), 
+                    loadedPath.getOSCOutput(),
+                    loadedPath.getModelBuilder(),
+                    loadedPath.getModel(),
+                    loadedPath.getModelState(),
+                    loadedPath.getSelectedInputs(),
                     w.getInputManager().getInputNames(), 
-                    initialMatches, r);
+                    initialMatches, 
+                    pathIndex,
+                    r);
             
             m.setAlwaysOnTop(true);
             m.setVisible(true);
