@@ -201,8 +201,8 @@ public class InputReMapper extends javax.swing.JFrame {
         for (int i = 0; i < rows.size(); i++) {
             for (int j = i+1; j < rows.size(); j++) {
                 if (selectedIndices[i] == selectedIndices[j]) {
-                    String msg = "You have selected inpu \'" + selectedNames[i]
-                            + "\' more than once";
+                    String msg = "You have selected input \'" + selectedNames[i]
+                            + "\' more than once.";
                     Util.showPrettyErrorPane(this, msg);
                     return;
                 }

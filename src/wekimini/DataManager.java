@@ -356,6 +356,7 @@ public class DataManager {
             inputListsForOutputsTraining.set(outputIndex, myIndices);
             updateTrainingAndSavingFiltersForOutput(outputIndex);
             if (!waitForRetrainToApply) {
+                inputListsForOutputsRunning.set(outputIndex, myIndices);
                 updateRunningFiltersForOutput(outputIndex);
             }
         } catch (Exception ex) {

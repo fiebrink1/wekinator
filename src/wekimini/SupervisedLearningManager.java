@@ -769,8 +769,10 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             if (newState == ModelState.BUILT) {
                 ModelState oldState = (ModelState) evt.getOldValue();
                 if (oldState != ModelState.BUILT) {
-                    int whichPath = pathsToOutputIndices.get(p);
-                    w.getDataManager().useTrainingInputSelectionForRunning(whichPath);
+                    if (pathsToOutputIndices.containsKey(p)) {
+                        int whichPath = pathsToOutputIndices.get(p);
+                        w.getDataManager().useTrainingInputSelectionForRunning(whichPath);
+                    }
                 }
             }
         }
