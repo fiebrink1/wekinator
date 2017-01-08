@@ -76,10 +76,9 @@ public class SimpleLearningSet1_TEMP extends javax.swing.JPanel {
             }
         }); */
         
-        w.getSupervisedLearningManager().addPathEditedListener(new SupervisedLearningManager.PathOutputTypeEditedListener() {
-
+        w.getSupervisedLearningManager().addPathEditedListener(new SupervisedLearningManager.PathEditedListener() {
             @Override
-            public void pathOutputTypeEdited(int which, Path newPath, Path oldPath) {
+            public void pathEdited(int which, Path newPath, Path oldPath) {
                 changePath(which, newPath, oldPath);
             }
         });

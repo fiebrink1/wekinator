@@ -52,7 +52,8 @@ public class DataManager {
 
     private final Wekinator w;
     //  private int[] outputInstanceCounts;
-    private Filter[] outputFilters; //Filters to produce instances for training & classification
+    private Filter[] trainingFilters; //Filter to produce instances for training
+    private Filter[] runningFilters; //Filters to produce instances for running //TODO output after one or more models are trained, for correct models
     private Filter[] savingFilters; //Filters to produce instances for saving on a per-output basis
     private boolean isInitialized = false;
     private OSCOutputGroup outputGroup;
@@ -60,7 +61,8 @@ public class DataManager {
     private String[] outputNames;
     private int numOutputs = 0;
     private int numInputs = 0;
-    private List<int[]> inputListsForOutputs;
+    private List<int[]> inputListsForOutputsTraining;
+    private List<int[]> inputListsForOutputsRunning; //TODO: Output after a model or all models are trained
     private Instances allInstances = null;
     private int nextID = 1;
 
@@ -164,8 +166,16 @@ public class DataManager {
                 updateForOutputTypeEdit(newOutput, oldOutput, which);
             }
         });
-    }
+        
+       /* w.getSupervisedLearningManager().addPathEditedListener(new SupervisedLearningManager.PathEditedListener() {
 
+            @Override
+            public void pathEdited(int which, Path newPath, Path oldPath) {
+                updateForPathEdited(which, newPath, oldPath);
+            }
+        }); */
+    }
+    
     public void updateForOutputTypeEdit(OSCOutput newOutput, OSCOutput oldOutput, int which) {
         if (newOutput instanceof OSCClassificationOutput && oldOutput instanceof OSCClassificationOutput) {
             OSCClassificationOutput newO = (OSCClassificationOutput) newOutput;
@@ -198,7 +208,9 @@ public class DataManager {
         //Finally:
         numClasses[index] = newNumClasses;
         try {
-            updateFiltersForOutput(index);
+            updateTrainingAndSavingFiltersForOutput(index);
+            updateRunningFiltersForOutput(index);
+
         } catch (Exception ex) {
             Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -336,12 +348,16 @@ public class DataManager {
         return -1;
     }
 
-    public void setInputIndicesForOutput(int[] indices, int outputIndex) {
+    public void setInputIndicesForOutput(int[] indices, int outputIndex, boolean waitForRetrainToApply) {
         int[] myIndices = new int[indices.length];
         System.arraycopy(indices, 0, myIndices, 0, indices.length);
-        inputListsForOutputs.set(outputIndex, myIndices);
+        
         try {
-            updateFiltersForOutput(outputIndex);
+            inputListsForOutputsTraining.set(outputIndex, myIndices);
+            updateTrainingAndSavingFiltersForOutput(outputIndex);
+            if (!waitForRetrainToApply) {
+                updateRunningFiltersForOutput(outputIndex);
+            }
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Could not update input selection filter", ex);
         }
@@ -503,8 +519,13 @@ public class DataManager {
         r.s
     } */
     
-    public String getOutputFilterString(int which) {
-        Reorder r = (Reorder)outputFilters[which];
+    public String getTrainingFilterString(int which) {
+        Reorder r = (Reorder)trainingFilters[which];
+        return r.getAttributeIndices();
+    }
+    
+    public String getRunningFilterString(int which) {
+        Reorder r = (Reorder)runningFilters[which];
         return r.getAttributeIndices();
     }
     
@@ -559,23 +580,26 @@ public class DataManager {
     }
 
     private void initializeInputLists() {
-        inputListsForOutputs = new ArrayList<>(numOutputs);
+        inputListsForOutputsTraining = new ArrayList<>(numOutputs);
+        inputListsForOutputsRunning = new ArrayList<>(numOutputs);
+
         int inputList[] = new int[numInputs];
         for (int i = 0; i < numInputs; i++) {
             inputList[i] = i;
         }
         for (int i = 0; i < numOutputs; i++) {
-            inputListsForOutputs.add(inputList);
+            inputListsForOutputsTraining.add(inputList);
+            inputListsForOutputsRunning.add(inputList);
         }
     }
 
     //Problem: This is being called when feature selection is changed,
     //before retraining happens (if at all)!
-    private void updateFiltersForOutput(int output) throws Exception {
+    private void updateTrainingAndSavingFiltersForOutput(int output) throws Exception {
         Reorder r = new Reorder();
         Reorder s = new Reorder();
 
-        int[] inputList = inputListsForOutputs.get(output); //includes only "selected" inputs
+        int[] inputList = inputListsForOutputsTraining.get(output); //includes only "selected" inputs
         int[] reordering = new int[inputList.length + 1];
         int[] saving = new int[numMetaData + inputList.length + 1];
 
@@ -600,20 +624,42 @@ public class DataManager {
         s.setAttributeIndicesArray(saving);
         s.setInputFormat(dummyInstances);
 
-        outputFilters[output] = r;
+        trainingFilters[output] = r;
         savingFilters[output] = s;
     }
 
+    private void updateRunningFiltersForOutput(int output) throws Exception {
+        Reorder r = new Reorder();
+
+        int[] inputList = inputListsForOutputsRunning.get(output); //includes only "selected" inputs
+        int[] reordering = new int[inputList.length + 1];
+
+        //Features
+        for (int f = 0; f < inputList.length; f++) {
+            reordering[f] = inputList[f] + numMetaData;
+        }
+
+        //The actual "class" output
+        reordering[reordering.length - 1] = numMetaData + numInputs + output;
+
+        r.setAttributeIndicesArray(reordering);
+        r.setInputFormat(dummyInstances);
+
+        runningFilters[output] = r;
+    }
+
+    
     //This sets up filters in basic case, when no input reordering must be done.
     private void setupFilters() throws Exception {
-        outputFilters = new Reorder[numOutputs];
+        trainingFilters = new Reorder[numOutputs];
+        runningFilters = new Reorder[numOutputs];
         savingFilters = new Reorder[numOutputs];
 
         for (int i = 0; i < numOutputs; i++) {
             Reorder r = new Reorder();
             Reorder s = new Reorder();
 
-            int[] inputList = inputListsForOutputs.get(i);
+            int[] inputList = inputListsForOutputsTraining.get(i);
             int[] reordering = new int[inputList.length + 1];
             int[] saving = new int[numMetaData + inputList.length + 1];
 
@@ -638,7 +684,8 @@ public class DataManager {
             s.setAttributeIndicesArray(saving);
             s.setInputFormat(dummyInstances);
 
-            outputFilters[i] = r;
+            trainingFilters[i] = r;
+            runningFilters[i] = Reorder.makeCopy(r);
             savingFilters[i] = s;
         }
     }
@@ -647,7 +694,7 @@ public class DataManager {
     public Instances getTrainingDataForOutput(int which, boolean includeMetadataFields) {
         if (!includeMetadataFields) {
             try {
-                Instances in = Filter.useFilter(allInstances, outputFilters[which]);
+                Instances in = Filter.useFilter(allInstances, trainingFilters[which]);
                 in.setClassIndex(in.numAttributes() - 1);
                 in.deleteWithMissingClass();
                 return in;
@@ -681,7 +728,7 @@ public class DataManager {
         Instances tmp = new Instances(dummyInstances);
         tmp.add(instance);
         try {
-            tmp = Filter.useFilter(tmp, outputFilters[which]);
+            tmp = Filter.useFilter(tmp, runningFilters[which]);
             tmp.setClassIndex(tmp.numAttributes() - 1);
             instance = tmp.firstInstance();
         } catch (Exception ex) {
@@ -721,7 +768,7 @@ public class DataManager {
             Instances tmp = new Instances(dummyInstances);
             tmp.add(is[i]);
             try {
-                tmp = Filter.useFilter(tmp, outputFilters[i]);
+                tmp = Filter.useFilter(tmp, runningFilters[i]);
                 tmp.setClassIndex(tmp.numAttributes() - 1);
                 is[i] = tmp.firstInstance();
             } catch (Exception ex) {
@@ -761,7 +808,6 @@ public class DataManager {
                     for (int j = 0; j < numOutputs; j++) {
                         if (!allInstances.instance(i).isMissing(numMetaData + numInputs + j)) {
                             setNumExamplesPerOutput(j, getNumExamplesPerOutput(j) - 1);
-                            //soutputInstanceCounts[j]--; //TODO: Test this
                         }
                     }
                     deleted.add(allInstances.instance(i));
@@ -836,7 +882,6 @@ public class DataManager {
                 i.setValue(numMetaData + numInputs + whichOutput, v);
             } else {
                 logger.log(Level.SEVERE, "Attribute value out of range");
-                //TODO: CHeck this
             }
         } else {
             //TODO insert error checking / range limiting for this version!
@@ -1076,6 +1121,16 @@ public class DataManager {
             }
         });
 
+    }
+    
+    //Replace the run filters with the training filters
+    //(call when this model has been trained, and should be run with same inputs)
+    public void useTrainingInputSelectionForRunning(int whichModel) {
+        try {
+            runningFilters[whichModel] = Reorder.makeCopy(trainingFilters[whichModel]);
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, null, ex);
+        }
     }
 
 }

@@ -769,7 +769,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
     }
 
     private void applyChanges() {
-        w.getSupervisedLearningManager().updatePathWithModel(p, newOutput, newModelBuilder, getSelectedInputNames(), null, null);
+        w.getSupervisedLearningManager().updatePath(p, newOutput, newModelBuilder, getSelectedInputNames());
     }
 
     private File getLoadFilename() {
@@ -842,9 +842,9 @@ public class PathEditorFrame extends javax.swing.JFrame {
         }
     }
     
-    private void completeImport(Path loadedPath, String[] names, boolean importData) {
+    private void completeImport(Path loadedPath, String[] selectedInputs, boolean importData) {
        // TODO: need to use importdata here!
-        loadedPath.setSelectedInputs(names);
+       // loadedPath.setSelectedInputs(names);
         
         //TODO: Detect feature mapping for this specific trained model
         //Do we need to remap/re-order inputs? If so figure that out before displaying
@@ -858,13 +858,13 @@ public class PathEditorFrame extends javax.swing.JFrame {
             Instances loadedInstances = PathAndDataLoader.getLoadedInstances();
         }
 
-            //Make sure path object itself is now up to date.
-            //loadedPath.g //WHAT ABOUT THE TRAINED MODEL????
-        w.getSupervisedLearningManager().updatePathWithModel(
+        //TODO: Use a different function call here, so that this path
+        //immediately uses its selected features.
+        w.getSupervisedLearningManager().replacePath(
                 p,
                 loadedOutput,
                 loadedPath.getModelBuilder(),
-                loadedPath.getSelectedInputs(),
+                selectedInputs,
                 (SupervisedLearningModel) loadedPath.getModel(),
                 loadedPath.getModelState());
 
