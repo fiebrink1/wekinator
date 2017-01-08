@@ -34,10 +34,15 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
     private List<LearningRow> pathPanels;
     private boolean recordAll = true;
     private boolean runAll = true;
+    private boolean buildAll = true;
     private final ImageIcon recordIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/record1.png"));
     private final ImageIcon recordIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/norec3.png"));
     private final ImageIcon playIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/play1.png"));
     private final ImageIcon playIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noplay1.png"));
+    private final ImageIcon buildIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/hammerSmall2.png"));
+    private final ImageIcon buildIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noHammer1.png"));
+    
+    
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture scheduledFuture;
     private static final Logger logger = Logger.getLogger(SupervisedLearningSetGUI.class.getName());
@@ -194,6 +199,7 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
         buttonRecord = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
+        buttonBuild = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         scrollPathsPanel = new javax.swing.JScrollPane();
@@ -345,18 +351,31 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
 
         jLabel5.setText("Edit  Status");
 
+        buttonBuild.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/hammersmall2.png"))); // NOI18N
+        buttonBuild.setToolTipText("Toggle training for all outputs");
+        buttonBuild.setMaximumSize(new java.awt.Dimension(30, 34));
+        buttonBuild.setName(""); // NOI18N
+        buttonBuild.setPreferredSize(new java.awt.Dimension(34, 34));
+        buttonBuild.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonBuildActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(8, 8, 8)
+                .addGap(4, 4, 4)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(buttonRecord, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(0, 0, 0)
                         .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                        .addGap(0, 0, 0)
+                        .addComponent(buttonBuild, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -366,7 +385,6 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
                 .addComponent(jLabel4)
                 .addGap(0, 0, 0)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -376,6 +394,7 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addContainerGap())))
+            .addComponent(buttonBuild, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         jLabel1.setText("Models");
@@ -398,7 +417,7 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -468,6 +487,14 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
         }
     }
     
+    private void updateBuildButton() {
+        if (buildAll) {
+           buttonBuild.setIcon(buildIconOn);
+        } else {
+            buttonBuild.setIcon(buildIconOff);
+        }
+    }
+    
     private void buttonViewExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonViewExamplesActionPerformed
         w.getMainGUI().showExamplesViewer();
     }//GEN-LAST:event_buttonViewExamplesActionPerformed
@@ -493,8 +520,13 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
         runClicked();
     }//GEN-LAST:event_jButton5ActionPerformed
 
+    private void buttonBuildActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonBuildActionPerformed
+        buildEnableClicked();
+    }//GEN-LAST:event_buttonBuildActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonBuild;
     private javax.swing.JButton buttonDeleteAllExamples;
     private javax.swing.JButton buttonRandomize;
     private javax.swing.JButton buttonRecord;
@@ -526,5 +558,13 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
         } else {
             buttonRecord.setIcon(recordIconOff);
         }
+    }
+
+    private void buildEnableClicked() {
+        buildAll = !buildAll;
+        updateBuildButton();
+        for (LearningRow r : pathPanels) {
+           r.setTrainEnabled(buildAll);
+       } 
     }
 }

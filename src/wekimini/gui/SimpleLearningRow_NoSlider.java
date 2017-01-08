@@ -757,4 +757,9 @@ public class SimpleLearningRow_NoSlider extends javax.swing.JPanel implements Le
         //TODO HACK
         textModelValue.setText(dFormat.format(value));
     }
+
+    @Override
+    public void setTrainEnabled(boolean e) {
+        //Not implemented
+    }
 }

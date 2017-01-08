@@ -328,7 +328,7 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
     public void setRecordEnabled(boolean e) {
         learnerRecord = e;
         if (learnerRecord) {
-            buttonLearnerRecord.setIcon(recordIconOn); // NOI18N
+            buttonLearnerRecord.setIcon(recordIconOn);
         } else {
             buttonLearnerRecord.setIcon(recordIconOff);
         }
@@ -339,11 +339,22 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
     public void setRunEnabled(boolean e) {
         learnerRun = e;
         if (learnerRun) {
-            buttonLearnerPlay.setIcon(playIconOn); // NOI18N
+            buttonLearnerPlay.setIcon(playIconOn);
         } else {
             buttonLearnerPlay.setIcon(playIconOff);
         }
         myPath.setRunEnabled(e);
+    }
+    
+    @Override
+    public void setTrainEnabled(boolean e) {
+        learnerTrain = e;
+        if (learnerTrain) {
+            buttonLearnerTrain.setIcon(buildIconOn);
+        } else {
+            buttonLearnerTrain.setIcon(buildIconOff);
+        }
+        myPath.setTrainEnabled(e);
     }
     
     @Override
@@ -870,7 +881,7 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
         setTrainEnabled(learnerTrain);
     }//GEN-LAST:event_buttonLearnerTrainActionPerformed
 
-    public void setTrainEnabled(boolean e) {
+    /*public void setTrainEnabled(boolean e) {
         learnerTrain = e;
         if (learnerTrain) {
             buttonLearnerTrain.setIcon(buildIconOn); // NOI18N
@@ -878,7 +889,7 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
             buttonLearnerTrain.setIcon(buildIconOff);
         }
         myPath.setTrainEnabled(e);
-    }
+    } */
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonDeleteLearnerExamples;
     private javax.swing.JButton buttonEditLearner;
