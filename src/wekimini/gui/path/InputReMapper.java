@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import wekimini.Path.ModelState;
 import wekimini.Wekinator;
+import wekimini.gui.LabelLabelRow;
 import wekimini.gui.NameDropdownRow;
 import wekimini.gui.path.PathEditorFrame;
 import wekimini.learning.Model;
@@ -57,10 +58,13 @@ public class InputReMapper extends javax.swing.JFrame {
         this.outputNumber = outputNumber;
         
         panelInputsParent.removeAll();
-        
+
         labelOutputName.setText(model.getPrettyName());
         labelOutputType1.setText(PathEditorFrame.getOscOutputDescription(oscOutput));
         labelModelType.setText(modelBuilder.getPrettyName());
+        
+        LabelLabelRow labels = new LabelLabelRow("Input in file:", "Input in project:");
+        panelInputsParent.add(labels);
         
         for (int i = 0; i < numInputs; i++) {
             NameDropdownRow r = new NameDropdownRow(loadedNames[i], currentProjectNames);
@@ -72,7 +76,7 @@ public class InputReMapper extends javax.swing.JFrame {
     }
     
     public interface InputRemappingReceiver {
-        void setNamesAndDataPrefs(String[] names, boolean importData);
+        void setNamesAndDataPrefs(String[] names, boolean importData, boolean preventRetraining);
         void cancel();
     }
     
@@ -105,6 +109,7 @@ public class InputReMapper extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         labelModelType = new javax.swing.JLabel();
         labelOutputName = new javax.swing.JLabel();
+        checkPreventRetraining = new javax.swing.JCheckBox();
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -139,11 +144,11 @@ public class InputReMapper extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
         );
 
         buttonApply.setText("OK");
@@ -168,27 +173,35 @@ public class InputReMapper extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         jLabel1.setText("Output name: ");
 
+        jLabel2.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         jLabel2.setText("Output type:");
 
         jLabel3.setText("       ");
 
         labelOutputType1.setText("Numeric output, real values");
 
+        jLabel6.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         jLabel6.setText("Model type:");
 
         labelModelType.setText("Neural Network");
 
         labelOutputName.setText("jLabel4");
 
+        checkPreventRetraining.setSelected(true);
+        checkPreventRetraining.setText("<html>Prevent this model from re-training and overwriting itself. (You can re-enable training at anytime using the build icon on the model row in the GUI.)</html>");
+        checkPreventRetraining.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkPreventRetrainingActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -201,26 +214,30 @@ public class InputReMapper extends javax.swing.JFrame {
                         .addComponent(buttonApply))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(checkImportData, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addComponent(checkImportData, javax.swing.GroupLayout.DEFAULT_SIZE, 509, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addGap(18, 18, 18)
-                                .addComponent(labelModelType))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(labelOutputType1))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(labelOutputName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(labelOutputName, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel6))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(labelModelType)
+                                    .addComponent(labelOutputType1))))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(label1, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+                    .addComponent(checkPreventRetraining, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -245,7 +262,9 @@ public class InputReMapper extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(checkImportData, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(checkImportData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(checkPreventRetraining, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonApply)
@@ -299,7 +318,7 @@ public class InputReMapper extends javax.swing.JFrame {
                 }
             } 
         }
-        inputMappingReceiver.setNamesAndDataPrefs(selectedNames, checkImportData.isSelected());
+        inputMappingReceiver.setNamesAndDataPrefs(selectedNames, checkImportData.isSelected(), checkPreventRetraining.isSelected());
         this.dispose();    
     }//GEN-LAST:event_buttonApplyActionPerformed
 
@@ -311,6 +330,10 @@ public class InputReMapper extends javax.swing.JFrame {
         inputMappingReceiver.cancel();
         this.dispose();
     }//GEN-LAST:event_buttonCancelActionPerformed
+
+    private void checkPreventRetrainingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkPreventRetrainingActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_checkPreventRetrainingActionPerformed
 
     /**
      * @param args the command line arguments
@@ -354,6 +377,7 @@ public class InputReMapper extends javax.swing.JFrame {
     private javax.swing.JButton buttonApply;
     private javax.swing.JButton buttonCancel;
     private javax.swing.JCheckBox checkImportData;
+    private javax.swing.JCheckBox checkPreventRetraining;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

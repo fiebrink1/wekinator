@@ -1183,7 +1183,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         }
     }
 
-    public void replacePath(Path p, OSCOutput newOutput, LearningModelBuilder newModelBuilder, String[] selectedInputNames, SupervisedLearningModel model, ModelState state) {
+    public void replacePath(Path p, OSCOutput newOutput, LearningModelBuilder newModelBuilder, String[] selectedInputNames, SupervisedLearningModel model, ModelState state, boolean isTrainEnabled) {
         //Which path?
         int which = paths.indexOf(p);
         if (which == -1) {
@@ -1208,6 +1208,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
         newP.setModelBuilder(newModelBuilder); //automatically indicates that re-training needed
         newP.setModel(model);
+        newP.setTrainEnabled(isTrainEnabled);
         newP.setModelState(state);
 
         //Finally:

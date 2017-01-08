@@ -203,6 +203,7 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
         updateModelState(myPath.getModelState());
         updateRecordEnabled(myPath.isRecordEnabled());
         updateRunEnabled(myPath.isRunEnabled());
+        updateTrainEnabled(myPath.isTrainEnabled());
 
         myPath.addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -214,6 +215,8 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
                     updateRecordEnabled(myPath.isRecordEnabled());
                 } else if (evt.getPropertyName() == Path.PROP_RUNENABLED) {
                     updateRunEnabled(myPath.isRunEnabled());
+                } else if (evt.getPropertyName() == Path.PROP_TRAINENABLED) {
+                    updateTrainEnabled(myPath.isTrainEnabled());
                 } else if (evt.getPropertyName() == Path.PROP_MODELSTATE) {
                     updateModelState(myPath.getModelState());
                 } else if (evt.getPropertyName() == Path.PROP_CURRENTMODELNAME) {
@@ -266,6 +269,15 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
             buttonLearnerPlay.setIcon(playIconOn); // NOI18N
         } else {
             buttonLearnerPlay.setIcon(playIconOff);
+        }
+    }
+    
+    private void updateTrainEnabled(boolean enabled) {
+        learnerTrain = enabled;
+        if (learnerTrain) {
+            buttonLearnerTrain.setIcon(buildIconOn);
+        } else {
+            buttonLearnerTrain.setIcon(buildIconOff);
         }
     }
 

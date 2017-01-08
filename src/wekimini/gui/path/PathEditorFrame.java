@@ -817,8 +817,8 @@ public class PathEditorFrame extends javax.swing.JFrame {
             
             InputReMapper.InputRemappingReceiver r = new InputReMapper.InputRemappingReceiver() {
                 @Override
-                public void setNamesAndDataPrefs(String[] names, boolean importData) {
-                    completeImport(loadedPath, names, importData);
+                public void setNamesAndDataPrefs(String[] names, boolean importData, boolean preventRetraining) {
+                    completeImport(loadedPath, names, importData, preventRetraining);
                 }
 
                 @Override
@@ -853,7 +853,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         }
     }
     
-    private void completeImport(Path loadedPath, String[] selectedInputs, boolean importData) {
+    private void completeImport(Path loadedPath, String[] selectedInputs, boolean importData, boolean preventRetraining) {
        // TODO: need to use importdata here!
        // loadedPath.setSelectedInputs(names);
         
@@ -873,8 +873,8 @@ public class PathEditorFrame extends javax.swing.JFrame {
                 loadedPath.getModelBuilder(),
                 selectedInputs,
                 (SupervisedLearningModel) loadedPath.getModel(),
-                loadedPath.getModelState());
-        
+                loadedPath.getModelState(),
+                !preventRetraining);
         
         int[] inputIndices = getInputsOrdering(loadedPath);
         
@@ -884,7 +884,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
             //w.getDataManager().addLoadedDataForPath(loadedInstances, selectedInputs, loadedPath);
             w.getSupervisedLearningManager().addLoadedDataForPathToTraining(loadedInstances, inputIndices, pathIndex);
         }
-
+        w.getSupervisedLearningManager().getPaths().get(pathIndex).setModelState(loadedPath.getModelState());
             //p.setModel((SupervisedLearningModel) loadedPath.getModel());
         //p.setModelState(loadedPath.getModelState()); //doesn't update path change listeners...
             //TODO: Set path numExamples?
