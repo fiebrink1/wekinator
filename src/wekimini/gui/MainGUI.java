@@ -20,6 +20,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import wekimini.DtwLearningManager;
+import wekimini.GlobalSettings;
 import wekimini.LearningManager;
 import wekimini.LearningManager.LearningType;
 import wekimini.Path;
@@ -795,8 +796,13 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     }//GEN-LAST:event_menuItemSaveActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-        String homeDir = System.getProperty("user.home");
-        File f = Util.findLoadFile(WekinatorFileData.FILENAME_EXTENSION, "Wekinator file", homeDir, this);
+        //String homeDir = System.getProperty("user.home");
+        String lastLocation = GlobalSettings.getInstance().getStringValue("wekinatorProjectLoadLocation", "");
+        if (lastLocation.equals("")) {
+            lastLocation = System.getProperty("user.home");
+        }
+        
+        File f = Util.findLoadFile(WekinatorFileData.FILENAME_EXTENSION, "Wekinator file", lastLocation, this);
         if (f != null) {
             try {
                 //TODO: Check this isn't same wekinator as mine! (don't load from my same place, or from something already open...)

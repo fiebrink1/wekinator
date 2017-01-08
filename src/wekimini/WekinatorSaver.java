@@ -58,6 +58,8 @@ public class WekinatorSaver {
         if (isSupervised) {
            Instances data = loadDataFromArff(projectDir);
            w = instantiateSupervisedWekinator(wfd, ig, og, data, paths, projectDir);
+           GlobalSettings.getInstance().setStringValue("wekinatorProjectLoadLocation", projectDir);
+
         } else {
             //Temporal modeling
             w = instantiateTemporalWekinator(wfd, ig, og, projectDir);

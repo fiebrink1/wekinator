@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextField;
+import wekimini.GlobalSettings;
 import wekimini.LearningModelBuilder;
 import wekimini.WekiMiniRunner;
 import wekimini.WekiMiniRunner.Closeable;
@@ -1478,8 +1479,13 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     }//GEN-LAST:event_menuItemNewProjectActionPerformed
 
     private void menuItemOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemOpenProjectActionPerformed
-        String homeDir = System.getProperty("user.home");
-        File f = Util.findLoadFile(WekinatorFileData.FILENAME_EXTENSION, "Wekinator file", homeDir, this);
+        //String homeDir = System.getProperty("user.home");
+        String lastLocation = GlobalSettings.getInstance().getStringValue("wekinatorProjectLoadLocation", "");
+        if (lastLocation.equals("")) {
+            lastLocation = System.getProperty("user.home");
+        }
+        
+        File f = Util.findLoadFile(WekinatorFileData.FILENAME_EXTENSION, "Wekinator file", lastLocation, this);
         if (f != null) {
             try {
                 //TODO: Check this isn't same wekinator as mine! (don't load from my same place, or from something already open...)
