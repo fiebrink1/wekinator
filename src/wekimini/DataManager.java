@@ -569,6 +569,8 @@ public class DataManager {
         }
     }
 
+    //Problem: This is being called when feature selection is changed,
+    //before retraining happens (if at all)!
     private void updateFiltersForOutput(int output) throws Exception {
         Reorder r = new Reorder();
         Reorder s = new Reorder();
@@ -641,6 +643,7 @@ public class DataManager {
         }
     }
 
+    //This will need to use *new* filters, not old ones
     public Instances getTrainingDataForOutput(int which, boolean includeMetadataFields) {
         if (!includeMetadataFields) {
             try {
@@ -666,7 +669,7 @@ public class DataManager {
 
     }
 
-    //Untested
+    //This will use old filters, not new ones.
     public Instance getClassifiableInstanceForOutput(double[] vals, int which) {
         double data[] = new double[numMetaData + numInputs + numOutputs];
         System.arraycopy(vals, 0, data, numMetaData, vals.length);
@@ -702,6 +705,7 @@ public class DataManager {
         return num;
     }
 
+    //This will use old filters, not new ones.
     public Instance[] getClassifiableInstancesForAllOutputs(double[] vals) {
 
         double data[] = new double[numMetaData + numInputs + numOutputs];

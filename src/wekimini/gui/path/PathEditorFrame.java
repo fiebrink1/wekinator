@@ -24,6 +24,7 @@ import wekimini.Path;
 import wekimini.PathAndDataLoader;
 import wekimini.Wekinator;
 import wekimini.WekinatorSaver;
+import wekimini.gui.InputReMapper;
 import wekimini.gui.path.ModelEditorFrame.ModelBuilderReceiver;
 import wekimini.gui.path.OutputEditFrame.OutputEditReceiver;
 import wekimini.kadenze.KadenzeLogging;
@@ -803,7 +804,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         try {
             //Load the file
             PathAndDataLoader.tryLoadFromFile(filename.getCanonicalPath());
-            Path loadedPath = PathAndDataLoader.getLoadedPath();
+            final Path loadedPath = PathAndDataLoader.getLoadedPath();
             
             //Check compatibility
             if (!isCompatibleType(loadedPath) || !isCompatibleFeatures(loadedPath)) {
@@ -811,54 +812,73 @@ public class PathEditorFrame extends javax.swing.JFrame {
                 return;
             }
             
-            //TODO: Detect feature mapping for this specific trained model
-            //Do we need to remap/re-order inputs? If so figure that out before displaying
-            // in this GUI (for input/output selection)
-            
-           // int[] selectedInputIndices = getInputsOrdering(loadedPath);
-            
-            //TODO: Update corresponding Reorder filter object!
-            
-            OSCOutput loadedOutput = loadedPath.getOSCOutput();
-            
-            //TODO:Add instances to dataset.
-            Instances loadedInstances = PathAndDataLoader.getLoadedInstances();
-           
-            
-            //Make sure path object itself is now up to date.
-            
-            //loadedPath.g //WHAT ABOUT THE TRAINED MODEL????
-            
-            w.getSupervisedLearningManager().updatePathWithModel(
-                    p, 
-                    loadedOutput, 
-                    loadedPath.getModelBuilder(), 
-                    loadedPath.getSelectedInputs(),
-                    (SupervisedLearningModel) loadedPath.getModel(),
-                    loadedPath.getModelState());
-            
-            //p.setModel((SupervisedLearningModel) loadedPath.getModel());
-            //p.setModelState(loadedPath.getModelState()); //doesn't update path change listeners...
-            
-            //TODO: Set path numExamples?
-            
-            //TODO:Should we reset model name? number of examples?
+            InputReMapper.InputRemappingReceiver r = new InputReMapper.InputRemappingReceiver() {
+                @Override
+                public void setNamesAndDataPrefs(String[] names, boolean importData) {
+                    completeImport(loadedPath, names, importData);
+                }
 
+                @Override
+                public void cancel() {
+                    //nothing to do
+                }
+            };
             
-            //TODO: Change data (add these instances in)
+            int[] initialMatches = proposeInitialMatches(loadedPath.getSelectedInputs(), w.getInputManager().getInputNames());
+            
+            InputReMapper m = new InputReMapper(w, 
+                    loadedPath.getSelectedInputs(), 
+                    w.getInputManager().getInputNames(), 
+                    initialMatches, r);
+            
+            m.setAlwaysOnTop(true);
+            m.setVisible(true);
             
             
-            
-            PathAndDataLoader.discardLoaded(); 
-             
-            //Close this pane (TODO later: Allow people to view and change model before closing).
-            dispose();
+
         } catch (Exception ex) {
             Util.showPrettyErrorPane(this, "Could not load from file: " + ex.getMessage());
             logger.log(Level.SEVERE, null, ex);
         }
     }
+    
+    private void completeImport(Path loadedPath, String[] names, boolean importData) {
+       // TODO: need to use importdata here!
+        loadedPath.setSelectedInputs(names);
         
+        //TODO: Detect feature mapping for this specific trained model
+        //Do we need to remap/re-order inputs? If so figure that out before displaying
+        // in this GUI (for input/output selection)
+           // int[] selectedInputIndices = getInputsOrdering(loadedPath);
+            //TODO: Update corresponding Reorder filter object!
+        OSCOutput loadedOutput = loadedPath.getOSCOutput();
+
+        //TODO:Add instances to dataset.
+        if (importData) {
+            Instances loadedInstances = PathAndDataLoader.getLoadedInstances();
+        }
+
+            //Make sure path object itself is now up to date.
+            //loadedPath.g //WHAT ABOUT THE TRAINED MODEL????
+        w.getSupervisedLearningManager().updatePathWithModel(
+                p,
+                loadedOutput,
+                loadedPath.getModelBuilder(),
+                loadedPath.getSelectedInputs(),
+                (SupervisedLearningModel) loadedPath.getModel(),
+                loadedPath.getModelState());
+
+            //p.setModel((SupervisedLearningModel) loadedPath.getModel());
+        //p.setModelState(loadedPath.getModelState()); //doesn't update path change listeners...
+            //TODO: Set path numExamples?
+            //TODO:Should we reset model name? number of examples?
+            //TODO: Change data (add these instances in)
+        PathAndDataLoader.discardLoaded();
+
+        //Close this pane (TODO later: Allow people to view and change model before closing).
+        dispose();
+    }
+    
     private String getTypeString(OSCOutput o) {
         if (o instanceof OSCNumericOutput) {
             return "continuous/numeric";
@@ -947,5 +967,24 @@ public class PathEditorFrame extends javax.swing.JFrame {
             }
         }
         return -1;
+    }
+
+    private int[] proposeInitialMatches(String[] pathInputs, String[] projectInputs) {
+        //A very simple approach:
+        int[] proposedIndices = new int[pathInputs.length];
+        for (int i = 0; i < pathInputs.length; i++) {
+            boolean matched = false;
+            for (int j = 0; j < projectInputs.length; j++) {
+                if (pathInputs[i].equals(projectInputs[j])) {
+                    proposedIndices[i] = j;
+                    matched = true;
+                    break;
+                }
+            }
+            if (! matched) {
+                proposedIndices[i] = 0;
+            }
+        }
+        return proposedIndices;
     }
 }

@@ -72,6 +72,7 @@ public class PathAndDataLoader {
         } catch (Exception ex) {
             myEx = ex;
             err = true;
+            
             logger.log(Level.WARNING, "Error encountered in reading from file: {0}", ex.getMessage());
         } finally {
             try {
