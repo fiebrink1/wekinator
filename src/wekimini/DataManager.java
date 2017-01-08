@@ -1134,4 +1134,77 @@ public class DataManager {
         }
     }
 
+    private int[] findMissingInputsList(int[] selectedInputIndices) {
+        boolean[] isMissing = new boolean[numInputs];
+        for (int i = 0; i < isMissing.length; i++) {
+            isMissing[i] = true;
+        }
+        for (int i = 0; i < selectedInputIndices.length; i++) {
+            isMissing[selectedInputIndices[i]] = false;
+        }
+        
+        int[] missingInputs = new int[numInputs - selectedInputIndices.length];
+        int next = 0;
+        for (int i = 0; i < numInputs; i++) {
+            if (isMissing[i]) {
+                missingInputs[next++] = i;
+            }
+        }
+        return missingInputs;
+    }
+    
+    //Instances are formatted for this path
+    //Inputs may need to be reordered
+    //Some inputs from this project may not be present
+    public void addLoadedDataForPath(Instances loadedInstances, int[] selectedInputIndices, int pathNum, int recordingRound) {
+        if (loadedInstances.numInstances() == 0) {
+            return;
+        }
+        
+        int numInstances = loadedInstances.numInstances();
+        int[] missingInputs = findMissingInputsList(selectedInputIndices);
+        
+        for (int i = 0; i < numInstances; i++) {
+            Instance instance = loadedInstances.instance(i);
+            int thisId = nextID;
+            nextID++;
+            double myVals[] = new double[numMetaData + numInputs + numOutputs];
+            myVals[idIndex] = thisId;
+            myVals[recordingRoundIndex] = recordingRound;
+            
+            //Copy available feature values from loaded instance
+            for (int j = 0; j < selectedInputIndices.length; j++) {
+                myVals[numMetaData + selectedInputIndices[j]] = instance.value(j + numMetaData);
+            }
+            
+            //Copy output value from loaded instance
+            myVals[numMetaData + numInputs + pathNum] = instance.value(instance.numAttributes()-1);
+            setNumExamplesPerOutput(pathNum, getNumExamplesPerOutput(pathNum) + 1);
+            
+            //Create new instance with these values
+            Instance newInstance = new Instance(1.0, myVals);
+ 
+            //Use same timestamp as original data
+            newInstance.setValue(timestampIndex, instance.value(timestampIndex));
+            
+            //Set missing inputs
+            for (int j = 0; j < missingInputs.length; j++) {
+                newInstance.setMissing(numMetaData + missingInputs[j]);
+            } 
+            
+            //Set missing outputs
+            for (int j = 0; j < numOutputs; j++) {
+                if (j != pathNum) {
+                    newInstance.setMissing(numMetaData + numInputs + j);
+                }
+            }
+        
+            newInstance.setDataset(allInstances);
+            allInstances.add(newInstance);
+        }
+        setHasInstances(true);
+        fireStateChanged();
+
+        //TODO: need to update output counts? Update id?
+    }
 }

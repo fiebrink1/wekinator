@@ -863,12 +863,8 @@ public class PathEditorFrame extends javax.swing.JFrame {
            // int[] selectedInputIndices = getInputsOrdering(loadedPath);
             //TODO: Update corresponding Reorder filter object!
         OSCOutput loadedOutput = loadedPath.getOSCOutput();
-
-        //TODO:Add instances to dataset.
-        if (importData) {
-            Instances loadedInstances = PathAndDataLoader.getLoadedInstances();
-        }
-
+        int pathIndex = w.getSupervisedLearningManager().getPaths().indexOf(p);
+        
         //TODO: Use a different function call here, so that this path
         //immediately uses its selected features.
         w.getSupervisedLearningManager().replacePath(
@@ -878,6 +874,16 @@ public class PathEditorFrame extends javax.swing.JFrame {
                 selectedInputs,
                 (SupervisedLearningModel) loadedPath.getModel(),
                 loadedPath.getModelState());
+        
+        
+        int[] inputIndices = getInputsOrdering(loadedPath);
+        
+        //TODO:Add instances to dataset.
+        if (importData) {
+            Instances loadedInstances = PathAndDataLoader.getLoadedInstances();
+            //w.getDataManager().addLoadedDataForPath(loadedInstances, selectedInputs, loadedPath);
+            w.getSupervisedLearningManager().addLoadedDataForPathToTraining(loadedInstances, inputIndices, pathIndex);
+        }
 
             //p.setModel((SupervisedLearningModel) loadedPath.getModel());
         //p.setModelState(loadedPath.getModelState()); //doesn't update path change listeners...

@@ -187,6 +187,11 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         }
     }
 
+    public void addLoadedDataForPathToTraining(Instances loadedInstances, int[] selectedInputIndices, int pathNum) {
+        setRecordingRound(w.getDataManager().getMaxRecordingRound()+1);
+        w.getDataManager().addLoadedDataForPath(loadedInstances, selectedInputIndices, pathNum, recordingRound);
+    }
+
     public static enum LearningState {
 
         DONE_TRAINING, TRAINING, READY_TO_TRAIN, NOT_READY_TO_TRAIN
