@@ -113,6 +113,10 @@ public class Path {
     private boolean runEnabled = true;
 
     public static final String PROP_RUNENABLED = "runEnabled";
+    
+    private transient boolean trainEnabled = true;
+
+    public static final String PROP_TRAINENABLED = "trainEnabled";
 
     private int numExamples = 0;
 
@@ -414,6 +418,26 @@ public class Path {
         boolean oldRunEnabled = this.runEnabled;
         this.runEnabled = runEnabled;
         propertyChangeSupport.firePropertyChange(PROP_RUNENABLED, oldRunEnabled, runEnabled);
+    }
+    
+        /**
+     * Get the value of runEnabled
+     *
+     * @return the value of runEnabled
+     */
+    public boolean isTrainEnabled() {
+        return trainEnabled;
+    }
+
+    /**
+     * Set the value of runEnabled
+     *
+     * @param runEnabled new value of runEnabled
+     */
+    public void setTrainEnabled(boolean trainEnabled) {
+        boolean oldTrainEnabled = this.trainEnabled;
+        this.trainEnabled = trainEnabled;
+        propertyChangeSupport.firePropertyChange(PROP_TRAINENABLED, oldTrainEnabled, trainEnabled);
     }
 
     /**

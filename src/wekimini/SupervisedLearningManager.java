@@ -77,7 +77,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     private boolean notifyPathsOfDatasetChange = true;
 
     private final List<PathEditedListener> pathEditedListeners = new LinkedList<>();
-    private final List<InputOutputConnectionsListener> inputOutputConnectionsListeners = new LinkedList<>();
+    private final List<ConnectsInputsToOutputs.InputOutputConnectionsListener> inputOutputConnectionsListeners = new LinkedList<>();
 
     private boolean computeDistribution = false;
 
@@ -951,11 +951,15 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     public void buildAll() {
         KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.TRAIN_START);
-        //Launch training threads & get notified ...        
+        //Launch training threads & get notified ...  
         synchronized (this) {
             List<Instances> data = new ArrayList<>(paths.size());
             for (Path p : paths) {
-                data.add(w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p), false));
+                if (p.isTrainEnabled()) {
+                    data.add(w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p), false));
+                } else {
+                    data.add(null);
+                }
             }
             w.getTrainingRunner().buildAll(paths, data, trainingWorkerListener);
             setLearningState(LearningState.TRAINING);
@@ -1231,18 +1235,18 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     }
 
     private void notifyNewInputOutputConnections(boolean[][] connections) {
-        for (InputOutputConnectionsListener l : inputOutputConnectionsListeners) {
+        for (ConnectsInputsToOutputs.InputOutputConnectionsListener l : inputOutputConnectionsListeners) {
             l.newConnectionMatrix(connections);
         }
     }
 
     @Override
-    public void addConnectionsListener(InputOutputConnectionsListener l) {
+    public void addConnectionsListener(ConnectsInputsToOutputs.InputOutputConnectionsListener l) {
         inputOutputConnectionsListeners.add(l);
     }
 
     @Override
-    public boolean removeConnectionsListener(InputOutputConnectionsListener l) {
+    public boolean removeConnectionsListener(ConnectsInputsToOutputs.InputOutputConnectionsListener l) {
         return inputOutputConnectionsListeners.remove(l);
     }
 
