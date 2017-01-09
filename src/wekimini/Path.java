@@ -592,7 +592,7 @@ public class Path {
     public void resetOnEmptyData() {
         model = null;
         setModelState(ModelState.NOT_READY);
-    }
-
+    }    //TODO test this
     
+
 }

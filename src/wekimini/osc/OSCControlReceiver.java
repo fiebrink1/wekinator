@@ -43,7 +43,10 @@ public class OSCControlReceiver {
     private final String setInputNamesMessage = "/wekinator/control/setInputNames";
     private final String setOutputNamesMessage = "/wekinator/control/setOutputNames";
     private final String setInputSelectionForOutputMessage = "/wekinator/control/selectInputsForOutput";
-
+    
+    private final String loadModelFromFileMessage = "/wekinator/control/loadModelFromFile"; //int for model # (starting from 1), 2nd argument a filename.
+    private final String saveModelToFileMessage = "/wekinator/control/saveModelToFile"; //int for model # (starting from 1), 2nd argument a filename.
+    
     public OSCControlReceiver(Wekinator w, OSCController controller) {
         this.w = w;
         this.controller = controller;
@@ -170,6 +173,8 @@ public class OSCControlReceiver {
         w.getOSCReceiver().addOSCListener(setInputNamesMessage, createInputNamesListener());
         w.getOSCReceiver().addOSCListener(setOutputNamesMessage, createOutputNamesListener());
         w.getOSCReceiver().addOSCListener(setInputSelectionForOutputMessage, createInputSelectionListener());
+        w.getOSCReceiver().addOSCListener(loadModelFromFileMessage, createModelLoadListener());
+        w.getOSCReceiver().addOSCListener(saveModelToFileMessage, createModelSaveListener());
     }
 
     private OSCListener createModelChangeListener(final boolean isRecord, final boolean isEnable) {
@@ -354,6 +359,131 @@ public class OSCControlReceiver {
         return l;
     }
 
+    private OSCListener createModelLoadListener() {
+        OSCListener l = new OSCListener() {
+            @Override
+            public void acceptMessage(Date date, OSCMessage oscm) {
+                if (!controller.checkEnabled()) {
+                    return;
+                }
+                
+                List<Object> o = oscm.getArguments();
+                try {
+                    //w.getOutputManager().hasValidOutputGroup()) {
+                    
+                    
+                    if (o.size() < 2) {
+                        w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + loadModelFromFileMessage 
+                               + " requires model ID followed by filename");
+                        return; 
+                    }
+                    
+                    int modelNum = 0;
+                    if (o.get(0) instanceof Number) {
+                        modelNum = ((Number) o.get(0)).intValue();
+                    } else {
+                        w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + loadModelFromFileMessage 
+                               + " requires model ID (as integer) followed by filename");
+                        return;
+                    }
+                    
+                    if (!w.getOutputManager().hasValidOutputGroup()) {
+                        w.getStatusUpdateCenter().warn(this,
+                                "Wekinator outputs are not set up; cannot yet "
+                                + " apply OSC message " + loadModelFromFileMessage);
+                        return;
+                    }
+                    if (modelNum < 1 || modelNum > w.getOutputManager().getOutputGroup().getNumOutputs()) {
+                        w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + loadModelFromFileMessage 
+                               + " requires model ID to be between 1 and number of models");
+                        return;
+                    }
+                    
+                    String filename;
+                    if (o.get(1) instanceof String) {
+                        filename = (String)o.get(1);
+                    } else {
+                        w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + loadModelFromFileMessage
+                                + " requires second argument to be filename (as string)");
+                        return;
+                    }
+
+                    controller.loadModelFromFilename(modelNum, filename);
+                } catch (IllegalArgumentException ex) {
+                }
+            }
+
+        };
+        return l;
+    }
+
+     private OSCListener createModelSaveListener() {
+        OSCListener l = new OSCListener() {
+            @Override
+            public void acceptMessage(Date date, OSCMessage oscm) {
+                if (!controller.checkEnabled()) {
+                    return;
+                }
+                
+                List<Object> o = oscm.getArguments();
+                try {
+                    //w.getOutputManager().hasValidOutputGroup()) {
+                    
+                    
+                    if (o.size() < 2) {
+                        w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + saveModelToFileMessage 
+                               + " requires model ID followed by filename");
+                        return; 
+                    }
+                    
+                    int modelNum = 0;
+                    if (o.get(0) instanceof Number) {
+                        modelNum = ((Number) o.get(0)).intValue();
+                    } else {
+                        w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + saveModelToFileMessage 
+                               + " requires model ID (as integer) followed by filename");
+                        return;
+                    }
+                    
+                    if (!w.getOutputManager().hasValidOutputGroup()) {
+                        w.getStatusUpdateCenter().warn(this,
+                                "Wekinator outputs are not set up; cannot yet "
+                                + " apply OSC message " + saveModelToFileMessage);
+                        return;
+                    }
+                    if (modelNum < 1 || modelNum > w.getOutputManager().getOutputGroup().getNumOutputs()) {
+                        w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + saveModelToFileMessage 
+                               + " requires model ID to be between 1 and number of models");
+                        return;
+                    }
+                    
+                    String filename;
+                    if (o.get(1) instanceof String) {
+                        filename = (String)o.get(1);
+                    } else {
+                        w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + saveModelToFileMessage
+                                + " requires second argument to be filename (as string)");
+                        return;
+                    }
+
+                    controller.saveModelToFilename(modelNum, filename);
+                } catch (IllegalArgumentException ex) {
+                }
+            }
+
+        };
+        return l;
+    }
+
+    
     private int[] unpackToInts(List<Object> o, int n, String msg) {
         if (o.size() != n) {
             w.getStatusUpdateCenter().warn(this, "Received wrong number of arguments for OSC message " + msg

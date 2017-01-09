@@ -197,4 +197,16 @@ public class OSCController {
         }
     }
 
+    void loadModelFromFilename(int modelNum, String filename) {
+        if (checkEnabled() && isSupervised) {
+            w.getWekinatorController().loadModelFromFilename(modelNum-1, filename);
+        }
+    }
+
+    void saveModelToFilename(int modelNum, String filename) {
+        if (checkEnabled() && isSupervised) {
+            w.getWekinatorController().saveModelToFilename(modelNum-1, filename);        
+        }
+    }
+
 }
