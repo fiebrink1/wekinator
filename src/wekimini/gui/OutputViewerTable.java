@@ -235,6 +235,17 @@ public class OutputViewerTable extends javax.swing.JFrame {
         } else {
            int numOutputs = w.getOutputManager().getOutputGroup().getNumOutputs();
            addOutputFrame = new AddOutputFrame(numOutputs+1, "outputs-" + (numOutputs+1), w);
+           
+           Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                @Override
+                public void callMe() {
+                    //Set to null
+                    addOutputFrame = null;
+                }
+            };
+            Util.callOnClosed(addOutputFrame, callMe);
+           
+           
            addOutputFrame.setVisible(true);
            addOutputFrame.toFront();
         }

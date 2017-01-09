@@ -79,6 +79,8 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     private final List<PathEditedListener> pathEditedListeners = new LinkedList<>();
     private final List<ConnectsInputsToOutputs.InputOutputConnectionsListener> inputOutputConnectionsListeners = new LinkedList<>();
+    //Listeners for new output added
+    private final List<OutputAddedListener> outputAddedListeners;
 
     private boolean computeDistribution = false;
 
@@ -138,7 +140,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     private double[][] computeBundleDistributions(int numInputs, List<List<Double>> values, int whichOutput) {
         // int numPoints = (Integer) values.get(0);
         double[][] allDistributions = new double[values.size()][];
-       // int whichValue = 1; //starts at 1
+        // int whichValue = 1; //starts at 1
 
         if (paths.get(whichOutput).canCompute()) {
             int n = 0;
@@ -188,19 +190,32 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         }
     }
 
+    public void addOutputAddedListener(OutputAddedListener l) {
+        outputAddedListeners.add(l);
+    }
+
+    public void removeOutputAddedListener(OutputAddedListener l) {
+        outputAddedListeners.remove(l);
+    }
+
+    private void notifyOutputAddedListeners(OSCOutput newOutput, int index) {
+        for (OutputAddedListener l : outputAddedListeners) {
+            l.outputAdded(newOutput, index);
+        }
+    }
+
     public void addLoadedDataForPathToTraining(Instances loadedInstances, int[] selectedInputIndices, int pathNum) {
-        setRecordingRound(w.getDataManager().getMaxRecordingRound()+1);
+        setRecordingRound(w.getDataManager().getMaxRecordingRound() + 1);
         w.getDataManager().addLoadedDataForPath(loadedInstances, selectedInputIndices, pathNum, recordingRound);
     }
 
     public void addOutput(OSCOutput o, LearningModelBuilder mb) {
         int newOutputIndex = paths.size();
         w.getOutputManager().addNewOutput(o);
-        
+
         String[] inputs = w.getInputManager().getInputNames();
         final Path newPath = new Path(o, inputs, w, this);
-               
-        
+
         //this sort of thing:
         //initializeInputIndices(inputNames);
         pathRecordingMask = appendToArray(pathRecordingMask, newPath.isRecordEnabled());
@@ -234,22 +249,23 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
         int[] indices = convertInputNamesToIndices(inputs);
         w.getDataManager().setInputIndicesForOutput(indices, newOutputIndex, false);
-        
+
         updateAbleToRecord();
-        updateAbleToRun(); 
+        updateAbleToRun();
+        notifyOutputAddedListeners(o, newOutputIndex);
     }
 
     private boolean[] appendToArray(boolean[] original, boolean newValue) {
         boolean[] newArray = new boolean[original.length + 1];
         System.arraycopy(original, 0, newArray, 0, original.length);
-        newArray[newArray.length-1] = newValue;
+        newArray[newArray.length - 1] = newValue;
         return newArray;
     }
 
     private double[] appendToArray(double[] original, double newValue) {
         double[] newArray = new double[original.length + 1];
         System.arraycopy(original, 0, newArray, 0, original.length);
-        newArray[newArray.length-1] = newValue;
+        newArray[newArray.length - 1] = newValue;
         return newArray;
     }
 
@@ -410,6 +426,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         controller = new WekinatorSupervisedLearningController(this, w);
         inputNamesToIndices = new HashMap<>();
         pathsToOutputIndices = new HashMap<>();
+        outputAddedListeners = new LinkedList<>();
         //TODO listen for changes in input names, # outputs or inputs, etc.
 
         trainingWorkerListener = new PropertyChangeListener() {
@@ -464,8 +481,9 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         controller = new WekinatorSupervisedLearningController(this, w);
         inputNamesToIndices = new HashMap<>();
         pathsToOutputIndices = new HashMap<>();
-        //TODO listen for changes in input names, # outputs or inputs, etc.
+        outputAddedListeners = new LinkedList<>();
 
+        //TODO listen for changes in input names, # outputs or inputs, etc.
         trainingWorkerListener = new PropertyChangeListener() {
 
             @Override
@@ -750,16 +768,15 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     //User has requested change to input selection for this path,
     //to be implemented at next training
     /*private void changePathInputsOnRetrain(Path p) {
-        Integer outputIndex = pathsToOutputIndices.get(p);
-        if (outputIndex == null) {
-            logger.log(Level.SEVERE, "Path not found in pathInputsChanged");
-            return;
-        }
-        String[] inputs = p.getSelectedInputs();
-        int[] indices = convertInputNamesToIndices(inputs);
-        w.getDataManager().setInputIndicesForOutput(indices, outputIndex);
-    } */
-    
+     Integer outputIndex = pathsToOutputIndices.get(p);
+     if (outputIndex == null) {
+     logger.log(Level.SEVERE, "Path not found in pathInputsChanged");
+     return;
+     }
+     String[] inputs = p.getSelectedInputs();
+     int[] indices = convertInputNamesToIndices(inputs);
+     w.getDataManager().setInputIndicesForOutput(indices, outputIndex);
+     } */
     private void changePathInputs(Path p, boolean waitForRetrainToApply) {
         Integer outputIndex = pathsToOutputIndices.get(p);
         if (outputIndex == null) {
@@ -842,15 +859,13 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                 }
             }
         }
-        
+
         /*else if (evt.getPropertyName() == Path.PROP_NUMEXAMPLES) {
          pathNumExamplesChanged(p);
          } */ //this is called explicitly when we hear back from Datamanager
-
         //if (evt.getPropertyName() == Path.)
         //TODO: listen for record/run enable change and update our Mask
         // System.out.println("What do we do? Path changed for output: " + p.getOSCOutput().getName());
-
     }
 
     //Right now, this simply won't change indices where mask is false
@@ -1280,7 +1295,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         pathsToOutputIndices.put(newP, which);
         changePathInputs(newP, false);
         notifyPathEditedListeners(which, newP, p);
-            //May need to update learning state, depending on models...
+        //May need to update learning state, depending on models...
         //newP.setSelectedInputs(new String[0]); //Changes state to "needs rebuilding"
         updateLearningStateFromPathStates();
     }
@@ -1310,6 +1325,11 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     @Override
     public boolean removeConnectionsListener(ConnectsInputsToOutputs.InputOutputConnectionsListener l) {
         return inputOutputConnectionsListeners.remove(l);
+    }
+
+    public interface OutputAddedListener {
+
+        public void outputAdded(OSCOutput newOutput, int which);
     }
 
 }

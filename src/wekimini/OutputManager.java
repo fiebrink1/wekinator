@@ -45,9 +45,6 @@ public class OutputManager {
     
     //Listeners for individual output edits (e.g. change # classes)
     private final List<OutputTypeEditListener> outputTypeEditListeners;
-
-    //Listeners for new output added
-    private final List<OutputAddedListener> outputAddedListeners;
     
     //Listeners for single outputs computed internally
   //  private final List<OutputManager.SingleOutputValueListener> singleValueComputedListeners;
@@ -106,7 +103,6 @@ public class OutputManager {
         valueReceivedListeners = new LinkedList<>();
         valueComputedListeners = new LinkedList<>();
         outputTypeEditListeners = new LinkedList<>();
-        outputAddedListeners = new LinkedList<>();
         //singleValueComputedListeners = new LinkedList<>();
 
         //Currently have listeners for outputGroupChange (add, remove, modify)
@@ -356,20 +352,6 @@ public class OutputManager {
             l.outputTypeEdited(newOutput, oldOutput, index);
         }
     }
-    
-    public void addOutputAddedListener(OutputAddedListener l) {
-        outputAddedListeners.add(l);
-    }
-    
-    public void removeOutputAddedListener(OutputAddedListener l) {
-        outputAddedListeners.remove(l);
-    }
-    
-    private void notifyOutputAddedListeners(OSCOutput newOutput, int index) {
-        for (OutputAddedListener l : outputAddedListeners) {
-            l.outputAdded(newOutput, index);
-        }
-    }
 
     public boolean containsOutputName(String name) {
         List<OSCOutput> l = outputGroup.getOutputs();
@@ -423,7 +405,7 @@ public class OutputManager {
 
     //adds new output (appended to end)
     public void addNewOutput(OSCOutput o) {
-        int index = outputGroup.getNumOutputs() + 1;
+        int index = outputGroup.getNumOutputs();
         List<OSCOutput> outputs = outputGroup.getOutputs();
         outputs.add(o);
         
@@ -435,7 +417,7 @@ public class OutputManager {
         vals[vals.length-1] = o.getDefaultValue();
         
         setOSCOutputGroup(newGroup, vals);
-        notifyOutputAddedListeners(o, index);
+       // notifyOutputAddedListeners(o, index);
     }
     
     // TODO: Not sure if we need this?
@@ -471,9 +453,5 @@ public class OutputManager {
     
     public interface OutputTypeEditListener {
         public void outputTypeEdited(OSCOutput newOutput, OSCOutput oldOutput, int which);   
-    }
-    
-    public interface OutputAddedListener {
-        public void outputAdded(OSCOutput newOutput, int which);
     }
 }

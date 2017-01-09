@@ -5,6 +5,7 @@
  */
 package wekimini.gui;
 
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -132,6 +133,7 @@ public class AddOutputFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
+        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)); //Necessary to be handled correctly by main gui!
         this.dispose();
     }//GEN-LAST:event_buttonCancelActionPerformed
 
@@ -152,6 +154,8 @@ public class AddOutputFrame extends javax.swing.JFrame {
      
         ModelBuilder mb = outputConfigRow.getModelBuilderFromForm();
         w.getSupervisedLearningManager().addOutput(o, (LearningModelBuilder)mb);
+        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)); //Necessary to be handled correctly by main gui!
+
         this.dispose();
     }//GEN-LAST:event_buttonDoneActionPerformed
 

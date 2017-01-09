@@ -586,7 +586,7 @@ public class DataManager {
         }
 
         allInstances.insertAttributeAt(a, numMetaData + numInputs + which);
-        dummyInstances = new Instances(allInstances);
+        dummyInstances = new Instances(allInstances, 0);
     }
 
     private void initializeOutputData() {
@@ -607,7 +607,7 @@ public class DataManager {
             int numNewClasses = ((OSCClassificationOutput) outputGroup.getOutput(which)).getNumClasses();
             numClasses = insertIntoArray(numNewClasses, numClasses, which);
         } else {
-            insertIntoArray(0, numClasses, which);
+            numClasses = insertIntoArray(0, numClasses, which);
         }
     }
 

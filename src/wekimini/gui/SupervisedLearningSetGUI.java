@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package wekimini.gui;
 
 import java.awt.Dimension;
@@ -29,6 +28,7 @@ import wekimini.osc.OSCOutput;
  * @author fiebrink
  */
 public class SupervisedLearningSetGUI extends javax.swing.JPanel {
+
     private Wekinator w;
     private List<Path> paths;
     private List<LearningRow> pathPanels;
@@ -41,19 +41,19 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
     private final ImageIcon playIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noplay1.png"));
     private final ImageIcon buildIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/hammerSmall2.png"));
     private final ImageIcon buildIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noHammer1.png"));
-    
-    
+
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture scheduledFuture;
     private static final Logger logger = Logger.getLogger(SupervisedLearningSetGUI.class.getName());
+
     /**
      * Creates new form LearningSet1
      */
     public SupervisedLearningSetGUI() {
         initComponents();
-      //  jButton3.setVisible(false);
+        //  jButton3.setVisible(false);
     }
-    
+
     public final void setup(Wekinator w, Path[] ps, String[] modelNames) {
         this.w = w;
         paths = new LinkedList<>();
@@ -74,15 +74,14 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
                 outputValuesReceived(vals);
             }
         });
-        
-       /* w.getOutputManager().addIndividualOutputEditListener(new OutputManager.OutputTypeEditListener() {
 
-            @Override
-            public void outputTypeEdited(OSCOutput newOutput, OSCOutput oldOutput, int which) {
-                outputTypeChanged(newOutput, oldOutput, which);
-            }
-        }); */
-        
+        /* w.getOutputManager().addIndividualOutputEditListener(new OutputManager.OutputTypeEditListener() {
+
+         @Override
+         public void outputTypeEdited(OSCOutput newOutput, OSCOutput oldOutput, int which) {
+         outputTypeChanged(newOutput, oldOutput, which);
+         }
+         }); */
         w.getSupervisedLearningManager().addPathEditedListener(new SupervisedLearningManager.PathEditedListener() {
 
             @Override
@@ -90,54 +89,73 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
                 changePath(which, newPath, oldPath);
             }
         });
-        
-    
-        
+
+        w.getSupervisedLearningManager().addOutputAddedListener(new SupervisedLearningManager.OutputAddedListener() {
+            @Override
+            public void outputAdded(OSCOutput newOutput, int which) {
+                addNewOutputRow(newOutput, which);
+            }
+        });
+
         //setupThread(); //Was test for lower GUI update rate, didn't make too much difference
-            //Also interfered with user setting of GUI
+        //Also interfered with user setting of GUI
     }
-    
-    
+
+    private void addNewOutputRow(OSCOutput newOutput, int which) {
+        Path newPath = w.getSupervisedLearningManager().getPaths().get(which);
+        paths.add(which, newPath);
+        
+        //pathsPanel.removeAll();
+        double[] currentValues = w.getOutputManager().getCurrentValues();
+        LearningRow r = new SupervisedLearningRow(w, paths.get(which));
+        r.setValue(currentValues[which]);
+        pathPanels.add(which,r);
+        JSeparator sep = new JSeparator();
+        sep.setMaximumSize(new Dimension(32767, 5));
+        pathsPanel.add(sep, which*2);
+        pathsPanel.add(r.getComponent(), which*2+1);
+        pathsPanel.revalidate();
+        scrollPathsPanel.validate();
+        repaint();
+    }
+
     private void changePath(int which, Path newPath, Path oldPath) {
         double[] currentValues = w.getOutputManager().getCurrentValues();
         LearningRow r = new SupervisedLearningRow(w, newPath);
         r.setValue(currentValues[which]);
-        
+
         //Replace in my panel array
         pathPanels.remove(which);
         pathPanels.add(which, r);
-        
-       // pathsPanel.c
-        pathsPanel.remove(2*which+1); //added in sequence (separator, row)
-        pathsPanel.add(r.getComponent(), 2*which+1);
-        
-         /*   pathsPanel.add(sep);
-            pathsPanel.add(r.getComponent()); */
 
+        // pathsPanel.c
+        pathsPanel.remove(2 * which + 1); //added in sequence (separator, row)
+        pathsPanel.add(r.getComponent(), 2 * which + 1);
+
+        /*   pathsPanel.add(sep);
+         pathsPanel.add(r.getComponent()); */
         pathsPanel.revalidate();
         scrollPathsPanel.validate();
-        repaint();  
+        repaint();
     }
-    
+
     public SupervisedLearningSetGUI(Wekinator w, Path[] ps, String[] modelNames) {
         initComponents();
         setup(w, ps, modelNames);
         //jButton3.setVisible(false);
 
-        
     }
-    
-   /* private void setupThread() {
-            scheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                for (LearningRow lr : pathPanels) {
-                    lr.updateValueGUI();
-                }
-            }
-        }, 500, 50, TimeUnit.MILLISECONDS);
-    } */
-    
+
+    /* private void setupThread() {
+     scheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+     @Override
+     public void run() {
+     for (LearningRow lr : pathPanels) {
+     lr.updateValueGUI();
+     }
+     }
+     }, 500, 50, TimeUnit.MILLISECONDS);
+     } */
     //TODO: check if this setValue here is resulting in duplicate call to learning manager value change
     //Assumes that ordering of outputs is never going to change; don't have to look up anything or refer to SupervisedLearningManager.
     private void outputValuesComputed(double[] vals) {
@@ -145,15 +163,14 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
             pathPanels.get(i).setComputedValue(vals[i]);
         }
     }
-    
+
     //Called when new output values received via OSC (not via GUI, not computed)
     private void outputValuesReceived(double[] vals) {
         for (int i = 0; i < vals.length; i++) {
             if (paths.get(i).getOSCOutput().isLegalTrainingValue(vals[i])) {
                 pathPanels.get(i).setValueOnlyForDisplay(vals[i]);
             } else {
-                logger.log(Level.WARNING, "Received illegal value of {0} for model {1}; ignoring it"
-                        , new Object[]{vals[i], i});
+                logger.log(Level.WARNING, "Received illegal value of {0} for model {1}; ignoring it", new Object[]{vals[i], i});
             }
         }
     }
@@ -170,11 +187,12 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
             pathsPanel.add(sep);
             pathsPanel.add(r.getComponent());
         }
-        
+
         pathsPanel.revalidate();
         scrollPathsPanel.validate();
-        repaint();  
+        repaint();
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -475,10 +493,10 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
         runAll = !runAll;
         updateRunButton();
         for (LearningRow r : pathPanels) {
-           r.setRunEnabled(runAll);
-       } 
+            r.setRunEnabled(runAll);
+        }
     }
-    
+
     private void updateRunButton() {
         if (runAll) {
             jButton5.setIcon(playIconOn);
@@ -486,15 +504,15 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
             jButton5.setIcon(playIconOff);
         }
     }
-    
+
     private void updateBuildButton() {
         if (buildAll) {
-           buttonBuild.setIcon(buildIconOn);
+            buttonBuild.setIcon(buildIconOn);
         } else {
             buttonBuild.setIcon(buildIconOff);
         }
     }
-    
+
     private void buttonViewExamplesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonViewExamplesActionPerformed
         w.getMainGUI().showExamplesViewer();
     }//GEN-LAST:event_buttonViewExamplesActionPerformed
@@ -508,10 +526,10 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
         recordAll = !recordAll;
         updateRecordButton();
         for (LearningRow r : pathPanels) {
-           r.setRecordEnabled(recordAll);
-       }
+            r.setRecordEnabled(recordAll);
+        }
     }
-    
+
     private void buttonRecordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRecordActionPerformed
         recordClicked();
     }//GEN-LAST:event_buttonRecordActionPerformed
@@ -564,7 +582,7 @@ public class SupervisedLearningSetGUI extends javax.swing.JPanel {
         buildAll = !buildAll;
         updateBuildButton();
         for (LearningRow r : pathPanels) {
-           r.setTrainEnabled(buildAll);
-       } 
+            r.setTrainEnabled(buildAll);
+        }
     }
 }
