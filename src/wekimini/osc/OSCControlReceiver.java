@@ -50,6 +50,10 @@ public class OSCControlReceiver {
 
     private final String runNewProjectMessage = "/wekinator/control/runNewProject"; //First argument filename, second argument (optional) CLOSECURRENT/STOPCURRENTLISTENING/KEEPCURRENTRUNNING
 
+    private final String enablePerformanceModeMessage = "/wekinator/control/enablePerformanceMode";
+    private final String disablePerformanceModeMessage = "/wekinator/control/disablePerformanceMode";
+
+    
     public OSCControlReceiver(Wekinator w, OSCController controller) {
         this.w = w;
         this.controller = controller;
@@ -178,6 +182,8 @@ public class OSCControlReceiver {
         w.getOSCReceiver().addOSCListener(loadModelFromFileMessage, createModelLoadListener());
         w.getOSCReceiver().addOSCListener(saveModelToFileMessage, createModelSaveListener());
         w.getOSCReceiver().addOSCListener(runNewProjectMessage, runNewProjectListener());
+        w.getOSCReceiver().addOSCListener(enablePerformanceModeMessage, enablePerformanceModeListener());
+        w.getOSCReceiver().addOSCListener(disablePerformanceModeMessage, disablePerformanceModeListener());
 
     }
 
@@ -570,6 +576,35 @@ public class OSCControlReceiver {
         return l;
     }
 
+    private OSCListener enablePerformanceModeListener() {
+        OSCListener l;
+        l = new OSCListener() {
+            @Override
+            public void acceptMessage(Date date, OSCMessage oscm) {
+                if (!controller.checkEnabled()) {
+                    return;
+                }
+                controller.enablePerformanceMode(true);
+            }
+        };
+        return l;
+    }
+
+    private OSCListener disablePerformanceModeListener() {
+        OSCListener l;
+        l = new OSCListener() {
+            @Override
+            public void acceptMessage(Date date, OSCMessage oscm) {
+                if (!controller.checkEnabled()) {
+                    return;
+                }
+                controller.enablePerformanceMode(false);
+            }
+        };
+        return l;
+    }
+
+    
     private int[] unpackToInts(List<Object> o, int n, String msg) {
         if (o.size() != n) {
             w.getStatusUpdateCenter().warn(this, "Received wrong number of arguments for OSC message " + msg

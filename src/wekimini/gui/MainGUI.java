@@ -844,15 +844,20 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         // TODO add your handling code here:
     }//GEN-LAST:event_formWindowClosed
 
-    private void menuPerformanceCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPerformanceCheckActionPerformed
-        learningPanel1.setPerfomanceMode(menuPerformanceCheck.isSelected());
-        if (menuPerformanceCheck.isSelected()) {
+    public void setPerformanceMode(boolean performanceMode) {
+        learningPanel1.setPerfomanceMode(performanceMode);
+        menuPerformanceCheck.setSelected(performanceMode);
+        if (performanceMode) {
             this.setSize(225, 225);
             setMaximumSize(new Dimension(255, 255));
         } else {
             this.setSize(getPreferredSize());
             this.setMaximumSize(new Dimension(817, 2147483647));
         }
+    }
+    
+    private void menuPerformanceCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPerformanceCheckActionPerformed
+        setPerformanceMode(menuPerformanceCheck.isSelected());
         //pack();
         //repaint();
     }//GEN-LAST:event_menuPerformanceCheckActionPerformed

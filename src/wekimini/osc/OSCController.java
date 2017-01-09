@@ -222,4 +222,9 @@ public class OSCController {
         }
     }
 
+    void enablePerformanceMode(boolean b) {
+        if (w.getMainGUI() != null) {
+            w.getMainGUI().setPerformanceMode(b);
+        }
+    }
 }
