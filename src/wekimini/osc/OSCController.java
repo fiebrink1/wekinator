@@ -197,9 +197,9 @@ public class OSCController {
         }
     }
 
-    void loadModelFromFilename(int modelNum, String filename) {
+    void loadModelFromFilename(int modelNum, String filename, boolean importData) {
         if (checkEnabled() && isSupervised) {
-            w.getWekinatorController().loadModelFromFilename(modelNum-1, filename);
+            w.getWekinatorController().loadModelFromFilename(modelNum-1, filename, importData);
         }
     }
 

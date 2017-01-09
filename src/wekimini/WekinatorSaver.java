@@ -184,10 +184,11 @@ public class WekinatorSaver {
         List<Path> paths = new ArrayList<>(howMany);
         for (int i = 0; i < howMany; i++) {
             String filename = pathsDirectory + "model" + i + ".xml"; //TODO: need better solution here.
-            PathAndDataLoader.tryLoadFromFile(filename);
-            Path ptemp = PathAndDataLoader.getLoadedPath();
+            PathAndDataLoader loader = new PathAndDataLoader();
+            loader.tryLoadFromFile(filename);
+            Path ptemp = loader.getLoadedPath();
             //Don't do anything with loaded data, since we're loading all paths for a project here.
-            PathAndDataLoader.discardLoaded();
+            loader.discardLoaded();
            // Path ptemp = Path.readFromFile(filename); //TODO: take care of this within Path instead
             paths.add(ptemp); //still need to initialise with wekinator, etc. later
         }

@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 import wekimini.learning.Model;
-import wekimini.learning.ModelBuilder;
 import wekimini.learning.SupervisedLearningModel;
 
 /**
@@ -22,12 +21,16 @@ import wekimini.learning.SupervisedLearningModel;
  * @author rebecca
  */
 public class PathAndDataLoader {
-    private static boolean isLoaded = false;
-    private static Path loadedPath = null;
-    private static Instances loadedInstances = null;
-    private static final Logger logger = Logger.getLogger(PathAndDataLoader.class.getName());
+    private boolean isLoaded = false;
+    private Path loadedPath = null;
+    private Instances loadedInstances = null;
+    private final Logger logger = Logger.getLogger(PathAndDataLoader.class.getName());
 
-    public static void tryLoadFromFile(String filename) throws Exception {
+    public PathAndDataLoader() {
+        
+    }
+    
+    public void tryLoadFromFile(String filename) throws Exception {
         //Danger: Will not have any transient fields initialised!
         Path p = null;
         FileInputStream instream = null;
@@ -93,7 +96,7 @@ public class PathAndDataLoader {
         isLoaded = true;
     }
 
-    public static Path getLoadedPath() {
+    public Path getLoadedPath() {
         if (isLoaded) {
             return loadedPath;
         } else {
@@ -103,7 +106,7 @@ public class PathAndDataLoader {
     }
 
     //TODO: getSelectedInputs() isn't ordered yet
-    public static String[] getOrderedInputNamesForLoadedPath() {
+    public String[] getOrderedInputNamesForLoadedPath() {
         if (isLoaded) {
             return loadedPath.getSelectedInputs();
         } else {
@@ -113,7 +116,7 @@ public class PathAndDataLoader {
     }
 
     //Returns null if no instances could be loaded
-    public static Instances getLoadedInstances() {
+    public Instances getLoadedInstances() {
         if (isLoaded) {
             return loadedInstances;
             //If no instances, fail gracefully?
@@ -123,7 +126,7 @@ public class PathAndDataLoader {
         }
     }
 
-    public static void discardLoaded() {
+    public void discardLoaded() {
         loadedPath = null;
         loadedInstances = null;
         isLoaded = false;

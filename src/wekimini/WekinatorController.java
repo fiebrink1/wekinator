@@ -232,28 +232,30 @@ public class WekinatorController {
     }
 
     //Uses modelNum with 0 indexing
-    public void loadModelFromFilename(int modelNum, String filename) {
+    public void loadModelFromFilename(int modelNum, String filename, boolean importData) {
         File file;
+        PathAndDataLoader loader;
         try {
             file = new File(filename);
-            PathAndDataLoader.tryLoadFromFile(file.getCanonicalPath());
+            loader = new PathAndDataLoader();
+            loader.tryLoadFromFile(file.getCanonicalPath());
 
         } catch (Exception ex) {
             logger.log(Level.SEVERE, null, ex);
             w.getStatusUpdateCenter().warn(this, "Cannot load from file" + filename);
+            return;
         }
-        final Path loadedPath = PathAndDataLoader.getLoadedPath();
+        final Path loadedPath = loader.getLoadedPath();
         OSCOutput existingOutput = w.getOutputManager().getOutputGroup().getOutput(modelNum);
         //Check compatibility
         if (!isCompatibleType(existingOutput, loadedPath) || !isCompatibleFeatures(loadedPath)) {
-            PathAndDataLoader.discardLoaded();
+            loader.discardLoaded();
             return;
         }
 
         int[] initialMatches = proposeInitialMatches(loadedPath.getSelectedInputs(), w.getInputManager().getInputNames());
-       // String[] inputMatches = getInputMatches(loadedPath.getSelectedInputs(), w.getInputManager().getInputNames());
-
         if (initialMatches.length == 0) {
+            loader.discardLoaded();
             return;
         }
 
@@ -262,8 +264,6 @@ public class WekinatorController {
         OSCOutput loadedOutput = loadedPath.getOSCOutput();
         Path oldPath = w.getSupervisedLearningManager().getPaths().get(modelNum);
 
-        //TODO: Use a different function call here, so that this path
-        //immediately uses its selected features.
         w.getSupervisedLearningManager().replacePath(
                 oldPath,
                 loadedOutput,
@@ -273,18 +273,16 @@ public class WekinatorController {
                 loadedPath.getModelState(),
                 false);
 
-       // int[] inputIndices = getInputsOrdering(loadedPath);
-        //TODO: Fix later so this is an option in OSC message
-        boolean importData = false;
-
         //TODO:Add instances to dataset.
         if (importData) {
-            Instances loadedInstances = PathAndDataLoader.getLoadedInstances();
+            Instances loadedInstances = loader.getLoadedInstances();
             //w.getDataManager().addLoadedDataForPath(loadedInstances, selectedInputs, loadedPath);
             w.getSupervisedLearningManager().addLoadedDataForPathToTraining(loadedInstances, initialMatches, modelNum);
         }
         w.getSupervisedLearningManager().getPaths().get(modelNum).setModelState(loadedPath.getModelState());
-        PathAndDataLoader.discardLoaded();
+        w.getStatusUpdateCenter().update(this, "Model " + (modelNum+1) + " loaded from file " + filename);
+
+        loader.discardLoaded();
     }
 
     public void saveModelToFilename(int modelNum, String filename) {
@@ -293,6 +291,7 @@ public class WekinatorController {
         try {
             Path p = w.getSupervisedLearningManager().getPaths().get(modelNum);
             p.writeToFile(filename);
+            w.getStatusUpdateCenter().update(this, "Model " + (modelNum+1) + " saved to file " + filename);
         } catch (IOException ex) {
             w.getStatusUpdateCenter().warn(this, "Could not write to file " + filename + ex.getMessage());
         }
@@ -311,8 +310,9 @@ public class WekinatorController {
                 }
             }
             if (!matched) {
-                w.getStatusUpdateCenter().warn(this, "Model cannot be loaded: No match for "
-                        + " input " + pathInputs[i]);
+                w.getStatusUpdateCenter().warn(this, "Model cannot be loaded: "
+                        + "Input names do not match (No match for "
+                        + " input " + pathInputs[i] + ")");
                 return new int[0]; //THIS IS DIFFERENT FROM PATH EDITOR VERSION
             }
         }

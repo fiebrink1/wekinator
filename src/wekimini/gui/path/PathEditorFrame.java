@@ -52,12 +52,14 @@ public class PathEditorFrame extends javax.swing.JFrame {
     private JCheckBox inputs[] = null;
     private String[] inputNames = null;
     private Wekinator w;
+    private final PathAndDataLoader loader;
     /**
      * Creates new form PathEditorFrame
      */
     public PathEditorFrame() {
         initComponents();
         p = null;
+        loader = new PathAndDataLoader();
     }
 
     public PathEditorFrame(Path p, String[] inputNames, Wekinator w) {
@@ -68,6 +70,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         this.w = w;
         initInputsPanel(p, inputNames);
         setTitle("Editing " + p.getOSCOutput().getName());
+        loader = new PathAndDataLoader();
     }
 
     private void initInputsPanel(Path p, String[] inputNames) {
@@ -806,12 +809,12 @@ public class PathEditorFrame extends javax.swing.JFrame {
         
         try {
             //Load the file
-            PathAndDataLoader.tryLoadFromFile(filename.getCanonicalPath());
-            final Path loadedPath = PathAndDataLoader.getLoadedPath();
+            loader.tryLoadFromFile(filename.getCanonicalPath());
+            final Path loadedPath = loader.getLoadedPath();
             
             //Check compatibility
             if (!isCompatibleType(loadedPath) || !isCompatibleFeatures(loadedPath)) {
-                PathAndDataLoader.discardLoaded(); 
+                loader.discardLoaded(); 
                 return;
             }
             
@@ -880,7 +883,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         
         //TODO:Add instances to dataset.
         if (importData) {
-            Instances loadedInstances = PathAndDataLoader.getLoadedInstances();
+            Instances loadedInstances = loader.getLoadedInstances();
             //w.getDataManager().addLoadedDataForPath(loadedInstances, selectedInputs, loadedPath);
             w.getSupervisedLearningManager().addLoadedDataForPathToTraining(loadedInstances, inputIndices, pathIndex);
         }
@@ -890,7 +893,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
             //TODO: Set path numExamples?
             //TODO:Should we reset model name? number of examples?
             //TODO: Change data (add these instances in)
-        PathAndDataLoader.discardLoaded();
+        loader.discardLoaded();
 
         //Close this pane (TODO later: Allow people to view and change model before closing).
         dispose();

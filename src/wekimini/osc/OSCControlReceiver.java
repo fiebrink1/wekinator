@@ -44,7 +44,7 @@ public class OSCControlReceiver {
     private final String setOutputNamesMessage = "/wekinator/control/setOutputNames";
     private final String setInputSelectionForOutputMessage = "/wekinator/control/selectInputsForOutput";
     
-    private final String loadModelFromFileMessage = "/wekinator/control/loadModelFromFile"; //int for model # (starting from 1), 2nd argument a filename.
+    private final String loadModelFromFileMessage = "/wekinator/control/loadModelFromFile"; //int for model # (starting from 1), 2nd argument a filename, 3rd argument (optional) is WITHDATA or WITHOUTDATA
     private final String saveModelToFileMessage = "/wekinator/control/saveModelToFile"; //int for model # (starting from 1), 2nd argument a filename.
     
     public OSCControlReceiver(Wekinator w, OSCController controller) {
@@ -411,8 +411,28 @@ public class OSCControlReceiver {
                                 + " requires second argument to be filename (as string)");
                         return;
                     }
+                    
+                    boolean importData = false;
+                    if (o.size() >= 3) {
+                        if (o.get(2) instanceof String) {
+                            String dataString = (String)o.get(2);
+                            if (dataString.equals("WITHDATA")) {
+                                importData = true;
+                            } else if (!dataString.equals("WITHOUTDATA")) {
+                                w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + loadModelFromFileMessage
+                                + " requires third argument to be WITHDATA or WITHOUTDATA");    
+                                //Don't return, we'll proceed anyway.
+                            }
+                        } else {
+                            w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + loadModelFromFileMessage
+                                + " requires third argument to be WITHDATA or WITHOUTDATA");    
+                            //Don't return, we'll proceed anyway.
+                        }
+                    }
 
-                    controller.loadModelFromFilename(modelNum, filename);
+                    controller.loadModelFromFilename(modelNum, filename, importData);
                 } catch (IllegalArgumentException ex) {
                 }
             }
