@@ -46,6 +46,9 @@ public class OutputManager {
     //Listeners for individual output edits (e.g. change # classes)
     private final List<OutputTypeEditListener> outputTypeEditListeners;
 
+    //Listeners for new output added
+    private final List<OutputAddedListener> outputAddedListeners;
+    
     //Listeners for single outputs computed internally
   //  private final List<OutputManager.SingleOutputValueListener> singleValueComputedListeners;
 
@@ -103,6 +106,7 @@ public class OutputManager {
         valueReceivedListeners = new LinkedList<>();
         valueComputedListeners = new LinkedList<>();
         outputTypeEditListeners = new LinkedList<>();
+        outputAddedListeners = new LinkedList<>();
         //singleValueComputedListeners = new LinkedList<>();
 
         //Currently have listeners for outputGroupChange (add, remove, modify)
@@ -160,6 +164,15 @@ public class OutputManager {
             currentValues[i] = outputGroup.getOutput(i).getDefaultValue();
         }
         
+        propertyChangeSupport.firePropertyChange(PROP_OUTPUTGROUP, oldGroup, outputGroup);
+    }
+    
+     //For now, no possibility to modify an output group: it's a totally new group.
+    public void setOSCOutputGroup(OSCOutputGroup newG, double[] values) throws IllegalArgumentException {
+        OSCOutputGroup oldGroup = outputGroup;
+        outputGroup = newG;
+        currentValues = new double[newG.getNumOutputs()];
+        System.arraycopy(values, 0, currentValues, 0, currentValues.length);
         propertyChangeSupport.firePropertyChange(PROP_OUTPUTGROUP, oldGroup, outputGroup);
     }
 
@@ -343,6 +356,20 @@ public class OutputManager {
             l.outputTypeEdited(newOutput, oldOutput, index);
         }
     }
+    
+    public void addOutputAddedListener(OutputAddedListener l) {
+        outputAddedListeners.add(l);
+    }
+    
+    public void removeOutputAddedListener(OutputAddedListener l) {
+        outputAddedListeners.remove(l);
+    }
+    
+    private void notifyOutputAddedListeners(OSCOutput newOutput, int index) {
+        for (OutputAddedListener l : outputAddedListeners) {
+            l.outputAdded(newOutput, index);
+        }
+    }
 
     public boolean containsOutputName(String name) {
         List<OSCOutput> l = outputGroup.getOutputs();
@@ -393,6 +420,23 @@ public class OutputManager {
         
         
     }
+
+    //adds new output (appended to end)
+    public void addNewOutput(OSCOutput o) {
+        int index = outputGroup.getNumOutputs() + 1;
+        List<OSCOutput> outputs = outputGroup.getOutputs();
+        outputs.add(o);
+        
+        OSCOutputGroup newGroup = new OSCOutputGroup(outputs, outputGroup.getOscMessage(), outputGroup.getHostname(), outputGroup.getOutputPort());
+        OSCOutputGroup oldGroup = outputGroup;
+        
+        double[] vals = new double[currentValues.length + 1];
+        System.arraycopy(currentValues, 0, vals, 0, currentValues.length);
+        vals[vals.length-1] = o.getDefaultValue();
+        
+        setOSCOutputGroup(newGroup, vals);
+        notifyOutputAddedListeners(o, index);
+    }
     
     // TODO: Not sure if we need this?
     public interface OutputValueListener extends EventListener {
@@ -427,5 +471,9 @@ public class OutputManager {
     
     public interface OutputTypeEditListener {
         public void outputTypeEdited(OSCOutput newOutput, OSCOutput oldOutput, int which);   
+    }
+    
+    public interface OutputAddedListener {
+        public void outputAdded(OSCOutput newOutput, int which);
     }
 }

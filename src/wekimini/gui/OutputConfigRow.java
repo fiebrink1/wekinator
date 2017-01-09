@@ -31,6 +31,7 @@ public class OutputConfigRow extends javax.swing.JPanel {
 
     private final ModelBuilder[] classificationModelBuilders;
     private final ModelBuilder[] regressionModelBuilders;
+    private boolean showNumber = true;
 
     /**
      * Creates new form GUIOSCOutputPanel
@@ -145,7 +146,16 @@ public class OutputConfigRow extends javax.swing.JPanel {
 
     public final void setNum(int num) {
         number = num;
-        labelName.setText(number + ". Name:");
+        displayNum();
+        
+    }
+    
+    private final void displayNum() {
+        if (showNumber) {
+            labelName.setText(number + ". Name:");
+        } else {
+            labelName.setText("Name:");
+        }
     }
 
     /* public OutputConfigRow(OSCOutput o) {
@@ -752,5 +762,10 @@ public class OutputConfigRow extends javax.swing.JPanel {
     void setOutputName(String name) {
         textName.setText(name);
         updateOSCLabelForName();
+    }
+
+    void setShowNumber(boolean b) {
+        showNumber = false;
+        displayNum();
     }
 }

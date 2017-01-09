@@ -568,6 +568,26 @@ public class DataManager {
         //Set up dummy instances to reflect state of actual instances
         dummyInstances = new Instances(allInstances);
     }
+    
+    private void updateInstancesForNewOutput(int which) {
+        Attribute a;
+        if (isDiscrete[which]) {
+            //Create fastVector w/ possible
+            FastVector classes = new FastVector(numOutputs);
+            classes.addElement(new Integer(0).toString()); //Allow for 0 "no class" in ARFF specification
+            for (int val = 0; val < numClasses[which]; val++) {
+                    //System.out.println("Adding legal value " + (new Integer(val + 1)).toString());
+                classes.addElement((new Integer(val + 1)).toString()); //Values 1 to numClasses
+            }
+            a = new Attribute(outputNames[which], classes);
+
+        } else {
+            a = new Attribute(outputNames[which]);
+        }
+
+        allInstances.insertAttributeAt(a, numMetaData + numInputs + which);
+        dummyInstances = new Instances(allInstances);
+    }
 
     private void initializeOutputData() {
         isDiscrete = new boolean[numOutputs];
@@ -577,6 +597,17 @@ public class DataManager {
             if (isDiscrete[i]) {
                 numClasses[i] = ((OSCClassificationOutput) outputGroup.getOutput(i)).getNumClasses();
             }
+        }
+    }
+    
+    private void updateOutputDataForNewOutput(int which) {
+        boolean isNewDiscrete = (outputGroup.getOutput(which) instanceof OSCClassificationOutput);
+        isDiscrete = insertIntoArray(isNewDiscrete, isDiscrete, which);
+        if (isNewDiscrete) {
+            int numNewClasses = ((OSCClassificationOutput) outputGroup.getOutput(which)).getNumClasses();
+            numClasses = insertIntoArray(numNewClasses, numClasses, which);
+        } else {
+            insertIntoArray(0, numClasses, which);
         }
     }
 
@@ -592,6 +623,15 @@ public class DataManager {
             inputListsForOutputsTraining.add(inputList);
             inputListsForOutputsRunning.add(inputList);
         }
+    }
+    
+    private void updateInputListsForNewOutput(int which) {
+        int inputList[] = new int[numInputs];
+        for (int i = 0; i < numInputs; i++) {
+            inputList[i] = i;
+        }
+        inputListsForOutputsTraining.add(which, inputList);
+        inputListsForOutputsRunning.add(which, inputList);
     }
 
     //Problem: This is being called when feature selection is changed,
@@ -689,6 +729,49 @@ public class DataManager {
             runningFilters[i] = Reorder.makeCopy(r);
             savingFilters[i] = s;
         }
+    }
+    
+    private void updateFiltersForNewOutput(int which) {
+    
+        Reorder r = new Reorder();
+        Reorder s = new Reorder();
+
+        int[] inputList = inputListsForOutputsTraining.get(which);
+        int[] reordering = new int[inputList.length + 1];
+        int[] saving = new int[numMetaData + inputList.length + 1];
+
+        //Metadata
+        for (int f = 0; f < numMetaData; f++) {
+            saving[f] = f;
+        }
+
+        //Features
+        for (int f = 0; f < inputList.length; f++) {
+            reordering[f] = inputList[f] + numMetaData;
+            saving[f + numMetaData] = inputList[f] + numMetaData;
+        }
+
+        //The actual "class" output
+        reordering[reordering.length - 1] = numMetaData + numInputs + which;
+        saving[saving.length - 1] = numMetaData + numInputs + which;
+
+        try {
+            r.setAttributeIndicesArray(reordering);
+            r.setInputFormat(dummyInstances);
+            s.setAttributeIndicesArray(saving);
+            s.setInputFormat(dummyInstances);
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "Encountered exception setting filters");
+        }
+
+        
+        trainingFilters = insertIntoArray(r, trainingFilters, which);
+        try {
+            runningFilters = insertIntoArray(Reorder.makeCopy(r), runningFilters, which);
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "Encountered exception copying Reorder array");
+        }
+        savingFilters = insertIntoArray(s, savingFilters, which);
     }
 
     //This will need to use *new* filters, not old ones
@@ -1206,5 +1289,48 @@ public class DataManager {
         fireStateChanged();
 
         //TODO: need to update output counts? Update id?
+    }
+
+    public void newOutputAdded(int which) {
+        outputGroup = w.getOutputManager().getOutputGroup();
+        numExamplesPerOutput = insertIntoArray(0, numExamplesPerOutput, which);
+        outputNames = outputGroup.getOutputNames();
+        numOutputs = outputGroup.getNumOutputs();
+        updateOutputDataForNewOutput(which);
+        updateInputListsForNewOutput(which);
+        updateInstancesForNewOutput(which);
+        updateFiltersForNewOutput(which);
+        setNumExamplesPerOutput(which, 0);
+        fireStateChanged();
+    }
+
+    private int[] insertIntoArray(int newValue, int[] existingArray, int which) {
+        int[] newArray = new int[existingArray.length+1];
+        System.arraycopy(existingArray, 0, newArray, 0, which);
+        newArray[which] = newValue;
+        for (int i = which+1; i <= existingArray.length; i++) {
+            newArray[i] = existingArray[i-1];
+        }
+        return newArray;
+    }
+    
+    private boolean[] insertIntoArray(boolean newValue, boolean[] existingArray, int which) {
+        boolean[] newArray = new boolean[existingArray.length+1];
+        System.arraycopy(existingArray, 0, newArray, 0, which);
+        newArray[which] = newValue;
+        for (int i = which+1; i <= existingArray.length; i++) {
+            newArray[i] = existingArray[i-1];
+        }
+        return newArray;
+    }
+    
+    private Filter[] insertIntoArray(Filter newValue, Filter[] existingArray, int which) {
+        Filter[] newArray = new Filter[existingArray.length+1];
+        System.arraycopy(existingArray, 0, newArray, 0, which);
+        newArray[which] = newValue;
+        for (int i = which+1; i <= existingArray.length; i++) {
+            newArray[i] = existingArray[i-1];
+        }
+        return newArray;
     }
 }

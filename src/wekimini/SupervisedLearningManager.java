@@ -26,6 +26,7 @@ import wekimini.Path.ModelState;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.Model;
+import wekimini.learning.ModelBuilder;
 import wekimini.learning.SupervisedLearningModel;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
@@ -190,6 +191,66 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public void addLoadedDataForPathToTraining(Instances loadedInstances, int[] selectedInputIndices, int pathNum) {
         setRecordingRound(w.getDataManager().getMaxRecordingRound()+1);
         w.getDataManager().addLoadedDataForPath(loadedInstances, selectedInputIndices, pathNum, recordingRound);
+    }
+
+    public void addOutput(OSCOutput o, LearningModelBuilder mb) {
+        int newOutputIndex = paths.size();
+        w.getOutputManager().addNewOutput(o);
+        
+        String[] inputs = w.getInputManager().getInputNames();
+        final Path newPath = new Path(o, inputs, w, this);
+               
+        
+        //this sort of thing:
+        //initializeInputIndices(inputNames);
+        pathRecordingMask = appendToArray(pathRecordingMask, newPath.isRecordEnabled());
+        pathRunningMask = appendToArray(pathRunningMask, newPath.isRunEnabled());
+        myComputedOutputs = appendToArray(myComputedOutputs, 0.);
+
+        PropertyChangeListener pChange = new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                pathChanged(newPath, evt);
+            }
+        };
+        newPath.addPropertyChangeListener(wls.propertyChange(pChange));
+        newPath.addInputSelectionChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                changePathInputs((Path) e.getSource(), true);
+            }
+        });
+
+        pathsToOutputIndices.put(newPath, newOutputIndex);
+        paths.add(newPath);
+        setModelBuilderForPath(mb, newOutputIndex);
+
+        //Without this, paths will think that examples have changed since their training    
+        notifyPathsOfDatasetChange = false;
+        w.getDataManager().newOutputAdded(newOutputIndex);
+        notifyPathsOfDatasetChange = true;
+
+        updateLearningStateFromPathStates();
+
+        int[] indices = convertInputNamesToIndices(inputs);
+        w.getDataManager().setInputIndicesForOutput(indices, newOutputIndex, false);
+        
+        updateAbleToRecord();
+        updateAbleToRun(); 
+    }
+
+    private boolean[] appendToArray(boolean[] original, boolean newValue) {
+        boolean[] newArray = new boolean[original.length + 1];
+        System.arraycopy(original, 0, newArray, 0, original.length);
+        newArray[newArray.length-1] = newValue;
+        return newArray;
+    }
+
+    private double[] appendToArray(double[] original, double newValue) {
+        double[] newArray = new double[original.length + 1];
+        System.arraycopy(original, 0, newArray, 0, original.length);
+        newArray[newArray.length-1] = newValue;
+        return newArray;
     }
 
     public static enum LearningState {
