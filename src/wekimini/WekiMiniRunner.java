@@ -80,6 +80,7 @@ public final class WekiMiniRunner {
                 w.getStatusUpdateCenter().warn(this, "Tried to run automatically but cannot in this state.");
             }
         } 
+        w.getMainGUI().setPerformanceMode(true);
         
         if (options == NewProjectOptions.CLOSECURRENT) {
             if (oldWekinator != null) {
