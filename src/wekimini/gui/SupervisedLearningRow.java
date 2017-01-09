@@ -61,7 +61,7 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
     private final ImageIcon recordIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/norec3.png"));
     private final ImageIcon playIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/play1.png"));
     private final ImageIcon playIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noplay1.png"));
-    private final ImageIcon buildIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/hammerSmall2.png"));
+    private final ImageIcon buildIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/hammersmall2.png"));
     private final ImageIcon buildIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noHammer1.png"));
     
     private boolean caretReset = false;
