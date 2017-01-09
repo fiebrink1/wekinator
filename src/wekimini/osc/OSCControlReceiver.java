@@ -9,6 +9,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.List;
+import wekimini.WekiMiniRunner;
 import wekimini.Wekinator;
 import wekimini.util.Util;
 
@@ -38,15 +39,17 @@ public class OSCControlReceiver {
     private final String enableModelRunMessage = "/wekinator/control/enableModelRunning"; //List of model #s to enable (indexed from 1) 
     private final String disableModelRunMessage = "/wekinator/control/disableModelRunning"; //List of model #s to disable (indexed from 1) 
 
-   // private final String setModelRecordEnabledMessage = "/wekinator/control/setModelRecordEnabled"; //1st argument model # (starting from 1), 2nd argument record boolean (0/1))
+    // private final String setModelRecordEnabledMessage = "/wekinator/control/setModelRecordEnabled"; //1st argument model # (starting from 1), 2nd argument record boolean (0/1))
     //  private final String setModelRunEnabledMessage = "/wekinator/control/setModelRunEnabled"; //1st argument model # (starting from 1), 2nd argument run boolean (0/1))
     private final String setInputNamesMessage = "/wekinator/control/setInputNames";
     private final String setOutputNamesMessage = "/wekinator/control/setOutputNames";
     private final String setInputSelectionForOutputMessage = "/wekinator/control/selectInputsForOutput";
-    
+
     private final String loadModelFromFileMessage = "/wekinator/control/loadModelFromFile"; //int for model # (starting from 1), 2nd argument a filename, 3rd argument (optional) is WITHDATA or WITHOUTDATA
     private final String saveModelToFileMessage = "/wekinator/control/saveModelToFile"; //int for model # (starting from 1), 2nd argument a filename.
-    
+
+    private final String runNewProjectMessage = "/wekinator/control/runNewProject"; //First argument filename, second argument (optional) CLOSECURRENT/STOPCURRENTLISTENING/KEEPCURRENTRUNNING
+
     public OSCControlReceiver(Wekinator w, OSCController controller) {
         this.w = w;
         this.controller = controller;
@@ -87,13 +90,12 @@ public class OSCControlReceiver {
         };
         w.getOSCReceiver().addOSCListener(stopRecordMessage, stopRecordListener);
 
-        
         OSCListener startDtwRecordListener = new OSCListener() {
             @Override
             public void acceptMessage(Date date, OSCMessage oscm) {
                 List<Object> o = oscm.getArguments();
                 if (o != null && o.size() > 0 && o.get(0) instanceof Integer) {
-                    controller.startDtwRecord((Integer)o.get(0)); 
+                    controller.startDtwRecord((Integer) o.get(0));
                 } else {
                     String msg = "Error: Expected message " + startDtwRecordMessage + " to be followed by 1 integer argument";
                     w.getStatusUpdateCenter().warn(this, msg);
@@ -101,7 +103,7 @@ public class OSCControlReceiver {
             }
         };
         w.getOSCReceiver().addOSCListener(startDtwRecordMessage, startDtwRecordListener);
-        
+
         OSCListener stopDtwRecordListener = new OSCListener() {
             @Override
             public void acceptMessage(Date date, OSCMessage oscm) {
@@ -109,7 +111,7 @@ public class OSCControlReceiver {
             }
         };
         w.getOSCReceiver().addOSCListener(stopDtwRecordMessage, stopDtwRecordListener);
-        
+
         OSCListener startRunListener = new OSCListener() {
             @Override
             public void acceptMessage(Date date, OSCMessage oscm) {
@@ -148,20 +150,20 @@ public class OSCControlReceiver {
                 controller.deleteAllExamples();
             }
         };
-        
+
         OSCListener deleteAllExamplesForOutputListener = new OSCListener() {
             @Override
             public void acceptMessage(Date date, OSCMessage oscm) {
                 List<Object> o = oscm.getArguments();
                 if (o != null && o.size() > 0 && o.get(0) instanceof Integer) {
-                    controller.deleteExamplesForOutput((Integer)o.get(0)); 
+                    controller.deleteExamplesForOutput((Integer) o.get(0));
                 } else {
                     String msg = "Error: Expected message " + deleteExamplesForOutputMessage + " to be followed by 1 integer argument";
                     w.getStatusUpdateCenter().warn(this, msg);
                 }
             }
         };
-        
+
         w.getOSCReceiver().addOSCListener(deleteAllExamplesMessage, deleteAllExamplesListener);
         w.getOSCReceiver().addOSCListener(deleteExamplesForOutputMessage, deleteAllExamplesForOutputListener);
 
@@ -175,6 +177,8 @@ public class OSCControlReceiver {
         w.getOSCReceiver().addOSCListener(setInputSelectionForOutputMessage, createInputSelectionListener());
         w.getOSCReceiver().addOSCListener(loadModelFromFileMessage, createModelLoadListener());
         w.getOSCReceiver().addOSCListener(saveModelToFileMessage, createModelSaveListener());
+        w.getOSCReceiver().addOSCListener(runNewProjectMessage, runNewProjectListener());
+
     }
 
     private OSCListener createModelChangeListener(final boolean isRecord, final boolean isEnable) {
@@ -184,7 +188,7 @@ public class OSCControlReceiver {
                 if (!controller.checkEnabled()) {
                     return;
                 }
-                
+
                 List<Object> o = oscm.getArguments();
                 if (o.size() == 0) {
                     w.getStatusUpdateCenter().warn(this,
@@ -228,7 +232,7 @@ public class OSCControlReceiver {
                 if (!controller.checkEnabled()) {
                     return;
                 }
-                
+
                 List<Object> o = oscm.getArguments();
                 try {
                     if (w.getInputManager().hasValidInputs() && o.size() != w.getInputManager().getNumInputs()) {
@@ -269,7 +273,7 @@ public class OSCControlReceiver {
                 if (!controller.checkEnabled()) {
                     return;
                 }
-                
+
                 List<Object> o = oscm.getArguments();
                 try {
                     if (w.getOutputManager().hasValidOutputGroup() && o.size() != w.getOutputManager().getOutputGroup().getNumOutputs()) {
@@ -311,24 +315,24 @@ public class OSCControlReceiver {
                 if (!controller.checkEnabled()) {
                     return;
                 }
-                
+
                 List<Object> o = oscm.getArguments();
                 try {
                     //Check if we can reasonably do something with this:
                     if (!w.getInputManager().hasValidInputs() || !w.getOutputManager().hasValidOutputGroup()) {
-                       w.getStatusUpdateCenter().warn(this,
+                        w.getStatusUpdateCenter().warn(this,
                                 "Cannot create connections between inputs and outputs: these are not yet set up");
-                        return; 
-                    } 
-                    
+                        return;
+                    }
+
                     if (o.size() < 2) {
                         w.getStatusUpdateCenter().warn(this,
                                 "OSC message " + setInputSelectionForOutputMessage + " requires output ID followed by at least one selected input ID");
-                        return; 
+                        return;
                     }
-                    
+
                     int[] vals = unpackToInts(o, o.size(), setInputSelectionForOutputMessage);
-                    
+
                     int outputNum = vals[0];
                     if (outputNum < 1 || outputNum > w.getOutputManager().getOutputGroup().getNumOutputs()) {
                         w.getStatusUpdateCenter().warn(this,
@@ -366,29 +370,28 @@ public class OSCControlReceiver {
                 if (!controller.checkEnabled()) {
                     return;
                 }
-                
+
                 List<Object> o = oscm.getArguments();
                 try {
                     //w.getOutputManager().hasValidOutputGroup()) {
-                    
-                    
+
                     if (o.size() < 2) {
                         w.getStatusUpdateCenter().warn(this,
-                                "OSC message " + loadModelFromFileMessage 
-                               + " requires model ID followed by filename");
-                        return; 
+                                "OSC message " + loadModelFromFileMessage
+                                + " requires model ID followed by filename");
+                        return;
                     }
-                    
+
                     int modelNum = 0;
                     if (o.get(0) instanceof Number) {
                         modelNum = ((Number) o.get(0)).intValue();
                     } else {
                         w.getStatusUpdateCenter().warn(this,
-                                "OSC message " + loadModelFromFileMessage 
-                               + " requires model ID (as integer) followed by filename");
+                                "OSC message " + loadModelFromFileMessage
+                                + " requires model ID (as integer) followed by filename");
                         return;
                     }
-                    
+
                     if (!w.getOutputManager().hasValidOutputGroup()) {
                         w.getStatusUpdateCenter().warn(this,
                                 "Wekinator outputs are not set up; cannot yet "
@@ -397,37 +400,37 @@ public class OSCControlReceiver {
                     }
                     if (modelNum < 1 || modelNum > w.getOutputManager().getOutputGroup().getNumOutputs()) {
                         w.getStatusUpdateCenter().warn(this,
-                                "OSC message " + loadModelFromFileMessage 
-                               + " requires model ID to be between 1 and number of models");
+                                "OSC message " + loadModelFromFileMessage
+                                + " requires model ID to be between 1 and number of models");
                         return;
                     }
-                    
+
                     String filename;
                     if (o.get(1) instanceof String) {
-                        filename = (String)o.get(1);
+                        filename = (String) o.get(1);
                     } else {
                         w.getStatusUpdateCenter().warn(this,
                                 "OSC message " + loadModelFromFileMessage
                                 + " requires second argument to be filename (as string)");
                         return;
                     }
-                    
+
                     boolean importData = false;
                     if (o.size() >= 3) {
                         if (o.get(2) instanceof String) {
-                            String dataString = (String)o.get(2);
+                            String dataString = (String) o.get(2);
                             if (dataString.equals("WITHDATA")) {
                                 importData = true;
                             } else if (!dataString.equals("WITHOUTDATA")) {
                                 w.getStatusUpdateCenter().warn(this,
-                                "OSC message " + loadModelFromFileMessage
-                                + " requires third argument to be WITHDATA or WITHOUTDATA");    
+                                        "OSC message " + loadModelFromFileMessage
+                                        + " requires third argument to be WITHDATA or WITHOUTDATA");
                                 //Don't return, we'll proceed anyway.
                             }
                         } else {
                             w.getStatusUpdateCenter().warn(this,
-                                "OSC message " + loadModelFromFileMessage
-                                + " requires third argument to be WITHDATA or WITHOUTDATA");    
+                                    "OSC message " + loadModelFromFileMessage
+                                    + " requires third argument to be WITHDATA or WITHOUTDATA");
                             //Don't return, we'll proceed anyway.
                         }
                     }
@@ -441,36 +444,35 @@ public class OSCControlReceiver {
         return l;
     }
 
-     private OSCListener createModelSaveListener() {
+    private OSCListener createModelSaveListener() {
         OSCListener l = new OSCListener() {
             @Override
             public void acceptMessage(Date date, OSCMessage oscm) {
                 if (!controller.checkEnabled()) {
                     return;
                 }
-                
+
                 List<Object> o = oscm.getArguments();
                 try {
                     //w.getOutputManager().hasValidOutputGroup()) {
-                    
-                    
+
                     if (o.size() < 2) {
                         w.getStatusUpdateCenter().warn(this,
-                                "OSC message " + saveModelToFileMessage 
-                               + " requires model ID followed by filename");
-                        return; 
+                                "OSC message " + saveModelToFileMessage
+                                + " requires model ID followed by filename");
+                        return;
                     }
-                    
+
                     int modelNum = 0;
                     if (o.get(0) instanceof Number) {
                         modelNum = ((Number) o.get(0)).intValue();
                     } else {
                         w.getStatusUpdateCenter().warn(this,
-                                "OSC message " + saveModelToFileMessage 
-                               + " requires model ID (as integer) followed by filename");
+                                "OSC message " + saveModelToFileMessage
+                                + " requires model ID (as integer) followed by filename");
                         return;
                     }
-                    
+
                     if (!w.getOutputManager().hasValidOutputGroup()) {
                         w.getStatusUpdateCenter().warn(this,
                                 "Wekinator outputs are not set up; cannot yet "
@@ -479,14 +481,14 @@ public class OSCControlReceiver {
                     }
                     if (modelNum < 1 || modelNum > w.getOutputManager().getOutputGroup().getNumOutputs()) {
                         w.getStatusUpdateCenter().warn(this,
-                                "OSC message " + saveModelToFileMessage 
-                               + " requires model ID to be between 1 and number of models");
+                                "OSC message " + saveModelToFileMessage
+                                + " requires model ID to be between 1 and number of models");
                         return;
                     }
-                    
+
                     String filename;
                     if (o.get(1) instanceof String) {
-                        filename = (String)o.get(1);
+                        filename = (String) o.get(1);
                     } else {
                         w.getStatusUpdateCenter().warn(this,
                                 "OSC message " + saveModelToFileMessage
@@ -503,7 +505,71 @@ public class OSCControlReceiver {
         return l;
     }
 
-    
+    private OSCListener runNewProjectListener() {
+        OSCListener l;
+        l = new OSCListener() {
+            @Override
+            public void acceptMessage(Date date, OSCMessage oscm) {
+                if (!controller.checkEnabled()) {
+                    return;
+                }
+
+                List<Object> o = oscm.getArguments();
+                try {
+                    //w.getOutputManager().hasValidOutputGroup()) {
+
+                    if (o.size() < 1) {
+                        w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + runNewProjectMessage
+                                + " requires a filename");
+                        return;
+                    }
+
+                    String filename;
+                    if (o.get(0) instanceof String) {
+                        filename = (String) o.get(0);
+                    } else {
+                        w.getStatusUpdateCenter().warn(this,
+                                "OSC message " + runNewProjectMessage
+                                + " requires first argument to be filename (as string)");
+                        return;
+                    }
+
+                    WekiMiniRunner.NewProjectOptions options = WekiMiniRunner.NewProjectOptions.CLOSECURRENT;
+
+                    if (o.size() > 1) {
+                        if (o.get(1) instanceof String) {
+                            String s = (String) o.get(1);
+                            if (s.equals("CLOSECURRENT")) {
+                                options = WekiMiniRunner.NewProjectOptions.CLOSECURRENT;
+                            } else if (s.equals("STOPCURRENTLISTENING")) {
+                                options = WekiMiniRunner.NewProjectOptions.STOPCURRENTLISTENING;
+                            } else if (s.equals("KEEPCURRENTRUNNING")) {
+                                options = WekiMiniRunner.NewProjectOptions.KEEPCURRENTRUNNING;
+                            } else {
+                                w.getStatusUpdateCenter().warn(this,
+                                        "OSC message " + runNewProjectMessage
+                                        + " requires second argument to be CLOSECURRENT, STOPCURRENTLISTENING, or KEEPCURRENTRUNNING");
+                                return;
+                            }
+                        } else {
+                            w.getStatusUpdateCenter().warn(this,
+                                    "OSC message " + runNewProjectMessage
+                                    + " requires second argument to be CLOSECURRENT, STOPCURRENTLISTENING, or KEEPCURRENTRUNNING");
+                            return;
+                        }
+
+                    }
+
+                    controller.runNewProject(filename, options);
+                } catch (IllegalArgumentException ex) {
+                }
+            }
+
+        };
+        return l;
+    }
+
     private int[] unpackToInts(List<Object> o, int n, String msg) {
         if (o.size() != n) {
             w.getStatusUpdateCenter().warn(this, "Received wrong number of arguments for OSC message " + msg

@@ -7,8 +7,11 @@ package wekimini.osc;
 import com.illposed.osc.OSCMessage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import wekimini.LearningManager;
 import wekimini.LearningManager.LearningType;
+import wekimini.WekiMiniRunner;
 import wekimini.Wekinator;
 import wekimini.WekinatorController;
 import wekimini.WekinatorDtwLearningController;
@@ -206,6 +209,16 @@ public class OSCController {
     void saveModelToFilename(int modelNum, String filename) {
         if (checkEnabled() && isSupervised) {
             w.getWekinatorController().saveModelToFilename(modelNum-1, filename);        
+        }
+    }
+
+    void runNewProject(String filename, WekiMiniRunner.NewProjectOptions options) {
+        try {
+            WekiMiniRunner.getInstance().runNewProjectAutomatically(w, filename, options);
+        } catch (Exception ex) {
+            //Problem loading from file
+            w.getStatusUpdateCenter().warn(this, "Could not load from file " + filename);
+            Logger.getLogger(OSCController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
