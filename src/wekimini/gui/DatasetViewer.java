@@ -266,10 +266,11 @@ public class DatasetViewer extends javax.swing.JFrame {
     private void comboWhichOutputsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboWhichOutputsActionPerformed
         int selected = comboWhichOutputs.getSelectedIndex();
         if (selected == 0) {
-           // showAllOutputs(); //This is buggy!
+           //showAllOutputs(); //This is buggy!
+           showAllOutputs2();
         } else {
             updateRowFilter(selected-1);
-          //  hideAllOutputsBut(selected-1); //this is buggy!
+           //hideAllOutputsBut(selected-1); //this is buggy!
         }
         table.repaint();
         scrollTable.revalidate();
@@ -376,6 +377,22 @@ public class DatasetViewer extends javax.swing.JFrame {
             };
         sorter.setRowFilter(rf);
     }
+    
+    private void showAllOutputs2() {
+        RowFilter<DataTableModel, Integer> rf = null;
+        //If current expression doesn't parse, don't update.
+       // try {
+            rf = new RowFilter<DataTableModel, Integer>() {
+
+            @Override
+            public boolean include(RowFilter.Entry<? extends DataTableModel, ? extends Integer> entry) {
+                return true;
+            }
+                
+            };
+        sorter.setRowFilter(rf);
+    }
+    
     private void showAllOutputs() {
         sorter.setRowFilter(null);
         for (int i = 3 + model.getNumInputs(); i < table.getColumnCount(); i++) {
