@@ -55,11 +55,11 @@ public class WekiArffLoader {
         this.w = w;
         this.recv = recv;
         this.af = new ArffLoader();
-       /* File f = getArffFile();
-        if (f == null) {
-            recv.completed();
-            return;
-        } */
+        /* File f = getArffFile();
+         if (f == null) {
+         recv.completed();
+         return;
+         } */
 
         try {
             af.setFile(f);
@@ -115,7 +115,7 @@ public class WekiArffLoader {
             candidateNames.add(projectNames[0]);
             candidateIndices.add(0);
             int numAddedToColum = 1;
-            
+
             for (int j = 0; j < currentInputs.length; j++) {
                 if (isNumeric[i]) {
                     //We can match any numeric column to an input
@@ -124,17 +124,18 @@ public class WekiArffLoader {
                     numAddedToColum++;
                     if (!matched && matches(currentInputs[j], attributeNames[i])) {
                         matched = true;
-                        selectedIndicesPerColumn[i] = numAddedToColum-1;
+                        selectedIndicesPerColumn[i] = numAddedToColum - 1;
                     }
                 } else if (isNominal[i]) {
-                    //We can match any nominal column to an input, but warn first
-                    candidateNames.add(currentInputs[j] + "*");
-                    candidateIndices.add(j);
-                    numAddedToColum++;
-                    if (!matched && matches(currentInputs[j], attributeNames[i])) {
-                        matched = true;
-                        selectedIndicesPerColumn[i] = numAddedToColum-1;
-                    }
+                    //Cannot match nominal columns to inputs!
+                    //E.g., classes {1,2,4} will be translated to 0,1,2 ! Don't allow.
+                   /* candidateNames.add(currentInputs[j] + "*");
+                     candidateIndices.add(j);
+                     numAddedToColum++;
+                     if (!matched && matches(currentInputs[j], attributeNames[i])) {
+                     matched = true;
+                     selectedIndicesPerColumn[i] = numAddedToColum-1;
+                     } */
                 }
             }
 
@@ -146,17 +147,17 @@ public class WekiArffLoader {
                     numAddedToColum++;
                     if (!matched && matches(currentOutputs[j], attributeNames[i])) {
                         matched = true;
-                        selectedIndicesPerColumn[i] = numAddedToColum-1;
+                        selectedIndicesPerColumn[i] = numAddedToColum - 1;
                     }
                 } else if (isNominal[i] && isProjectOutputNumeric[j]) {
-                    //We can match a nominal column to a numeric output, but warn first
-                    candidateNames.add(currentOutputs[j] + "^");
-                    candidateIndices.add(currentInputs.length + j);
-                    numAddedToColum++;
-                    if (!matched && matches(currentOutputs[j], attributeNames[i])) {
-                        matched = true;
-                        selectedIndicesPerColumn[i] = numAddedToColum-1;
-                    }
+                    //Don't allow this (for same reason as not allowing inputs to be nominal
+                   /* candidateNames.add(currentOutputs[j] + "^");
+                     candidateIndices.add(currentInputs.length + j);
+                     numAddedToColum++;
+                     if (!matched && matches(currentOutputs[j], attributeNames[i])) {
+                     matched = true;
+                     selectedIndicesPerColumn[i] = numAddedToColum-1;
+                     } */
                 } else if (isNominal[i] && !isProjectOutputNumeric[j]) {
                     //May be able to match
                     //Allow match only if ARFF can reasonably be represented using the
@@ -170,7 +171,7 @@ public class WekiArffLoader {
                         numAddedToColum++;
                         if (!matched && matches(currentOutputs[j], attributeNames[i])) {
                             matched = true;
-                            selectedIndicesPerColumn[i] = numAddedToColum-1;
+                            selectedIndicesPerColumn[i] = numAddedToColum - 1;
                         }
                     }
                 } //else: column is nominal but output is numeric; can't do that. User should change Output in Wekinator.
@@ -191,8 +192,8 @@ public class WekiArffLoader {
                 new WekiArffLoadFrame.ArffConfiguredNotificationReceiver() {
 
                     @Override
-                    public void arffConfigured(int[] selectedIndices, boolean overwrite) {
-                        receivedConfiguration(selectedIndices, overwrite);
+                    public void arffConfigured(int[] selectedIndices, boolean overwrite, boolean ignoreWithNoOutputs) {
+                        receivedConfiguration(selectedIndices, overwrite, ignoreWithNoOutputs);
                     }
 
                     @Override
@@ -214,8 +215,31 @@ public class WekiArffLoader {
 
     }
 
-    private static boolean matches(String currentInput, String attributeName) {
-        return (currentInput.equalsIgnoreCase(attributeName));
+    private static boolean matches(String currentInputOrOutput, String attributeName) {
+        if (currentInputOrOutput.equalsIgnoreCase(attributeName)) {
+            return true;
+        }
+        //Check for old Wekinator projects:
+        if (attributeName.startsWith("CustomOsc_")) {
+            //It's an old input
+            String numericPart = attributeName.substring(10);
+            try {
+                int i = Integer.parseInt(numericPart) + 1;
+                String matchingName = "inputs-" + i;
+                if (currentInputOrOutput.equalsIgnoreCase(matchingName)) {
+                    return true;
+                }
+            } catch (Exception ex) {
+
+            }
+        } else if (attributeName.startsWith("Param")) {
+            //It's an old ouput
+            String numericPart = attributeName.substring(5);
+            if (currentInputOrOutput.equalsIgnoreCase("outputs-" + numericPart)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean hasValue(Attribute attribute, int val) {
@@ -239,95 +263,97 @@ public class WekiArffLoader {
         return (numSeen == attribute.numValues());
     }
 
-    private void receivedConfiguration(int[] selectedIndices, boolean overwrite) {
+    private void receivedConfiguration(int[] selectedIndices, boolean overwrite, boolean ignoreWithNoOutputs) {
         //Now load the data. TODO
         //For each instance: 
-        
+
         //Slow, not great, but should work:
         //addImportedData(double[] inputs, double[][] outputs, boolean[] inputMask, boolean[] outputMask) {
-        
         //w.getSupervisedLearningManager().addBundleToTraining(null, outputs, recordingMask);
-          
         //w.getDataManager().addToTraining(inputs, outputs, recordingMask, recordingRound);
         w.getSupervisedLearningManager().incrementRecordingRound();
-        
+
         if (overwrite) {
             w.getSupervisedLearningManager().deleteAllExamples();
         }
-        
+
         boolean[] inputMaskForSet = createInputMaskForSet(selectedIndices);
         boolean[] outputMaskForSet = createOutputMaskForSet(selectedIndices);
-        
+
         try {
             //Get enumerator for instances...
             Instance nextInstance = af.getNextInstance(structure);
-            double[] inputs = new double[inputMaskForSet.length];
-            int numInputs = inputs.length;
-            double[] outputs = new double[outputMaskForSet.length];
-            boolean[] inputMask = new boolean[inputMaskForSet.length];
-            System.arraycopy(inputMaskForSet, 0, inputMask, 0, inputMask.length);
-            boolean[] outputMask = new boolean[outputMaskForSet.length];
-            System.arraycopy(outputMaskForSet, 0, outputMask, 0, outputMask.length);
+            int numInputs = inputMaskForSet.length;
+            int numOutputs = outputMaskForSet.length;
 
             while (nextInstance != null) {
-                 for (int i = 0; i < selectedIndices.length; i++) {
-                     //selectedIndices[i] : says which input/output corresponds to the ith attribute
-                     if (selectedIndices[i] == 0) {
-                         //do nothing: ignore it
-                     } else if (selectedIndices[i] <= inputs.length) { //it's an input
-                         if (nextInstance.isMissing(i)) {
-                             inputs[selectedIndices[i]-1] = 0;
-                             inputMask[selectedIndices[i]-1] = false;
-                         } else {
-                            inputs[selectedIndices[i]-1] = nextInstance.value(i);
-                         }
-                     } else { //it's an output
-                         if (nextInstance.isMissing(i)) {
-                             outputs[selectedIndices[i]-1-numInputs] = 0;
-                             outputMask[selectedIndices[i]-1-numInputs] = false;
-                         } else {
-                             outputs[selectedIndices[i]-1-numInputs] = nextInstance.value(i);
-                         }
-                     } 
-                 }    
-                w.getSupervisedLearningManager().addToTraining(inputs, outputs, inputMask, outputMask);
+                double[] inputs = new double[inputMaskForSet.length];
+                double[] outputs = new double[outputMaskForSet.length];
+                boolean[] inputMask = new boolean[inputMaskForSet.length];
+                System.arraycopy(inputMaskForSet, 0, inputMask, 0, inputMask.length);
+                boolean[] outputMask = new boolean[outputMaskForSet.length];
+                System.arraycopy(outputMaskForSet, 0, outputMask, 0, outputMask.length);
+
+                int numOutputsMissing = 0;
+                for (int i = 0; i < selectedIndices.length; i++) {
+                    //selectedIndices[i] : says which input/output corresponds to the ith attribute
+                    if (selectedIndices[i] == 0) {
+                        //do nothing: ignore it
+                    } else if (selectedIndices[i] <= inputs.length) { //it's an input
+                        if (nextInstance.isMissing(i)) {
+                            inputs[selectedIndices[i] - 1] = 0;
+                            inputMask[selectedIndices[i] - 1] = false;
+                        } else {
+                            inputs[selectedIndices[i] - 1] = nextInstance.value(i);
+                        }
+                    } else { //it's an output
+                        if (nextInstance.isMissing(i)) {
+                            outputs[selectedIndices[i] - 1 - numInputs] = 0;
+                            outputMask[selectedIndices[i] - 1 - numInputs] = false;
+                            numOutputsMissing++;
+                        } else {
+                            outputs[selectedIndices[i] - 1 - numInputs] = nextInstance.value(i);
+                        }
+                    }
+                }
+                if (!ignoreWithNoOutputs || numOutputsMissing < numOutputs) {
+                    w.getSupervisedLearningManager().addToTraining(inputs, outputs, inputMask, outputMask);
+                }
                 nextInstance = af.getNextInstance(structure);
             }
-            
+
         } catch (IOException ex) {
             w.getStatusUpdateCenter().warn(this, "Encountered error in reading from ARFF file.");
             Logger.getLogger(WekiArffLoader.class.getName()).log(Level.SEVERE, null, ex);
             recv.completed();
         }
-        
-        
-        
+
         //TODO: Prevent this from being available when in DTW mode.
-            
         recv.completed();
-        }
+    }
 
     private boolean[] createInputMaskForSet(int[] selectedIndices) {
         boolean[] isPresent = new boolean[w.getInputManager().getNumInputs()];
         for (int i = 0; i < isPresent.length; i++) {
-            isPresent[i] = existsInArray(i+1, selectedIndices);
+            isPresent[i] = existsInArray(i + 1, selectedIndices);
         }
         return isPresent;
     }
-    
+
     private boolean[] createOutputMaskForSet(int[] selectedIndices) {
         int numInputs = w.getInputManager().getNumInputs();
         boolean[] isPresent = new boolean[w.getOutputManager().getOutputGroup().getNumOutputs()];
         for (int i = 0; i < isPresent.length; i++) {
-            isPresent[i] = existsInArray(i+1+numInputs, selectedIndices);
+            isPresent[i] = existsInArray(i + 1 + numInputs, selectedIndices);
         }
         return isPresent;
     }
 
     private boolean existsInArray(int num, int[] array) {
-        for (int i=0; i < array.length; i++) {
-            if (num == array[i])
+        for (int i = 0; i < array.length; i++) {
+            if (num == array[i]) {
                 return true;
+            }
         }
         return false;
     }
