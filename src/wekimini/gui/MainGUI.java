@@ -55,6 +55,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     private OSCInputStatusFrame oscInputStatusFrame = null;
     private InputMonitor inputMonitorFrame = null;
+    private WekiArffLoader arffLoader = null;
     private OutputViewerTable outputTableWindow = null;
     private DtwOutputEditor dtwOutputEditor = null;
     private ModelEvaluationFrame modelEvaluationFrame = null;
@@ -250,7 +251,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         addKadenzeListener(kadenzeMenuItems[1], KadenzeAssignmentType.ASSIGNMENT4_PART1B);
         addKadenzeListener(kadenzeMenuItems[2], KadenzeAssignmentType.ASSIGNMENT4_PART1C);
         addKadenzeListener(kadenzeMenuItems[3], KadenzeAssignmentType.ASSIGNMENT4_PART2);
-        
+
         kadenzeMenuItems[4] = new JMenuItem();
         addKadenzeSummaryItem(menuKadenze, kadenzeMenuItems[4]);
 
@@ -297,7 +298,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
         kadenzeMenuItems[6] = new JMenuItem();
         addKadenzeSummaryItem(menuKadenze, kadenzeMenuItems[6]);
-        
+
         kadenzeMenuItems[7] = new JMenuItem("Create Kadenze Assignment 3 submission");
         kadenzeMenuItems[7].addActionListener(new java.awt.event.ActionListener() {
             @Override
@@ -339,10 +340,9 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         addKadenzeListener(kadenzeMenuItems[4], KadenzeAssignmentType.ASSIGNMENT2_PART2);
         addKadenzeListener(kadenzeMenuItems[5], KadenzeAssignmentType.ASSIGNMENT2_PART3A);
         addKadenzeListener(kadenzeMenuItems[6], KadenzeAssignmentType.ASSIGNMENT2_PART3B);
-        
+
         kadenzeMenuItems[7] = new JMenuItem();
         addKadenzeSummaryItem(menuKadenze, kadenzeMenuItems[7]);
-
 
         kadenzeMenuItems[8] = new JMenuItem("Create Kadenze Assignment 2 submission");
         kadenzeMenuItems[8].addActionListener(new java.awt.event.ActionListener() {
@@ -611,6 +611,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuFile = new javax.swing.JMenu();
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
+        menuLoadFromARFF = new javax.swing.JMenuItem();
         menuItemSave = new javax.swing.JMenuItem();
         menuItemSaveAs = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
@@ -673,6 +674,15 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             }
         });
         menuFile.add(jMenuItem4);
+
+        menuLoadFromARFF.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.META_MASK));
+        menuLoadFromARFF.setText("Import training data from file...");
+        menuLoadFromARFF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuLoadFromARFFActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuLoadFromARFF);
 
         menuItemSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.META_MASK));
         menuItemSave.setText("Save");
@@ -801,7 +811,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         if (lastLocation.equals("")) {
             lastLocation = System.getProperty("user.home");
         }
-        
+
         File f = Util.findLoadFile(WekinatorFileData.FILENAME_EXTENSION, "Wekinator file", lastLocation, this);
         if (f != null) {
             try {
@@ -855,7 +865,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             this.setMaximumSize(new Dimension(817, 2147483647));
         }
     }
-    
+
     private void menuPerformanceCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPerformanceCheckActionPerformed
         setPerformanceMode(menuPerformanceCheck.isSelected());
         //pack();
@@ -877,6 +887,10 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         flushLogs();
     }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void menuLoadFromARFFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuLoadFromARFFActionPerformed
+        showArffLoader();
+    }//GEN-LAST:event_menuLoadFromARFFActionPerformed
 
     private void flushLogs() {
         KadenzeLogging.getLogger().flush();
@@ -1060,6 +1074,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuItem menuItemSave;
     private javax.swing.JMenuItem menuItemSaveAs;
     private javax.swing.JMenu menuKadenze;
+    private javax.swing.JMenuItem menuLoadFromARFF;
     private javax.swing.JCheckBoxMenuItem menuPerformanceCheck;
     private javax.swing.JPanel panelParent;
     private wekimini.gui.SupervisedLearningPanel supervisedLearningPanel1;
@@ -1171,5 +1186,23 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         KadenzeLogging.getLogger().flush();
         KadenzeAssignmentSummaryFrame kasf = new KadenzeAssignmentSummaryFrame(w);
         kasf.setVisible(true);
+    }
+
+    public void showArffLoader() {
+        if (arffLoader == null) {
+            
+            File f = WekiArffLoader.getArffFile();
+            if (f == null) {
+                return;
+            }
+            
+            arffLoader = new WekiArffLoader(w, f, new WekiArffLoader.ArffLoaderNotificationReceiver() {
+
+                @Override
+                public void completed() {
+                    arffLoader = null;
+                }
+            });
+        }
     }
 }

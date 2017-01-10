@@ -1170,7 +1170,7 @@ public class DataManager {
             return;
         }
 
-        viewer = new DatasetViewer(this);
+        viewer = new DatasetViewer(this, w);
         viewer.setVisible(true);
         viewer.toFront();
         viewer.addWindowListener(new WindowListener() {
@@ -1333,4 +1333,61 @@ public class DataManager {
         }
         return newArray;
     }
+
+    void addToTraining(double[] inputs, double[] outputs, boolean[] inputMask, boolean[] outputMask, int recordingRound) {
+        int thisId = nextID;
+        nextID++;
+
+        double myVals[] = new double[numMetaData + numInputs + numOutputs];
+        myVals[idIndex] = thisId;
+        myVals[recordingRoundIndex] = recordingRound;
+
+        Date now = new Date();
+        //myVals[timestampIndex] = Double.parseDouble(dateFormat.format(now)); //Error: This gives us scientific notation!
+
+        String pretty = prettyDateFormat.format(now);
+        try {
+            myVals[timestampIndex] = allInstances.attribute(timestampIndex).parseDate(pretty);
+            //myVals[timestampIndex] =
+        } catch (ParseException ex) {
+            myVals[timestampIndex] = 0;
+            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        /*for (int i = 0; i < numInputs; i++) {
+         myVals[numMetaData + i] = featureVals[i];
+         } */
+        System.arraycopy(inputs, 0, myVals, numMetaData, inputs.length); //TODO DOUBLECHECK
+
+
+        /*for (int i = 0; i < numParams; i++) {
+         if (isParamDiscrete[i] && (paramVals[i] < 0 || paramVals[i] >= numParamValues[i])) {
+         throw new IllegalArgumentException("Invalid value for this discrete parameter");
+         }
+
+         myVals[numMetaData + numFeatures + i] = paramVals[i];
+         } */
+        System.arraycopy(outputs, 0, myVals, numMetaData + numInputs, outputs.length);
+
+        Instance in = new Instance(1.0, myVals);
+        for (int i = 0; i < inputMask.length; i++) {
+            if (!inputMask[i]) {
+                in.setMissing(numMetaData + i);
+            }
+        }
+        
+        for (int i = 0; i < outputMask.length; i++) {
+            if (!outputMask[i]) {
+                in.setMissing(numMetaData + numInputs + i);
+            } else {
+                setNumExamplesPerOutput(i, getNumExamplesPerOutput(i) + 1);
+            }
+        }
+        in.setDataset(allInstances);
+        allInstances.add(in);
+        setHasInstances(true);
+        fireStateChanged();
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 }

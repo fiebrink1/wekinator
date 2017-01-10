@@ -337,6 +337,13 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         this.recordingRound = newRound;
         propertyChangeSupport.firePropertyChange(PROP_RECORDINGROUND, oldRecordingRound, this.recordingRound);
     }
+    
+    public void incrementRecordingRound() {
+        int oldRecordingRound = this.recordingRound;
+        this.recordingRound++;
+        propertyChangeSupport.firePropertyChange(PROP_RECORDINGROUND, oldRecordingRound, this.recordingRound);
+    
+    }
 
     public void startRecording() {
         numExamplesThisRound = 0;
@@ -898,6 +905,19 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         return outputs;
     }
 
+    public void addToTraining(double[] inputs, double[] outputs, boolean[] inputMask, boolean[] outputMask) {
+        /*double[] trainingOutputs = new double[outputs.length];
+        
+         for (int i = 0; i < outputs.length; i++) {
+         if (recordingMask[i]) {
+                
+         }
+         } */
+        setNumExamplesThisRound(numExamplesThisRound + 1);
+        w.getDataManager().addToTraining(inputs, outputs, inputMask, outputMask, recordingRound);
+    }
+
+    
     public void addToTraining(double[] inputs, double[] outputs, boolean[] recordingMask) {
         /*double[] trainingOutputs = new double[outputs.length];
         
