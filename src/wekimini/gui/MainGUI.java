@@ -1196,13 +1196,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
                 return;
             }
             
-            arffLoader = new WekiArffLoader(w, f, new WekiArffLoader.ArffLoaderNotificationReceiver() {
+            arffLoader = new WekiArffLoader(w, new WekiArffLoader.ArffLoaderNotificationReceiver() {
 
                 @Override
                 public void completed() {
                     arffLoader = null;
                 }
             });
+            arffLoader.loadFile(f);
         }
     }
 }

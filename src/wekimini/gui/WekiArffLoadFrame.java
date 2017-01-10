@@ -23,13 +23,17 @@ public class WekiArffLoadFrame extends javax.swing.JFrame {
     
     private final ArffConfiguredNotificationReceiver arffConfiguredReceiver;
     
+    private final List<List<Integer>> projectIndicesPerColumn;
+    
     /**
      * Creates new form OSCInputStatusFrame
      */
     public WekiArffLoadFrame() {
         initComponents();
         this.w = null;
+        projectIndicesPerColumn = null;
         arffConfiguredReceiver = null;
+        
     }
 
     public WekiArffLoadFrame(final Wekinator w, 
@@ -43,6 +47,7 @@ public class WekiArffLoadFrame extends javax.swing.JFrame {
        // arffMappingReceiver = recv;
         this.w = w;
         this.arffConfiguredReceiver = recv;
+        this.projectIndicesPerColumn = projectIndicesPerColumn;
         //int numInputs = currentInputs.length;
         //int numOutputs = currentOutputs.length;
         
@@ -262,8 +267,12 @@ public class WekiArffLoadFrame extends javax.swing.JFrame {
         }
 
         for (int i = 0; i < rows.size(); i++) {
+            int index1 = projectIndicesPerColumn.get(i).get(selectedIndices[i]);
+            
             for (int j = i+1; j < rows.size(); j++) {
-                if (selectedIndices[i] != 0 && selectedIndices[i] == selectedIndices[j]) {
+                int index2 = projectIndicesPerColumn.get(j).get(selectedIndices[j]);
+
+                if (index1 != 0 && index1 == index2) {
                     String msg = "You have selected \'" + selectedNames[i]
                     + "\' more than once.";
                     Util.showPrettyErrorPane(this, msg);

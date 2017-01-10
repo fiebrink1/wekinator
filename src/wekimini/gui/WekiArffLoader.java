@@ -34,6 +34,7 @@ public class WekiArffLoader {
     private final ArffLoaderNotificationReceiver recv;
     private final ArffLoader af;
     private Instances structure;
+    private List<List<Integer>> projectIndicesPerColumn;
 
     public static File getArffFile() {
         String lastLocation = GlobalSettings.getInstance().getStringValue("arffLoadLocation", "");
@@ -51,7 +52,7 @@ public class WekiArffLoader {
         return f;
     }
 
-    public WekiArffLoader(Wekinator w, File f, final ArffLoaderNotificationReceiver recv) {
+    public WekiArffLoader(Wekinator w, final ArffLoaderNotificationReceiver recv) {
         this.w = w;
         this.recv = recv;
         this.af = new ArffLoader();
@@ -60,7 +61,9 @@ public class WekiArffLoader {
          recv.completed();
          return;
          } */
-
+    }
+    
+    public void loadFile(File f) {
         try {
             af.setFile(f);
             structure = af.getStructure();
@@ -98,11 +101,10 @@ public class WekiArffLoader {
         }
 
         //Options for project matches for each column
-        //Nominal attributes can be made numeric, but not the other way around
         List<List<String>> projectNamesPerColumn = new LinkedList<>();
 
         //Corresponding indices of project names, in projectNames array
-        List<List<Integer>> projectIndicesPerColumn = new LinkedList<>();
+        projectIndicesPerColumn = new LinkedList<>();
 
         //Which initial values should be selected?
         int[] selectedIndicesPerColumn = new int[numColumns];
@@ -112,15 +114,15 @@ public class WekiArffLoader {
             List<String> candidateNames = new ArrayList<>(numColumns);
             List<Integer> candidateIndices = new ArrayList<>(numColumns);
 
-            candidateNames.add(projectNames[0]);
-            candidateIndices.add(0);
+            candidateNames.add(projectNames[0]); //0th element is always "none" option
+            candidateIndices.add(0); //which corresponds to index 0 for project.
             int numAddedToColum = 1;
 
             for (int j = 0; j < currentInputs.length; j++) {
                 if (isNumeric[i]) {
                     //We can match any numeric column to an input
                     candidateNames.add(currentInputs[j]);
-                    candidateIndices.add(j);
+                    candidateIndices.add(j+1);
                     numAddedToColum++;
                     if (!matched && matches(currentInputs[j], attributeNames[i])) {
                         matched = true;
@@ -143,7 +145,7 @@ public class WekiArffLoader {
                 if (isNumeric[i] && isProjectOutputNumeric[j]) {
                     //We can match a numeric column to a numeric output
                     candidateNames.add(currentOutputs[j]);
-                    candidateIndices.add(currentInputs.length + j);
+                    candidateIndices.add(currentInputs.length + j + 1);
                     numAddedToColum++;
                     if (!matched && matches(currentOutputs[j], attributeNames[i])) {
                         matched = true;
@@ -167,7 +169,7 @@ public class WekiArffLoader {
                     int numClassesInArff = structure.attribute(i).numValues();
                     if (canMatch(structure.attribute(i), (OSCClassificationOutput) outputs.get(j))) {
                         candidateNames.add(currentOutputs[j]);
-                        candidateIndices.add(currentInputs.length + j);
+                        candidateIndices.add(currentInputs.length + j + 1);
                         numAddedToColum++;
                         if (!matched && matches(currentOutputs[j], attributeNames[i])) {
                             matched = true;
@@ -263,6 +265,7 @@ public class WekiArffLoader {
         return (numSeen == attribute.numValues());
     }
 
+    //selectedIndices[] is index *for that particular row* (may not be index used globally! Depends on what options were for that row...)
     private void receivedConfiguration(int[] selectedIndices, boolean overwrite, boolean ignoreWithNoOutputs) {
         //Now load the data. TODO
         //For each instance: 
@@ -296,23 +299,25 @@ public class WekiArffLoader {
 
                 int numOutputsMissing = 0;
                 for (int i = 0; i < selectedIndices.length; i++) {
+                    int projectIndexForCol = projectIndicesPerColumn.get(i).get(selectedIndices[i]);
                     //selectedIndices[i] : says which input/output corresponds to the ith attribute
-                    if (selectedIndices[i] == 0) {
+                    if (projectIndexForCol == 0) {
                         //do nothing: ignore it
-                    } else if (selectedIndices[i] <= inputs.length) { //it's an input
+                    } else if (projectIndexForCol <= inputs.length) { //it's an input
                         if (nextInstance.isMissing(i)) {
-                            inputs[selectedIndices[i] - 1] = 0;
-                            inputMask[selectedIndices[i] - 1] = false;
+                            inputs[projectIndexForCol - 1] = 0;
+                            inputMask[projectIndexForCol - 1] = false;
                         } else {
-                            inputs[selectedIndices[i] - 1] = nextInstance.value(i);
+                            inputs[projectIndexForCol - 1] = nextInstance.value(i);
                         }
                     } else { //it's an output
                         if (nextInstance.isMissing(i)) {
-                            outputs[selectedIndices[i] - 1 - numInputs] = 0;
-                            outputMask[selectedIndices[i] - 1 - numInputs] = false;
+                            outputs[projectIndexForCol - 1 - numInputs] = 0;
+                            outputMask[projectIndexForCol - 1 - numInputs] = false;
                             numOutputsMissing++;
                         } else {
-                            outputs[selectedIndices[i] - 1 - numInputs] = nextInstance.value(i);
+                            double val = nextInstance.value(i);
+                            outputs[projectIndexForCol - 1 - numInputs] = val;
                         }
                     }
                 }
@@ -341,10 +346,15 @@ public class WekiArffLoader {
     }
 
     private boolean[] createOutputMaskForSet(int[] selectedIndices) {
+        int[] projectArray = new int[selectedIndices.length];
+        for (int i =0 ; i < projectArray.length; i++) {
+            projectArray[i] = projectIndicesPerColumn.get(i).get(selectedIndices[i]);
+        }
+        
         int numInputs = w.getInputManager().getNumInputs();
         boolean[] isPresent = new boolean[w.getOutputManager().getOutputGroup().getNumOutputs()];
         for (int i = 0; i < isPresent.length; i++) {
-            isPresent[i] = existsInArray(i + 1 + numInputs, selectedIndices);
+            isPresent[i] = existsInArray(i + 1 + numInputs, projectArray);
         }
         return isPresent;
     }
