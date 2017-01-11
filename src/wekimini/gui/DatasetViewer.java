@@ -20,6 +20,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 import wekimini.DataManager;
 import wekimini.DataTableModel;
+import wekimini.Wekinator;
 import wekimini.util.Util;
 
 /**
@@ -29,23 +30,18 @@ import wekimini.util.Util;
 public class DatasetViewer extends javax.swing.JFrame {
 
     private final DataManager dataManager;
+    private final Wekinator w;
     private  javax.swing.JTable table;
     private  DataTableModel model;
     private  TableRowSorter sorter;
     private static final Logger logger = Logger.getLogger(DatasetViewer.class.getName());
 
-    public DatasetViewer(DataManager dataManager) {
+    public DatasetViewer(DataManager dataManager, Wekinator w) {
         initComponents();
-        
-        
-        
         this.dataManager = dataManager;
+        this.w = w;
         setComboBoxOptions();
         populateTable();
-
-        
-
-        // this.gui = gui;
     }
 
     private void setComboBoxOptions() {
@@ -78,6 +74,7 @@ public class DatasetViewer extends javax.swing.JFrame {
         buttonSaveArff = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         comboWhichOutputs = new javax.swing.JComboBox();
+        buttonLoadArff = new javax.swing.JButton();
 
         jLabel1.setText("jLabel1");
 
@@ -133,18 +130,27 @@ public class DatasetViewer extends javax.swing.JFrame {
             }
         });
 
+        buttonLoadArff.setText("Load from ARFF...");
+        buttonLoadArff.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonLoadArffActionPerformed(evt);
+            }
+        });
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(scrollTable, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 687, Short.MAX_VALUE)
+            .add(scrollTable)
             .add(layout.createSequentialGroup()
                 .add(buttonDelete, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 146, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(buttonAdd)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(buttonListen)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 126, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(buttonLoadArff)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(buttonSaveArff)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(buttonDone))
@@ -165,7 +171,8 @@ public class DatasetViewer extends javax.swing.JFrame {
                     .add(buttonDelete)
                     .add(buttonAdd)
                     .add(buttonListen)
-                    .add(buttonSaveArff))
+                    .add(buttonSaveArff)
+                    .add(buttonLoadArff))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel2)
@@ -259,10 +266,11 @@ public class DatasetViewer extends javax.swing.JFrame {
     private void comboWhichOutputsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboWhichOutputsActionPerformed
         int selected = comboWhichOutputs.getSelectedIndex();
         if (selected == 0) {
-           // showAllOutputs(); //This is buggy!
+           //showAllOutputs(); //This is buggy!
+           showAllOutputs2();
         } else {
             updateRowFilter(selected-1);
-          //  hideAllOutputsBut(selected-1); //this is buggy!
+           //hideAllOutputsBut(selected-1); //this is buggy!
         }
         table.repaint();
         scrollTable.revalidate();
@@ -274,6 +282,10 @@ public class DatasetViewer extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         model.prepareToDie();
     }//GEN-LAST:event_formWindowClosing
+
+    private void buttonLoadArffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoadArffActionPerformed
+        w.getMainGUI().showArffLoader();
+    }//GEN-LAST:event_buttonLoadArffActionPerformed
 
     private void hideAllOutputsBut(int which) {
         int j = 0;
@@ -327,6 +339,7 @@ public class DatasetViewer extends javax.swing.JFrame {
     private javax.swing.JButton buttonDelete;
     private javax.swing.JButton buttonDone;
     private javax.swing.JButton buttonListen;
+    private javax.swing.JButton buttonLoadArff;
     private javax.swing.JButton buttonSaveArff;
     private javax.swing.JComboBox comboWhichOutputs;
     private javax.swing.JLabel jLabel1;
@@ -364,6 +377,22 @@ public class DatasetViewer extends javax.swing.JFrame {
             };
         sorter.setRowFilter(rf);
     }
+    
+    private void showAllOutputs2() {
+        RowFilter<DataTableModel, Integer> rf = null;
+        //If current expression doesn't parse, don't update.
+       // try {
+            rf = new RowFilter<DataTableModel, Integer>() {
+
+            @Override
+            public boolean include(RowFilter.Entry<? extends DataTableModel, ? extends Integer> entry) {
+                return true;
+            }
+                
+            };
+        sorter.setRowFilter(rf);
+    }
+    
     private void showAllOutputs() {
         sorter.setRowFilter(null);
         for (int i = 3 + model.getNumInputs(); i < table.getColumnCount(); i++) {

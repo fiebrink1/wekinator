@@ -45,7 +45,7 @@ public class OutputManager {
     
     //Listeners for individual output edits (e.g. change # classes)
     private final List<OutputTypeEditListener> outputTypeEditListeners;
-
+    
     //Listeners for single outputs computed internally
   //  private final List<OutputManager.SingleOutputValueListener> singleValueComputedListeners;
 
@@ -160,6 +160,15 @@ public class OutputManager {
             currentValues[i] = outputGroup.getOutput(i).getDefaultValue();
         }
         
+        propertyChangeSupport.firePropertyChange(PROP_OUTPUTGROUP, oldGroup, outputGroup);
+    }
+    
+     //For now, no possibility to modify an output group: it's a totally new group.
+    public void setOSCOutputGroup(OSCOutputGroup newG, double[] values) throws IllegalArgumentException {
+        OSCOutputGroup oldGroup = outputGroup;
+        outputGroup = newG;
+        currentValues = new double[newG.getNumOutputs()];
+        System.arraycopy(values, 0, currentValues, 0, currentValues.length);
         propertyChangeSupport.firePropertyChange(PROP_OUTPUTGROUP, oldGroup, outputGroup);
     }
 
@@ -392,6 +401,23 @@ public class OutputManager {
         }
         
         
+    }
+
+    //adds new output (appended to end)
+    public void addNewOutput(OSCOutput o) {
+        int index = outputGroup.getNumOutputs();
+        List<OSCOutput> outputs = outputGroup.getOutputs();
+        outputs.add(o);
+        
+        OSCOutputGroup newGroup = new OSCOutputGroup(outputs, outputGroup.getOscMessage(), outputGroup.getHostname(), outputGroup.getOutputPort());
+        OSCOutputGroup oldGroup = outputGroup;
+        
+        double[] vals = new double[currentValues.length + 1];
+        System.arraycopy(currentValues, 0, vals, 0, currentValues.length);
+        vals[vals.length-1] = o.getDefaultValue();
+        
+        setOSCOutputGroup(newGroup, vals);
+       // notifyOutputAddedListeners(o, index);
     }
     
     // TODO: Not sure if we need this?

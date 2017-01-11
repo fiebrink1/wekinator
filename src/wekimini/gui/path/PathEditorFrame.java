@@ -8,22 +8,29 @@ package wekimini.gui.path;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JCheckBox;
+import weka.core.Instances;
+import wekimini.GlobalSettings;
 import wekimini.LearningModelBuilder;
 import wekimini.LoggingManager;
 import wekimini.Path;
+import wekimini.PathAndDataLoader;
 import wekimini.Wekinator;
+import wekimini.WekinatorSaver;
 import wekimini.gui.path.ModelEditorFrame.ModelBuilderReceiver;
 import wekimini.gui.path.OutputEditFrame.OutputEditReceiver;
-import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.Model;
+import wekimini.learning.SupervisedLearningModel;
 import wekimini.osc.OSCClassificationOutput;
+import wekimini.osc.OSCDtwOutput;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.util.Util;
@@ -45,25 +52,25 @@ public class PathEditorFrame extends javax.swing.JFrame {
     private JCheckBox inputs[] = null;
     private String[] inputNames = null;
     private Wekinator w;
+    private final PathAndDataLoader loader;
     /**
      * Creates new form PathEditorFrame
      */
     public PathEditorFrame() {
         initComponents();
         p = null;
+        loader = new PathAndDataLoader();
     }
 
     public PathEditorFrame(Path p, String[] inputNames, Wekinator w) {
         initComponents();
-        
-        jButton1.setVisible(false);
-        jButton2.setVisible(false);
         
         this.p = p;
         initFormForPath();
         this.w = w;
         initInputsPanel(p, inputNames);
         setTitle("Editing " + p.getOSCOutput().getName());
+        loader = new PathAndDataLoader();
     }
 
     private void initInputsPanel(Path p, String[] inputNames) {
@@ -76,11 +83,11 @@ public class PathEditorFrame extends javax.swing.JFrame {
             inputs[i] = new JCheckBox(inputNames[i]);
             inputs[i].setBackground(new java.awt.Color(255, 255, 255));
             inputs[i].setSelected(p.isUsingInput(inputNames[i]));
-            inputs[i].addMouseListener(new MouseAdapter() {
+            /*inputs[i].addMouseListener(new MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent evt) {
                     mouseClick(which);
                 }
-            });
+            }); */
             inputs[i].addActionListener(new ActionListener() {
 
                 @Override
@@ -91,10 +98,6 @@ public class PathEditorFrame extends javax.swing.JFrame {
             panelInputList.add(inputs[i]);
         }
         updateNumInputs();
-    }
-
-    private void mouseClick(int whichCheckbox) {
-        //System.out.println("Click on " + whichCheckbox);
     }
 
     private void initFormForPath() {
@@ -111,9 +114,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
         labelConnectedInputs.setText(getNumberInputsSelected() + " connected inputs:");
     }
 
-    private void updateFormForOutput(OSCOutput o) {
-        labelOutputName.setText("Name: " + o.getName());
-
+    protected static String getOscOutputDescription(OSCOutput o) {
         StringBuilder sb = new StringBuilder("<html>");
         if (o instanceof OSCNumericOutput) {
             OSCNumericOutput no = (OSCNumericOutput) o;
@@ -146,22 +147,15 @@ public class PathEditorFrame extends javax.swing.JFrame {
             sb.append("Unknown type</html>");
             logger.log(Level.SEVERE, "Uknown output type: {0}", o.getClass().getCanonicalName());
         }
-        labelOutputType.setText(sb.toString());
+        return sb.toString();
+    }
+    
+    private void updateFormForOutput(OSCOutput o) {
+        labelOutputName.setText("Name: " + o.getName());
+        String s = getOscOutputDescription(o);
+        labelOutputType.setText(s);
     }
 
-    /*public void initInputList() {
-     String[] inputNames = p.getSelectedInputs();
-     labelConnectedInputs.setText(inputNames.length + " connected inputs:");
-        
-     panelInputList.removeAll();
-     for (int i = 0; i < inputNames.length; i++) {
-     panelInputList.add(new JLabel(inputNames[i]));
-     }
-     panelInputList.repaint();
-     panelInputList.validate();
-     scrollPaneInputs.revalidate();
-        
-     } */
     public static boolean pathEditorExists(Path p) {
         return pathsBeingEdited.containsKey(p);
     }
@@ -186,8 +180,8 @@ public class PathEditorFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        buttonPathLoad = new javax.swing.JButton();
+        buttonPathSave = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         buttonEditOutput = new javax.swing.JButton();
@@ -212,17 +206,17 @@ public class PathEditorFrame extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jButton1.setText("Load from file...");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        buttonPathLoad.setText("Load from file...");
+        buttonPathLoad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                buttonPathLoadActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Save to file...");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        buttonPathSave.setText("Save to file...");
+        buttonPathSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                buttonPathSaveActionPerformed(evt);
             }
         });
 
@@ -264,8 +258,8 @@ public class PathEditorFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(labelOutputName, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
-                        .addContainerGap(81, Short.MAX_VALUE))
+                        .addComponent(labelOutputName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -384,7 +378,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(labelConnectedInputs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(6, 6, 6))
-                    .addComponent(scrollPaneInputs, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE))
+                    .addComponent(scrollPaneInputs))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -409,9 +403,9 @@ public class PathEditorFrame extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jButton1)
+                .addComponent(buttonPathLoad)
                 .addGap(0, 0, 0)
-                .addComponent(jButton2)
+                .addComponent(buttonPathSave)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton4)
                 .addGap(0, 0, 0)
@@ -434,11 +428,12 @@ public class PathEditorFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(buttonPathSave)
+                        .addComponent(jButton3)
+                        .addComponent(jButton4))
+                    .addComponent(buttonPathLoad)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -492,6 +487,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
          } */
     }
 
+    //Called when output editor is used to make changes, which are accepted.
     private void newOutputReceived(OSCOutput o) {
         newOutput = o;
         updateFormForOutput(o);
@@ -517,13 +513,13 @@ public class PathEditorFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        loadModelFromFile();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void buttonPathLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPathLoadActionPerformed
+        loadPathFromFile();
+    }//GEN-LAST:event_buttonPathLoadActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        saveModelToFile();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void buttonPathSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPathSaveActionPerformed
+        savePathToFile();
+    }//GEN-LAST:event_buttonPathSaveActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         dispose();
@@ -586,9 +582,9 @@ public class PathEditorFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonEditModelType;
     private javax.swing.JButton buttonEditOutput;
+    private javax.swing.JButton buttonPathLoad;
+    private javax.swing.JButton buttonPathSave;
     private javax.swing.JButton buttonPrintToConsole;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JCheckBox jCheckBox1;
@@ -706,7 +702,7 @@ public class PathEditorFrame extends javax.swing.JFrame {
 
     //Do we know how and whether to change this output?
     private boolean validateOutputChange() {
-        OSCOutput oldOutput = p.getOSCOutput();
+        OSCOutput oldOutput = p.getOSCOutput(); //TODO: Validate against new loaded path, if applicable.
         if (newOutput instanceof OSCClassificationOutput && oldOutput instanceof OSCClassificationOutput) {
             //Check if # classes is different, and prompt if new numclasses < old num
             int oldNum = ((OSCClassificationOutput) oldOutput).getNumClasses();
@@ -779,33 +775,236 @@ public class PathEditorFrame extends javax.swing.JFrame {
     }
 
     private void applyChanges() {
-      //  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-
-      //if (newOutput != null) {
-          w.getSupervisedLearningManager().updatePath(p, newOutput, newModelBuilder, getSelectedInputNames());
-          
-         //w.getOutputManager().updateOutput(newOutput, p.getOSCOutput());
-       // w.getSupervisedLearningManager().updateOutput()
-        //New P or existing p??
-        //Need to update model state, path output name, 
-    //  }
-  //TODO: also Update output info: XOutputManager, learning manager, data manager, sender?, path, all GUIs (through listeners)
-      
-     /* if (newModelBuilder != null) {
-          p.setModelBuilder(newModelBuilder);
-      }
-      
-      p.setSelectedInputs(getSelectedInputNames()); */
-      
-        //Update modelbuilder: path
-        //Update input list: Path, learning manager, data manager
+        w.getSupervisedLearningManager().updatePath(p, newOutput, newModelBuilder, getSelectedInputNames());
     }
 
-    private void loadModelFromFile() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private File getLoadFilename() {
+        File filename;
+        String lastValue = GlobalSettings.getInstance().getStringValue("modelSaveLoadLocation", "");
+        if (lastValue != "") {
+            filename = Util.findLoadFileWithDefaultFile("xml", "XML File", lastValue, this);
+        } else if (w.hasSaveLocation()) {
+            filename = Util.findLoadFile("xml", "XML File", WekinatorSaver.getStashLocation(w.getProjectLocation()), this);
+            //filename = Util.findSaveFile(WekinatorSaver.getStashLocation(w.getProjectLocation()), "xml", p.getCurrentModelName(), "XML file", this);
+        } else {
+            filename = Util.findLoadFile("xml", "XML File", System.getProperty("user.home"), this);
+        }
+        //Record last file location
+        try {
+            GlobalSettings.getInstance().setStringValue("modelSaveLoadLocation", filename.getCanonicalPath());
+        } catch (Exception ex) {
+            //Don't really care
+        }
+        return filename;
+    }
+    
+    //TODO: Possibly use last load location instead to load this file.
+    //TODO: Test that this works with models saved as part of a project.
+    private void loadPathFromFile() {
+        //Load it here and display in this GUI, before committing.
+        File filename = getLoadFilename();
+        if (filename == null) {
+            return;
+        }
+        
+        try {
+            //Load the file
+            loader.tryLoadFromFile(filename.getCanonicalPath());
+            final Path loadedPath = loader.getLoadedPath();
+            
+            //Check compatibility
+            if (!isCompatibleType(loadedPath) || !isCompatibleFeatures(loadedPath)) {
+                loader.discardLoaded(); 
+                return;
+            }
+            
+            InputReMapper.InputRemappingReceiver r = new InputReMapper.InputRemappingReceiver() {
+                @Override
+                public void setNamesAndDataPrefs(String[] names, boolean importData, boolean preventRetraining) {
+                    completeImport(loadedPath, names, importData, preventRetraining);
+                }
+
+                @Override
+                public void cancel() {
+                    //nothing to do
+                }
+            };
+            
+            int[] initialMatches = proposeInitialMatches(loadedPath.getSelectedInputs(), w.getInputManager().getInputNames());
+            
+            int pathIndex = w.getSupervisedLearningManager().getPaths().indexOf(p);
+            
+            InputReMapper m = new InputReMapper(w, 
+                    loadedPath.getOSCOutput(),
+                    loadedPath.getModelBuilder(),
+                    loadedPath.getModel(),
+                    loadedPath.getModelState(),
+                    loadedPath.getSelectedInputs(),
+                    w.getInputManager().getInputNames(), 
+                    initialMatches, 
+                    pathIndex,
+                    r);
+            
+            m.setAlwaysOnTop(true);
+            m.setVisible(true);
+            
+            
+
+        } catch (Exception ex) {
+            Util.showPrettyErrorPane(this, "Could not load from file: " + ex.getMessage());
+            logger.log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void completeImport(Path loadedPath, String[] selectedInputs, boolean importData, boolean preventRetraining) {
+       // TODO: need to use importdata here!
+       // loadedPath.setSelectedInputs(names);
+        
+        //TODO: Detect feature mapping for this specific trained model
+        //Do we need to remap/re-order inputs? If so figure that out before displaying
+        // in this GUI (for input/output selection)
+           // int[] selectedInputIndices = getInputsOrdering(loadedPath);
+            //TODO: Update corresponding Reorder filter object!
+        OSCOutput loadedOutput = loadedPath.getOSCOutput();
+        int pathIndex = w.getSupervisedLearningManager().getPaths().indexOf(p);
+        
+        //TODO: Use a different function call here, so that this path
+        //immediately uses its selected features.
+        w.getSupervisedLearningManager().replacePath(
+                p,
+                loadedOutput,
+                loadedPath.getModelBuilder(),
+                selectedInputs,
+                (SupervisedLearningModel) loadedPath.getModel(),
+                loadedPath.getModelState(),
+                !preventRetraining);
+        
+        int[] inputIndices = getInputsOrdering(loadedPath);
+        
+        //TODO:Add instances to dataset.
+        if (importData) {
+            Instances loadedInstances = loader.getLoadedInstances();
+            //w.getDataManager().addLoadedDataForPath(loadedInstances, selectedInputs, loadedPath);
+            w.getSupervisedLearningManager().addLoadedDataForPathToTraining(loadedInstances, inputIndices, pathIndex);
+        }
+        w.getSupervisedLearningManager().getPaths().get(pathIndex).setModelState(loadedPath.getModelState());
+            //p.setModel((SupervisedLearningModel) loadedPath.getModel());
+        //p.setModelState(loadedPath.getModelState()); //doesn't update path change listeners...
+            //TODO: Set path numExamples?
+            //TODO:Should we reset model name? number of examples?
+            //TODO: Change data (add these instances in)
+        loader.discardLoaded();
+
+        //Close this pane (TODO later: Allow people to view and change model before closing).
+        dispose();
+    }
+    
+    private String getTypeString(OSCOutput o) {
+        if (o instanceof OSCNumericOutput) {
+            return "continuous/numeric";
+        } else if (o instanceof OSCClassificationOutput) {
+            return "classification";
+        } else {
+            return "dynamic time warping";
+        }
+    }
+    
+    //TODO test this
+    private boolean isCompatibleFeatures(Path newPath) {
+        String[] newInputs = newPath.getSelectedInputs();
+        if (newInputs.length > w.getInputManager().getInputNames().length) {
+            String msg = "Not enough inputs available: current project has "
+                    + w.getInputManager().getInputNames().length
+                    + " inputs, but the model in this file requires " 
+                    + newInputs.length + " inputs.";
+            Util.showPrettyErrorPane(this, msg);
+            return false;
+        }
+        return true;
+    }
+    
+    //TODO test this.
+     private boolean isCompatibleType(Path newPath) {
+        OSCOutput original = p.getOSCOutput();
+        OSCOutput newOutput = newPath.getOSCOutput();
+        
+        if (original instanceof OSCNumericOutput && newOutput instanceof OSCNumericOutput) {
+            return true;
+        } else if (original instanceof OSCClassificationOutput && newOutput instanceof OSCClassificationOutput) {
+            return true;
+        } else if (original instanceof OSCDtwOutput || newOutput instanceof OSCDtwOutput ) {
+            Util.showPrettyErrorPane(this, "Model loading is not yet implemented for DTW, sorry!");
+            return false;
+        } else {
+            String msg = "Output types are not compatible: Current type is " + 
+                    getTypeString(original) + ", but this file uses type "
+                    + getTypeString(newOutput);
+            Util.showPrettyErrorPane(this, "Could not load from file: " + msg);
+            return false;
+        }
+     }
+
+    private void savePathToFile() {
+        //Get full filename, should end in .xml
+        File filename;
+        if (w.hasSaveLocation()) {
+            filename = Util.findSaveFile(WekinatorSaver.getStashLocation(w.getProjectLocation()), "xml", p.getCurrentModelName(), "XML file", this);
+        } else {
+            filename = Util.findSaveFile("xml", p.getCurrentModelName(), "XML file", this);
+        }
+        if (filename != null) {
+            try {
+                p.writeToFile(filename.getCanonicalPath());
+                GlobalSettings.getInstance().setStringValue("modelSaveLoadLocation", filename.getCanonicalPath());
+
+            } catch (IOException ex) {
+                Util.showPrettyWarningPromptPane(null, "Error encountered in saving file: " + ex.getLocalizedMessage());
+                logger.log(Level.SEVERE, "Could not save Wekinator file:{0}", ex.getMessage());
+            }
+        }
     }
 
-    private void saveModelToFile() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private int[] getInputsOrdering(Path loadedPath) {
+        String[] selectedInputs = loadedPath.getSelectedInputs();
+        String[] projectInputs = w.getInputManager().getInputNames();
+        int[] selectedInputIndices = new int[selectedInputs.length];
+        for (int i = 0; i < selectedInputs.length; i++) {
+            int correspondingIndex = findStringIndex(selectedInputs[i], projectInputs);
+            if (correspondingIndex >= 0) {
+                selectedInputIndices[i] = correspondingIndex;
+            } else {
+                selectedInputIndices[i] = 0;
+                System.out.println("Error: No corresponding name found");
+            }     
+        }
+        return selectedInputIndices;
+    }
+
+    private int findStringIndex(String selectedInput, String[] projectInputs) {
+        for (int i = 0; i < projectInputs.length; i++) {
+            if (projectInputs[i].equals(selectedInput)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int[] proposeInitialMatches(String[] pathInputs, String[] projectInputs) {
+        //A very simple approach:
+        int[] proposedIndices = new int[pathInputs.length];
+        for (int i = 0; i < pathInputs.length; i++) {
+            boolean matched = false;
+            for (int j = 0; j < projectInputs.length; j++) {
+                if (pathInputs[i].equals(projectInputs[j])) {
+                    proposedIndices[i] = j;
+                    matched = true;
+                    break;
+                }
+            }
+            if (! matched) {
+                proposedIndices[i] = 0;
+            }
+        }
+        return proposedIndices;
     }
 }

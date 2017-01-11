@@ -55,11 +55,15 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
     private boolean hasChanged = false;
     private boolean learnerRecord = true;
     private boolean learnerRun = true;
+    private boolean learnerTrain = true;
     
     private final ImageIcon recordIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/record1.png"));
     private final ImageIcon recordIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/norec3.png"));
     private final ImageIcon playIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/play1.png"));
     private final ImageIcon playIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noplay1.png"));
+    private final ImageIcon buildIconOn = new ImageIcon(getClass().getResource("/wekimini/icons/hammersmall2.png"));
+    private final ImageIcon buildIconOff = new ImageIcon(getClass().getResource("/wekimini/icons/noHammer1.png"));
+    
     private boolean caretReset = false;
     
     //Colors for Path status
@@ -199,6 +203,7 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
         updateModelState(myPath.getModelState());
         updateRecordEnabled(myPath.isRecordEnabled());
         updateRunEnabled(myPath.isRunEnabled());
+        updateTrainEnabled(myPath.isTrainEnabled());
 
         myPath.addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -210,6 +215,8 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
                     updateRecordEnabled(myPath.isRecordEnabled());
                 } else if (evt.getPropertyName() == Path.PROP_RUNENABLED) {
                     updateRunEnabled(myPath.isRunEnabled());
+                } else if (evt.getPropertyName() == Path.PROP_TRAINENABLED) {
+                    updateTrainEnabled(myPath.isTrainEnabled());
                 } else if (evt.getPropertyName() == Path.PROP_MODELSTATE) {
                     updateModelState(myPath.getModelState());
                 } else if (evt.getPropertyName() == Path.PROP_CURRENTMODELNAME) {
@@ -262,6 +269,15 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
             buttonLearnerPlay.setIcon(playIconOn); // NOI18N
         } else {
             buttonLearnerPlay.setIcon(playIconOff);
+        }
+    }
+    
+    private void updateTrainEnabled(boolean enabled) {
+        learnerTrain = enabled;
+        if (learnerTrain) {
+            buttonLearnerTrain.setIcon(buildIconOn);
+        } else {
+            buttonLearnerTrain.setIcon(buildIconOff);
         }
     }
 
@@ -324,7 +340,7 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
     public void setRecordEnabled(boolean e) {
         learnerRecord = e;
         if (learnerRecord) {
-            buttonLearnerRecord.setIcon(recordIconOn); // NOI18N
+            buttonLearnerRecord.setIcon(recordIconOn);
         } else {
             buttonLearnerRecord.setIcon(recordIconOff);
         }
@@ -335,11 +351,22 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
     public void setRunEnabled(boolean e) {
         learnerRun = e;
         if (learnerRun) {
-            buttonLearnerPlay.setIcon(playIconOn); // NOI18N
+            buttonLearnerPlay.setIcon(playIconOn);
         } else {
             buttonLearnerPlay.setIcon(playIconOff);
         }
         myPath.setRunEnabled(e);
+    }
+    
+    @Override
+    public void setTrainEnabled(boolean e) {
+        learnerTrain = e;
+        if (learnerTrain) {
+            buttonLearnerTrain.setIcon(buildIconOn);
+        } else {
+            buttonLearnerTrain.setIcon(buildIconOff);
+        }
+        myPath.setTrainEnabled(e);
     }
     
     @Override
@@ -400,6 +427,7 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
         cardNumeric = new javax.swing.JPanel();
         textModelValue = new javax.swing.JTextField();
         buttonLearnerPlay = new javax.swing.JButton();
+        buttonLearnerTrain = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
 
         setBackground(new java.awt.Color(255, 255, 255));
@@ -425,7 +453,7 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
         add(jPanel1);
 
         panelMain.setBackground(new java.awt.Color(255, 255, 255));
-        panelMain.setPreferredSize(new java.awt.Dimension(540, 70));
+        panelMain.setPreferredSize(new java.awt.Dimension(550, 70));
 
         labelModelName.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
         labelModelName.setText("MaxVolume1_1");
@@ -518,7 +546,7 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
             .addGroup(warningPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(labelModelStatus)
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         warningPanelLayout.setVerticalGroup(
             warningPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -613,6 +641,17 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
             }
         });
 
+        buttonLearnerTrain.setIcon(new javax.swing.ImageIcon(getClass().getResource("/wekimini/icons/hammersmall2.png"))); // NOI18N
+        buttonLearnerTrain.setToolTipText("Enable training");
+        buttonLearnerTrain.setMaximumSize(new java.awt.Dimension(30, 30));
+        buttonLearnerTrain.setMinimumSize(new java.awt.Dimension(30, 30));
+        buttonLearnerTrain.setPreferredSize(new java.awt.Dimension(30, 30));
+        buttonLearnerTrain.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonLearnerTrainActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelMainLayout = new javax.swing.GroupLayout(panelMain);
         panelMain.setLayout(panelMainLayout);
         panelMainLayout.setHorizontalGroup(
@@ -637,10 +676,12 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
                 .addComponent(buttonLearnerRecord, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonLearnerPlay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(36, 36, 36)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonLearnerTrain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonEditLearner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE))
+                .addComponent(warningPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelMainLayout.setVerticalGroup(
             panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -652,15 +693,16 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
                     .addGroup(panelMainLayout.createSequentialGroup()
                         .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(buttonEditLearner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(warningPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(buttonDeleteLearnerExamples, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(labelNumExamples, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(panelModelOutput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(labelModelName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(buttonLearnerRecord, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(buttonLearnerPlay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 5, Short.MAX_VALUE)))
+                            .addComponent(buttonLearnerPlay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buttonLearnerTrain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 10, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sliderModelValue, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -846,12 +888,26 @@ public class SupervisedLearningRow extends javax.swing.JPanel implements Learnin
      } */
     }//GEN-LAST:event_textModelValueCaretUpdate
 
+    private void buttonLearnerTrainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLearnerTrainActionPerformed
+        learnerTrain = !learnerTrain;
+        setTrainEnabled(learnerTrain);
+    }//GEN-LAST:event_buttonLearnerTrainActionPerformed
 
+    /*public void setTrainEnabled(boolean e) {
+        learnerTrain = e;
+        if (learnerTrain) {
+            buttonLearnerTrain.setIcon(buildIconOn); // NOI18N
+        } else {
+            buttonLearnerTrain.setIcon(buildIconOff);
+        }
+        myPath.setTrainEnabled(e);
+    } */
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonDeleteLearnerExamples;
     private javax.swing.JButton buttonEditLearner;
     private javax.swing.JButton buttonLearnerPlay;
     private javax.swing.JButton buttonLearnerRecord;
+    private javax.swing.JButton buttonLearnerTrain;
     private javax.swing.JPanel cardClassifier;
     private javax.swing.JPanel cardNumeric;
     private javax.swing.JComboBox comboClassifier;

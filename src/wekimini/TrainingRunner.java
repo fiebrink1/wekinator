@@ -135,7 +135,7 @@ public class TrainingRunner {
                 //setProgress(progress);
                 int numToTrain = 0;
                 for (Path p : paths) {
-                    if (p.canBuild()) {
+                    if (p.canBuild() && p.isTrainEnabled()) {
                         numToTrain++;
                     }
                 }
@@ -146,8 +146,7 @@ public class TrainingRunner {
 
                 for (int i = 0; i < paths.size(); i++) {
                     Path p = paths.get(i);
-                    if (p.canBuild()) {
-                        //TODO: Check if trainable!
+                    if (p.canBuild() && p.isTrainEnabled()) {
                         try {
                             p.buildModel(
                                     p.getOSCOutput().getName() + " (v" + trainingRound + ")",

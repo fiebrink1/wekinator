@@ -26,6 +26,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 import weka.core.converters.ArffSaver;
+import wekimini.learning.ModelBuilder;
 import wekimini.learning.SupervisedLearningModel;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCSupervisedLearningOutput;
@@ -72,11 +73,11 @@ public class Path {
         setModelState(p.modelState);
     }
     
-    public void inheritModelAndBuilder(Path p) {
+   /* public void inheritModelAndBuilder(Path p) {
         setModel(p.model); //TODO: may have to make real copy later...
         setModelBuilder(p.modelBuilder);
         setModelState(p.modelState);
-    }
+    } */
 
     double[] computeDistribution(Instance instance) {
         return model.computeDistribution(instance);
@@ -112,6 +113,10 @@ public class Path {
     private boolean runEnabled = true;
 
     public static final String PROP_RUNENABLED = "runEnabled";
+    
+    private transient boolean trainEnabled = true;
+
+    public static final String PROP_TRAINENABLED = "trainEnabled";
 
     private int numExamples = 0;
 
@@ -279,7 +284,7 @@ public class Path {
      this.outputValue = outputValue;
      } */
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
+    
     /**
      * Add PropertyChangeListener.
      *
@@ -413,6 +418,26 @@ public class Path {
         boolean oldRunEnabled = this.runEnabled;
         this.runEnabled = runEnabled;
         propertyChangeSupport.firePropertyChange(PROP_RUNENABLED, oldRunEnabled, runEnabled);
+    }
+    
+        /**
+     * Get the value of runEnabled
+     *
+     * @return the value of runEnabled
+     */
+    public boolean isTrainEnabled() {
+        return trainEnabled;
+    }
+
+    /**
+     * Set the value of runEnabled
+     *
+     * @param runEnabled new value of runEnabled
+     */
+    public void setTrainEnabled(boolean trainEnabled) {
+        boolean oldTrainEnabled = this.trainEnabled;
+        this.trainEnabled = trainEnabled;
+        propertyChangeSupport.firePropertyChange(PROP_TRAINENABLED, oldTrainEnabled, trainEnabled);
     }
 
     /**
@@ -582,7 +607,7 @@ public class Path {
 
     /* public static Path readFromFile(String filename) throws Exception {
         
-        
+   
 
      //Path g = (Path) Util.readFromXMLFile("Path", Path.class, filename);
      //return g;
@@ -594,6 +619,12 @@ public class Path {
         }
     }
 
+    //Only for use when loading path from XML file
+    public void initialiseModelBuilder() {
+        ModelBuilder mb = modelBuilder.fromTemplate(modelBuilder);
+        this.modelBuilder = (LearningModelBuilder) mb;
+    }
+    
     public boolean shouldResetOnEmptyData() {
         if (numExamples == 0 && modelState == ModelState.NEEDS_REBUILDING) {
             return true;
@@ -604,114 +635,7 @@ public class Path {
     public void resetOnEmptyData() {
         model = null;
         setModelState(ModelState.NOT_READY);
-    }
-
-    public static class PathAndDataLoader {
-
-        private static boolean isLoaded = false;
-        private static Path loadedPath = null;
-        private static Instances loadedInstances = null;
-
-        public static void tryLoadFromFile(String filename) throws Exception {
-            //Danger: Will not have any transient fields initialised!
-            Path p = null;
-            FileInputStream instream = null;
-            ObjectInputStream objin = null;
-            Object o = null;
-            boolean err = false;
-            Exception myEx = new Exception();
-            try {
-                instream = new FileInputStream(filename);
-                objin = new ObjectInputStream(instream);
-           // o = objin.readObject();
-
-                String xml = (String) objin.readObject();
-                XStream xstream = new XStream();
-                xstream.alias("Path", Path.class);
-                p = (Path) xstream.fromXML(xml);
-                //Is p state correct here? yes
-                String modelClassName = (String) objin.readObject();
-                Model m = null;
-                if (!modelClassName.equals("null")) {
-                    Class c = Class.forName(modelClassName);
-                    m = ModelLoader.loadModel(c, objin);
-                }
-                p.setModel((SupervisedLearningModel)m);
-                
-                try {
-                    String instancesString = (String) objin.readObject();
-                    if (!instancesString.equals("null")) {
-                        ArffLoader al = new ArffLoader();
-                        al.setSource(objin);
-                        loadedInstances = al.getDataSet();
-                    } else {
-                        loadedInstances = null;
-                    }
-                } catch (Exception ex) {
-                    //Could not load instances: not necessarily a problem
-                    logger.log(Level.WARNING, "No instances found in path file; not loading them");
-                    loadedInstances = null;
-                }
-            } catch (Exception ex) {
-                myEx = ex;
-                err = true;
-                logger.log(Level.WARNING, "Error encountered in reading from file: {0}", ex.getMessage());
-            } finally {
-                try {
-                    if (objin != null) {
-                        objin.close();
-                    }
-                    if (instream != null) {
-                        instream.close();
-                    }
-                } catch (IOException ex) {
-                    logger.log(Level.WARNING, "Encountered error closing file objects");
-                }
-
-            }
-            if (err) {
-                throw myEx;
-            }
-            loadedPath = p;
-            isLoaded = true;
-        }
+    }    //TODO test this
     
 
-        public static Path getLoadedPath() {
-            if (isLoaded) {
-               return loadedPath;
-            } else {
-                logger.log(Level.WARNING, "Attempt to load path but isLoaded is false");
-                return null;
-            }
-        }
-        
-        //TODO: getSelectedInputs() isn't ordered yet
-        public static String[] getOrderedInputNamesForLoadedPath() {
-            if (isLoaded) {
-                return loadedPath.getSelectedInputs();
-            } else {
-                logger.log(Level.WARNING, "Attempt to load input names but isLoaded is false");
-                return null;
-            }
-        }
-
-        //Returns null if no instances could be loaded
-        public static Instances getLoadedInstances() {
-            if (isLoaded) {
-                return loadedInstances;
-                //If no instances, fail gracefully?
-            } else {
-                logger.log(Level.WARNING, "Attempt to load instances but isLoaded is false");
-                return null;
-            }
-        }
-
-        public static void discardLoaded() {
-            loadedPath = null;
-            loadedInstances = null;
-            isLoaded = false;
-        }
-    }
-    
 }

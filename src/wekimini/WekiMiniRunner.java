@@ -9,6 +9,7 @@ import wekimini.gui.MainGUI;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,7 +36,7 @@ import wekimini.util.Util;
  */
 public final class WekiMiniRunner {
 
-    private static final String versionString = "9 July 2016";
+    private static final String versionString = "v2.1.1.0a_10Jan2017";
     private static final Logger logger = Logger.getLogger(WekiMiniRunner.class.getName());
     // private static final List<Wekinator> runningWekinators = new LinkedList<>();
     private static WekiMiniRunner ref = null; //Singleton
@@ -44,8 +45,53 @@ public final class WekiMiniRunner {
     private final static About aboutBox = new About();
     private final static Preferences preferencesBox = new Preferences();
     private final ImageIcon myIcon = new ImageIcon(getClass().getResource("/wekimini/icons/wekimini_small.png"));
-    private static boolean isKadenze = true;
+    private static boolean isKadenze = false;
     private static int nextID = 1;
+
+    //Load it and start running, handle old project
+    public void runNewProjectAutomatically(Wekinator oldWekinator, String filename, NewProjectOptions options) throws Exception {
+        File f = new File(filename);
+        int newestID = nextID;
+        Wekinator w = WekiMiniRunner.getInstance().runFromFile(f.getAbsolutePath(), false);
+
+        if (options == NewProjectOptions.STOPCURRENTLISTENING ||
+                options == NewProjectOptions.CLOSECURRENT) {
+            if (oldWekinator != null) {
+                oldWekinator.getOSCReceiver().stopListening();
+            }
+        }
+        
+        //Start OSC listening for newest one
+        w.getOSCReceiver().startListening();
+        
+        //Start running newest one
+        if (w.getLearningManager().getLearningType() == LearningManager.LearningType.SUPERVISED_LEARNING) {
+            WekinatorSupervisedLearningController supervisedController = w.getLearningManager().getSupervisedLearningManager().getSupervisedLearningController();
+            if (supervisedController.canRun()) {
+                supervisedController.startRun();
+            } else {
+                w.getStatusUpdateCenter().warn(this, "Tried to run automatically but cannot in this state.");
+            }
+        } else {
+            WekinatorDtwLearningController dtwController = w.getLearningManager().getDtwLearningManager().getDtwLearningController();
+            if (dtwController.canRun()) {
+                dtwController.startRun();
+            } else {
+                w.getStatusUpdateCenter().warn(this, "Tried to run automatically but cannot in this state.");
+            }
+        } 
+        w.getMainGUI().setPerformanceMode(true);
+        
+        if (options == NewProjectOptions.CLOSECURRENT) {
+            if (oldWekinator != null) {
+                oldWekinator.getMainGUI().dispose();
+                oldWekinator.close(); //Do I do this or something else?
+            }
+            
+        }
+    }
+    
+    public enum NewProjectOptions {CLOSECURRENT, STOPCURRENTLISTENING, KEEPCURRENTRUNNING};
     
     public static int generateNextID() {
         return nextID++;
@@ -119,7 +165,7 @@ public final class WekiMiniRunner {
     public static void main(String[] args) {
         /* Create and display the form */
         //WekiMiniRunner.isKadenze = (args.length != 0);
-        WekiMiniRunner.isKadenze = true; //KADENZE SET
+        WekiMiniRunner.isKadenze = false; //KADENZE SET
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
              UIManager.put("Slider.paintValue", false);
@@ -207,11 +253,13 @@ public final class WekiMiniRunner {
         System.exit(0); //Too late to go back
     }
 
-    public void runFromFile(String fileLocation) throws Exception {
+    public Wekinator runFromFile(String fileLocation, boolean showOSCWindow) throws Exception {
         Wekinator w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
         MainGUI mg = w.getMainGUI();
         mg.setVisible(true);
-        mg.showOSCReceiverWindow();
+        if (showOSCWindow) {
+            mg.showOSCReceiverWindow();
+        }
         wekinatorCurrentMainFrames.put(w, mg);
         mg.addWindowListener(wl);
         w.addCloseListener(new ChangeListener() {
@@ -228,7 +276,7 @@ public final class WekiMiniRunner {
                 wekinatorCurrentMainFrames.remove((Wekinator) e.getSource());
             }
         });
-
+        return w;
     }
 
     public void registerForMacOSXEvents() {

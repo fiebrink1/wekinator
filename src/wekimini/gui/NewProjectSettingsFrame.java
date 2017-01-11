@@ -8,6 +8,7 @@ package wekimini.gui;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JFileChooser;
+import wekimini.GlobalSettings;
 import wekimini.Wekinator;
 import wekimini.WekinatorSaver;
 import wekimini.util.Util;
@@ -34,19 +35,23 @@ public class NewProjectSettingsFrame extends javax.swing.JFrame {
 
     private void finishSetup() {
         String projectDefault = "WekinatorProject";
-        String homeDir = System.getProperty("user.home");
-        File f1 = new File(homeDir + File.separator + projectDefault);
+        String fileLocation = GlobalSettings.getInstance().getStringValue("wekinatorProjectSaveLocation", "");
+        if (fileLocation.equals("")) {
+            fileLocation = System.getProperty("user.home");
+        }
+        
+        File f1 = new File(fileLocation + File.separator + projectDefault);
         int numTries = 0;
         while (f1.exists() && numTries < 1000) {
             numTries++;
-            f1 = new File(homeDir + File.separator + projectDefault + numTries);   
+            f1 = new File(fileLocation + File.separator + projectDefault + numTries);   
         }
         if (numTries == 0) {
             fieldProjectName.setText(projectDefault);
         } else {
             fieldProjectName.setText(projectDefault + numTries);
         }
-        fieldProjectLocation.setText(homeDir);
+        fieldProjectLocation.setText(fileLocation);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -198,6 +203,8 @@ public class NewProjectSettingsFrame extends javax.swing.JFrame {
             try {
                 w.saveAs(fieldProjectName.getText(), f);
                 //WekinatorSaver.createNewProject();
+                GlobalSettings.getInstance().setStringValue("wekinatorProjectSaveLocation", fieldProjectLocation.getText());
+
                 this.dispose();
             } catch (IOException ex) {
                 Util.showPrettyErrorPane(this,

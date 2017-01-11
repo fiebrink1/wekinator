@@ -100,7 +100,15 @@ public class DataTableModel extends AbstractTableModel {
         } else if (col == 2) {
             return m.getRecordingRound(row);
         } else if (col < numMetaData + numInputs) {
-            return m.getInputValue(row, col - numMetaData);
+            //Treat as strings to represent missing values
+            
+            //return m.getInputValue(row, col - numMetaData);
+            Double d = m.getInputValue(row, col - numMetaData);
+            if (d.isNaN()) {
+                return "X";
+            } else {
+                return Double.toString(d);
+            }
         } else if (col < numMetaData + numInputs + numOutputs) {
             //Treat as strings to represent missing values!
             Double d = m.getOutputValue(row, col - numMetaData - numInputs);
@@ -128,11 +136,11 @@ public class DataTableModel extends AbstractTableModel {
         } else if (c == 2) {
             //Recording round
             return Integer.class;    
-        } else if (c >= 3 && c < (3+ numInputs)) {
+       // } //else if (c >= 3 && c < (3+ numInputs)) {
             //It's an input (no "X" allowed for missing data)
-            return Double.class;
+          //  return Double.class;
         } else {
-            //Output: "X" is allowed
+            //Input or Output: "X" is allowed
             return String.class;
         }
             

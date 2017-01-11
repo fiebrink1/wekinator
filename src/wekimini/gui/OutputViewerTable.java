@@ -10,6 +10,8 @@
  */
 package wekimini.gui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -19,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
+import wekimini.OutputManager;
 import wekimini.OutputTableModel;
 import wekimini.Path;
 import wekimini.Wekinator;
@@ -32,22 +35,35 @@ import wekimini.util.Util;
  */
 public class OutputViewerTable extends javax.swing.JFrame {
 
-    private final OSCOutputGroup outputGroup;
+    private  OSCOutputGroup outputGroup;
     private  javax.swing.JTable table;
     private  OutputTableModel model;
     private static final Logger logger = Logger.getLogger(OutputViewerTable.class.getName());
-    private final List<Path> paths;
+    private  List<Path> paths;
     private final Wekinator w;
     private OutputViewerTableSettingsEditor settingsChanger = null;
     private int port = 0;
     private String message = "";
     private String host = "";
+    private AddOutputFrame addOutputFrame = null;
     
     
     public OutputViewerTable(Wekinator w) {
         initComponents();
         this.w = w;
         this.outputGroup = w.getOutputManager().getOutputGroup();
+        
+        w.getOutputManager().addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                outputManagerPropertyChanged(evt);
+            }
+        });
+        setForOutputGroup();
+    }
+    
+    private void setForOutputGroup() {
         this.paths = w.getSupervisedLearningManager().getPaths();
         //this.port = outputGroup.getOutputPort();
         this.message = outputGroup.getOscMessage();
@@ -78,6 +94,7 @@ public class OutputViewerTable extends javax.swing.JFrame {
         buttonSendTest = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         label2 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Current output information");
@@ -107,6 +124,13 @@ public class OutputViewerTable extends javax.swing.JFrame {
 
         label2.setText("Sending to localhost at port 12000");
 
+        jButton2.setText("Add new output...");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -116,15 +140,18 @@ public class OutputViewerTable extends javax.swing.JFrame {
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(scrollTable, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
                     .add(jPanel1Layout.createSequentialGroup()
-                        .add(jButton1)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(buttonSendTest)
-                        .add(0, 0, Short.MAX_VALUE))
-                    .add(jPanel1Layout.createSequentialGroup()
                         .add(6, 6, 6)
                         .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(label1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(label2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .add(label2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .add(jPanel1Layout.createSequentialGroup()
+                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(jPanel1Layout.createSequentialGroup()
+                                .add(jButton1)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(buttonSendTest))
+                            .add(jButton2))
+                        .add(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -139,8 +166,9 @@ public class OutputViewerTable extends javax.swing.JFrame {
                     .add(jButton1)
                     .add(buttonSendTest))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(scrollTable, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
-                .addContainerGap())
+                .add(scrollTable, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 161, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(jButton2))
         );
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
@@ -201,6 +229,28 @@ public class OutputViewerTable extends javax.swing.JFrame {
         } 
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        if (addOutputFrame != null) {
+            addOutputFrame.toFront();
+        } else {
+           int numOutputs = w.getOutputManager().getOutputGroup().getNumOutputs();
+           addOutputFrame = new AddOutputFrame(numOutputs+1, "outputs-" + (numOutputs+1), w);
+           
+           Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                @Override
+                public void callMe() {
+                    //Set to null
+                    addOutputFrame = null;
+                }
+            };
+            Util.callOnClosed(addOutputFrame, callMe);
+           
+           
+           addOutputFrame.setVisible(true);
+           addOutputFrame.toFront();
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     private void updateSettings(int port, String message, String hostname) {
         this.port = port;
         this.message = message;
@@ -222,6 +272,13 @@ public class OutputViewerTable extends javax.swing.JFrame {
             Logger.getLogger(OutputViewerTable.class.getName()).log(Level.SEVERE, null, ex);
         }
         updateLabel();
+    }
+    
+    private void outputManagerPropertyChanged(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(OutputManager.PROP_OUTPUTGROUP)) {
+            this.outputGroup = (OSCOutputGroup)(evt.getNewValue());
+            setForOutputGroup();
+        }
     }
    
     /*private File findArffFileToSave() throws IOException {
@@ -254,6 +311,7 @@ public class OutputViewerTable extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonSendTest;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel label1;
     private javax.swing.JLabel label2;

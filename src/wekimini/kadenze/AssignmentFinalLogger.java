@@ -331,7 +331,7 @@ public class AssignmentFinalLogger implements KadenzeLogger {
             //Write to another file:
             // int numInputs, int numOutputs, int numMetaData, Instances dummyInstances, Filter outputFilter) {
             Instances dummyInstances = w.getDataManager().getDummyInstances();
-            String outputFilterString = w.getDataManager().getOutputFilterString(i);
+            String outputFilterString = w.getDataManager().getTrainingFilterString(i);
             LoadableInstanceMaker m;
             try {
                 m = new LoadableInstanceMaker(numInputs, numOutputs, numMetaData, dummyInstances, outputFilterString);
@@ -368,7 +368,7 @@ public class AssignmentFinalLogger implements KadenzeLogger {
             //Write to another file:
             // int numInputs, int numOutputs, int numMetaData, Instances dummyInstances, Filter outputFilter) {
             Instances dummyInstances = w.getDataManager().getDummyInstances();
-            String outputFilterString = w.getDataManager().getOutputFilterString(i);
+            String outputFilterString = w.getDataManager().getTrainingFilterString(i);
             LoadableInstanceMaker m;
             try {
                 m = new LoadableInstanceMaker(numInputs, numOutputs, numMetaData, dummyInstances, outputFilterString);

@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
-import wekimini.Path.PathAndDataLoader;
+import wekimini.PathAndDataLoader;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.dtw.DtwModel;
@@ -60,10 +60,12 @@ public class WekinatorSaver {
         if (isSupervised) {
            Instances data = loadDataFromArff(projectDir);
            w = instantiateSupervisedWekinator(wfd, ig, og, data, paths, projectDir);
+           GlobalSettings.getInstance().setStringValue("wekinatorProjectLoadLocation", projectDir);
+
         } else {
             //Temporal modeling
             w = instantiateTemporalWekinator(wfd, ig, og, projectDir);
-        } 
+        }  
         return w;
     }
 
@@ -214,10 +216,11 @@ public class WekinatorSaver {
         List<Path> paths = new ArrayList<>(howMany);
         for (int i = 0; i < howMany; i++) {
             String filename = pathsDirectory + "model" + i + ".xml"; //TODO: need better solution here.
-            PathAndDataLoader.tryLoadFromFile(filename);
-            Path ptemp = PathAndDataLoader.getLoadedPath();
+            PathAndDataLoader loader = new PathAndDataLoader();
+            loader.tryLoadFromFile(filename);
+            Path ptemp = loader.getLoadedPath();
             //Don't do anything with loaded data, since we're loading all paths for a project here.
-            PathAndDataLoader.discardLoaded();
+            loader.discardLoaded();
            // Path ptemp = Path.readFromFile(filename); //TODO: take care of this within Path instead
             paths.add(ptemp); //still need to initialise with wekinator, etc. later
         }
@@ -262,5 +265,10 @@ public class WekinatorSaver {
         // the above calls w.getDataManager().initialize(...) with data
         w.getStatusUpdateCenter().update(null, "Successfully loaded Wekinator project from file.");
         return w;
+    }
+
+    //Get stash location for an existing project
+    public static String getStashLocation(String projectLocation) {
+        return projectLocation + stashAppend;
     }
 }

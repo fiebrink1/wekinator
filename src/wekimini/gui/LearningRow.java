@@ -49,6 +49,8 @@ public interface LearningRow {
     void setRunEnabled(boolean e);
 
     void setSelected(boolean s);
+    
+    void setTrainEnabled(boolean e);
 
     /**
      * Set the value of value
