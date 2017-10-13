@@ -561,6 +561,49 @@ public class Path {
         // os.writeObject(wmodel);
         //Util.writeToXMLFile(this, "Path", Path.class, filename);
     }
+    /*
+    MZ: For C++ output, RAPID-MIX 
+    */
+   public void writeToCppFiles(int whichPath, String location, String[] allInputNames) throws IOException {
+        boolean success = false;
+        IOException myEx = new IOException();
+        
+        try {
+            CppWriter Cpp = new CppWriter();
+            Instances insts = w.getSupervisedLearningManager().getTrainingDataForPath(this, true);
+            Cpp.writeToFiles(whichPath, numExamples, inputNames, allInputNames, output, modelBuilder, insts, model, location);
+            success = true;
+        } catch (IOException ex) {
+            success = false;
+            myEx = ex;
+            logger.log(Level.WARNING, "Could not write to Cpp file {0", ex.getMessage());
+        }
+        
+        if (!success) {
+            throw myEx;
+        }
+   }
+    /*
+    MZ: For JSON output RAPID-MIX
+    */
+   public void modelJson(int whichPath, JsonFileWriter JSON) throws IOException {
+        boolean success = false;
+        IOException myEx = new IOException();
+        
+        try {
+            Instances insts = w.getSupervisedLearningManager().getTrainingDataForPath(this, true);
+            JSON.writePath(whichPath, numExamples, inputNames, output, modelBuilder, model, insts);
+            success = true;
+        } catch (IOException ex) {
+            success = false;
+            myEx = ex;
+            logger.log(Level.WARNING, "Could not write path to JSON file {0", ex.getMessage());
+        }
+        
+        if (!success) {
+            throw myEx;
+        }
+   }
 
     /* public static Path readFromFile(String filename) throws Exception {
         

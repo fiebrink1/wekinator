@@ -874,7 +874,6 @@ Portions Copyrighted 2013 Sun Microsystems, Inc.
                 info.setVendor(vendor);
                 info.setDescription(description);
                 var splash = new String(project.getProperty("deploy.splash.image"));
-                print("HERE");
                 if(defined(splash)) {
                     if(isTrue(fx_ant_api_1_1)) {
                         var sicon = info.createSplash();
@@ -888,7 +887,6 @@ Portions Copyrighted 2013 Sun Microsystems, Inc.
                 if(isTrue(nativeEnabled) && defined(nativeType) && nativeType != "none") {
                     var icon = new String(project.getProperty("deploy.icon.native"));
                     if(defined(icon)) {
-                        print("icon defined");
                         if(isTrue(fx_ant_api_1_2) && !isTrue(have_jdk_pre7u14)) {
                             var dicon = derelativizePath(icon);
                             // create temporary icon copy renamed to application name (required by native packager)
@@ -930,8 +928,6 @@ Portions Copyrighted 2013 Sun Microsystems, Inc.
                         }
                     }
                 } else {
-                    print("Not defined");
-
                     var icon = new String(project.getProperty("deploy.icon.webstart"));
                     if(defined(icon)) {
                         if(isTrue(fx_ant_api_1_1)) {
