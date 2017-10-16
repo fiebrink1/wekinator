@@ -83,6 +83,8 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     private final List<OutputAddedListener> outputAddedListeners;
 
     private boolean computeDistribution = false;
+    
+    private FeatureManager featureManager;
 
     /**
      * Get the value of computeDistribution
@@ -727,6 +729,8 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         pathRunningMask = new boolean[numOutputs];
         myComputedOutputs = new double[numOutputs];
 
+        featureManager = new FeatureManager();
+        
         for (int i = 0; i < numOutputs; i++) {
             pathRecordingMask[i] = true;
             pathRunningMask[i] = true;
@@ -930,6 +934,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         w.getDataManager().addToTraining(inputs, outputs, recordingMask, recordingRound);
     }
 
+    
     public void addBundleToTraining(List<List<Double>> inputs, double[] outputs, boolean[] recordingMask) {
         int numInputs = w.getInputManager().getNumInputs();
         //setNumExamplesThisRound(numExamplesThisRound + inputs.size());
@@ -974,6 +979,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         if (recordingState == RecordingState.RECORDING) {
             addToTraining(inputs, w.getOutputManager().getCurrentValues(), pathRecordingMask);
         } else if (runningState == RunningState.RUNNING) {
+            //double[] features = featureManager.modifyInputs(inputs);
             double[] d = computeValues(inputs, pathRunningMask);
             w.getOutputManager().setNewComputedValues(d);
 
