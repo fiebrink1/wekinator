@@ -522,9 +522,7 @@ public class Path {
             } else {
                 objout.writeObject("null");
             }
-            Instances i = w.getSupervisedLearningManager().getTrainingDataForPath(this, true);
-                    //w.getSupervisedLearningManager().getTrainingDataForPath(this);
-            
+            Instances i = w.getSupervisedLearningManager().getInputDataForPath(this, true);            
             
             if (i != null) {
                 objout.writeObject("instances");
@@ -570,7 +568,7 @@ public class Path {
         
         try {
             CppWriter Cpp = new CppWriter();
-            Instances insts = w.getSupervisedLearningManager().getTrainingDataForPath(this, true);
+            Instances insts = w.getSupervisedLearningManager().getInputDataForPath(this, true);
             Cpp.writeToFiles(whichPath, numExamples, inputNames, allInputNames, output, modelBuilder, insts, model, location);
             success = true;
         } catch (IOException ex) {
@@ -591,7 +589,7 @@ public class Path {
         IOException myEx = new IOException();
         
         try {
-            Instances insts = w.getSupervisedLearningManager().getTrainingDataForPath(this, true);
+            Instances insts = w.getSupervisedLearningManager().getInputDataForPath(this, true);
             JSON.writePath(whichPath, numExamples, inputNames, output, modelBuilder, model, insts);
             success = true;
         } catch (IOException ex) {

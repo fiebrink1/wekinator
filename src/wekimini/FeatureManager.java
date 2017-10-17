@@ -5,6 +5,10 @@
  */
 package wekimini;
 import java.util.List;
+import java.util.ArrayList;
+import weka.core.FastVector;
+import weka.core.Instances;
+import weka.core.Attribute;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.ModifiedInputSingle;
 import wekimini.modifiers.ModifiedInputVector;
@@ -17,15 +21,49 @@ import wekimini.modifiers.UsesInputsAndOutputs;
 public class FeatureManager 
 {
     
-    private List<ModifiedInput> modifiers;
+    private ArrayList<ArrayList<ModifiedInput>> modifiers;
+    private ArrayList<Boolean> dirtyFlags;
     
-    protected double[] modifyInputs(double[] newInputs)
+    FeatureManager()
+    {
+        modifiers = new ArrayList<ArrayList<ModifiedInput>>();
+        dirtyFlags = new ArrayList();
+    }
+    
+    protected boolean isDirty(int index)
+    {
+        return dirtyFlags.get(index);
+    }
+    
+    protected void setDirty(int index)
+    {
+       dirtyFlags.set(index, true);
+    }
+    
+    protected void didRecalculateFeatures(int index)
+    {
+        dirtyFlags.set(index, false);
+    }
+    
+    protected Instances getNewInstances(int index)
+    {
+        int length = numModifiedInputs(index);
+        FastVector ff = new FastVector(length);
+        for(int i = 0; i < length; i++)
+        {
+            ff.addElement(new Attribute("feature" + i));
+        }
+        return new Instances("features" + index, ff, 100);
+    }
+    
+    protected double[] modifyInputsForOutput(double[] newInputs, int index)
     {        
          //Compute output values that
         int currentIndex = 0;
-        double[] newValues = new double[numModifiedInputs()];
+        double[] newValues = new double[numModifiedInputs(index)];
+        List<ModifiedInput> m = modifiers.get(index);
         //First do computations with no dependencies other than current inputs
-        for (ModifiedInput modifier : modifiers) {
+        for (ModifiedInput modifier : m) {
             if (modifier instanceof UsesOnlyOriginalInputs) {
                 ((UsesOnlyOriginalInputs)modifier).updateForInputs(newInputs);
                 if (modifier instanceof ModifiedInputSingle) {
@@ -38,7 +76,7 @@ public class FeatureManager
         }
         
         //Do the rest of the computations now
-        for (ModifiedInput modifier : modifiers) {
+        for (ModifiedInput modifier : m) {
             currentIndex = 0;
             if (modifier instanceof UsesInputsAndOutputs) {
                 ((UsesOnlyOriginalInputs)modifier).updateForInputs(newInputs);
@@ -53,12 +91,13 @@ public class FeatureManager
         return newValues;
     }
     
-    protected int numModifiedInputs()
+    protected int numModifiedInputs(int index)
     {
+        List<ModifiedInput> m = modifiers.get(index);
         int sum = 0;
-        for(int i = 0; i < modifiers.size(); i++)
+        for(int i = 0; i < m.size(); i++)
         {
-            sum += modifiers.get(i).getSize();
+            sum += m.get(i).getSize();
         }
         return sum;
     }

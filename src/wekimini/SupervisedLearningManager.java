@@ -1048,7 +1048,11 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     }
 
     public Instances getTrainingDataForPath(Path p, boolean includeMetadataFields) {
-        return w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p), includeMetadataFields);
+        return w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p));
+    }
+    
+    public Instances getInputDataForPath(Path p, boolean includeMetadataFields) {
+        return w.getDataManager().getInputDataForOutput(pathsToOutputIndices.get(p), includeMetadataFields);
     }
 
     public void buildAll() {
@@ -1058,7 +1062,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             List<Instances> data = new ArrayList<>(paths.size());
             for (Path p : paths) {
                 if (p.isTrainEnabled()) {
-                    data.add(w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p), false));
+                    data.add(w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p)));
                 } else {
                     data.add(null);
                 }
