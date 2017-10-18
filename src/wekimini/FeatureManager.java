@@ -21,28 +21,34 @@ import wekimini.modifiers.UsesInputsAndOutputs;
 public class FeatureManager 
 {
     
-    private ArrayList<ArrayList<ModifiedInput>> modifiers;
-    private ArrayList<Boolean> dirtyFlags;
+    private ArrayList<FeatureGroup> modifiers;
     
     FeatureManager()
     {
-        modifiers = new ArrayList<ArrayList<ModifiedInput>>();
-        dirtyFlags = new ArrayList();
+        modifiers = new ArrayList<FeatureGroup>();
     }
     
     protected boolean isDirty(int index)
     {
-        return dirtyFlags.get(index);
+        return modifiers.get(index).isDirty();
     }
     
     protected void setDirty(int index)
     {
-       dirtyFlags.set(index, true);
+       modifiers.get(index).setDirty();
     }
     
     protected void didRecalculateFeatures(int index)
     {
-        dirtyFlags.set(index, false);
+        modifiers.get(index).didRecalculateFeatures();
+    }
+    
+    protected void addOutputs(int numOutputs)
+    {
+        for(int i = 0; i < numOutputs; i++)
+        {
+            modifiers.add(new FeatureGroup(new ArrayList()));
+        }
     }
     
     protected Instances getNewInstances(int index)
@@ -58,42 +64,12 @@ public class FeatureManager
     
     protected double[] modifyInputsForOutput(double[] newInputs, int index)
     {        
-         //Compute output values that
-        int currentIndex = 0;
-        double[] newValues = new double[numModifiedInputs(index)];
-        List<ModifiedInput> m = modifiers.get(index);
-        //First do computations with no dependencies other than current inputs
-        for (ModifiedInput modifier : m) {
-            if (modifier instanceof UsesOnlyOriginalInputs) {
-                ((UsesOnlyOriginalInputs)modifier).updateForInputs(newInputs);
-                if (modifier instanceof ModifiedInputSingle) {
-                    newValues[currentIndex] = ((ModifiedInputSingle)modifier).getValue();
-                } else {
-                    System.arraycopy(((ModifiedInputVector)modifier).getValues(), 0, newValues, currentIndex, modifier.getSize());
-                }
-            } 
-            currentIndex += modifier.getSize();
-        }
-        
-        //Do the rest of the computations now
-        for (ModifiedInput modifier : m) {
-            currentIndex = 0;
-            if (modifier instanceof UsesInputsAndOutputs) {
-                ((UsesOnlyOriginalInputs)modifier).updateForInputs(newInputs);
-                if (modifier instanceof ModifiedInputSingle) {
-                    newValues[currentIndex] = ((ModifiedInputSingle)modifier).getValue();
-                } else {
-                    System.arraycopy(((ModifiedInputVector)modifier).getValues(), 0, newValues, currentIndex, modifier.getSize());
-                }
-            } 
-            currentIndex += modifier.getSize();
-        }
-        return newValues;
+        return modifiers.get(index).computeAndGetValuesForNewInputs(newInputs);
     }
     
     protected int numModifiedInputs(int index)
     {
-        List<ModifiedInput> m = modifiers.get(index);
+        List<ModifiedInput> m = modifiers.get(index).getOutputs();
         int sum = 0;
         for(int i = 0; i < m.size(); i++)
         {
