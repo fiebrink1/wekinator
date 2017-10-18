@@ -402,7 +402,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
      *
      * @param learningState new value of learningState
      */
-    private void setLearningState(LearningState learningState) {
+    protected void setLearningState(LearningState learningState) {
         LearningState oldLearningState = this.learningState;
         this.learningState = learningState;
         updateAbleToRun();

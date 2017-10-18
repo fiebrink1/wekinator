@@ -508,6 +508,7 @@ public class DataManager {
         for (int i = 0; i < getNumInputs(); i++) {
             ff.addElement(new Attribute(this.inputNames[i]));
         }
+        featureInstances = new ArrayList(numOutputs);
 
         //Add outputs
         for (int i = 0; i < numOutputs; i++) {
@@ -527,7 +528,6 @@ public class DataManager {
         }
 
         inputInstances = new Instances("dataset", ff, 100);
-
         //Set up dummy instances to reflect state of actual instances
         dummyInstances = new Instances(inputInstances);
     }
@@ -746,20 +746,35 @@ public class DataManager {
             for (int i = 0; i < filteredInputs.numInstances(); i++)
             {
                 double[] input = filteredInputs.instance(i).toDoubleArray();
-                double[] features = featureManager.modifyInputsForOutput(input, index);
+                double output = input[input.length-2];
+                double[] justInput = new double[input.length-1];
+                System.arraycopy(input, 0, justInput, 0, justInput.length);
+                double[] features = featureManager.modifyInputsForOutput(justInput, index);
                 double[] withOutput = new double[features.length + 1];
-                withOutput[withOutput.length-2] = input[input.length-2];
-                System.arraycopy(features, 0, withOutput, features.length, withOutput.length);
+                withOutput[withOutput.length-1] = output;
+                System.arraycopy(features, 0, withOutput, 0, features.length);
                 Instance featureInstance = new Instance(1.0,withOutput);
                 newInstances.add(featureInstance);
             }
-            featureInstances.set(index, newInstances);
+            if(index < featureInstances.size())
+            {
+               featureInstances.set(index, newInstances);
+            }
+            else
+            {
+               featureInstances.add(newInstances);
+            }
             featureManager.didRecalculateFeatures(index); 
         } 
         catch (Exception e)
         {
-            
+            e.printStackTrace();
         }
+    }
+    
+    protected List<Instances> getFeatureInstances()
+    {
+        return featureInstances;
     }
 
     public Instances getTrainingDataForOutput(int index) {

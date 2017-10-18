@@ -54,6 +54,14 @@ public class FeatureManager
         }
     }
     
+    protected void setAllOutputsDirty()
+    {
+        for(FeatureGroup modifier:modifiers)
+        {
+            modifier.setDirty();
+        }
+    }
+    
     protected Instances getNewInstances(int index)
     {
         int length = numModifiedInputs(index);

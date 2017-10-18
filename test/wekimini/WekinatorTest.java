@@ -5,19 +5,14 @@
  */
 package wekimini;
 
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import javax.swing.event.ChangeListener;
+import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import wekimini.gui.MainGUI;
-import wekimini.osc.OSCMonitor;
-import wekimini.osc.OSCReceiver;
-import wekimini.osc.OSCSender;
+import weka.core.Instances;
 
 /**
  *
@@ -82,9 +77,30 @@ public class WekinatorTest {
     }
     
     @Test
-    public void testInputsPassThrough()
+    public void testInputsPassThroughForTraining()
     {
-        
+        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getDataManager().featureManager.setAllOutputsDirty();
+        w.getSupervisedLearningManager().buildAll();
+        List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
+        for(Instances instances:featureInstances)
+        {
+            for (int j = 0; j < instances.numInstances(); j++)
+            {
+                double[] inputs = instances.instance(j).toDoubleArray();
+                assertEquals(inputs[0], j + 1, 0.0);
+                assertEquals(inputs[1], 1.0, 0.0);
+                if(j % 10 == 9)
+                {
+                    assertEquals(inputs[2], 0.9, 0.0);
+                }
+                else   
+                {
+                    assertEquals(inputs[2], 0.1, 0.0);
+                }
+            }
+        }
     }
     
     @After
