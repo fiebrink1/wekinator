@@ -979,7 +979,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         if (recordingState == RecordingState.RECORDING) {
             addToTraining(inputs, w.getOutputManager().getCurrentValues(), pathRecordingMask);
         } else if (runningState == RunningState.RUNNING) {
-            //double[] features = featureManager.modifyInputs(inputs);
+
             double[] d = computeValues(inputs, pathRunningMask);
             w.getOutputManager().setNewComputedValues(d);
 

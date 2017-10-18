@@ -809,23 +809,18 @@ public class DataManager {
 
     //This will use old filters, not new ones.
     public Instance getClassifiableInstanceForOutput(double[] vals, int which) {
-        double data[] = new double[numMetaData + getNumInputs() + numOutputs];
+        
+        double[] features = featureManager.modifyInputsForOutput(vals, which);
+        double data[] = new double[numMetaData + features.length + numOutputs];
         System.arraycopy(vals, 0, data, numMetaData, vals.length);
 
-        Instance instance = new Instance(1.0, data);
-        Instances tmp = new Instances(dummyInstances);
-        tmp.add(instance);
-        try {
-            tmp = Filter.useFilter(tmp, runningFilters[which]);
-            tmp.setClassIndex(tmp.numAttributes() - 1);
-            instance = tmp.firstInstance();
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Could not filter");
-            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        tmp.setClassIndex(tmp.numAttributes() - 1);
+        Instances instances = featureManager.getNewInstances(which);
+        Instance featureInstance = new Instance(1.0,data);
+        instances.add(featureInstance);
+        instances.setClassIndex(instances.numAttributes() - 1);
+        featureInstance = instances.firstInstance();
 
-        return instance;
+        return featureInstance;
     }
 
     //Could probably make this more efficient...

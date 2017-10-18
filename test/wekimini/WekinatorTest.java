@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import weka.core.Instance;
 import weka.core.Instances;
 
 /**
@@ -101,6 +102,30 @@ public class WekinatorTest {
                 }
             }
         }
+    }
+    
+    @Test
+    public void testInputsGetClassifiableInstanceWithInputsPassedThrough()
+    {
+        double[] input = {1,1,1};
+        Instance instance = w.getDataManager().getClassifiableInstanceForOutput(input, 0);
+        assert(instance.numAttributes() == 9);
+        assert(instance.value(3) == 1);
+        assert(instance.value(4) == 1);
+        assert(instance.value(5) == 1);
+    } 
+    
+    @Test
+    public void testRunningWithInputsPassedThrough() throws InterruptedException
+    {
+        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getDataManager().featureManager.setAllOutputsDirty();
+        w.getSupervisedLearningManager().buildAll();
+        Thread.sleep(2000);
+        double[] inputs = {1,1,1};
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+        w.getSupervisedLearningManager().updateInputs(inputs);
     }
     
     @After
