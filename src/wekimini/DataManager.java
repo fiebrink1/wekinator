@@ -738,23 +738,27 @@ public class DataManager {
     }
     
     private void updateFeatureInstances(int index)
-    {
-  
+    { 
         Instances newInstances = featureManager.getNewInstances(index);
-        
-        for (int i = 0; i < inputInstances.numInstances(); i++)
+        try{
+            Instances filteredInputs = Filter.useFilter(inputInstances, trainingFilters[index]);
+            for (int i = 0; i < filteredInputs.numInstances(); i++)
+            {
+                double[] input = filteredInputs.instance(i).toDoubleArray();
+                double[] features = featureManager.modifyInputsForOutput(input, index);
+                double[] withOutput = new double[features.length + 1];
+                withOutput[withOutput.length-2] = input[input.length-2];
+                System.arraycopy(features, 0, withOutput, features.length, withOutput.length);
+                Instance featureInstance = new Instance(1.0,withOutput);
+                newInstances.add(featureInstance);
+            }
+            featureInstances.set(index, newInstances);
+            featureManager.didRecalculateFeatures(index); 
+        } 
+        catch (Exception e)
         {
-            double[] input = inputInstances.instance(i).toDoubleArray();
-            double[] features = featureManager.modifyInputsForOutput(input, index);
-            double[] withOutput = new double[features.length + 1];
-            //withOutput[withOutput.length-2] = input
-            System.arraycopy(features, 0, withOutput, features.length, withOutput.length);
-            Instance featureInstance = new Instance(1.0,withOutput);
-            newInstances.add(featureInstance);
+            
         }
-        
-        featureInstances.set(index, newInstances);
-        featureManager.didRecalculateFeatures(index); 
     }
 
     public Instances getTrainingDataForOutput(int index) {
