@@ -64,7 +64,7 @@ public class DataManager {
     private List<int[]> inputListsForOutputsRunning; //TODO: Output after a model or all models are trained
     private Instances inputInstances = null;
     private List<Instances> featureInstances = null;
-    private FeatureManager featureManager;
+    protected FeatureManager featureManager;
     private int nextID = 1;
     private int numOutputs = 0;
 
@@ -561,6 +561,7 @@ public class DataManager {
                 numClasses[i] = ((OSCClassificationOutput) outputGroup.getOutput(i)).getNumClasses();
             }
         }
+        featureManager.addOutputs(numOutputs, inputNames);
     }
     
     private void updateOutputDataForNewOutput(int which) {

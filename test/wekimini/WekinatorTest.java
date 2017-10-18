@@ -58,6 +58,35 @@ public class WekinatorTest {
         assertEquals(expResult,result);
     }
     
+    @Test
+    public void testOutputsAddedToFeatureManager()
+    {
+        int numModifiers = w.getDataManager().featureManager.modifiers.size();
+        int expResult = 3;
+        int result = numModifiers;
+        assertEquals(expResult, result);
+    }
+    
+    public void testDefaultModifiersAddedToFeatureManager()
+    {
+        int numOutputs = w.getDataManager().featureManager.numModifiedInputs(0);
+        int expResult = 3;
+        int result = numOutputs;
+        assertEquals(expResult, result);
+        numOutputs = w.getDataManager().featureManager.numModifiedInputs(1);
+        result = numOutputs;
+        assertEquals(expResult, result);
+        numOutputs = w.getDataManager().featureManager.numModifiedInputs(2);
+        result = numOutputs;
+        assertEquals(expResult, result);
+    }
+    
+    @Test
+    public void testInputsPassThrough()
+    {
+        
+    }
+    
     @After
     public void tearDown() {
     }  

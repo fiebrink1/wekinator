@@ -14,6 +14,7 @@ import wekimini.modifiers.ModifiedInputSingle;
 import wekimini.modifiers.ModifiedInputVector;
 import wekimini.modifiers.UsesOnlyOriginalInputs;
 import wekimini.modifiers.UsesInputsAndOutputs;
+import wekimini.modifiers.RawInputs;
 /**
  *
  * @author louismccallum
@@ -21,7 +22,7 @@ import wekimini.modifiers.UsesInputsAndOutputs;
 public class FeatureManager 
 {
     
-    private ArrayList<FeatureGroup> modifiers;
+    protected ArrayList<FeatureGroup> modifiers;
     
     FeatureManager()
     {
@@ -43,11 +44,13 @@ public class FeatureManager
         modifiers.get(index).didRecalculateFeatures();
     }
     
-    protected void addOutputs(int numOutputs)
+    protected void addOutputs(int numOutputs, String[] inputNames)
     {
         for(int i = 0; i < numOutputs; i++)
         {
-            modifiers.add(new FeatureGroup(new ArrayList()));
+            ArrayList<ModifiedInput> defaultModifiers = new ArrayList();
+            defaultModifiers.add(new RawInputs(inputNames, 0));
+            modifiers.add(new FeatureGroup(defaultModifiers));
         }
     }
     
