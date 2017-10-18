@@ -254,6 +254,7 @@ public final class WekiMiniRunner {
     }
 
     public Wekinator runFromFile(String fileLocation, boolean showOSCWindow) throws Exception {
+        System.out.println("running from file");
         Wekinator w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
         MainGUI mg = w.getMainGUI();
         mg.setVisible(true);
