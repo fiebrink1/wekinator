@@ -244,7 +244,6 @@ public class WekinatorSaver {
         
     }
     
-    //TODO: XXX WON"T WORK ANYMORE: NEED TO SET LEARNING TYPE HERE!
     private static Wekinator instantiateSupervisedWekinator(WekinatorFileData wfd, OSCInputGroup ig, OSCOutputGroup og, Instances data, List<Path> tempPaths, String projectDir) throws IOException {
         Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
         KadenzeLogging.getLogger().loadedFromFile(w, wfd.getProjectName());
@@ -253,7 +252,6 @@ public class WekinatorSaver {
         wfd.applySettings(w);
         w.getInputManager().setOSCInputGroup(ig);
         w.getOutputManager().setOSCOutputGroup(og);
-        //w.getLearningManager().setSupervisedLearning(); //TEST THIS NOW!
         List<Path> paths = new LinkedList<>();
         for (Path t : tempPaths) {
             Path p = new Path(t, w);

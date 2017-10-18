@@ -391,7 +391,7 @@ public class DataManager {
     }
 
     public int getNumInputs() {
-        return inputInstances == null ? inputNames.length:inputInstances.numInstances();
+        return inputNames.length;
     }
 
     public int getNumOutputs() {
