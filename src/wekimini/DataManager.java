@@ -746,7 +746,7 @@ public class DataManager {
             for (int i = 0; i < filteredInputs.numInstances(); i++)
             {
                 double[] input = filteredInputs.instance(i).toDoubleArray();
-                double output = input[input.length-2];
+                double output = input[input.length-1];
                 double[] justInput = new double[input.length-1];
                 System.arraycopy(input, 0, justInput, 0, justInput.length);
                 double[] features = featureManager.modifyInputsForOutput(justInput, index);
@@ -811,15 +811,15 @@ public class DataManager {
     public Instance getClassifiableInstanceForOutput(double[] vals, int which) {
         
         double[] features = featureManager.modifyInputsForOutput(vals, which);
-        double data[] = new double[numMetaData + features.length + numOutputs];
-        System.arraycopy(vals, 0, data, numMetaData, vals.length);
+        double data[] = new double[features.length + 1];
+        System.arraycopy(vals, 0, data, 0, vals.length);
 
         Instances instances = featureManager.getNewInstances(which);
-        Instance featureInstance = new Instance(1.0,data);
+        Instance featureInstance = new Instance(1.0, data);
         instances.add(featureInstance);
-        instances.setClassIndex(instances.numAttributes() - 1);
+        instances.setClassIndex(data.length - 1);
         featureInstance = instances.firstInstance();
-
+        //featureInstance.setClassMissing();
         return featureInstance;
     }
 

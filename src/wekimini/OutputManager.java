@@ -11,6 +11,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import static java.lang.System.out;
 import java.util.Date;
 import java.util.EventListener;
 import java.util.LinkedList;
@@ -298,6 +299,13 @@ public class OutputManager {
             throw new IllegalArgumentException("values is null or wrong length");
         }
         System.arraycopy(values, 0, currentValues, 0, values.length);
+        System.out.print("new vals");
+        for(double val:currentValues)
+        {
+            System.out.print(" : " + val);
+        }
+        System.out.println(".");
+        
         notifyOutputGroupComputedListeners(values);
 
         //In future, may want OSC Sender to listen and respond rather than push

@@ -85,8 +85,9 @@ public class WekinatorTest {
         w.getDataManager().featureManager.setAllOutputsDirty();
         w.getSupervisedLearningManager().buildAll();
         List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
-        for(Instances instances:featureInstances)
+        for(int i = 0; i < featureInstances.size(); i++)
         {
+            Instances instances = featureInstances.get(i);
             for (int j = 0; j < instances.numInstances(); j++)
             {
                 double[] inputs = instances.instance(j).toDoubleArray();
@@ -100,6 +101,8 @@ public class WekinatorTest {
                 {
                     assertEquals(inputs[2], 0.1, 0.0);
                 }
+                System.out.println(inputs[3] + "=" + i);
+                assertEquals(inputs[3], i + 1, 0.0);
             }
         }
     }
@@ -109,10 +112,10 @@ public class WekinatorTest {
     {
         double[] input = {1,1,1};
         Instance instance = w.getDataManager().getClassifiableInstanceForOutput(input, 0);
-        assert(instance.numAttributes() == 9);
-        assert(instance.value(3) == 1);
-        assert(instance.value(4) == 1);
-        assert(instance.value(5) == 1);
+        assert(instance.numAttributes() == 4);
+        assert(instance.value(0) == 1);
+        assert(instance.value(1) == 1);
+        assert(instance.value(2) == 1);
     } 
     
     @Test

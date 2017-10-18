@@ -40,7 +40,6 @@ public class KNNModel implements SupervisedLearningModel {
     
     @Override
     public double computeOutput(Instance instance) throws Exception {
-        //TODO: Where does instances come from?
         return wmodel.classifyInstance(instance);
     }
     

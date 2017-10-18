@@ -70,6 +70,8 @@ public class FeatureManager
         {
             ff.addElement(new Attribute("feature" + i));
         }
+        
+        ff.addElement(new Attribute("output"));
         return new Instances("features" + index, ff, 100);
     }
     
