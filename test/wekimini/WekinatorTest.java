@@ -63,6 +63,7 @@ public class WekinatorTest {
         assertEquals(expResult, result);
     }
     
+    @Test
     public void testDefaultModifiersAddedToFeatureManager()
     {
         int numOutputs = w.getDataManager().featureManager.numModifiedInputs(0);
@@ -101,7 +102,6 @@ public class WekinatorTest {
                 {
                     assertEquals(inputs[2], 0.1, 0.0);
                 }
-                System.out.println(inputs[3] + "=" + i);
                 assertEquals(inputs[3], i + 1, 0.0);
             }
         }
