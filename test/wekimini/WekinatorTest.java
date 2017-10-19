@@ -197,7 +197,7 @@ public class WekinatorTest {
     }
     
     /*
-        Add 10 buffer, then 5 buffer
+        Train on 10 buffer, then 5 buffer
     */
     
     @Test
@@ -205,6 +205,22 @@ public class WekinatorTest {
     {
         testInputsBufferedForTraining(10);
         testInputsBufferedForTraining(5);
+    }
+    
+    @Test
+    public void testRunningWithBuffers() throws InterruptedException
+    {
+        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getDataManager().featureManager.setAllOutputsDirty();
+        w.getDataManager().featureManager.removeModifierFromOutput(0, 0);
+        w.getDataManager().featureManager.addModifierToOutput(new BufferedInput("input-1",0,10,0), 0);
+        w.getSupervisedLearningManager().buildAll();
+        Thread.sleep(2000);
+        assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
+        double[] inputs = {1,1,1};
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+        w.getSupervisedLearningManager().updateInputs(inputs);
     }
     
     @After
