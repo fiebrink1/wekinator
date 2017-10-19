@@ -120,7 +120,7 @@ public class WekinatorTest {
     } 
     
     @Test
-    public void testRunningWithInputsPassedThrough() throws InterruptedException
+    public void testRunningWithInputsPassedThroughCompute() throws InterruptedException
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
@@ -131,6 +131,30 @@ public class WekinatorTest {
         double[] inputs = {1,1,1};
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
         w.getSupervisedLearningManager().updateInputs(inputs);
+    }
+    
+        @Test
+    public void testRunningWithInputsPassedThroughCheckValues() throws InterruptedException
+    {
+        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getDataManager().featureManager.setAllOutputsDirty();
+        w.getSupervisedLearningManager().buildAll();
+        Thread.sleep(2000);
+        assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+        boolean[] mask = {true,true,true};
+        for(int j = 1; j < 21; j++)
+        {
+            double[] oscInputs = {j, j + 1, j * j};
+            Instance instance = w.getDataManager().getClassifiableInstanceForOutput(oscInputs, 0);
+            double[] inputs = instance.toDoubleArray();
+            int numAttributes = inputs.length;
+            assertEquals(oscInputs.length + 1,numAttributes);
+            assertEquals(j, inputs[0], 0.0);
+            assertEquals(j + 1, inputs[1], 0.0);
+            assertEquals(j * j, inputs[2], 0.0);
+        } 
     }
     
 
@@ -239,8 +263,7 @@ public class WekinatorTest {
                    assertEquals( k + (j - (bufferSize - 1)), inputs[k], 0.0); 
                 }  
             }
-        }
-        
+        }  
     }
     
     @After
