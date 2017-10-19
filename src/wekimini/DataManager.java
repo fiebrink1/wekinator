@@ -246,7 +246,7 @@ public class DataManager {
         }
     }
 
-       private void updateInstancesForNewHigherMaxClass(int index, int newNumClasses) {
+    private void updateInstancesForNewHigherMaxClass(int index, int newNumClasses) {
         //Change inputInstances, dummyInstances
         AddValues a = new AddValues();
         int oldMaxClasses = numClasses[index];
@@ -1054,6 +1054,9 @@ public class DataManager {
     }
 
     private void fireStateChanged() {
+        
+        featureManager.setAllOutputsDirty();
+        
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == ChangeListener.class) {

@@ -378,6 +378,10 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public void setRunningState(RunningState runningState) {
         RunningState oldRunningState = this.runningState;
         this.runningState = runningState;
+        if(runningState == RunningState.NOT_RUNNING)
+        {
+           w.getDataManager().featureManager.resetAllModifiers();
+        }
         propertyChangeSupport.firePropertyChange(PROP_RUNNINGSTATE, oldRunningState, runningState);
     }
 
@@ -385,6 +389,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         if (learningState == LearningState.TRAINING) {
             KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.TRAIN_CANCEL);
             w.getTrainingRunner().cancel();
+            w.getDataManager().featureManager.resetAllModifiers();
             //trainingWorker.cancel(true);
         }
     }

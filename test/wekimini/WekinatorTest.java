@@ -13,6 +13,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import wekimini.modifiers.BufferedInput;
+import wekimini.modifiers.RawInputs;
+import wekimini.modifiers.RawInput;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -84,7 +86,6 @@ public class WekinatorTest {
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
-        w.getDataManager().featureManager.setAllOutputsDirty();
         w.getSupervisedLearningManager().buildAll();
         List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
         for(int i = 0; i < featureInstances.size(); i++)
@@ -108,6 +109,48 @@ public class WekinatorTest {
         }
     }
     
+        @Test
+    public void testMultipleModifiersForOneInput()
+    {
+        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getDataManager().featureManager.removeModifierFromOutput(0,0);
+        w.getDataManager().featureManager.addModifierToOutput(new RawInput("input-1a",0,0), 0);
+        w.getDataManager().featureManager.addModifierToOutput(new RawInput("input-1b",0,0), 0);
+        w.getDataManager().featureManager.addModifierToOutput(new RawInput("input-1c",0,0), 0);
+        w.getSupervisedLearningManager().buildAll();
+        List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
+        for(int i = 0; i < featureInstances.size(); i++)
+        {
+            Instances instances = featureInstances.get(i);
+            for (int j = 0; j < instances.numInstances(); j++)
+            {
+                double[] inputs = instances.instance(j).toDoubleArray();
+                if(i == 0)
+                {
+                    assertEquals(j + 1, inputs[0], 0.0);
+                    assertEquals(j + 1, inputs[1], 0.0);
+                    assertEquals(j + 1, inputs[2], 0.0);
+                    assertEquals(1, inputs[3], 0.0);
+                }
+                else
+                {
+                    assertEquals(j + 1, inputs[0], 0.0);
+                    assertEquals(1.0, inputs[1], 0.0);
+                    if(j % 10 == 9)
+                    {
+                        assertEquals(0.9, inputs[2], 0.0);
+                    }
+                    else   
+                    {
+                        assertEquals(0.1, inputs[2], 0.0);
+                    }
+                    assertEquals(i + 1, inputs[3], 0.0); 
+                }
+            }
+        }
+    }
+    
     @Test
     public void testInputsGetClassifiableInstanceWithInputsPassedThrough()
     {
@@ -122,10 +165,7 @@ public class WekinatorTest {
     @Test
     public void testRunningWithInputsPassedThroughCompute() throws InterruptedException
     {
-        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
-        w.getDataManager().featureManager.setAllOutputsDirty();
-        w.getSupervisedLearningManager().buildAll();
+        testInputsPassThroughForTraining();
         Thread.sleep(2000);
         assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
         double[] inputs = {1,1,1};
@@ -136,14 +176,10 @@ public class WekinatorTest {
         @Test
     public void testRunningWithInputsPassedThroughCheckValues() throws InterruptedException
     {
-        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
-        w.getDataManager().featureManager.setAllOutputsDirty();
-        w.getSupervisedLearningManager().buildAll();
+        testInputsPassThroughForTraining();
         Thread.sleep(2000);
         assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
-        boolean[] mask = {true,true,true};
         for(int j = 1; j < 21; j++)
         {
             double[] oscInputs = {j, j + 1, j * j};
@@ -162,7 +198,6 @@ public class WekinatorTest {
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
-        w.getDataManager().featureManager.setAllOutputsDirty();
         w.getDataManager().featureManager.removeModifierFromOutput(0, 0);
         w.getDataManager().featureManager.addModifierToOutput(new BufferedInput("input-1",0,bufferSize,0), 0);
         w.getSupervisedLearningManager().buildAll();
@@ -231,23 +266,15 @@ public class WekinatorTest {
         testInputsBufferedForTraining(5);
     }
     
-    @Test
-    public void testRunningWithBuffers() throws InterruptedException
+    public void testRunningWithBuffers(int bufferSize) throws InterruptedException
     {
-        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
-        w.getDataManager().featureManager.setAllOutputsDirty();
-        w.getDataManager().featureManager.removeModifierFromOutput(0, 0);
-        int bufferSize = 10;
-        w.getDataManager().featureManager.addModifierToOutput(new BufferedInput("input-1",0,bufferSize,0), 0);
-        w.getSupervisedLearningManager().buildAll();
+        testInputsBufferedForTraining(10);
         Thread.sleep(2000);
         assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
-        boolean[] mask = {true,true,true};
         for(int j = 1; j < 21; j++)
         {
-            double[] oscInputs = {j,j,j};
+            double[] oscInputs = {j, j + 1, j * j};
             Instance instance = w.getDataManager().getClassifiableInstanceForOutput(oscInputs, 0);
             double[] inputs = instance.toDoubleArray();
             int numAttributes = inputs.length;
@@ -265,6 +292,21 @@ public class WekinatorTest {
             }
         }  
     }
+    
+    @Test
+    public void testRunningBuffered() throws InterruptedException
+    {
+        testRunningWithBuffers(10);
+    }
+    
+    @Test
+    public void testRunningThenTrainingBuffered() throws InterruptedException
+    {
+        testRunningWithBuffers(10);
+        testInputsBufferedForTraining(10);
+    }
+    
+    
     
     @After
     public void tearDown() {
