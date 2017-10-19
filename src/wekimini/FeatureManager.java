@@ -22,26 +22,26 @@ import wekimini.modifiers.RawInputs;
 public class FeatureManager 
 {
     
-    protected ArrayList<FeatureGroup> modifiers;
+    protected ArrayList<FeatureGroup> featureGroups;
     
     FeatureManager()
     {
-        modifiers = new ArrayList<FeatureGroup>();
+        featureGroups = new ArrayList<FeatureGroup>();
     }
     
     protected boolean isDirty(int index)
     {
-        return modifiers.get(index).isDirty();
+        return featureGroups.get(index).isDirty();
     }
     
     protected void setDirty(int index)
     {
-       modifiers.get(index).setDirty();
+       featureGroups.get(index).setDirty();
     }
     
     protected void didRecalculateFeatures(int index)
     {
-        modifiers.get(index).didRecalculateFeatures();
+        featureGroups.get(index).didRecalculateFeatures();
     }
     
     protected void addOutputs(int numOutputs, String[] inputNames)
@@ -50,13 +50,13 @@ public class FeatureManager
         {
             ArrayList<ModifiedInput> defaultModifiers = new ArrayList();
             defaultModifiers.add(new RawInputs(inputNames, 0));
-            modifiers.add(new FeatureGroup(defaultModifiers));
+            featureGroups.add(new FeatureGroup(defaultModifiers));
         }
     }
     
     protected void setAllOutputsDirty()
     {
-        for(FeatureGroup modifier:modifiers)
+        for(FeatureGroup modifier:featureGroups)
         {
             modifier.setDirty();
         }
@@ -77,17 +77,33 @@ public class FeatureManager
     
     protected double[] modifyInputsForOutput(double[] newInputs, int index)
     {        
-        return modifiers.get(index).computeAndGetValuesForNewInputs(newInputs);
+        return featureGroups.get(index).computeAndGetValuesForNewInputs(newInputs);
     }
     
     protected int numModifiedInputs(int index)
     {
-        List<ModifiedInput> m = modifiers.get(index).getOutputs();
+        List<ModifiedInput> m = featureGroups.get(index).getModifiers();
         int sum = 0;
         for(int i = 0; i < m.size(); i++)
         {
             sum += m.get(i).getSize();
         }
         return sum;
+    }
+    
+    protected void addModifierToOutput(ModifiedInput modifier, int index)
+    {
+        featureGroups.get(index).addModifier(modifier);
+    }
+    
+    protected void removeModifierFromOutput(int modifierIndex, int index)
+    {
+        try {
+            featureGroups.get(index).removeModifier(index);      
+        } 
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            System.out.println("Error trying to remove modifier, index out of bounds");
+        }
     }
 }

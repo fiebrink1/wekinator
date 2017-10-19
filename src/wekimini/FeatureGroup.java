@@ -21,22 +21,34 @@ import wekimini.modifiers.UsesInputsAndOutputs;
  */
 public class FeatureGroup {
     
-    private final List<ModifiedInput> outputs; //Includes at least one for every original input
-    private final int numOutputTypes;
-    private final int dimensionality;
-    private final boolean hasDependencies;
+    private List<ModifiedInput> modifiers;
+    private int numOutputTypes;
+    private int dimensionality;
+    private boolean hasDependencies;
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private transient double[] currentValues;
     private transient double[] lastInputs;
     private boolean dirtyFlag = true;
     
-    public FeatureGroup(List<ModifiedInput> outputs) 
+    public FeatureGroup(List<ModifiedInput> modifiers) 
     {
-        this.outputs = new LinkedList<>(outputs);
-        this.numOutputTypes = outputs.size();
+        this.modifiers = new LinkedList<>(modifiers);
+        update();
+    }
+    
+    public FeatureGroup(FeatureGroup groupFromFile) {
+        this.modifiers = new LinkedList<>(groupFromFile.getModifiers());
+        this.numOutputTypes = groupFromFile.numOutputTypes;
+        this.dimensionality = groupFromFile.dimensionality;
+        this.hasDependencies = groupFromFile.hasDependencies;
+    }
+    
+    private void update()
+    {
+        this.numOutputTypes = this.modifiers.size();
         int s = 0;
         boolean d = false;
-        for (ModifiedInput output : outputs) {
+        for (ModifiedInput output : modifiers) {
             s += output.getSize();
             if (output instanceof UsesInputsAndOutputs) {
                 d = true;
@@ -45,14 +57,20 @@ public class FeatureGroup {
         hasDependencies = d;
         dimensionality = s;
         currentValues = new double[s];
-        
     }
     
-    public FeatureGroup(FeatureGroup groupFromFile) {
-        this.outputs = new LinkedList<>(groupFromFile.getOutputs());
-        this.numOutputTypes = groupFromFile.numOutputTypes;
-        this.dimensionality = groupFromFile.dimensionality;
-        this.hasDependencies = groupFromFile.hasDependencies;
+    protected void addModifier(ModifiedInput modifier)
+    {
+        modifiers.add(modifier);
+        update();
+        setDirty();
+    }
+    
+    protected void removeModifier(int index)
+    {
+        modifiers.remove(index);
+        update();
+        setDirty();
     }
     
     protected boolean isDirty()
@@ -86,8 +104,8 @@ public class FeatureGroup {
     //Doesn't do computation unless has dependencies that require it
     public void updateInputValues(double[] newInputs) {
         if (! hasDependencies) {
-            for (ModifiedInput output : outputs) {
-                ((UsesOnlyOriginalInputs)output).updateForInputs(newInputs);
+            for (ModifiedInput modifier : modifiers) {
+                ((UsesOnlyOriginalInputs)modifier).updateForInputs(newInputs);
             }
         } else {
             computeValuesForNewInputs(newInputs);
@@ -99,30 +117,30 @@ public class FeatureGroup {
         int currentIndex = 0;
         
         //First do computations with no dependencies other than current inputs
-        for (ModifiedInput output : outputs) {
-            if (output instanceof UsesOnlyOriginalInputs) {
-                ((UsesOnlyOriginalInputs)output).updateForInputs(newInputs);
-                if (output instanceof ModifiedInputSingle) {
-                    currentValues[currentIndex] = ((ModifiedInputSingle)output).getValue();
+        for (ModifiedInput modifier : modifiers) {
+            if (modifier instanceof UsesOnlyOriginalInputs) {
+                ((UsesOnlyOriginalInputs)modifier).updateForInputs(newInputs);
+                if (modifier instanceof ModifiedInputSingle) {
+                    currentValues[currentIndex] = ((ModifiedInputSingle)modifier).getValue();
                 } else {
-                    System.arraycopy(((ModifiedInputVector)output).getValues(), 0, currentValues, currentIndex, output.getSize());
+                    System.arraycopy(((ModifiedInputVector)modifier).getValues(), 0, currentValues, currentIndex, modifier.getSize());
                 }
             } 
-            currentIndex += output.getSize();
+            currentIndex += modifier.getSize();
         }
         
         //Do the rest of the computations now
-        for (ModifiedInput output : outputs) {
+        for (ModifiedInput modifier : modifiers) {
             currentIndex = 0;
-            if (output instanceof UsesInputsAndOutputs) {
-                ((UsesOnlyOriginalInputs)output).updateForInputs(newInputs);
-                if (output instanceof ModifiedInputSingle) {
-                    currentValues[currentIndex] = ((ModifiedInputSingle)output).getValue();
+            if (modifier instanceof UsesInputsAndOutputs) {
+                ((UsesOnlyOriginalInputs)modifier).updateForInputs(newInputs);
+                if (modifier instanceof ModifiedInputSingle) {
+                    currentValues[currentIndex] = ((ModifiedInputSingle)modifier).getValue();
                 } else {
-                    System.arraycopy(((ModifiedInputVector)output).getValues(), 0, currentValues, currentIndex, output.getSize());
+                    System.arraycopy(((ModifiedInputVector)modifier).getValues(), 0, currentValues, currentIndex, modifier.getSize());
                 }
             } 
-            currentIndex += output.getSize();
+            currentIndex += modifier.getSize();
         }
     }
 
@@ -147,7 +165,7 @@ public class FeatureGroup {
     public String[] getOutputNames() {
         int currentIndex = 0;
         String[] s = new String[getOutputDimensionality()];
-        for (ModifiedInput o : outputs) {
+        for (ModifiedInput o : modifiers) {
             if (o instanceof ModifiedInputSingle) {
                 s[currentIndex] = ((ModifiedInputSingle)o).getName();
                 currentIndex++;
@@ -171,20 +189,20 @@ public class FeatureGroup {
     }
 
     public int getOutputNumber(FeatureGroup o) {
-        for (int i= 0; i < outputs.size(); i++) {
-            if (outputs.get(i).equals(o)) {
+        for (int i= 0; i < modifiers.size(); i++) {
+            if (modifiers.get(i).equals(o)) {
                 return i;
             }
         }
         return -1;
     }
     
-    public List<ModifiedInput> getOutputs() {
-        return outputs;
+    public List<ModifiedInput> getModifiers() {
+        return modifiers;
     }
     
-    public ModifiedInput getOutput(int which) {
-        return outputs.get(which);
+    public ModifiedInput getModifier(int which) {
+        return modifiers.get(which);
     }
     
 }

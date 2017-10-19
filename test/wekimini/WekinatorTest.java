@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import wekimini.modifiers.BufferedInput;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -57,7 +58,7 @@ public class WekinatorTest {
     @Test
     public void testOutputsAddedToFeatureManager()
     {
-        int numModifiers = w.getDataManager().featureManager.modifiers.size();
+        int numModifiers = w.getDataManager().featureManager.featureGroups.size();
         int expResult = 3;
         int result = numModifiers;
         assertEquals(expResult, result);
@@ -129,6 +130,62 @@ public class WekinatorTest {
         double[] inputs = {1,1,1};
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
         w.getSupervisedLearningManager().updateInputs(inputs);
+    }
+    
+    /*
+        Remove pass through and add 10 window buffer to input 1 for path 1
+    */
+    @Test
+    public void testInputsBufferedForTraining()
+    {
+        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getDataManager().featureManager.setAllOutputsDirty();
+        w.getDataManager().featureManager.removeModifierFromOutput(0, 0);
+        w.getDataManager().featureManager.addModifierToOutput(new BufferedInput("input-1",0,10,0), 0);
+        w.getSupervisedLearningManager().buildAll();
+        List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
+        for(int i = 0; i < featureInstances.size(); i++)
+        {
+            Instances instances = featureInstances.get(i);
+            for (int j = 0; j < instances.numInstances(); j++)
+            {
+                double[] inputs = instances.instance(j).toDoubleArray();
+                //CHECK BUFFERED FEATURES
+                if(i == 0 )
+                {
+                    int numAttributes = inputs.length;
+                    assertEquals(11,numAttributes);
+                    for(int k = 0; k < 10; k++)
+                    {
+                        if((k + j) < 9)
+                        {
+                            assertEquals(inputs[k], 0.0, 0.0);
+                        }
+                        else
+                        {
+                           assertEquals(inputs[k], k + (j - 8), 0.0); 
+                        }  
+                    }
+                    assertEquals(inputs[10], 1.0, 0.0);
+                }
+                else
+                {
+                    //CHECK PASS THROUGH FEAUTRES
+                    assertEquals(inputs[0], j + 1, 0.0);
+                    assertEquals(inputs[1], 1.0, 0.0);
+                    if(j % 10 == 9)
+                    {
+                        assertEquals(inputs[2], 0.9, 0.0);
+                    }
+                    else   
+                    {
+                        assertEquals(inputs[2], 0.1, 0.0);
+                    }
+                    assertEquals(inputs[3], i + 1, 0.0);
+                }
+            }
+        }
     }
     
     @After
