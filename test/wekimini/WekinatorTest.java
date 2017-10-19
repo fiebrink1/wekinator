@@ -93,17 +93,17 @@ public class WekinatorTest {
             for (int j = 0; j < instances.numInstances(); j++)
             {
                 double[] inputs = instances.instance(j).toDoubleArray();
-                assertEquals(inputs[0], j + 1, 0.0);
-                assertEquals(inputs[1], 1.0, 0.0);
+                assertEquals(j + 1, inputs[0], 0.0);
+                assertEquals(1.0, inputs[1], 0.0);
                 if(j % 10 == 9)
                 {
-                    assertEquals(inputs[2], 0.9, 0.0);
+                    assertEquals(0.9, inputs[2], 0.0);
                 }
                 else   
                 {
-                    assertEquals(inputs[2], 0.1, 0.0);
+                    assertEquals(0.1, inputs[2], 0.0);
                 }
-                assertEquals(inputs[3], i + 1, 0.0);
+                assertEquals(i + 1, inputs[3], 0.0);
             }
         }
     }
@@ -127,22 +127,20 @@ public class WekinatorTest {
         w.getDataManager().featureManager.setAllOutputsDirty();
         w.getSupervisedLearningManager().buildAll();
         Thread.sleep(2000);
+        assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
         double[] inputs = {1,1,1};
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
         w.getSupervisedLearningManager().updateInputs(inputs);
     }
     
-    /*
-        Remove pass through and add 10 window buffer to input 1 for path 1
-    */
-    @Test
-    public void testInputsBufferedForTraining()
+
+    public void testInputsBufferedForTraining(int bufferSize)
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getDataManager().featureManager.setAllOutputsDirty();
         w.getDataManager().featureManager.removeModifierFromOutput(0, 0);
-        w.getDataManager().featureManager.addModifierToOutput(new BufferedInput("input-1",0,10,0), 0);
+        w.getDataManager().featureManager.addModifierToOutput(new BufferedInput("input-1",0,bufferSize,0), 0);
         w.getSupervisedLearningManager().buildAll();
         List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
         for(int i = 0; i < featureInstances.size(); i++)
@@ -151,41 +149,62 @@ public class WekinatorTest {
             for (int j = 0; j < instances.numInstances(); j++)
             {
                 double[] inputs = instances.instance(j).toDoubleArray();
-                //CHECK BUFFERED FEATURES
+                //CHECK BUFFERED FEATURES (Input 1 is incremental 1-100)
                 if(i == 0 )
                 {
                     int numAttributes = inputs.length;
-                    assertEquals(11,numAttributes);
-                    for(int k = 0; k < 10; k++)
+                    assertEquals(bufferSize + 1,numAttributes);
+                    for(int k = 0; k < bufferSize; k++)
                     {
-                        if((k + j) < 9)
+                        if((k + j) < bufferSize - 1)
                         {
-                            assertEquals(inputs[k], 0.0, 0.0);
+                            assertEquals(0.0, inputs[k], 0.0);
                         }
                         else
                         {
-                           assertEquals(inputs[k], k + (j - 8), 0.0); 
+                           assertEquals( k + (j - (bufferSize - 2)), inputs[k], 0.0); 
                         }  
                     }
-                    assertEquals(inputs[10], 1.0, 0.0);
+                    assertEquals(1.0, inputs[bufferSize], 0.0);
                 }
                 else
                 {
                     //CHECK PASS THROUGH FEAUTRES
-                    assertEquals(inputs[0], j + 1, 0.0);
-                    assertEquals(inputs[1], 1.0, 0.0);
+                    assertEquals(j + 1, inputs[0], 0.0);
+                    assertEquals(1.0, inputs[1], 0.0);
                     if(j % 10 == 9)
                     {
-                        assertEquals(inputs[2], 0.9, 0.0);
+                        assertEquals(0.9, inputs[2], 0.0);
                     }
                     else   
                     {
-                        assertEquals(inputs[2], 0.1, 0.0);
+                        assertEquals(0.1, inputs[2], 0.0);
                     }
-                    assertEquals(inputs[3], i + 1, 0.0);
+                    assertEquals(i + 1, inputs[3], 0.0);
                 }
             }
         }
+    }
+    
+    /*
+        Remove pass through and add 10 window buffer to input 1 for path 1
+    */
+    
+    @Test
+    public void testSingleBuffer()
+    {
+        testInputsBufferedForTraining(10);
+    }
+    
+    /*
+        Add 10 buffer, then 5 buffer
+    */
+    
+    @Test
+    public void testChangingBufferSize()
+    {
+        testInputsBufferedForTraining(10);
+        testInputsBufferedForTraining(5);
     }
     
     @After
