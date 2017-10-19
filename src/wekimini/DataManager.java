@@ -812,8 +812,8 @@ public class DataManager {
         
         double[] features = featureManager.modifyInputsForOutput(vals, which);
         double data[] = new double[features.length + 1];
-        System.arraycopy(vals, 0, data, 0, vals.length);
-
+        System.arraycopy(features, 0, data, 0, features.length);
+           
         Instances instances = featureManager.getNewInstances(which);
         Instance featureInstance = new Instance(1.0, data);
         instances.add(featureInstance);

@@ -80,6 +80,17 @@ public class FeatureManager
         return featureGroups.get(index).computeAndGetValuesForNewInputs(newInputs);
     }
     
+    protected void resetAllModifiers()
+    {
+        for(FeatureGroup f:featureGroups)
+        {
+            for(ModifiedInput m:f.getModifiers())
+            {
+                m.reset();
+            }
+        }
+    }
+    
     protected int numModifiedInputs(int index)
     {
         List<ModifiedInput> m = featureGroups.get(index).getModifiers();

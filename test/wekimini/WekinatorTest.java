@@ -150,7 +150,7 @@ public class WekinatorTest {
             {
                 double[] inputs = instances.instance(j).toDoubleArray();
                 //CHECK BUFFERED FEATURES (Input 1 is incremental 1-100)
-                if(i == 0 )
+                if(i == 0)
                 {
                     int numAttributes = inputs.length;
                     assertEquals(bufferSize + 1,numAttributes);
@@ -214,13 +214,33 @@ public class WekinatorTest {
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getDataManager().featureManager.setAllOutputsDirty();
         w.getDataManager().featureManager.removeModifierFromOutput(0, 0);
-        w.getDataManager().featureManager.addModifierToOutput(new BufferedInput("input-1",0,10,0), 0);
+        int bufferSize = 10;
+        w.getDataManager().featureManager.addModifierToOutput(new BufferedInput("input-1",0,bufferSize,0), 0);
         w.getSupervisedLearningManager().buildAll();
         Thread.sleep(2000);
         assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
-        double[] inputs = {1,1,1};
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
-        w.getSupervisedLearningManager().updateInputs(inputs);
+        boolean[] mask = {true,true,true};
+        for(int j = 1; j < 21; j++)
+        {
+            double[] oscInputs = {j,j,j};
+            Instance instance = w.getDataManager().getClassifiableInstanceForOutput(oscInputs, 0);
+            double[] inputs = instance.toDoubleArray();
+            int numAttributes = inputs.length;
+            assertEquals(bufferSize + 1,numAttributes);
+            for(int k = 0; k < bufferSize; k++)
+            {
+                if((k + (j-1)) < (bufferSize - 1))
+                {
+                    assertEquals(0.0, inputs[k], 0.0);
+                }
+                else
+                {
+                   assertEquals( k + (j - (bufferSize - 1)), inputs[k], 0.0); 
+                }  
+            }
+        }
+        
     }
     
     @After

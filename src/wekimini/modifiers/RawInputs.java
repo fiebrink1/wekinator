@@ -29,6 +29,12 @@ public class RawInputs implements ModifiedInputVector, UsesOnlyOriginalInputs {
     }
     
     @Override
+    public void reset()
+    {
+        
+    }
+    
+    @Override
     public String[] getNames() {
         return names;
     }

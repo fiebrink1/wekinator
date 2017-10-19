@@ -11,4 +11,5 @@ package wekimini.modifiers;
  */
 public interface ModifiedInput {
     public int getSize();
+    public void reset();
 }

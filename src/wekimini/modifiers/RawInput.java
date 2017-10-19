@@ -25,6 +25,12 @@ public class RawInput implements ModifiedInputSingle, UsesOnlyOriginalInputs {
     }
     
     @Override
+    public void reset()
+    {
+        
+    }
+    
+    @Override
     public String getName() {
         return name;
     }

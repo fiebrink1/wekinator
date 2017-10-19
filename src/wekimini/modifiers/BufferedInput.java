@@ -24,6 +24,14 @@ public class BufferedInput implements ModifiedInputVector, UsesOnlyOriginalInput
         return index;
     }
     
+    @Override
+    public void reset()
+    {
+        history = new double[bufferSize];
+        returnValues = new double[bufferSize];
+        startPointer = 0;
+    }
+    
     public BufferedInput(String originalName, int index, int bufferSize, int increment) {
         names = new String[bufferSize];
         if (increment == 1) {
@@ -40,9 +48,7 @@ public class BufferedInput implements ModifiedInputVector, UsesOnlyOriginalInput
         
         this.index = index;
         this.bufferSize = bufferSize;
-        history = new double[bufferSize];
-        returnValues = new double[bufferSize];
-        startPointer = 0;
+        reset();
     }
     
     @Override

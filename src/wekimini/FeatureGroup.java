@@ -81,6 +81,10 @@ public class FeatureGroup {
     protected void setDirty()
     {
        dirtyFlag = true;
+       for(ModifiedInput modifier:modifiers)
+       {
+           modifier.reset();
+       }
     }
     
     protected void didRecalculateFeatures()

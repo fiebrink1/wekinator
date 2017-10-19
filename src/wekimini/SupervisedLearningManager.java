@@ -306,6 +306,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                 }
 
                 setLearningState(LearningState.DONE_TRAINING);
+                w.getDataManager().featureManager.resetAllModifiers();
             }
         } // else if = progress: TODO do anything with tthis?
     }
