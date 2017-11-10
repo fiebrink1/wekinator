@@ -37,6 +37,13 @@ public class WekinatorTest {
     public static void tearDownClass() {
     }
     
+    /*
+        Load test file. This dataset has three inputs with 100 rows. 
+        0 = > 1,2,3,4....100, 
+        1 => 1,1,1,1,1....1, 
+        2 => 0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.9,0.1,0.1.....etc
+        And three outputs, each classifiers with classes 1,2 and 3 respectively
+    */
     @Before
     public void setUp() {
         String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj");
@@ -109,7 +116,7 @@ public class WekinatorTest {
         }
     }
     
-        @Test
+    @Test
     public void testMultipleModifiersForOneInput()
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
@@ -173,7 +180,7 @@ public class WekinatorTest {
         w.getSupervisedLearningManager().updateInputs(inputs);
     }
     
-        @Test
+    @Test
     public void testRunningWithInputsPassedThroughCheckValues() throws InterruptedException
     {
         testInputsPassThroughForTraining();
