@@ -24,18 +24,7 @@ import weka.core.Instances;
  */
 public class WekinatorTest {
     
-    Wekinator w;
-    
-    public WekinatorTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
+    public Wekinator w;
     
     /*
         Load test file. This dataset has three inputs with 100 rows. 
@@ -199,121 +188,7 @@ public class WekinatorTest {
             assertEquals(j * j, inputs[2], 0.0);
         } 
     }
-    
 
-    public void testInputsBufferedForTraining(int bufferSize)
-    {
-        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
-        w.getDataManager().featureManager.removeModifierFromOutput(0, 0);
-        w.getDataManager().featureManager.addModifierToOutput(new BufferedInput("input-1",0,bufferSize,0), 0);
-        w.getSupervisedLearningManager().buildAll();
-        List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
-        for(int i = 0; i < featureInstances.size(); i++)
-        {
-            Instances instances = featureInstances.get(i);
-            for (int j = 0; j < instances.numInstances(); j++)
-            {
-                double[] inputs = instances.instance(j).toDoubleArray();
-                //CHECK BUFFERED FEATURES (Input 1 is incremental 1-100)
-                if(i == 0)
-                {
-                    int numAttributes = inputs.length;
-                    assertEquals(bufferSize + 1,numAttributes);
-                    for(int k = 0; k < bufferSize; k++)
-                    {
-                        if((k + j) < bufferSize - 1)
-                        {
-                            assertEquals(0.0, inputs[k], 0.0);
-                        }
-                        else
-                        {
-                           assertEquals( k + (j - (bufferSize - 2)), inputs[k], 0.0); 
-                        }  
-                    }
-                    assertEquals(1.0, inputs[bufferSize], 0.0);
-                }
-                else
-                {
-                    //CHECK PASS THROUGH FEAUTRES
-                    assertEquals(j + 1, inputs[0], 0.0);
-                    assertEquals(1.0, inputs[1], 0.0);
-                    if(j % 10 == 9)
-                    {
-                        assertEquals(0.9, inputs[2], 0.0);
-                    }
-                    else   
-                    {
-                        assertEquals(0.1, inputs[2], 0.0);
-                    }
-                    assertEquals(i + 1, inputs[3], 0.0);
-                }
-            }
-        }
-    }
-    
-    /*
-        Remove pass through and add 10 window buffer to input 1 for path 1
-    */
-    
-    @Test
-    public void testSingleBuffer()
-    {
-        testInputsBufferedForTraining(10);
-    }
-    
-    /*
-        Train on 10 buffer, then 5 buffer
-    */
-    
-    @Test
-    public void testChangingBufferSize()
-    {
-        testInputsBufferedForTraining(10);
-        testInputsBufferedForTraining(5);
-    }
-    
-    public void testRunningWithBuffers(int bufferSize) throws InterruptedException
-    {
-        testInputsBufferedForTraining(10);
-        Thread.sleep(2000);
-        assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
-        for(int j = 1; j < 21; j++)
-        {
-            double[] oscInputs = {j, j + 1, j * j};
-            Instance instance = w.getDataManager().getClassifiableInstanceForOutput(oscInputs, 0);
-            double[] inputs = instance.toDoubleArray();
-            int numAttributes = inputs.length;
-            assertEquals(bufferSize + 1,numAttributes);
-            for(int k = 0; k < bufferSize; k++)
-            {
-                if((k + (j-1)) < (bufferSize - 1))
-                {
-                    assertEquals(0.0, inputs[k], 0.0);
-                }
-                else
-                {
-                   assertEquals( k + (j - (bufferSize - 1)), inputs[k], 0.0); 
-                }  
-            }
-        }  
-    }
-    
-    @Test
-    public void testRunningBuffered() throws InterruptedException
-    {
-        testRunningWithBuffers(10);
-    }
-    
-    @Test
-    public void testRunningThenTrainingBuffered() throws InterruptedException
-    {
-        testRunningWithBuffers(10);
-        testInputsBufferedForTraining(10);
-    }
-    
-    
     
     @After
     public void tearDown() {

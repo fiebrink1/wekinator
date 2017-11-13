@@ -48,7 +48,9 @@ public class BufferedInput implements ModifiedInputVector, UsesOnlyOriginalInput
         
         this.index = index;
         this.bufferSize = bufferSize;
-        reset();
+        history = new double[bufferSize];
+        returnValues = new double[bufferSize];
+        startPointer = 0;
     }
     
     @Override
