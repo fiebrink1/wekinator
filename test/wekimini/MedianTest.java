@@ -5,21 +5,22 @@
  */
 package wekimini;
 
+import java.util.Arrays;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import weka.core.Instance;
 import weka.core.Instances;
-import wekimini.modifiers.AverageWindowOperation;
+import wekimini.modifiers.MedianWindowOperation;
 import wekimini.modifiers.WindowedOperation;
+
 
 /**
  *
  * @author louismccallum
  */
-public class MeanTest implements ModifierTest {
-    
+public class MedianTest implements ModifierTest {
     public Wekinator w;
     
     @Before
@@ -39,7 +40,7 @@ public class MeanTest implements ModifierTest {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getDataManager().featureManager.removeModifierFromOutput(0, 0);
-        w.getDataManager().featureManager.addModifierToOutput(new WindowedOperation("input-1",new AverageWindowOperation(),0,windowSize,0), 0);
+        w.getDataManager().featureManager.addModifierToOutput(new WindowedOperation("input-1",new MedianWindowOperation(),0,windowSize,0), 0);
         w.getSupervisedLearningManager().buildAll();
         List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
         for(int outputIndex = 0; outputIndex < featureInstances.size(); outputIndex++)
@@ -52,11 +53,13 @@ public class MeanTest implements ModifierTest {
                 {
                     double sum = 0;
                     int countBack = (instanceIndex + 1) < windowSize ? (instanceIndex + 1) : windowSize;
+                    double [] window = new double[windowSize];
                     for(int i = 0; i < countBack; i++)
                     {
-                        sum = sum + ((instanceIndex+1) - i); 
+                        window[i] = ((instanceIndex+1) - i);
                     }
-                    assertEquals(sum/(double)windowSize,inputs[0],0.0);
+                    Arrays.sort(window);
+                    assertEquals(window[(int)Math.floor(window.length/2.0)],inputs[0],0.0);
                 }
                 else
                 {
@@ -93,11 +96,13 @@ public class MeanTest implements ModifierTest {
             assertEquals(2,numAttributes);
             double sum = 0;
             int countBack = instanceIndex < windowSize ? instanceIndex : windowSize;
+            double [] window = new double[windowSize];
             for(int i = 0; i < countBack; i++)
             {
-                sum = sum + (instanceIndex - i); 
+                window[i] = (instanceIndex - i);
             }
-            assertEquals(sum/(double)windowSize,inputs[0],0.0);
+            Arrays.sort(window);
+            assertEquals(window[(int)Math.floor(window.length/2.0)],inputs[0],0.0);
         }  
     }
     
@@ -130,5 +135,4 @@ public class MeanTest implements ModifierTest {
         testForRunning(10);
         testForTraining(10);
     }
-    
 }

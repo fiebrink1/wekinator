@@ -3,10 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.modifiers;
+package wekimini;
 
 import org.junit.Ignore;
-import wekimini.Wekinator;
 
 /**
  *
@@ -16,8 +15,8 @@ import wekimini.Wekinator;
             
     public void testForTraining(int windowSize);
     public void testForRunning(int windowSize) throws InterruptedException;
-    public void testSingle();
-    public void testChangingWindowSize();
+    public void testTraining();
+    public void testTrainingChangingWindowSize();
     public void testRunning() throws InterruptedException;
     public void testRunningThenTraining() throws InterruptedException;
     

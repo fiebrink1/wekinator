@@ -5,7 +5,6 @@
  */
 package wekimini;
 
-import wekimini.modifiers.ModifierTest;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
@@ -31,11 +30,6 @@ public class BufferTest implements ModifierTest {
         {
             
         }
-    }
-    
-    public BufferTest()
-    {
-        
     }
     
     /*
@@ -130,14 +124,14 @@ public class BufferTest implements ModifierTest {
     
     @Override
     @Test
-    public void testSingle()
+    public void testTraining()
     {
         testForTraining(10);
     }
     
     @Override
     @Test
-    public void testChangingWindowSize()
+    public void testTrainingChangingWindowSize()
     {
         testForTraining(10);
         testForTraining(5);
