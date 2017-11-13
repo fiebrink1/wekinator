@@ -20,19 +20,7 @@ import wekimini.modifiers.WindowedOperation;
  *
  * @author louismccallum
  */
-public class MedianTest implements ModifierTest {
-    public Wekinator w;
-    
-    @Before
-    public void setUp() {
-        String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj");
-        try{
-            w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
-        } catch (Exception e)
-        {
-            
-        }
-    }
+public class MedianTest extends ModifierTest {
     
     @Override
     public void testForTraining(int windowSize)
@@ -104,35 +92,5 @@ public class MedianTest implements ModifierTest {
             Arrays.sort(window);
             assertEquals(window[(int)Math.floor(window.length/2.0)],inputs[0],0.0);
         }  
-    }
-    
-    @Override
-    @Test
-    public void testTraining()
-    {
-        testForTraining(10);
-    }
-    
-    @Override
-    @Test
-    public void testTrainingChangingWindowSize()
-    {
-        testForTraining(10);
-        testForTraining(5);
-    }
-    
-    @Override
-    @Test
-    public void testRunning() throws InterruptedException
-    {
-        testForRunning(10);
-    }
-    
-    @Override
-    @Test
-    public void testRunningThenTraining() throws InterruptedException
-    {
-        testForRunning(10);
-        testForTraining(10);
     }
 }
