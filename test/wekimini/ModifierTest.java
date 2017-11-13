@@ -5,7 +5,6 @@
  */
 package wekimini;
 
-import java.util.Arrays;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
@@ -13,8 +12,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import weka.core.Instance;
 import weka.core.Instances;
-import wekimini.modifiers.MedianWindowOperation;
-import wekimini.modifiers.WindowedOperation;
 
 /**
  *

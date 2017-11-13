@@ -5,10 +5,7 @@
  */
 package wekimini;
 
-import java.util.List;
 import static org.junit.Assert.assertEquals;
-import weka.core.Instance;
-import weka.core.Instances;
 import wekimini.modifiers.AverageWindowOperation;
 import wekimini.modifiers.WindowedOperation;
 

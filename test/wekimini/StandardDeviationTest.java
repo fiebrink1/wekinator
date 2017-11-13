@@ -7,20 +7,20 @@ package wekimini;
 
 import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
-import wekimini.modifiers.MedianWindowOperation;
+import wekimini.modifiers.StdDevWindowOperation;
 import wekimini.modifiers.WindowedOperation;
 
 /**
  *
  * @author louismccallum
  */
-public class MedianTest extends ModifierTest {
-    
+public class StandardDeviationTest extends ModifierTest
+{
     @Override
     public void setUpFilters(int windowSize)
     {
         w.getDataManager().featureManager.removeModifierFromOutput(0, 0);
-        w.getDataManager().featureManager.addModifierToOutput(new WindowedOperation("input-1",new MedianWindowOperation(),0,windowSize,0), 0);
+        w.getDataManager().featureManager.addModifierToOutput(new WindowedOperation("input-1",new StdDevWindowOperation(),0,windowSize,0), 0);
     }
     
     @Override
@@ -32,8 +32,18 @@ public class MedianTest extends ModifierTest {
         {
             window[i] = ((instanceIndex+1) - i);
         }
-        Arrays.sort(window);
-        assertEquals(window[(int)Math.floor(window.length/2.0)],inputs[0],0.0);
+        double sum = 0;
+        for (int i = 0; i < window.length; i++) {
+            sum += window[i];
+        }
+        double avg = sum / window.length;
+
+        double ssd = 0;
+        for (int i = 0; i < window.length; i++) {
+            ssd += Math.pow(window[i] - avg, 2);
+        }
+        double stdDev = Math.sqrt(ssd / window.length);
+        assertEquals(stdDev,inputs[0],0.0);
     }
     
     @Override
@@ -41,4 +51,5 @@ public class MedianTest extends ModifierTest {
     {
         assertEquals(2,numAttributes,0.0);
     }
+    
 }
