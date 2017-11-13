@@ -21,7 +21,7 @@ import weka.core.Instances;
             
     public Wekinator w;
             
-   @Before
+    @Before
     public void setUp() {
         String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj");
         try{
@@ -51,7 +51,6 @@ import weka.core.Instances;
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
-        setUpFilters(windowSize);
         w.getSupervisedLearningManager().buildAll();
         List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
         for(int outputIndex = 0; outputIndex < featureInstances.size(); outputIndex++)
@@ -103,25 +102,30 @@ import weka.core.Instances;
     @Test
     public void testTraining()
     {
+        setUpFilters(10);
         testForTraining(10);
     }
     
     @Test
     public void testTrainingChangingWindowSize()
     {
+        setUpFilters(10);
         testForTraining(10);
+        setUpFilters(5);
         testForTraining(5);
     }
     
     @Test
     public void testRunning() throws InterruptedException
     {
+        setUpFilters(10);
         testForRunning(10);
     }
     
     @Test
     public void testRunningThenTraining() throws InterruptedException
     {
+        setUpFilters(10);
         testForRunning(10);
         testForTraining(10);
     }

@@ -205,6 +205,10 @@ public class FeatureGroup {
         return modifiers;
     }
     
+    public int getNumModifiers() {
+        return modifiers.size();
+    }
+    
     public ModifiedInput getModifier(int which) {
         return modifiers.get(which);
     }

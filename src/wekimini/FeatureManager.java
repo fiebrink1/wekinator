@@ -107,10 +107,19 @@ public class FeatureManager
         featureGroups.get(index).addModifier(modifier);
     }
     
+    protected void removeAllModifiersFromOutput(int index)
+    {
+        int toRemove = featureGroups.get(index).getNumModifiers();
+        for(int i = 0; i < toRemove; i++)
+        {
+            removeModifierFromOutput(0, index);
+        }
+    }
+    
     protected void removeModifierFromOutput(int modifierIndex, int index)
     {
         try {
-            featureGroups.get(index).removeModifier(index);      
+            featureGroups.get(index).removeModifier(modifierIndex);      
         } 
         catch (ArrayIndexOutOfBoundsException e)
         {

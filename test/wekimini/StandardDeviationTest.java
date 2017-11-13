@@ -5,7 +5,6 @@
  */
 package wekimini;
 
-import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import wekimini.modifiers.StdDevWindowOperation;
 import wekimini.modifiers.WindowedOperation;
