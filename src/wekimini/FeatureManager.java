@@ -10,10 +10,6 @@ import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.Attribute;
 import wekimini.modifiers.ModifiedInput;
-import wekimini.modifiers.ModifiedInputSingle;
-import wekimini.modifiers.ModifiedInputVector;
-import wekimini.modifiers.UsesOnlyOriginalInputs;
-import wekimini.modifiers.UsesInputsAndOutputs;
 import wekimini.modifiers.RawInputs;
 /**
  *
@@ -26,7 +22,7 @@ public class FeatureManager
     
     FeatureManager()
     {
-        featureGroups = new ArrayList<FeatureGroup>();
+        featureGroups = new ArrayList<>();
     }
     
     protected boolean isDirty(int index)
