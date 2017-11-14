@@ -45,7 +45,9 @@ public class FeatureManager
         for(int i = 0; i < numOutputs; i++)
         {
             ArrayList<ModifiedInput> defaultModifiers = new ArrayList();
-            defaultModifiers.add(new RawInputs(inputNames, 0));
+            ModifiedInput rawInput = new RawInputs(inputNames, 0);
+            rawInput.inputID = 0;
+            defaultModifiers.add(rawInput);
             featureGroups.add(new FeatureGroup(defaultModifiers));
         }
     }
@@ -103,12 +105,17 @@ public class FeatureManager
         featureGroups.get(index).addModifier(modifier);
     }
     
+    protected void passThroughInputToOutput(boolean passThrough, int index)
+    {
+        featureGroups.get(index).getModifiers().get(0).addToOutput = passThrough;
+    }
+    
     protected void removeAllModifiersFromOutput(int index)
     {
         int toRemove = featureGroups.get(index).getNumModifiers();
-        for(int i = 0; i < toRemove; i++)
+        for(int i = toRemove-1; i >= 0; i--)
         {
-            removeModifierFromOutput(0, index);
+            removeModifierFromOutput(0, i);
         }
     }
     

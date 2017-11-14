@@ -56,6 +56,7 @@ public class WindowedOperation extends ModifiedInputSingle {
         if (startPointer == windowSize) {
             startPointer = 0;
         }
+        dirty = true;
     }
     
     public int getWindowSize() {
@@ -64,7 +65,12 @@ public class WindowedOperation extends ModifiedInputSingle {
 
     @Override
     public double getValue() {
-        return op.doOperation(history, startPointer);
+        if(dirty)
+        {
+            value = op.doOperation(history, startPointer);
+            dirty = false;
+        }
+        return value;
     }
     
     public static void main(String[] args) {

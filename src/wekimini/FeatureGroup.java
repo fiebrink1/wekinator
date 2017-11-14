@@ -9,6 +9,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.ModifiedInputSingle;
 import wekimini.modifiers.ModifiedInputVector;
@@ -27,6 +28,7 @@ public class FeatureGroup {
     private transient double[] currentValues;
     private transient double[] lastInputs;
     private boolean dirtyFlag = true;
+    private int currentID = 0;
     
     public FeatureGroup(List<ModifiedInput> modifiers) 
     {
@@ -44,7 +46,10 @@ public class FeatureGroup {
         int s = 0;
         boolean d = false;
         for (ModifiedInput output : modifiers) {
-            s += output.getSize();
+            if(output.addToOutput)
+            {
+                s += output.getSize();
+            }
         }
         dimensionality = s;
         currentValues = new double[s];
@@ -52,18 +57,42 @@ public class FeatureGroup {
     
     //Modifiers 
     
-    protected void addModifier(ModifiedInput modifier)
+    protected int addModifier(ModifiedInput modifier)
     {
-        modifiers.add(modifier);
+        Boolean matched = false;
+        for(ModifiedInput existingModifier:modifiers)
+        {
+            if(existingModifier.equals(modifier))
+            {
+                matched = true;
+                modifier = existingModifier;
+                break;
+            }
+        }
+        if(!matched)
+        {
+            modifier.inputID = nextID();
+            modifiers.add(modifier);
+        }
         refreshState();
         setDirty();
+        return modifier.inputID;
+    }
+    
+    private int nextID()
+    {
+        currentID++;
+        return currentID;
     }
     
     protected void removeModifier(int index)
     {
-        modifiers.remove(index);
-        refreshState();
-        setDirty();
+        if(index > 0)
+        {
+            modifiers.remove(index);
+            refreshState();
+            setDirty();
+        }
     }
     
     public List<ModifiedInput> getModifiers() {
@@ -117,17 +146,56 @@ public class FeatureGroup {
     //Calculate outputs
     
     private void computeValuesForNewInputs(double[] newInputs) {
-        int currentIndex = 0;
         
-        //First do computations with no dependencies other than current inputs
+        int outputIndex = 0;
+        int matchingIndex = 0;
+        
         for (ModifiedInput modifier : modifiers) {
-            modifier.updateForInputs(newInputs);
-            if (modifier instanceof ModifiedInputSingle) {
-                currentValues[currentIndex] = ((ModifiedInputSingle)modifier).getValue();
-            } else {
-                System.arraycopy(((ModifiedInputVector)modifier).getValues(), 0, currentValues, currentIndex, modifier.getSize());
+            modifier.prepareForNewInputs();
+        }
+        
+        ModifiedInput currentModifier = modifiers.get(0);
+        currentModifier.updateForInputs(newInputs);
+        if(currentModifier.addToOutput)
+        {
+            System.arraycopy(((ModifiedInputVector)currentModifier).getValues(), 0, currentValues, outputIndex, currentModifier.getSize());
+            outputIndex += currentModifier.getSize();
+        }
+
+        ArrayList<ModifiedInput> completedModifiers = new ArrayList();
+        completedModifiers.add(modifiers.get(0));
+        while(completedModifiers.size() < modifiers.size())
+        {
+            for (ModifiedInput modifier : modifiers) 
+            {
+                if(!modifier.hasAllInputs()) 
+                {
+                    modifier.checkIfInputRequired(currentModifier);
+                    if(modifier.hasAllInputs())
+                    {
+                        modifier.updateFromInputs(modifiers);
+                        completedModifiers.add(modifier);
+                        if(modifier.addToOutput)
+                        {
+                            if (modifier instanceof ModifiedInputSingle) 
+                            {
+                                currentValues[outputIndex] = ((ModifiedInputSingle)modifier).getValue();
+                            } 
+                            else 
+                            {
+                                System.arraycopy(((ModifiedInputVector)modifier).getValues(), 0, currentValues, outputIndex, modifier.getSize());
+                            }
+                            outputIndex += modifier.getSize();
+                        }
+                        
+                    }
+                }
             }
-            currentIndex += modifier.getSize();
+            if(completedModifiers.size() < modifiers.size())
+            {
+                matchingIndex = (matchingIndex + 1) % completedModifiers.size();
+                currentModifier = completedModifiers.get(matchingIndex);
+            }
         }
     }
 

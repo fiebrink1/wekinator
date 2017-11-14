@@ -16,7 +16,6 @@ public class BufferedInput extends ModifiedInputVector {
     private final int bufferSize;
     private transient double[] history;
     private transient int startPointer;
-    private transient double[] returnValues;
 
     public int getIndex() {
         return index;
@@ -26,7 +25,7 @@ public class BufferedInput extends ModifiedInputVector {
     public void reset()
     {
         history = new double[bufferSize];
-        returnValues = new double[bufferSize];
+        values = new double[bufferSize];
         startPointer = 0;
     }
     
@@ -47,7 +46,7 @@ public class BufferedInput extends ModifiedInputVector {
         this.index = index;
         this.bufferSize = bufferSize;
         history = new double[bufferSize];
-        returnValues = new double[bufferSize];
+        values = new double[bufferSize];
         startPointer = 0;
     }
 
@@ -58,6 +57,7 @@ public class BufferedInput extends ModifiedInputVector {
         if (startPointer == bufferSize) {
             startPointer = 0;
         }
+        dirty = true;
     }
 
     @Override
@@ -67,9 +67,13 @@ public class BufferedInput extends ModifiedInputVector {
 
     @Override
     public double[] getValues() {
-        System.arraycopy(history, startPointer, returnValues, 0, history.length - startPointer);
-        System.arraycopy(history, 0, returnValues, history.length - startPointer, startPointer);
-        return returnValues;
+        if(dirty)
+        {
+            System.arraycopy(history, startPointer, values, 0, history.length - startPointer);
+            System.arraycopy(history, 0, values, history.length - startPointer, startPointer);
+            dirty = false;
+        }
+        return values;
     }
     
     public static void main(String[] args) {
@@ -94,7 +98,7 @@ public class BufferedInput extends ModifiedInputVector {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         history = new double[bufferSize];
-        returnValues = new double[bufferSize];
+        values = new double[bufferSize];
         startPointer = 0;
     }
 }

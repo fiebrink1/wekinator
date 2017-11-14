@@ -15,6 +15,7 @@ import static org.junit.Assert.*;
 import wekimini.modifiers.BufferedInput;
 import wekimini.modifiers.RawInputs;
 import wekimini.modifiers.RawInput;
+import wekimini.modifiers.ModifiedInput;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -110,10 +111,16 @@ public class WekinatorTest {
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
-        w.getDataManager().featureManager.removeModifierFromOutput(0,0);
-        w.getDataManager().featureManager.addModifierToOutput(new RawInput("input-1a",0,0), 0);
-        w.getDataManager().featureManager.addModifierToOutput(new RawInput("input-1b",0,0), 0);
-        w.getDataManager().featureManager.addModifierToOutput(new RawInput("input-1c",0,0), 0);
+        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
+        ModifiedInput modifier1 = new RawInput("input-1a",0,0);
+        modifier1.addRequiredInput(0);
+        ModifiedInput modifier2 = new RawInput("input-1b",0,0);
+        modifier2.addRequiredInput(1);
+        ModifiedInput modifier3 = new RawInput("input-1c",0,0);
+        modifier3.addRequiredInput(2);
+        w.getDataManager().featureManager.addModifierToOutput(modifier1, 0);
+        w.getDataManager().featureManager.addModifierToOutput(modifier2, 0);
+        w.getDataManager().featureManager.addModifierToOutput(modifier3, 0);
         w.getSupervisedLearningManager().buildAll();
         List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
         for(int i = 0; i < featureInstances.size(); i++)
