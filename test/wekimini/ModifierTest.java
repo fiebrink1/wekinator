@@ -84,7 +84,7 @@ import weka.core.Instances;
     
     public void testForRunning(int windowSize) throws InterruptedException
     {
-        testForTraining(10);
+        testForTraining(windowSize);
         Thread.sleep(2000);
         assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);

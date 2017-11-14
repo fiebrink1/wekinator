@@ -149,21 +149,21 @@ public class FeatureGroup {
         
         int outputIndex = 0;
         int matchingIndex = 0;
-        
+        ArrayList<ModifiedInput> completedModifiers = new ArrayList();
+
         for (ModifiedInput modifier : modifiers) {
             modifier.prepareForNewInputs();
         }
         
         ModifiedInput currentModifier = modifiers.get(0);
         currentModifier.updateForInputs(newInputs);
+        completedModifiers.add(modifiers.get(0));
         if(currentModifier.addToOutput)
         {
             System.arraycopy(((ModifiedInputVector)currentModifier).getValues(), 0, currentValues, outputIndex, currentModifier.getSize());
             outputIndex += currentModifier.getSize();
         }
 
-        ArrayList<ModifiedInput> completedModifiers = new ArrayList();
-        completedModifiers.add(modifiers.get(0));
         while(completedModifiers.size() < modifiers.size())
         {
             for (ModifiedInput modifier : modifiers) 

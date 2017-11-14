@@ -7,6 +7,7 @@ package wekimini;
 
 import static org.junit.Assert.assertEquals;
 import wekimini.modifiers.BufferedInput;
+import wekimini.modifiers.ModifiedInput;
 
 /**
  *
@@ -17,8 +18,11 @@ public class BufferTest extends ModifierTest {
     @Override
     public void setUpFilters(int windowSize)
     {
-        w.getDataManager().featureManager.removeModifierFromOutput(0, 0);
-        w.getDataManager().featureManager.addModifierToOutput(new BufferedInput("input-1",0,windowSize,0), 0);
+        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
+        w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
+        ModifiedInput buffer = new BufferedInput("input-1",0,windowSize,0);
+        buffer.addRequiredInput(0);
+        w.getDataManager().featureManager.addModifierToOutput(buffer, 0);
     }
     
     @Override
