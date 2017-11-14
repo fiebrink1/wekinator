@@ -12,19 +12,17 @@ import java.util.List;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.ModifiedInputSingle;
 import wekimini.modifiers.ModifiedInputVector;
-import wekimini.modifiers.UsesOnlyOriginalInputs;
-import wekimini.modifiers.UsesInputsAndOutputs;
 
 /**
  *
  * @author louismccallum
+ * 
+ * This has all the modifiers for a single path/output
  */
 public class FeatureGroup {
     
     private List<ModifiedInput> modifiers;
-    private int numOutputTypes;
     private int dimensionality;
-    private boolean hasDependencies;
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private transient double[] currentValues;
     private transient double[] lastInputs;
@@ -33,45 +31,54 @@ public class FeatureGroup {
     public FeatureGroup(List<ModifiedInput> modifiers) 
     {
         this.modifiers = new LinkedList<>(modifiers);
-        update();
+        refreshState();
     }
     
     public FeatureGroup(FeatureGroup groupFromFile) {
         this.modifiers = new LinkedList<>(groupFromFile.getModifiers());
-        this.numOutputTypes = groupFromFile.numOutputTypes;
         this.dimensionality = groupFromFile.dimensionality;
-        this.hasDependencies = groupFromFile.hasDependencies;
     }
     
-    private void update()
+    private void refreshState()
     {
-        this.numOutputTypes = this.modifiers.size();
         int s = 0;
         boolean d = false;
         for (ModifiedInput output : modifiers) {
             s += output.getSize();
-            if (output instanceof UsesInputsAndOutputs) {
-                d = true;
-            } 
         }
-        hasDependencies = d;
         dimensionality = s;
         currentValues = new double[s];
     }
     
+    //Modifiers 
+    
     protected void addModifier(ModifiedInput modifier)
     {
         modifiers.add(modifier);
-        update();
+        refreshState();
         setDirty();
     }
     
     protected void removeModifier(int index)
     {
         modifiers.remove(index);
-        update();
+        refreshState();
         setDirty();
     }
+    
+    public List<ModifiedInput> getModifiers() {
+        return modifiers;
+    }
+    
+    public int getNumModifiers() {
+        return modifiers.size();
+    }
+    
+    public ModifiedInput getModifier(int which) {
+        return modifiers.get(which);
+    }
+    
+    //Dirty State
     
     protected boolean isDirty()
     {
@@ -92,58 +99,34 @@ public class FeatureGroup {
         dirtyFlag = false;
     }
     
-    /**
-     * Add PropertyChangeListener.
-     *
-     * @param listener
-     */
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
+    //Outputs
+    
+    public int getOutputDimensionality() {
+        return dimensionality;
     }
     
-    public double[] getCurrentOutputs() {
-         return currentValues;
-    }
-    
-    //Doesn't do computation unless has dependencies that require it
-    public void updateInputValues(double[] newInputs) {
-        if (! hasDependencies) {
-            for (ModifiedInput modifier : modifiers) {
-                ((UsesOnlyOriginalInputs)modifier).updateForInputs(newInputs);
+    public int getOutputNumber(FeatureGroup o) {
+        for (int i= 0; i < modifiers.size(); i++) {
+            if (modifiers.get(i).equals(o)) {
+                return i;
             }
-        } else {
-            computeValuesForNewInputs(newInputs);
         }
+        return -1;
     }
     
-    public void computeValuesForNewInputs(double[] newInputs) {
-         //Compute output values that
+    //Calculate outputs
+    
+    private void computeValuesForNewInputs(double[] newInputs) {
         int currentIndex = 0;
         
         //First do computations with no dependencies other than current inputs
         for (ModifiedInput modifier : modifiers) {
-            if (modifier instanceof UsesOnlyOriginalInputs) {
-                ((UsesOnlyOriginalInputs)modifier).updateForInputs(newInputs);
-                if (modifier instanceof ModifiedInputSingle) {
-                    currentValues[currentIndex] = ((ModifiedInputSingle)modifier).getValue();
-                } else {
-                    System.arraycopy(((ModifiedInputVector)modifier).getValues(), 0, currentValues, currentIndex, modifier.getSize());
-                }
-            } 
-            currentIndex += modifier.getSize();
-        }
-        
-        //Do the rest of the computations now
-        for (ModifiedInput modifier : modifiers) {
-            currentIndex = 0;
-            if (modifier instanceof UsesInputsAndOutputs) {
-                ((UsesOnlyOriginalInputs)modifier).updateForInputs(newInputs);
-                if (modifier instanceof ModifiedInputSingle) {
-                    currentValues[currentIndex] = ((ModifiedInputSingle)modifier).getValue();
-                } else {
-                    System.arraycopy(((ModifiedInputVector)modifier).getValues(), 0, currentValues, currentIndex, modifier.getSize());
-                }
-            } 
+            modifier.updateForInputs(newInputs);
+            if (modifier instanceof ModifiedInputSingle) {
+                currentValues[currentIndex] = ((ModifiedInputSingle)modifier).getValue();
+            } else {
+                System.arraycopy(((ModifiedInputVector)modifier).getValues(), 0, currentValues, currentIndex, modifier.getSize());
+            }
             currentIndex += modifier.getSize();
         }
     }
@@ -156,14 +139,6 @@ public class FeatureGroup {
     
     public double[] getLastInputs() {
         return lastInputs; //is returning null when nothing is computed yet...
-    }
-    
-    public int getOutputDimensionality() {
-        return dimensionality;
-    }
-    
-    public int getNumOutputTypes() {
-        return numOutputTypes;
     }
     
     public String[] getOutputNames() {
@@ -183,34 +158,14 @@ public class FeatureGroup {
         return s;
     }  
     
-    /**
-     * Remove PropertyChangeListener.
-     *
-     * @param listener
-     */
+    //Property Change Listeners
+    
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+    
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
-    }
-
-    public int getOutputNumber(FeatureGroup o) {
-        for (int i= 0; i < modifiers.size(); i++) {
-            if (modifiers.get(i).equals(o)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-    
-    public List<ModifiedInput> getModifiers() {
-        return modifiers;
-    }
-    
-    public int getNumModifiers() {
-        return modifiers.size();
-    }
-    
-    public ModifiedInput getModifier(int which) {
-        return modifiers.get(which);
     }
     
 }

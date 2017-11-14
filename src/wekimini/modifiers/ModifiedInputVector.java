@@ -9,7 +9,24 @@ package wekimini.modifiers;
  *
  * @author rebecca
  */
-public interface ModifiedInputVector extends ModifiedInput {
-    public String[] getNames(); 
-    public double[] getValues();
+public class ModifiedInputVector extends ModifiedInput {
+    
+    protected String[] names;
+    protected transient double[] values;
+    
+    @Override
+    public int getSize()
+    {
+        return values.length;
+    }
+    
+    public String[] getNames()
+    {
+        return names;
+    }
+    
+    public double[] getValues()
+    {
+        return values;
+    }
 }

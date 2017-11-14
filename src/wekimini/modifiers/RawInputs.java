@@ -10,10 +10,7 @@ package wekimini.modifiers;
  * @author louismccallum
  */
 
-public class RawInputs implements ModifiedInputVector, UsesOnlyOriginalInputs {
-    
-    private final String[] names;
-    private transient double[] values;
+public class RawInputs extends ModifiedInputVector {
     
     public RawInputs(String[] originalNames, int increment) {
         if (increment == 1) {
@@ -27,31 +24,13 @@ public class RawInputs implements ModifiedInputVector, UsesOnlyOriginalInputs {
         }
         values = new double[originalNames.length];
     }
-    
-    @Override
-    public void reset()
-    {
-        
-    }
-    
-    @Override
-    public String[] getNames() {
-        return names;
-    }
+   
 
     @Override
     public void updateForInputs(double[] inputs) {
         values = inputs;
     }
 
-    @Override
-    public int getSize() {
-        return values.length;
-    }
 
-    @Override
-    public double[] getValues() {
-        return values;
-    }
     
 }

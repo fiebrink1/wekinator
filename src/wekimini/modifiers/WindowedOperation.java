@@ -9,9 +9,8 @@ package wekimini.modifiers;
  *
  * @author rebecca
  */
-public class WindowedOperation implements ModifiedInputSingle, UsesOnlyOriginalInputs{
-    private final String name;
-    private final int index;
+public class WindowedOperation extends ModifiedInputSingle {
+
     private final int windowSize;
     private transient double[] history;
     private transient int startPointer;
@@ -49,11 +48,6 @@ public class WindowedOperation implements ModifiedInputSingle, UsesOnlyOriginalI
         history = new double[windowSize];
         startPointer = 0;
     }
-    
-    @Override
-    public String getName() {
-        return name;
-    }
 
     @Override
     public void updateForInputs(double[] inputs) {
@@ -62,11 +56,6 @@ public class WindowedOperation implements ModifiedInputSingle, UsesOnlyOriginalI
         if (startPointer == windowSize) {
             startPointer = 0;
         }
-    }
-
-    @Override
-    public int getSize() {
-        return 1;
     }
     
     public int getWindowSize() {

@@ -12,9 +12,7 @@ import java.io.ObjectInputStream;
  *
  * @author rebecca
  */
-public class BufferedInput implements ModifiedInputVector, UsesOnlyOriginalInputs{
-    private final String[] names;
-    private final int index;
+public class BufferedInput extends ModifiedInputVector {
     private final int bufferSize;
     private transient double[] history;
     private transient int startPointer;
@@ -51,11 +49,6 @@ public class BufferedInput implements ModifiedInputVector, UsesOnlyOriginalInput
         history = new double[bufferSize];
         returnValues = new double[bufferSize];
         startPointer = 0;
-    }
-    
-    @Override
-    public String[] getNames() {
-        return names;
     }
 
     @Override

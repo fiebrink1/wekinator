@@ -9,12 +9,8 @@ package wekimini.modifiers;
  *
  * @author louismccallum
  */
-public class RawInput implements ModifiedInputSingle, UsesOnlyOriginalInputs {
- 
-    private final String name;
-    private final int index;
-    private transient double value = 0;
-    
+public class RawInput extends ModifiedInputSingle {
+     
     public RawInput(String originalName, int index, int increment) {
         if (increment == 1) {
             this.name = originalName;
@@ -25,29 +21,8 @@ public class RawInput implements ModifiedInputSingle, UsesOnlyOriginalInputs {
     }
     
     @Override
-    public void reset()
-    {
-        
-    }
-    
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
     public void updateForInputs(double[] inputs) {
         value = inputs[index];
-    }
-
-    @Override
-    public int getSize() {
-        return 1;
-    }
-
-    @Override
-    public double getValue() {
-        return value;
     }
 
 }

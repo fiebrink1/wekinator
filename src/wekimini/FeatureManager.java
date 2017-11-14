@@ -17,7 +17,7 @@ import wekimini.modifiers.RawInputs;
  */
 public class FeatureManager 
 {
-    
+    //There is one feature group for each path/output
     protected ArrayList<FeatureGroup> featureGroups;
     
     FeatureManager()

@@ -9,7 +9,22 @@ package wekimini.modifiers;
  *
  * @author rebecca
  */
-public interface ModifiedInput {
-    public int getSize();
-    public void reset();
+public class ModifiedInput {
+    
+    protected int index;
+    
+    public int getSize()
+    {
+        return 0;
+    }
+    
+    public void reset()
+    {
+        
+    }
+    
+    public void updateForInputs(double[] inputs)
+    {
+        
+    }
 }
