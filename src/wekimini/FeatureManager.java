@@ -94,9 +94,9 @@ public class FeatureManager
         return featureGroups.get(output).getOutputDimensionality();
     }
     
-    protected void addModifierToOutput(ModifiedInput modifier, int output)
+    protected int addModifierToOutput(ModifiedInput modifier, int output)
     {
-        featureGroups.get(output).addModifier(modifier);
+        return featureGroups.get(output).addModifier(modifier);
     }
     
     protected void passThroughInputToOutput(boolean passThrough, int output)

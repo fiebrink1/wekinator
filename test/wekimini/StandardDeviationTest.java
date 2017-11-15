@@ -23,7 +23,7 @@ public class StandardDeviationTest extends ModifierTest
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         ModifiedInput window = new WindowedOperation("input-1",new StdDevWindowOperation(),0,windowSize,0);
         window.addRequiredInput(0);
-        w.getDataManager().featureManager.addModifierToOutput(window, 0);
+        int id = w.getDataManager().featureManager.addModifierToOutput(window, 0);
     }
     
     @Override
