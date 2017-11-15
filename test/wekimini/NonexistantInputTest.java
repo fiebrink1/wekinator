@@ -6,8 +6,6 @@
 package wekimini;
 
 import static org.junit.Assert.assertEquals;
-import wekimini.modifiers.AverageWindowOperation;
-import wekimini.modifiers.BufferedInput;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.RawInput;
 import wekimini.modifiers.RawInputs;
@@ -16,7 +14,7 @@ import wekimini.modifiers.RawInputs;
  *
  * @author louismccallum
  */
-public class BadInputTest extends ModifierTest {
+public class NonexistantInputTest extends ModifierTest {
     
     @Override
     public void setUpFilters(int windowSize)
