@@ -107,6 +107,13 @@ public class FeatureGroup {
         return modifiers.get(which);
     }
     
+    protected void passThroughInputToOutput(boolean passThrough)
+    {
+        modifiers.get(0).addToOutput = passThrough;
+        setDirty();
+        refreshState();
+    }
+    
     //Dirty State
     
     protected boolean isDirty()
@@ -151,7 +158,8 @@ public class FeatureGroup {
         int matchingIndex = 0;
         ArrayList<ModifiedInput> completedModifiers = new ArrayList();
 
-        for (ModifiedInput modifier : modifiers) {
+        for (ModifiedInput modifier : modifiers) 
+        {
             modifier.prepareForNewInputs();
         }
         
@@ -173,7 +181,7 @@ public class FeatureGroup {
                     modifier.checkIfInputRequired(currentModifier);
                     if(modifier.hasAllInputs())
                     {
-                        modifier.updateFromInputs(modifiers);
+                        modifier.collateInputsFromModifiers(modifiers);
                         completedModifiers.add(modifier);
                         if(modifier.addToOutput)
                         {

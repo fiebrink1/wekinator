@@ -88,7 +88,7 @@ import weka.core.Instances;
         Thread.sleep(2000);
         assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
-        for(int instanceIndex = 0; instanceIndex < 20; instanceIndex++)
+        for(int instanceIndex = 0; instanceIndex < 50; instanceIndex++)
         {
             double[] oscInputs = {instanceIndex + 1, instanceIndex + 2, (instanceIndex + 1) * (instanceIndex + 1)};
             Instance instance = w.getDataManager().getClassifiableInstanceForOutput(oscInputs, 0);
@@ -102,9 +102,10 @@ import weka.core.Instances;
     @Test
     public void testTraining()
     {
-        setUpFilters(10);
-        testForTraining(10);
+        setUpFilters(8);
+        testForTraining(8);
     }
+    
     
     @Test
     public void testTrainingChangingWindowSize()
@@ -114,6 +115,7 @@ import weka.core.Instances;
         setUpFilters(5);
         testForTraining(5);
     }
+    
     
     @Test
     public void testRunning() throws InterruptedException
@@ -127,7 +129,9 @@ import weka.core.Instances;
     {
         setUpFilters(10);
         testForRunning(10);
-        testForTraining(10);
+        setUpFilters(5);
+        testForTraining(5);
     }
+
     
 }

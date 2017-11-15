@@ -72,7 +72,7 @@ public class ModifiedInput {
         return inputsCalculated == requiredInputs.size();
     }
     
-    public void updateFromInputs(List<ModifiedInput> modifiers)
+    public void collateInputsFromModifiers(List<ModifiedInput> modifiers)
     {
         for(ModifiedInput modifier: modifiers)
         {

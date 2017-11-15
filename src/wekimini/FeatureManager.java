@@ -25,19 +25,19 @@ public class FeatureManager
         featureGroups = new ArrayList<>();
     }
     
-    protected boolean isDirty(int index)
+    protected boolean isDirty(int output)
     {
-        return featureGroups.get(index).isDirty();
+        return featureGroups.get(output).isDirty();
     }
     
-    protected void setDirty(int index)
+    protected void setDirty(int output)
     {
-       featureGroups.get(index).setDirty();
+       featureGroups.get(output).setDirty();
     }
     
-    protected void didRecalculateFeatures(int index)
+    protected void didRecalculateFeatures(int output)
     {
-        featureGroups.get(index).didRecalculateFeatures();
+        featureGroups.get(output).didRecalculateFeatures();
     }
     
     protected void addOutputs(int numOutputs, String[] inputNames)
@@ -60,9 +60,9 @@ public class FeatureManager
         }
     }
     
-    protected Instances getNewInstances(int index)
+    protected Instances getNewInstances(int output)
     {
-        int length = numModifiedInputs(index);
+        int length = numModifiedInputs(output);
         FastVector ff = new FastVector(length);
         for(int i = 0; i < length; i++)
         {
@@ -70,12 +70,12 @@ public class FeatureManager
         }
         
         ff.addElement(new Attribute("output"));
-        return new Instances("features" + index, ff, 100);
+        return new Instances("features" + output, ff, 100);
     }
     
-    protected double[] modifyInputsForOutput(double[] newInputs, int index)
+    protected double[] modifyInputsForOutput(double[] newInputs, int output)
     {        
-        return featureGroups.get(index).computeAndGetValuesForNewInputs(newInputs);
+        return featureGroups.get(output).computeAndGetValuesForNewInputs(newInputs);
     }
     
     protected void resetAllModifiers()
@@ -89,40 +89,34 @@ public class FeatureManager
         }
     }
     
-    protected int numModifiedInputs(int index)
+    protected int numModifiedInputs(int output)
     {
-        List<ModifiedInput> m = featureGroups.get(index).getModifiers();
-        int sum = 0;
-        for(int i = 0; i < m.size(); i++)
+        return featureGroups.get(output).getOutputDimensionality();
+    }
+    
+    protected void addModifierToOutput(ModifiedInput modifier, int output)
+    {
+        featureGroups.get(output).addModifier(modifier);
+    }
+    
+    protected void passThroughInputToOutput(boolean passThrough, int output)
+    {
+        featureGroups.get(output).getModifiers().get(0).addToOutput = passThrough;
+    }
+    
+    protected void removeAllModifiersFromOutput(int output)
+    {
+        int toRemove = featureGroups.get(output).getNumModifiers();
+        for(int i = toRemove-1; i > 0; i--)
         {
-            sum += m.get(i).getSize();
-        }
-        return sum;
-    }
-    
-    protected void addModifierToOutput(ModifiedInput modifier, int index)
-    {
-        featureGroups.get(index).addModifier(modifier);
-    }
-    
-    protected void passThroughInputToOutput(boolean passThrough, int index)
-    {
-        featureGroups.get(index).getModifiers().get(0).addToOutput = passThrough;
-    }
-    
-    protected void removeAllModifiersFromOutput(int index)
-    {
-        int toRemove = featureGroups.get(index).getNumModifiers();
-        for(int i = toRemove-1; i >= 0; i--)
-        {
-            removeModifierFromOutput(0, i);
+            removeModifierFromOutput(i, output);
         }
     }
     
-    protected void removeModifierFromOutput(int modifierIndex, int index)
+    protected void removeModifierFromOutput(int modifierIndex, int output)
     {
         try {
-            featureGroups.get(index).removeModifier(modifierIndex);      
+            featureGroups.get(output).removeModifier(modifierIndex);      
         } 
         catch (ArrayIndexOutOfBoundsException e)
         {
