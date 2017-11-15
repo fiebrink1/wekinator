@@ -172,13 +172,14 @@ public class FeatureGroup {
             outputIndex += currentModifier.getSize();
         }
 
-        while(completedModifiers.size() < modifiers.size())
+        while(matchingIndex < completedModifiers.size())
         {
+            currentModifier = completedModifiers.get(matchingIndex);
             for (ModifiedInput modifier : modifiers) 
             {
                 if(!modifier.hasAllInputs()) 
                 {
-                    modifier.checkIfInputRequired(currentModifier);
+                    modifier.isInputRequired(currentModifier);
                     if(modifier.hasAllInputs())
                     {
                         modifier.collateInputsFromModifiers(modifiers);
@@ -195,15 +196,10 @@ public class FeatureGroup {
                             }
                             outputIndex += modifier.getSize();
                         }
-                        
                     }
                 }
             }
-            if(completedModifiers.size() < modifiers.size())
-            {
-                matchingIndex = (matchingIndex + 1) % completedModifiers.size();
-                currentModifier = completedModifiers.get(matchingIndex);
-            }
+            matchingIndex++;
         }
     }
 
