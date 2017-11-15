@@ -22,7 +22,7 @@ public class BufferTest extends ModifierTest {
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         ModifiedInput buffer = new BufferedInput("input-1",0,windowSize,0);
         buffer.addRequiredInput(0);
-        w.getDataManager().featureManager.addModifierToOutput(buffer, 0);
+        int id = w.getDataManager().featureManager.addModifierToOutput(buffer, 0);
     }
     
     @Override

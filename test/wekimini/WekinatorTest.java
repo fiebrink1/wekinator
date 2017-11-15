@@ -118,9 +118,9 @@ public class WekinatorTest {
         modifier2.addRequiredInput(1);
         ModifiedInput modifier3 = new RawInput("input-1c",0,0);
         modifier3.addRequiredInput(2);
-        w.getDataManager().featureManager.addModifierToOutput(modifier1, 0);
-        w.getDataManager().featureManager.addModifierToOutput(modifier2, 0);
-        w.getDataManager().featureManager.addModifierToOutput(modifier3, 0);
+        int id1 = w.getDataManager().featureManager.addModifierToOutput(modifier1, 0);
+        int id2 = w.getDataManager().featureManager.addModifierToOutput(modifier2, 0);
+        int id3 = w.getDataManager().featureManager.addModifierToOutput(modifier3, 0);
         w.getSupervisedLearningManager().buildAll();
         List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
         for(int i = 0; i < featureInstances.size(); i++)
