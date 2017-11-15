@@ -9,6 +9,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import wekimini.modifiers.MaxWindowOperation;
 import wekimini.modifiers.MinWindowOperation;
+import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.WindowedOperation;
 
 /**
@@ -20,9 +21,14 @@ public class MinMaxTest extends ModifierTest {
     @Override
     public void setUpFilters(int windowSize)
     {
+        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
-        w.getDataManager().featureManager.addModifierToOutput(new WindowedOperation("input-1",new MaxWindowOperation(),0,windowSize,0), 0);
-        w.getDataManager().featureManager.addModifierToOutput(new WindowedOperation("input-1",new MinWindowOperation(),0,windowSize,0), 0);
+        ModifiedInput windowMax = new WindowedOperation("input-1",new MaxWindowOperation(),0,windowSize,0);
+        windowMax.addRequiredInput(0);
+        ModifiedInput windowMin = new WindowedOperation("input-1",new MinWindowOperation(),0,windowSize,0);
+        windowMin.addRequiredInput(0);
+        w.getDataManager().featureManager.addModifierToOutput(windowMax, 0);
+        w.getDataManager().featureManager.addModifierToOutput(windowMin, 0);
     }
     
     @Override

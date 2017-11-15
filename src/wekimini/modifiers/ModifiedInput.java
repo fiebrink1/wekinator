@@ -26,13 +26,21 @@ public class ModifiedInput {
     @Override
     public boolean equals(Object obj)
     {
-        boolean classMatch = this.getClass().isAssignableFrom(obj.getClass());
+        boolean classMatch = this.getClass().equals(obj.getClass());
         if(classMatch)
         {
             ModifiedInput comparator = (ModifiedInput)obj;
-            for(int input1:comparator.requiredInputs)
+            if(comparator instanceof WindowedOperation)
             {
-                for(int input2:requiredInputs)
+                boolean operationMatch = ((WindowedOperation)this).getOp().getClass().equals(((WindowedOperation)obj).getOp().getClass());
+                if(!operationMatch)
+                {
+                    return false;
+                }
+            }
+            for(int input1:requiredInputs)
+            {
+                for(int input2:comparator.requiredInputs)
                 {
                     if(input1 != input2)
                     {
@@ -42,6 +50,7 @@ public class ModifiedInput {
             }
             return true;
         }
+        
         return false;
     }
 

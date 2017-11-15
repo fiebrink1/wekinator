@@ -6,6 +6,7 @@
 package wekimini;
 
 import static org.junit.Assert.assertEquals;
+import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.StdDevWindowOperation;
 import wekimini.modifiers.WindowedOperation;
 
@@ -18,8 +19,11 @@ public class StandardDeviationTest extends ModifierTest
     @Override
     public void setUpFilters(int windowSize)
     {
-        w.getDataManager().featureManager.removeModifierFromOutput(0, 0);
-        w.getDataManager().featureManager.addModifierToOutput(new WindowedOperation("input-1",new StdDevWindowOperation(),0,windowSize,0), 0);
+        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
+        w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
+        ModifiedInput window = new WindowedOperation("input-1",new StdDevWindowOperation(),0,windowSize,0);
+        window.addRequiredInput(0);
+        w.getDataManager().featureManager.addModifierToOutput(window, 0);
     }
     
     @Override

@@ -7,7 +7,9 @@ package wekimini;
 
 import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
+import wekimini.modifiers.AverageWindowOperation;
 import wekimini.modifiers.MedianWindowOperation;
+import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.WindowedOperation;
 
 /**
@@ -19,8 +21,11 @@ public class MedianTest extends ModifierTest {
     @Override
     public void setUpFilters(int windowSize)
     {
-        w.getDataManager().featureManager.removeModifierFromOutput(0, 0);
-        w.getDataManager().featureManager.addModifierToOutput(new WindowedOperation("input-1",new MedianWindowOperation(),0,windowSize,0), 0);
+        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
+        w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
+        ModifiedInput window = new WindowedOperation("input-1",new MedianWindowOperation(),0,windowSize,0);
+        window.addRequiredInput(0);
+        w.getDataManager().featureManager.addModifierToOutput(window, 0);
     }
     
     @Override
