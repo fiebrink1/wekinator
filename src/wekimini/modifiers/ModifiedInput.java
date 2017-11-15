@@ -30,6 +30,10 @@ public class ModifiedInput {
         if(classMatch)
         {
             ModifiedInput comparator = (ModifiedInput)obj;
+            if(!Objects.equals(addToOutput, comparator.addToOutput))
+            {
+                return false;
+            }
             if(comparator instanceof WindowedOperation)
             {
                 boolean operationMatch = ((WindowedOperation)this).getOp().getClass().equals(((WindowedOperation)obj).getOp().getClass());

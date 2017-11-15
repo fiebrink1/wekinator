@@ -106,7 +106,6 @@ import weka.core.Instances;
         testForTraining(8);
     }
     
-    
     @Test
     public void testTrainingChangingWindowSize()
     {
@@ -132,7 +131,5 @@ import weka.core.Instances;
         setUpFilters(5);
         testForTraining(5);
     }
-
-
-    
+   
 }
