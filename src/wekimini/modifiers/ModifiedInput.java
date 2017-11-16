@@ -19,7 +19,7 @@ public class ModifiedInput {
     protected ArrayList<Integer> requiredInputs = new ArrayList();
     public Boolean addToOutput = true;
     protected int inputsCalculated = 0;
-    private double[] inputValues = new double[0];
+    protected double[] inputValues = new double[0];
     public int inputID;
     protected boolean dirty = true;
     
@@ -41,6 +41,10 @@ public class ModifiedInput {
                 {
                     return false;
                 }
+            }
+            if(inputIndex != comparator.inputIndex)
+            {
+                return false;
             }
             for(int input1:requiredInputs)
             {
@@ -87,12 +91,18 @@ public class ModifiedInput {
     
     public void collateInputsFromModifiers(List<ModifiedInput> modifiers)
     {
+        int ptr = 0;
         for(ModifiedInput modifier: modifiers)
         {
             for(int input: requiredInputs)
             {
                 if(input == modifier.inputID)
                 {
+                    if(this instanceof MultipleInputWindowedOperation)
+                    {
+                        ((MultipleInputWindowedOperation)this).inputIndexes[ptr] = inputValues.length;
+                        ptr++;
+                    }
                     double newInputs[] = new double[1];
                     if (modifier instanceof ModifiedInputSingle) 
                     {

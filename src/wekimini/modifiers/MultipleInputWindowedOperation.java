@@ -7,14 +7,17 @@ package wekimini.modifiers;
 
 /**
  *
- * @author rebecca
+ * @author louismccallum
  */
-public class WindowedOperation extends ModifiedInputSingle {
-    private final int windowSize;
-    private transient double[] history;
-    private transient int startPointer;
-    private final Operation op;
+
+public class MultipleInputWindowedOperation extends ModifiedInputSingle {
     
+    private final int windowSize;
+    private double[][] history;
+    private transient int startPointer;
+    private final MultipleInputOperation op;
+    protected int[] inputIndexes;
+
     public static String makeName(String originalName, String shortName, int windowSize, int nameIncrement) {
         if (nameIncrement == 1) {
             return originalName + "_" + shortName + Integer.toString(windowSize);
@@ -23,29 +26,31 @@ public class WindowedOperation extends ModifiedInputSingle {
         }
     }
 
-    public Operation getOp() {
+    public MultipleInputOperation getOp() {
         return op;
     }
     
-    public WindowedOperation(String originalName, Operation op, int index, int windowSize, int nameIncrement) {
+    public MultipleInputWindowedOperation(String originalName, MultipleInputOperation op, int windowSize, int nameIncrement) {
         name = makeName(originalName, op.shortName(), windowSize, nameIncrement);       
-        this.inputIndex = index;
         this.windowSize = windowSize;
         this.op = op;
-        history = new double[windowSize];
+        history = new double[1][windowSize];
         startPointer = 0;
     }
     
     @Override
     public void reset()
     {
-        history = new double[windowSize];
+        history = new double[inputIndexes.length][windowSize];
         startPointer = 0;
     }
 
     @Override
     public void updateForInputs(double[] inputs) {
-        history[startPointer] = inputs[inputIndex];
+        for(int i = 0; i < inputIndexes.length; i++)
+        {
+            history[i][startPointer] = inputs[inputIndexes[i]];
+        }
         startPointer++;
         if (startPointer == windowSize) {
             startPointer = 0;
@@ -68,36 +73,17 @@ public class WindowedOperation extends ModifiedInputSingle {
         return value;
     }
     
-    public static void main(String[] args) {
-        
-        Operation avg = new Operation() {
-
-            @Override
-            public double doOperation(double[] vals, int startPtr) {
-                double sum = 0;
-                for (int i = 0; i < vals.length; i++) {
-                    sum += vals[i];
-                }
-                return sum / vals.length;
-            }
-
-            @Override
-            public String shortName() {
-                return "Avg";
-            }
-        };
-        WindowedOperation bi = new WindowedOperation("feat1", avg, 0, 3, 1);
-   
-        for (int i = 0; i < 10; i++) {
-            System.out.print(i + ": ");
-            bi.updateForInputs(new double[] {i});
-            double d = bi.getValue();
-            System.out.println(d);
-        }
+    @Override
+    public void addRequiredInput(int id)
+    {
+        requiredInputs.add(id);
+        inputIndexes = new int[requiredInputs.size()];
+        history = new double[inputIndexes.length][windowSize];
     }
     
-    public interface Operation {
-        public double doOperation(double[] vals, int startPointer);
+    public interface MultipleInputOperation {
+        public double doOperation(double[][] vals, int startPointer);
         public String shortName();
     }
+    
 }

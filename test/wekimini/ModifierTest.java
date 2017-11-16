@@ -90,7 +90,7 @@ import weka.core.Instances;
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
         for(int instanceIndex = 0; instanceIndex < 50; instanceIndex++)
         {
-            double[] oscInputs = {instanceIndex + 1, instanceIndex + 2, (instanceIndex + 1) * (instanceIndex + 1)};
+            double[] oscInputs = {instanceIndex + 1, 1.0, (instanceIndex + 1) * (instanceIndex + 1)};
             Instance instance = w.getDataManager().getClassifiableInstanceForOutput(oscInputs, 0);
             double[] inputs = instance.toDoubleArray();
             int numAttributes = inputs.length;
@@ -105,6 +105,7 @@ import weka.core.Instances;
         setUpFilters(8);
         testForTraining(8);
     }
+    
     
     @Test
     public void testTrainingChangingWindowSize()
