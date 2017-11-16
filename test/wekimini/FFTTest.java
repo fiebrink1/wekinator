@@ -106,7 +106,7 @@ public class FFTTest {
             Instance instance = w.getDataManager().getClassifiableInstanceForOutput(oscInputs, 0);
             double[] inputs = instance.toDoubleArray();
             int numAttributes = inputs.length;
-            testNumAttributes(numAttributes, bins.length);
+            assertEquals(numAttributes,bins.length + 1,0.0);
             testInputs((int)instanceIndex,windowSize,inputs);
         }  
     }

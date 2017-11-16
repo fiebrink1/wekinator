@@ -49,7 +49,7 @@ public class NonexistantInputTest extends ModifierTest {
     @Override
     public void testNumAttributes(int numAttributes, int windowSize)
     {
-        assertEquals(1 + 3 + 1, numAttributes, 0.0);
+        assertEquals(numAttributes,1 + 3 + 1, 0.0);
     }
     
 }

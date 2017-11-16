@@ -52,7 +52,7 @@ public class StandardDeviationTest extends ModifierTest
     @Override
     public void testNumAttributes(int numAttributes, int windowSize)
     {
-        assertEquals(2,numAttributes,0.0);
+        assertEquals(numAttributes,2,0.0);
     }
     
 }

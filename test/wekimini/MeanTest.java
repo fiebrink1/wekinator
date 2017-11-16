@@ -48,6 +48,6 @@ public class MeanTest extends ModifierTest {
     @Override
     public void testNumAttributes(int numAttributes, int windowSize)
     {
-        assertEquals(3,numAttributes,0.0);
+        assertEquals(numAttributes,3,0.0);
     }
 }

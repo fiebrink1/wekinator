@@ -63,7 +63,7 @@ public class ChainingTest extends ModifierTest {
     @Override
     public void testNumAttributes(int numAttributes, int windowSize)
     {
-        assertEquals(windowSize + 1,numAttributes,0.0);
+        assertEquals(numAttributes,windowSize + 1,0.0);
     }
     
 }
