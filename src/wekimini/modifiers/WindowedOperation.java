@@ -27,15 +27,10 @@ public class WindowedOperation extends ModifiedInputSingle {
     public Operation getOp() {
         return op;
     }
-
-    public int getIndex() {
-        return index;
-    }
-    
     
     public WindowedOperation(String originalName, Operation op, int index, int windowSize, int nameIncrement) {
         name = makeName(originalName, op.shortName(), windowSize, nameIncrement);       
-        this.index = index;
+        this.inputIndex = index;
         this.windowSize = windowSize;
         this.op = op;
         history = new double[windowSize];
@@ -51,7 +46,7 @@ public class WindowedOperation extends ModifiedInputSingle {
 
     @Override
     public void updateForInputs(double[] inputs) {
-        history[startPointer] = inputs[index];
+        history[startPointer] = inputs[inputIndex];
         startPointer++;
         if (startPointer == windowSize) {
             startPointer = 0;
@@ -59,7 +54,8 @@ public class WindowedOperation extends ModifiedInputSingle {
         dirty = true;
     }
     
-    public int getWindowSize() {
+    @Override
+    public int getSize() {
         return windowSize;
     }
 

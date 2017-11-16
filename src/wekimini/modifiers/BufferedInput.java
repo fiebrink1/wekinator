@@ -16,10 +16,6 @@ public class BufferedInput extends ModifiedInputVector {
     private final int bufferSize;
     private transient double[] history;
     private transient int startPointer;
-
-    public int getIndex() {
-        return index;
-    }
     
     @Override
     public void reset()
@@ -43,7 +39,7 @@ public class BufferedInput extends ModifiedInputVector {
             }
         }
         
-        this.index = index;
+        this.inputIndex = index;
         this.bufferSize = bufferSize;
         history = new double[bufferSize];
         values = new double[bufferSize];
@@ -52,7 +48,7 @@ public class BufferedInput extends ModifiedInputVector {
 
     @Override
     public void updateForInputs(double[] inputs) {
-        history[startPointer] = inputs[index];
+        history[startPointer] = inputs[inputIndex];
         startPointer++;
         if (startPointer == bufferSize) {
             startPointer = 0;

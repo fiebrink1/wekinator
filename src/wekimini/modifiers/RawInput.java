@@ -17,12 +17,12 @@ public class RawInput extends ModifiedInputSingle {
         } else {
             this.name = originalName + "(" + increment + ")";
         }
-        this.index = index;
+        this.inputIndex = index;
     }
     
     @Override
     public void updateForInputs(double[] inputs) {
-        value = inputs[index];
+        value = inputs[inputIndex];
     }
 
 }

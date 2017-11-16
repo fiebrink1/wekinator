@@ -15,6 +15,12 @@ public class ModifiedInputVector extends ModifiedInput {
     protected transient double[] values;
     
     @Override
+    public void reset()
+    {
+        values = new double[getSize()];
+    }
+    
+    @Override
     public int getSize()
     {
         return values.length;

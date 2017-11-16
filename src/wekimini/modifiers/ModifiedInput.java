@@ -15,7 +15,7 @@ import java.util.Objects;
  */
 public class ModifiedInput {
     
-    protected int index = 0;
+    protected int inputIndex = 0;
     protected ArrayList<Integer> requiredInputs = new ArrayList();
     public Boolean addToOutput = true;
     protected int inputsCalculated = 0;
