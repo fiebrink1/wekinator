@@ -54,11 +54,6 @@ public class WindowedOperation extends ModifiedInputSingle {
         dirty = true;
     }
     
-    @Override
-    public int getSize() {
-        return windowSize;
-    }
-    
     public int getWindowSize()
     {
         return windowSize;
