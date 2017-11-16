@@ -23,13 +23,18 @@ import weka.core.Instances;
             
     @Before
     public void setUp() {
-        String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj");
+        String fileLocation = getTestSetPath();
         try{
             w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
         } catch (Exception e)
         {
             
         }
+    }
+    
+    public String getTestSetPath()
+    {
+       return "/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj";
     }
 
     public void setUpFilters(int windowSize)
@@ -90,7 +95,7 @@ import weka.core.Instances;
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
         for(int instanceIndex = 0; instanceIndex < 50; instanceIndex++)
         {
-            double[] oscInputs = {instanceIndex + 1, 1.0, (instanceIndex + 1) * (instanceIndex + 1)};
+            double[] oscInputs = {instanceIndex + 1, 1.0, instanceIndex % 9 == 0 ? 0.1 : 0.9};
             Instance instance = w.getDataManager().getClassifiableInstanceForOutput(oscInputs, 0);
             double[] inputs = instance.toDoubleArray();
             int numAttributes = inputs.length;

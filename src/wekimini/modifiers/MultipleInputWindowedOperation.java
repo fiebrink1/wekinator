@@ -42,6 +42,7 @@ public class MultipleInputWindowedOperation extends ModifiedInputSingle {
     public void reset()
     {
         history = new double[inputIndexes.length][windowSize];
+        value = 0;
         startPointer = 0;
     }
 

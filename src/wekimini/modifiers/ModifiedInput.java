@@ -42,6 +42,14 @@ public class ModifiedInput {
                     return false;
                 }
             }
+            if(comparator instanceof MultipleInputWindowedOperation)
+            {
+                boolean operationMatch = ((MultipleInputWindowedOperation)this).getOp().getClass().equals(((MultipleInputWindowedOperation)obj).getOp().getClass());
+                if(!operationMatch)
+                {
+                    return false;
+                }
+            }
             if(inputIndex != comparator.inputIndex)
             {
                 return false;
