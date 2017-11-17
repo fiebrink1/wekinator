@@ -70,7 +70,7 @@ import weka.core.Instances;
                 }
                 else
                 {
-                    //CHECK PASS THROUGH FEAUTRES
+                    //Check the features on the outputs/paths that dont have any new modifiers
                     assertEquals(instanceIndex + 1, inputs[0], 0.0);
                     assertEquals(1.0, inputs[1], 0.0);
                     if(instanceIndex % 10 == 9)
@@ -137,5 +137,6 @@ import weka.core.Instances;
         setUpFilters(5);
         testForTraining(5);
     }
+
    
 }

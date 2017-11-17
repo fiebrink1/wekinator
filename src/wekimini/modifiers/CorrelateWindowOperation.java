@@ -15,11 +15,11 @@ public class CorrelateWindowOperation implements MultipleInputOperation {
     @Override
     public double doOperation(double[][] vals, int startPtr) {
         
-        double sumX = 0;
-        double sumY = 0;
-        double sumXY = 0;
-        double sumX2 = 0;
-        double sumY2 = 0;
+        double sumX = 0.0;
+        double sumY = 0.0;
+        double sumXY = 0.0;
+        double sumX2 = 0.0;
+        double sumY2 = 0.0;
         double n = vals[0].length;
         
         for(int i = 0; i < n; i++)
@@ -34,7 +34,7 @@ public class CorrelateWindowOperation implements MultipleInputOperation {
         double denomenator = (Math.sqrt(((n * sumX2) - Math.pow(sumX,2.0)) * ((n * sumY2) - Math.pow(sumY, 2))));
         
         //Avoid NaN
-        double r =  denomenator > 0 ? numerator / denomenator : 0.0;
+        double r =  denomenator > 0.0 ? numerator / denomenator : 0.0;
         
         return r;
     }
