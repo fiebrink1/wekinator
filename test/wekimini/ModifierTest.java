@@ -37,6 +37,11 @@ import weka.core.Instances;
        return "/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj";
     }
 
+    public int getMainWindowSize()
+    {
+        return 10;
+    }
+    
     public void setUpFilters(int windowSize)
     {
         
@@ -107,35 +112,35 @@ import weka.core.Instances;
     @Test
     public void testTraining()
     {
-        setUpFilters(8);
-        testForTraining(8);
+        setUpFilters(getMainWindowSize());
+        testForTraining(getMainWindowSize());
     }
     
     
     @Test
     public void testTrainingChangingWindowSize()
     {
-        setUpFilters(10);
-        testForTraining(10);
-        setUpFilters(5);
-        testForTraining(5);
+        setUpFilters(getMainWindowSize());
+        testForTraining(getMainWindowSize());
+        setUpFilters(getMainWindowSize()*2);
+        testForTraining(getMainWindowSize()*2);
     }
     
     
     @Test
     public void testRunning() throws InterruptedException
     {
-        setUpFilters(10);
-        testForRunning(10);
+        setUpFilters(getMainWindowSize());
+        testForRunning(getMainWindowSize());
     }
     
     @Test
     public void testRunningThenTraining() throws InterruptedException
     {
-        setUpFilters(10);
-        testForRunning(10);
-        setUpFilters(5);
-        testForTraining(5);
+        setUpFilters(getMainWindowSize());
+        testForRunning(getMainWindowSize());
+        setUpFilters(getMainWindowSize()*2);
+        testForTraining(getMainWindowSize()*2);
     }
 
    

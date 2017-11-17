@@ -10,7 +10,7 @@ import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.Attribute;
 import wekimini.modifiers.ModifiedInput;
-import wekimini.modifiers.RawInputs;
+import wekimini.modifiers.PassThroughVector;
 /**
  *
  * @author louismccallum
@@ -45,7 +45,7 @@ public class FeatureManager
         for(int i = 0; i < numOutputs; i++)
         {
             ArrayList<ModifiedInput> defaultModifiers = new ArrayList();
-            ModifiedInput rawInput = new RawInputs(inputNames, 0);
+            ModifiedInput rawInput = new PassThroughVector(inputNames, 0);
             rawInput.inputID = 0;
             defaultModifiers.add(rawInput);
             featureGroups.add(new FeatureGroup(defaultModifiers));

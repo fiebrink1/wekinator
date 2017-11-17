@@ -10,9 +10,9 @@ package wekimini.modifiers;
  * @author louismccallum
  */
 
-public class RawInputs extends ModifiedInputVector {
+public class PassThroughVector extends ModifiedInputVector {
     
-    public RawInputs(String[] originalNames, int increment) {
+    public PassThroughVector(String[] originalNames, int increment) {
         if (increment == 1) {
             this.names = originalNames;
         } else {

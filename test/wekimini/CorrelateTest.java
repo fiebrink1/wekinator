@@ -11,7 +11,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.MultipleInputWindowedOperation;
-import wekimini.modifiers.RawInput;
+import wekimini.modifiers.PassThroughSingle;
 import wekimini.modifiers.CorrelateWindowOperation;
 
 /**
@@ -33,19 +33,19 @@ public class CorrelateTest extends ModifierTest {
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         
         //Sequential 0->100
-        ModifiedInput raw1 = new RawInput("raw-1",0,0);
+        ModifiedInput raw1 = new PassThroughSingle("raw-1",0,0);
         raw1.addToOutput = false;
         raw1.addRequiredInput(0);
         int rawID1 = w.getDataManager().featureManager.addModifierToOutput(raw1, 0);
         
         //Sequential 0->100
-        ModifiedInput raw2 = new RawInput("raw-2",1,0);
+        ModifiedInput raw2 = new PassThroughSingle("raw-2",1,0);
         raw2.addToOutput = false;
         raw2.addRequiredInput(0);
         int rawID2 = w.getDataManager().featureManager.addModifierToOutput(raw2, 0);
         
         //Sequential 100->0
-        ModifiedInput raw3 = new RawInput("raw-3",2,0);
+        ModifiedInput raw3 = new PassThroughSingle("raw-3",2,0);
         raw3.addToOutput = false;
         raw3.addRequiredInput(0);
         int rawID3 = w.getDataManager().featureManager.addModifierToOutput(raw3, 0);

@@ -9,9 +9,9 @@ package wekimini.modifiers;
  *
  * @author louismccallum
  */
-public class RawInput extends ModifiedInputSingle {
+public class PassThroughSingle extends ModifiedInputSingle {
      
-    public RawInput(String originalName, int index, int increment) {
+    public PassThroughSingle(String originalName, int index, int increment) {
         if (increment == 1) {
             this.name = originalName;
         } else {

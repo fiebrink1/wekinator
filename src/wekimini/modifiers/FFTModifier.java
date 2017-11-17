@@ -74,10 +74,7 @@ public class FFTModifier extends ModifiedInputVector {
             {
                 int binNum  = outputBins[i];
                 values[i] = fft[binNum];
-                System.out.print(values[i] + ",");
             }
-            System.out.println("");
-
             dirty = false;
             
         }

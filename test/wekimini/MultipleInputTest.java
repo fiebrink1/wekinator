@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 import wekimini.modifiers.SumInputsWindowOperation;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.MultipleInputWindowedOperation;
-import wekimini.modifiers.RawInput;
+import wekimini.modifiers.PassThroughVector;
 
 /**
  *
@@ -23,11 +23,14 @@ public class MultipleInputTest extends ModifierTest {
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         //Sequential 1->100
-        ModifiedInput raw1 = new RawInput("raw-1",0,0);
+        String [] names = {"1","2","3"};
+        ModifiedInput raw1 = new PassThroughVector(names,0);
+        raw1.inputIndex = 0;
         raw1.addToOutput = false;
         raw1.addRequiredInput(0);
         //All ones
-        ModifiedInput raw2 = new RawInput("raw-2",1,0);
+        ModifiedInput raw2 = new PassThroughVector(names,0);
+        raw2.inputIndex = 1;
         raw2.addToOutput = false;
         raw2.addRequiredInput(0);
         int rawID1 = w.getDataManager().featureManager.addModifierToOutput(raw1, 0);

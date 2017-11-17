@@ -15,6 +15,8 @@ public class CorrelateWindowOperation implements MultipleInputOperation {
     @Override
     public double doOperation(double[][] vals, int startPtr) {
         
+        //We dont need to use the startPtr because everything just gets summed.
+        
         double sumX = 0.0;
         double sumY = 0.0;
         double sumXY = 0.0;

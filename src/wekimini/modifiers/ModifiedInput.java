@@ -15,7 +15,7 @@ import java.util.Objects;
  */
 public class ModifiedInput {
     
-    protected int inputIndex = 0;
+    public int inputIndex = 0;
     protected ArrayList<Integer> requiredInputs = new ArrayList();
     public Boolean addToOutput = true;
     protected int inputsCalculated = 0;
@@ -108,7 +108,7 @@ public class ModifiedInput {
                 {
                     if(this instanceof MultipleInputWindowedOperation)
                     {
-                        ((MultipleInputWindowedOperation)this).inputIndexes[ptr] = inputValues.length;
+                        ((MultipleInputWindowedOperation)this).inputIndexes[ptr] = inputValues.length + modifier.inputIndex;
                         ptr++;
                     }
                     double newInputs[] = new double[1];

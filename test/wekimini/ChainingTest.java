@@ -22,6 +22,7 @@ public class ChainingTest extends ModifierTest {
     @Override
     public void setUpFilters(int windowSize)
     {
+        //Buffer the values of a mean taken over a window of 5
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         ModifiedInput window = new WindowedOperation("input-1a",new AverageWindowOperation(),0,meanWindowSize,0);
@@ -39,12 +40,8 @@ public class ChainingTest extends ModifierTest {
         
         int numAttributes = inputs.length;
         assertEquals(windowSize + 1,numAttributes);
-        System.out.println("");
-        System.out.print("input[" + instanceIndex + "] = ");
         for(int k = 0; k < windowSize; k++)
-        {
-            System.out.print(inputs[k] + ",");
-           
+        {           
             if((k + instanceIndex) < windowSize - 1)
             {
                 assertEquals(0.0, inputs[k], 0.0);

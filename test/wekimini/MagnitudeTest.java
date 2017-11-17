@@ -13,7 +13,7 @@ import weka.core.Instances;
 import wekimini.modifiers.ThreeDimensionalMagnitude;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.MultipleInputWindowedOperation;
-import wekimini.modifiers.RawInput;
+import wekimini.modifiers.PassThroughSingle;
 
 /**
  *
@@ -29,27 +29,31 @@ public class MagnitudeTest extends ModifierTest {
     }
     
     @Override
-    public void setUpFilters(int windowSize)
+    public int getMainWindowSize()
     {
-        windowSize = 2;
-        
+        return 2;
+    }
+    
+    @Override
+    public void setUpFilters(int windowSize)
+    {        
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         
         // 2*1, 2*2, 2*3...2*n
-        ModifiedInput raw1 = new RawInput("raw-1",0,0);
+        ModifiedInput raw1 = new PassThroughSingle("raw-1",0,0);
         raw1.addToOutput = false;
         raw1.addRequiredInput(0);
         int rawID1 = w.getDataManager().featureManager.addModifierToOutput(raw1, 0);
         
         // 10*1, 10*2, 10*3...10*n
-        ModifiedInput raw2 = new RawInput("raw-2",1,0);
+        ModifiedInput raw2 = new PassThroughSingle("raw-2",1,0);
         raw2.addToOutput = false;
         raw2.addRequiredInput(0);
         int rawID2 = w.getDataManager().featureManager.addModifierToOutput(raw2, 0);
         
         // 11*1, 11*2, 11*3...11*n
-        ModifiedInput raw3 = new RawInput("raw-3",2,0);
+        ModifiedInput raw3 = new PassThroughSingle("raw-3",2,0);
         raw3.addToOutput = false;
         raw3.addRequiredInput(0);
         int rawID3 = w.getDataManager().featureManager.addModifierToOutput(raw3, 0);
@@ -64,8 +68,6 @@ public class MagnitudeTest extends ModifierTest {
     @Override
     public void testInputs(int instanceIndex, int windowSize, double[] inputs)
     {
-        System.out.println(inputs[0]);
-        //[0..windowSize] has erroneous 0 values 
         if(instanceIndex > windowSize)
         {
             //Pythagorean Quadruple is 2,10,11,15
@@ -83,7 +85,6 @@ public class MagnitudeTest extends ModifierTest {
     @Override
     public void testForTraining(int windowSize)
     {
-        windowSize = 2;
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getSupervisedLearningManager().buildAll();
@@ -105,7 +106,6 @@ public class MagnitudeTest extends ModifierTest {
     @Override
     public void testForRunning(int windowSize) throws InterruptedException
     {
-        windowSize = 2;
         testForTraining(windowSize);
         Thread.sleep(2000);
         assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
