@@ -97,7 +97,7 @@ public class MagnitudeTest extends ModifierTest {
                 double[] inputs = instances.instance(instanceIndex).toDoubleArray();
                 if(outputIndex == 0)
                 {
-                    //testInputs(instanceIndex,windowSize,inputs);
+                    testInputs(instanceIndex,windowSize,inputs);
                 }
             }
         }

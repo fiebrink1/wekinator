@@ -29,7 +29,8 @@ public class FeatureManagerTest {
     {
         fm = new FeatureManager();
         String[] names = {"1","2","3"};
-        fm.addOutputs(2, names);
+        fm.addOutputs(1, names);
+        assertEquals(1, fm.getFeatureGroups().size());
     }
     
     @Test
@@ -38,7 +39,6 @@ public class FeatureManagerTest {
         PassThroughSingle modifier = new PassThroughSingle("1",0,0);
         modifier.addRequiredInput(0);
         fm.addModifierToOutput(modifier, 0);
-        assertEquals(2, fm.getFeatureGroups().size());
         assertEquals(2, fm.getFeatureGroups().get(0).getModifiers().size());
     }
     
@@ -52,7 +52,6 @@ public class FeatureManagerTest {
         PassThroughSingle modifier2 = new PassThroughSingle("2",0,0);
         modifier2.addRequiredInput(0);
         int id2 = fm.addModifierToOutput(modifier2, 0);
-        assertEquals(2, fm.getFeatureGroups().size());
         assertEquals(2, fm.getFeatureGroups().get(0).getModifiers().size());
         assertTrue(id1 == id2);
        
@@ -74,7 +73,6 @@ public class FeatureManagerTest {
         PassThroughSingle modifier = new PassThroughSingle("1",0,0);
         modifier.addRequiredInput(0);
         int id1 = fm.addModifierToOutput(modifier, 0);
-        assertEquals(2, fm.getFeatureGroups().size());
         assertEquals(2, fm.getFeatureGroups().get(0).getModifiers().size());
         
         //Can't remove passthrough
@@ -110,7 +108,7 @@ public class FeatureManagerTest {
     }
     
     @Test
-    public void testRemoveOphaned()
+    public void testRemoveOrphaned()
     {
         PassThroughSingle modifier = new PassThroughSingle("1",0,0);
         modifier.addRequiredInput(0);
