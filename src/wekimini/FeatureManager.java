@@ -99,7 +99,7 @@ public class FeatureManager
         return featureGroups.get(output).getOutputDimensionality();
     }
     
-    protected int addModifierToOutput(ModifiedInput modifier, int output)
+    public int addModifierToOutput(ModifiedInput modifier, int output)
     {
         return featureGroups.get(output).addModifier(modifier);
     }
@@ -118,7 +118,7 @@ public class FeatureManager
         }
     }
     
-    protected void removeModifierFromOutput(int modifierID, int output)
+    public void removeModifierFromOutput(int modifierID, int output)
     {
         try {
             featureGroups.get(output).removeModifier(modifierID);      

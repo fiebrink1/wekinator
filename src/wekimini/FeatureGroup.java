@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.ModifiedInputSingle;
 import wekimini.modifiers.ModifiedInputVector;
-
+import wekimini.modifiers.FeatureLibrary;
 /**
  *
  * @author louismccallum
@@ -29,10 +29,12 @@ public class FeatureGroup {
     private transient double[] lastInputs;
     private boolean dirtyFlag = true;
     private int currentID = 0;
+    protected FeatureLibrary featureLibrary;
     
     public FeatureGroup(List<ModifiedInput> modifiers) 
     {
         this.modifiers = new LinkedList<>(modifiers);
+        featureLibrary = new FeatureLibrary();
         refreshState();
     }
     
@@ -57,7 +59,7 @@ public class FeatureGroup {
     
     //Modifiers 
     
-    protected int addModifier(ModifiedInput modifier)
+    public int addModifier(ModifiedInput modifier)
     {
         Boolean matched = false;
         for(ModifiedInput existingModifier:modifiers)
@@ -85,7 +87,7 @@ public class FeatureGroup {
         return currentID;
     }
     
-    protected void removeOrphanedModifiers()
+    public void removeOrphanedModifiers()
     {
         ArrayList<ModifiedInput> toRemove = new ArrayList();
         for(ModifiedInput modifier:modifiers)
@@ -99,10 +101,13 @@ public class FeatureGroup {
                     if(input == existing.inputID)
                     {
                         foundParent = true;
-                        toRemove.add(modifier);
                         break INNER;
                     }
                 }
+            }
+            if(!foundParent && modifier.inputID > 0)
+            {
+                toRemove.add(modifier);
             }
         }
         for(ModifiedInput remove:toRemove)
@@ -117,7 +122,7 @@ public class FeatureGroup {
 
     }
     
-    protected void removeModifier(int id)
+    public void removeModifier(int id)
     {
         if(id > 0)
         {

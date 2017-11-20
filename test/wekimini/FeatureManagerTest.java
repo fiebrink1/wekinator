@@ -7,14 +7,8 @@ package wekimini;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import weka.core.Instance;
-import weka.core.Instances;
-import wekimini.modifiers.PassThroughVector;
 import wekimini.modifiers.PassThroughSingle;
-import wekimini.FeatureGroup;
-import wekimini.FeatureManager;
 
 /**
  *
@@ -121,8 +115,7 @@ public class FeatureManagerTest {
         assertEquals(3, fm.getFeatureGroups().get(0).getModifiers().size());
         
         fm.getFeatureGroups().get(0).removeOrphanedModifiers();
-        assertEquals(2, fm.getFeatureGroups().get(0).getModifiers().size());
-        
+        assertEquals(2, fm.getFeatureGroups().get(0).getModifiers().size());   
     }
     
 }
