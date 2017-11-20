@@ -17,7 +17,7 @@ public class SumInputsWindowOperation implements MultipleInputOperation {
         for (double[] signal : vals) {
             for(int j = 0; j < signal.length; j++)
             {
-                sum+=signal[j];
+                sum += signal[j];
             }
         }
         return sum;

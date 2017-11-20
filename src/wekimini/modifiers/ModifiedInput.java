@@ -111,11 +111,6 @@ public class ModifiedInput {
             {
                 if(input == modifier.inputID)
                 {
-                    if(this instanceof MultipleInputWindowedOperation)
-                    {
-                        ((MultipleInputWindowedOperation)this).inputIndexes[ptr] = inputValues.length + modifier.inputIndex;
-                        ptr++;
-                    }
                     double newInputs[] = new double[1];
                     if (modifier instanceof ModifiedInputSingle) 
                     {

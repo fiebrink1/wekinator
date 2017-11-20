@@ -16,7 +16,6 @@ public class MultipleInputWindowedOperation extends ModifiedInputSingle {
     private double[][] history;
     private transient int startPointer;
     private final MultipleInputOperation op;
-    protected int[] inputIndexes;
 
     public static String makeName(String originalName, String shortName, int windowSize, int nameIncrement) {
         if (nameIncrement == 1) {
@@ -41,16 +40,16 @@ public class MultipleInputWindowedOperation extends ModifiedInputSingle {
     @Override
     public void reset()
     {
-        history = new double[inputIndexes.length][windowSize];
+        history = new double[requiredInputs.size()][windowSize];
         value = 0;
         startPointer = 0;
     }
 
     @Override
     public void updateForInputs(double[] inputs) {
-        for(int i = 0; i < inputIndexes.length; i++)
+        for(int i = 0; i < inputs.length; i++)
         {
-            history[i][startPointer] = inputs[inputIndexes[i]];
+            history[i][startPointer] = inputs[i];
         }
         startPointer++;
         if (startPointer == windowSize) {
@@ -78,8 +77,7 @@ public class MultipleInputWindowedOperation extends ModifiedInputSingle {
     public void addRequiredInput(int id)
     {
         requiredInputs.add(id);
-        inputIndexes = new int[requiredInputs.size()];
-        history = new double[inputIndexes.length][windowSize];
+        history = new double[requiredInputs.size()][windowSize];
     }
     
     public interface MultipleInputOperation {

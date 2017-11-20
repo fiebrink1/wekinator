@@ -46,7 +46,7 @@ public class StandardDeviationTest extends ModifierTest
             ssd += Math.pow(window[i] - avg, 2);
         }
         double stdDev = Math.sqrt(ssd / window.length);
-        assertEquals(stdDev,inputs[0],0.0);
+        assertEquals(stdDev,inputs[0],0.00001);
     }
     
     @Override
