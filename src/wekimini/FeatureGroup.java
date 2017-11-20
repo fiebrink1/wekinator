@@ -85,14 +85,73 @@ public class FeatureGroup {
         return currentID;
     }
     
-    protected void removeModifier(int index)
+    protected void removeOrphanedModifiers()
     {
-        if(index > 0)
+        ArrayList<ModifiedInput> toRemove = new ArrayList();
+        for(ModifiedInput modifier:modifiers)
         {
-            modifiers.remove(index);
+            Boolean foundParent = false;
+            INNER:
+            for(Integer input : modifier.getRequiredInputs())
+            {
+                for(ModifiedInput existing:modifiers)
+                {
+                    if(input == existing.inputID)
+                    {
+                        foundParent = true;
+                        toRemove.add(modifier);
+                        break INNER;
+                    }
+                }
+            }
+        }
+        for(ModifiedInput remove:toRemove)
+        {
+            removeModifier(modifiers.indexOf(remove));
+        }
+        if(toRemove.size() > 0)
+        {
             refreshState();
             setDirty();
         }
+
+    }
+    
+    protected void removeModifier(int id)
+    {
+        if(id > 0)
+        {
+            Boolean canRemove = true;
+            for(ModifiedInput existing:modifiers)
+            {
+                for(Integer input : existing.getRequiredInputs())
+                {
+                    if(input == id)
+                    {
+                        canRemove = false;
+                        break;
+                    }
+                }
+            }
+            if(canRemove)
+            {
+                modifiers.remove(indexForID(id));
+                refreshState();
+                setDirty();
+            }
+        }
+    }
+    
+    private int indexForID(int id)
+    {
+        for(int i = 0; i < modifiers.size(); i++)
+        {
+            if(modifiers.get(i).inputID == id)
+            {
+                return i;
+            }
+        }
+        return 0;
     }
     
     public List<ModifiedInput> getModifiers() {

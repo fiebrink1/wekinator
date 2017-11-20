@@ -25,6 +25,11 @@ public class FeatureManager
         featureGroups = new ArrayList<>();
     }
     
+    public ArrayList<FeatureGroup> getFeatureGroups()
+    {
+        return featureGroups;
+    }
+    
     protected boolean isDirty(int output)
     {
         return featureGroups.get(output).isDirty();
@@ -113,10 +118,10 @@ public class FeatureManager
         }
     }
     
-    protected void removeModifierFromOutput(int modifierIndex, int output)
+    protected void removeModifierFromOutput(int modifierID, int output)
     {
         try {
-            featureGroups.get(output).removeModifier(modifierIndex);      
+            featureGroups.get(output).removeModifier(modifierID);      
         } 
         catch (ArrayIndexOutOfBoundsException e)
         {

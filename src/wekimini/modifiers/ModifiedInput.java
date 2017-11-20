@@ -97,6 +97,11 @@ public class ModifiedInput {
         return inputsCalculated == requiredInputs.size();
     }
     
+    public List<Integer> getRequiredInputs()
+    {
+        return requiredInputs;
+    }
+    
     public void collateInputsFromModifiers(List<ModifiedInput> modifiers)
     {
         int ptr = 0;
