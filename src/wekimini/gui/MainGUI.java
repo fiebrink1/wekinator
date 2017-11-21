@@ -60,7 +60,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private DtwOutputEditor dtwOutputEditor = null;
     private ModelEvaluationFrame modelEvaluationFrame = null;
     private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
-    private FeaturesEditor featuresWindow = null;
+    private FeatureEditor featuresWindow = null;
     private final Wekinator w;
     private boolean closeable = true; //flaseif this is the last window open
     private static final Logger logger = Logger.getLogger(MainGUI.class.getName());
@@ -1010,7 +1010,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private void showFeaturesWindow()
     {
         if (featuresWindow == null) {
-            featuresWindow = new FeaturesEditor(w);
+            featuresWindow = new FeatureEditor(w);
             featuresWindow.setVisible(true);
 
             //Problem: Won't call on button-triggered dispose...

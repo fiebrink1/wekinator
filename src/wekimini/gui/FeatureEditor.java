@@ -21,7 +21,7 @@ import wekimini.kadenze.KadenzeLogging;
  *
  * @author rebecca
  */
-public class FeaturesEditor extends javax.swing.JFrame {
+public class FeatureEditor extends javax.swing.JFrame {
     private Wekinator w;
     private LabeledButtonGridPanel gridPanel;
     private javax.swing.JButton jButton1;
@@ -37,7 +37,7 @@ public class FeaturesEditor extends javax.swing.JFrame {
     private javax.swing.JPopupMenu popupMenuAction;
     private javax.swing.JScrollPane scrollPanel;
     
-    public FeaturesEditor(Wekinator w) {
+    public FeatureEditor(Wekinator w) {
         initComponents();
         this.w = w;
         setup(w.getDataManager().featureManager.getFeatureNames(),
