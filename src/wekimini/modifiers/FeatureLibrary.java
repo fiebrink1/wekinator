@@ -31,33 +31,6 @@ class Feature
     
 }
 
-class JustAccelerometer extends Feature
-{
-
-    public JustAccelerometer(String name) {
-        super(name);
-    }
-
-    @Override
-    public List<Integer> addFeature(FeatureGroup fg)
-    {
-        PassThroughSingle x = new PassThroughSingle("x",0,0);
-        x.addRequiredInput(0);
-        int id1 = fg.addModifier(x);
-        PassThroughSingle y = new PassThroughSingle("x",1,0);
-        y.addRequiredInput(0);
-        int id2 = fg.addModifier(y);
-        PassThroughSingle z = new PassThroughSingle("z",2,0);
-        z.addRequiredInput(0);
-        int id3 = fg.addModifier(z);
-        ArrayList<Integer> ids = new ArrayList();
-        ids.add(id1);
-        ids.add(id2);
-        ids.add(id3);
-        return ids;
-    }
-}
-
 class MaxFFT extends Feature
 {
 
@@ -114,32 +87,40 @@ class MinFFT extends Feature
 
 class PassThrough extends Feature
 {
-
-    public PassThrough(String name) {
+    int[] indexes;
+    
+    public PassThrough(String name, int[] indexes) {
         super(name);
+        this.indexes = indexes;
     }
 
     @Override
     public List<Integer> addFeature(FeatureGroup fg)
     {
-        PassThroughSingle modifier = new PassThroughSingle("1",0,0);
-        modifier.addRequiredInput(0);
-        int id1 = fg.addModifier(modifier);
         ArrayList<Integer> ids = new ArrayList();
-        ids.add(id1);
+        for(int index:indexes)
+        {
+            PassThroughSingle modifier = new PassThroughSingle(Integer.toString(index),index,0);
+            modifier.addRequiredInput(0);
+            int id1 = fg.addModifier(modifier);
+            ids.add(id1);
+        }
+
         return ids;
     }
 }
 
 public class FeatureLibrary 
 {
-    Map<String, List<Integer>> added = new HashMap<>();
-    List<Feature> library = new ArrayList();
+    private Map<String, List<Integer>> added = new HashMap<>();
+    public List<Feature> library = new ArrayList();
     
     public FeatureLibrary()
     {
-        library.add(new PassThrough("PassThroughFirst"));
-        library.add(new JustAccelerometer("JustAccelerometer"));
+        int[] i1 = {0};
+        library.add(new PassThrough("PassThroughFirst",i1));
+        int[] i2 = {0,1,2};
+        library.add(new PassThrough("JustAccelerometer",i2));
         library.add(new MaxFFT("MaxFFT"));
         library.add(new MinFFT("MinFFT"));
     }
