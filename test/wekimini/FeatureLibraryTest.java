@@ -77,4 +77,47 @@ public class FeatureLibraryTest {
         fg.featureLibrary.removeFeatureForKey(fg, "JustAccelerometer");
         assertEquals(1, fg.getModifiers().size());
     }
+    
+    @Test
+    public void testRemoveNotAddedFeature()
+    {
+       fg.featureLibrary.addFeatureForKey(fg, "MaxFFT");
+       assertEquals(3, fg.getModifiers().size()); 
+       fg.featureLibrary.removeFeatureForKey(fg, "JustAccelerometer");
+       assertEquals(3, fg.getModifiers().size()); 
+    }
+    
+    @Test 
+    public void testGetConnections()
+    {
+       fg.featureLibrary.addFeatureForKey(fg, "MaxFFT");
+       assertEquals(3, fg.getModifiers().size()); 
+       Boolean[] connections = fg.featureLibrary.getConnections();
+       int ptr = 0;
+       for(Boolean isEnabled:connections)
+       {
+           assertEquals(ptr == 2, isEnabled);
+           ptr++;
+       }
+    }
+    
+    @Test
+    public void testSetConnections()
+    {
+        fg.featureLibrary.addFeatureForKey(fg, "MaxFFT");
+        assertEquals(3, fg.getModifiers().size()); 
+        
+        Boolean[] onOff = {true,true,false,false};
+        fg.setSelectedFeatures(onOff);
+        
+        Boolean[] connections = fg.featureLibrary.getConnections();
+        int ptr = 0;
+        for(Boolean isEnabled:connections)
+        {
+           assertEquals(ptr < 2, isEnabled);
+           ptr++;
+        }
+        assertEquals(4, fg.getModifiers().size());
+        
+    }
 }

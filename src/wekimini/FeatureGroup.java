@@ -14,6 +14,7 @@ import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.ModifiedInputSingle;
 import wekimini.modifiers.ModifiedInputVector;
 import wekimini.modifiers.FeatureLibrary;
+import wekimini.modifiers.Feature;
 /**
  *
  * @author louismccallum
@@ -176,6 +177,23 @@ public class FeatureGroup {
         modifiers.get(0).addToOutput = passThrough;
         setDirty();
         refreshState();
+    }
+    
+    public void setSelectedFeatures(Boolean[] onOff)
+    {
+        int ptr = 0;
+        for(Feature feature:featureLibrary.getLibrary())
+        {
+            if(onOff[ptr])
+            {
+                featureLibrary.addFeatureForKey(this, feature.name);
+            }
+            else
+            {
+                featureLibrary.removeFeatureForKey(this, feature.name);
+            }
+            ptr++;
+        }
     }
     
     //Dirty State

@@ -15,21 +15,6 @@ import wekimini.FeatureGroup;
  *
  * @author louismccallum
  */
-class Feature 
-{
-    public final String name;
-    
-    public Feature(String name)
-    {
-        this.name = name;
-    }
-    
-    public List<Integer> addFeature(FeatureGroup fg)
-    {
-        return new ArrayList();
-    }
-    
-}
 
 class MaxFFT extends Feature
 {
@@ -112,8 +97,8 @@ class PassThrough extends Feature
 
 public class FeatureLibrary 
 {
-    private Map<String, List<Integer>> added = new HashMap<>();
-    public List<Feature> library = new ArrayList();
+    private final Map<String, List<Integer>> added = new HashMap<>();
+    private final List<Feature> library = new ArrayList();
     
     public FeatureLibrary()
     {
@@ -125,6 +110,23 @@ public class FeatureLibrary
         library.add(new MinFFT("MinFFT"));
     }
     
+    public List<Feature> getLibrary()
+    {
+        return library;
+    }
+    
+    public Boolean[] getConnections()
+    {
+        Boolean[] connections = new Boolean[library.size()];
+        int ptr = 0;
+        for(Feature feature : library)
+        {
+            connections[ptr] = added.containsKey(feature.name); 
+            ptr++;
+        }
+        return connections;
+    }
+            
     public void addFeatureForKey(FeatureGroup fg, String key)
     {
         if(added.containsKey(key))
@@ -143,10 +145,17 @@ public class FeatureLibrary
     
     public void removeFeatureForKey(FeatureGroup fg, String key)
     {
+        if(!added.containsKey(key))
+        {
+            return;
+        }
+        
         for(Integer id:added.get(key))
         {
             fg.removeModifier(id);
         }
         fg.removeOrphanedModifiers();
+        
+        added.remove(key);
     }
 }
