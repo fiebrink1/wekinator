@@ -23,6 +23,18 @@ import wekimini.osc.OSCOutputGroup;
 public class LearningManager implements ConnectsInputsToOutputs {
     private static final Logger logger = Logger.getLogger(LearningManager.class.getName());
 
+    public static enum LearningType {INITIALIZATION, SUPERVISED_LEARNING, TEMPORAL_MODELING};
+    //private LearningType learningType = LearningType.INITIALIZATION;
+    private SupervisedLearningManager supervisedLearningManager = null;
+    private DtwLearningManager dtwLearningManager = null;
+    private ConnectsInputsToOutputs connector;
+    
+    private final Wekinator w;
+    
+    private LearningType learningType = LearningType.INITIALIZATION;
+
+    public static final String PROP_LEARNINGTYPE = "learningType";
+    
     @Override
     public void addConnectionsListener(InputOutputConnectionsListener l) {
         assert (connector != null); //XXX check all these valid
@@ -79,18 +91,6 @@ public class LearningManager implements ConnectsInputsToOutputs {
             logger.log(Level.WARNING, "Unknown learning manager type");
         }
     }
-    
-    public static enum LearningType {INITIALIZATION, SUPERVISED_LEARNING, TEMPORAL_MODELING};
-    //private LearningType learningType = LearningType.INITIALIZATION;
-    private SupervisedLearningManager supervisedLearningManager = null;
-    private DtwLearningManager dtwLearningManager = null;
-    private ConnectsInputsToOutputs connector;
-    
-    private final Wekinator w;
-    
-    private LearningType learningType = LearningType.INITIALIZATION;
-
-    public static final String PROP_LEARNINGTYPE = "learningType";
 
     /**
      * Get the value of learningType

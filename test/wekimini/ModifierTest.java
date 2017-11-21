@@ -78,14 +78,7 @@ import weka.core.Instances;
                     //Check the features on the outputs/paths that dont have any new modifiers
                     assertEquals(instanceIndex + 1, inputs[0], 0.0);
                     assertEquals(1.0, inputs[1], 0.0);
-                    if(instanceIndex % 10 == 9)
-                    {
-                        assertEquals(0.9, inputs[2], 0.0);
-                    }
-                    else   
-                    {
-                        assertEquals(0.1, inputs[2], 0.0);
-                    }
+                    assertEquals(instanceIndex % 10 == 9 ? 0.9 : 0.1, inputs[2], 0.0);
                     assertEquals(outputIndex + 1, inputs[3], 0.0);
                 }
             }
@@ -100,7 +93,7 @@ import weka.core.Instances;
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
         for(int instanceIndex = 0; instanceIndex < 50; instanceIndex++)
         {
-            double[] oscInputs = {instanceIndex + 1, 1.0, instanceIndex % 9 == 0 ? 0.1 : 0.9};
+            double[] oscInputs = {instanceIndex + 1, 1.0, instanceIndex % 10 == 9 ? 0.9 : 0.1};
             Instance instance = w.getDataManager().getClassifiableInstanceForOutput(oscInputs, 0);
             double[] inputs = instance.toDoubleArray();
             int numAttributes = inputs.length;

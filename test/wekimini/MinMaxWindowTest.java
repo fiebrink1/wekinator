@@ -16,7 +16,7 @@ import wekimini.modifiers.WindowedOperation;
  *
  * @author louismccallum
  */
-public class MinMaxTest extends ModifierTest {
+public class MinMaxWindowTest extends ModifierTest {
  
     @Override
     public void setUpFilters(int windowSize)

@@ -15,54 +15,31 @@ import wekimini.FeatureGroup;
  *
  * @author louismccallum
  */
-public class FeatureLibrary 
+class Feature 
 {
-    Map<String, List<Integer>> added = new HashMap<>();
+    public final String name;
     
-    public void addFeatureForKey(FeatureGroup fg, String key)
+    public Feature(String name)
     {
-        if(added.containsKey(key))
-        {
-            return;
-        }
-        if(key.equals("PassThroughFirst"))
-        {   
-            added.put(key,addPassThrough(fg));
-        }
-        if(key.equals("JustAccelerometer"))
-        {   
-            added.put(key,addJustAccelerometer(fg));
-        }
-        if(key.equals("MaxFFT"))
-        {   
-            added.put(key,addMaxFFT(fg));
-        }
-        if(key.equals("MinFFT"))
-        {   
-            added.put(key,addMinFFT(fg));
-        }
+        this.name = name;
     }
     
-    public void removeFeatureForKey(FeatureGroup fg, String key)
+    public List<Integer> addFeature(FeatureGroup fg)
     {
-        for(Integer id:added.get(key))
-        {
-            fg.removeModifier(id);
-        }
-        fg.removeOrphanedModifiers();
+        return new ArrayList();
     }
     
-    private List<Integer> addPassThrough(FeatureGroup fg)
-    {
-        PassThroughSingle modifier = new PassThroughSingle("1",0,0);
-        modifier.addRequiredInput(0);
-        int id1 = fg.addModifier(modifier);
-        ArrayList<Integer> ids = new ArrayList();
-        ids.add(id1);
-        return ids;
+}
+
+class JustAccelerometer extends Feature
+{
+
+    public JustAccelerometer(String name) {
+        super(name);
     }
-    
-    private List<Integer> addJustAccelerometer(FeatureGroup fg)
+
+    @Override
+    public List<Integer> addFeature(FeatureGroup fg)
     {
         PassThroughSingle x = new PassThroughSingle("x",0,0);
         x.addRequiredInput(0);
@@ -79,8 +56,17 @@ public class FeatureLibrary
         ids.add(id3);
         return ids;
     }
-    
-    private List<Integer> addMaxFFT(FeatureGroup fg)
+}
+
+class MaxFFT extends Feature
+{
+
+    public MaxFFT(String name) {
+        super(name);
+    }
+
+    @Override
+    public List<Integer> addFeature(FeatureGroup fg)
     {
         int [] bins = {1,2,3,4,5};
         FFTModifier fft = new FFTModifier("fft",0,64,bins);
@@ -88,17 +74,26 @@ public class FeatureLibrary
         fft.addRequiredInput(0);
         int fftID = fg.addModifier(fft);
         
-        ModifiedInput windowMax = new WindowedOperation("input-1",new MaxWindowOperation(),0,10,0);
-        windowMax.addRequiredInput(fftID);
-        int maxID = fg.addModifier(windowMax);
+        ModifiedInput max = new MaxInputs("max",0,0);
+        max.addRequiredInput(fftID);
+        int maxID = fg.addModifier(max);
         
         ArrayList<Integer> ids = new ArrayList();
         ids.add(maxID);
         ids.add(fftID);
         return ids;
     }
-    
-    private List<Integer> addMinFFT(FeatureGroup fg)
+}
+
+class MinFFT extends Feature
+{
+
+    public MinFFT(String name) {
+        super(name);
+    }
+
+    @Override
+    public List<Integer> addFeature(FeatureGroup fg)
     {
         int [] bins = {1,2,3,4,5};
         FFTModifier fft = new FFTModifier("fft",0,64,bins);
@@ -106,13 +101,71 @@ public class FeatureLibrary
         fft.addRequiredInput(0);
         int fftID = fg.addModifier(fft);
         
-        ModifiedInput windowMin = new WindowedOperation("input-1",new MinWindowOperation(),0,10,0);
-        windowMin.addRequiredInput(fftID);
-        int minID = fg.addModifier(windowMin);
+        ModifiedInput min = new MinInputs("min",0,0);
+        min.addRequiredInput(fftID);
+        int minID = fg.addModifier(min);
         
         ArrayList<Integer> ids = new ArrayList();
         ids.add(minID);
         ids.add(fftID);
         return ids;
+    }
+}
+
+class PassThrough extends Feature
+{
+
+    public PassThrough(String name) {
+        super(name);
+    }
+
+    @Override
+    public List<Integer> addFeature(FeatureGroup fg)
+    {
+        PassThroughSingle modifier = new PassThroughSingle("1",0,0);
+        modifier.addRequiredInput(0);
+        int id1 = fg.addModifier(modifier);
+        ArrayList<Integer> ids = new ArrayList();
+        ids.add(id1);
+        return ids;
+    }
+}
+
+public class FeatureLibrary 
+{
+    Map<String, List<Integer>> added = new HashMap<>();
+    List<Feature> library = new ArrayList();
+    
+    public FeatureLibrary()
+    {
+        library.add(new PassThrough("PassThroughFirst"));
+        library.add(new JustAccelerometer("JustAccelerometer"));
+        library.add(new MaxFFT("MaxFFT"));
+        library.add(new MinFFT("MinFFT"));
+    }
+    
+    public void addFeatureForKey(FeatureGroup fg, String key)
+    {
+        if(added.containsKey(key))
+        {
+            return;
+        }
+        
+        for(Feature feature:library)
+        {
+            if(key.equals(feature.name))
+            {
+                added.put(key,feature.addFeature(fg));
+            }
+        }
+    }
+    
+    public void removeFeatureForKey(FeatureGroup fg, String key)
+    {
+        for(Integer id:added.get(key))
+        {
+            fg.removeModifier(id);
+        }
+        fg.removeOrphanedModifiers();
     }
 }

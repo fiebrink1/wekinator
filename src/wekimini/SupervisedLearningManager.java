@@ -84,8 +84,6 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     private boolean computeDistribution = false;
     
-    private FeatureManager featureManager;
-
     /**
      * Get the value of computeDistribution
      *
@@ -734,8 +732,6 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         pathRecordingMask = new boolean[numOutputs];
         pathRunningMask = new boolean[numOutputs];
         myComputedOutputs = new double[numOutputs];
-
-        featureManager = new FeatureManager();
         
         for (int i = 0; i < numOutputs; i++) {
             pathRecordingMask[i] = true;

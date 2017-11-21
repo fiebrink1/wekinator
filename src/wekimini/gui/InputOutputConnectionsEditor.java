@@ -31,7 +31,7 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
         setup(w.getInputManager().getInputNames(),
                 w.getOutputManager().getOutputGroup().getOutputNames(),
                 w.getLearningManager().getConnectionMatrix());
-                w.getLearningManager().addConnectionsListener(new InputOutputConnectionsListener() {
+        w.getLearningManager().addConnectionsListener(new InputOutputConnectionsListener() {
 
             @Override
             public void newConnectionMatrix(boolean[][] connections) {
@@ -415,7 +415,7 @@ public class InputOutputConnectionsEditor extends javax.swing.JFrame {
     }
 
     //doesn't really work
-//See http://stackoverflow.com/questions/14777926/java-how-to-make-a-jlabel-with-vertical-text
+    //See http://stackoverflow.com/questions/14777926/java-how-to-make-a-jlabel-with-vertical-text
     public class JVertLabel extends JComponent {
 
         private String text;
