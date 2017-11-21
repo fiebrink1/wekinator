@@ -157,7 +157,7 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
             selectionMatrix[i][0] = inputSelection[i];
         }
         KadenzeLogging.getLogger().logDtwModelUpdated(w, m, oldSettings, newDtwSettings, m.getSelectedInputs(), inputSelection);
-        updateInputOutputConnections(selectionMatrix);
+        updateInputOutputConnections(selectionMatrix, false);
     }
 
     void startRecording(int whichGesture) {
@@ -289,7 +289,7 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
     }
     
 
-    public boolean[][] getConnectionMatrix() {
+    public boolean[][] getConnectionMatrix(boolean feature) {
         //For now, only have 1 output! (only 1 model)    
         boolean[][] b = new boolean[w.getInputManager().getNumInputs()][1];
         for (int input = 0; input < b.length; input++) {
@@ -299,7 +299,7 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
     }
 
     @Override
-    public void updateInputOutputConnections(boolean[][] newConnections) {
+    public void updateInputOutputConnections(boolean[][] newConnections, boolean feature) {
         boolean[] newSelections = new boolean[newConnections.length];
         for (int i = 0; i < newConnections.length; i++) {
             newSelections[i] = newConnections[i][0];
@@ -385,12 +385,12 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
     }
 
     @Override
-    public void addConnectionsListener(InputOutputConnectionsListener l) {
+    public void addConnectionsListener(InputOutputConnectionsListener l, boolean feature) {
         inputOutputConnectionsListeners.add(l);
     }
 
     @Override
-    public boolean removeConnectionsListener(InputOutputConnectionsListener l) {
+    public boolean removeConnectionsListener(InputOutputConnectionsListener l, boolean feature) {
         return inputOutputConnectionsListeners.remove(l);
     }
 }

@@ -30,6 +30,11 @@ public class FeatureManager
         return featureGroups;
     }
     
+    public String[] getFeatureNames()
+    {
+        return featureGroups.get(0).getFeatureNames();
+    }
+    
     protected boolean isDirty(int output)
     {
         return featureGroups.get(output).isDirty();

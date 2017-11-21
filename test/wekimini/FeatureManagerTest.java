@@ -109,7 +109,7 @@ public class FeatureManagerTest {
         int id1 = fm.addModifierToOutput(modifier, 0);
         
         PassThroughSingle modifier2 = new PassThroughSingle("1",1,0);
-        modifier2.addRequiredInput(id1+2);
+        modifier2.addRequiredInput(Integer.MAX_VALUE);
         int id2 = fm.addModifierToOutput(modifier2, 0);
         
         assertEquals(3, fm.getFeatureGroups().get(0).getModifiers().size());

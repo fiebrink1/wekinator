@@ -64,7 +64,7 @@ public class DataManager {
     private List<int[]> inputListsForOutputsRunning; //TODO: Output after a model or all models are trained
     private Instances inputInstances = null;
     private List<Instances> featureInstances = null;
-    protected FeatureManager featureManager;
+    public FeatureManager featureManager;
     private int nextID = 1;
     private int numOutputs = 0;
 

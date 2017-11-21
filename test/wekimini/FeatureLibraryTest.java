@@ -28,73 +28,73 @@ public class FeatureLibraryTest {
     @Test
     public void testSingle()
     {
-        fg.featureLibrary.addFeatureForKey(fg, "PassThroughFirst");
+        fg.addFeatureForKey("PassThroughFirst");
         assertEquals(2, fg.getModifiers().size());
-        fg.featureLibrary.removeFeatureForKey(fg, "PassThroughFirst");
+        fg.removeFeatureForKey("PassThroughFirst");
         assertEquals(1, fg.getModifiers().size());
     }
     
     @Test
     public void testMultipleModifiers()
     {
-        fg.featureLibrary.addFeatureForKey(fg, "JustAccelerometer");
+        fg.addFeatureForKey("JustAccelerometer");
         assertEquals(4, fg.getModifiers().size());
-        fg.featureLibrary.removeFeatureForKey(fg, "JustAccelerometer");
+        fg.removeFeatureForKey("JustAccelerometer");
         assertEquals(1, fg.getModifiers().size());
     }
     
     @Test
     public void testChained()
     {
-        fg.featureLibrary.addFeatureForKey(fg, "MaxFFT");
+        fg.addFeatureForKey("MaxFFT");
         assertEquals(3, fg.getModifiers().size());
-        fg.featureLibrary.removeFeatureForKey(fg, "MaxFFT");
+        fg.removeFeatureForKey("MaxFFT");
         assertEquals(1, fg.getModifiers().size());
     }
     
     @Test
     public void testShared()
     {
-        fg.featureLibrary.addFeatureForKey(fg, "MaxFFT");
+        fg.addFeatureForKey("MaxFFT");
         assertEquals(3, fg.getModifiers().size());
-        fg.featureLibrary.addFeatureForKey(fg, "MinFFT");
+        fg.addFeatureForKey("MinFFT");
         assertEquals(4, fg.getModifiers().size());
-        fg.featureLibrary.removeFeatureForKey(fg, "MaxFFT");
+        fg.removeFeatureForKey("MaxFFT");
         assertEquals(3, fg.getModifiers().size());
-        fg.featureLibrary.removeFeatureForKey(fg, "MinFFT");
+        fg.removeFeatureForKey("MinFFT");
         assertEquals(1, fg.getModifiers().size());
     }
     
     @Test
     public void testMultipleFeatures()
     {
-        fg.featureLibrary.addFeatureForKey(fg, "MaxFFT");
+        fg.addFeatureForKey("MaxFFT");
         assertEquals(3, fg.getModifiers().size());
-        fg.featureLibrary.addFeatureForKey(fg, "JustAccelerometer");
+        fg.addFeatureForKey("JustAccelerometer");
         assertEquals(6, fg.getModifiers().size());
-        fg.featureLibrary.removeFeatureForKey(fg, "MaxFFT");
+        fg.removeFeatureForKey("MaxFFT");
         assertEquals(4, fg.getModifiers().size());
-        fg.featureLibrary.removeFeatureForKey(fg, "JustAccelerometer");
+        fg.removeFeatureForKey("JustAccelerometer");
         assertEquals(1, fg.getModifiers().size());
     }
     
     @Test
     public void testRemoveNotAddedFeature()
     {
-       fg.featureLibrary.addFeatureForKey(fg, "MaxFFT");
+       fg.addFeatureForKey("MaxFFT");
        assertEquals(3, fg.getModifiers().size()); 
-       fg.featureLibrary.removeFeatureForKey(fg, "JustAccelerometer");
+       fg.removeFeatureForKey("JustAccelerometer");
        assertEquals(3, fg.getModifiers().size()); 
     }
     
     @Test 
     public void testGetConnections()
     {
-       fg.featureLibrary.addFeatureForKey(fg, "MaxFFT");
+       fg.addFeatureForKey("MaxFFT");
        assertEquals(3, fg.getModifiers().size()); 
-       Boolean[] connections = fg.featureLibrary.getConnections();
+       boolean[] connections = fg.getConnections();
        int ptr = 0;
-       for(Boolean isEnabled:connections)
+       for(boolean isEnabled:connections)
        {
            assertEquals(ptr == 2, isEnabled);
            ptr++;
@@ -104,15 +104,15 @@ public class FeatureLibraryTest {
     @Test
     public void testSetConnections()
     {
-        fg.featureLibrary.addFeatureForKey(fg, "MaxFFT");
+        fg.addFeatureForKey("MaxFFT");
         assertEquals(3, fg.getModifiers().size()); 
         
-        Boolean[] onOff = {true,true,false,false};
+        boolean[] onOff = {true,true,false,false};
         fg.setSelectedFeatures(onOff);
         
-        Boolean[] connections = fg.featureLibrary.getConnections();
+        boolean[] connections = fg.getConnections();
         int ptr = 0;
-        for(Boolean isEnabled:connections)
+        for(boolean isEnabled:connections)
         {
            assertEquals(ptr < 2, isEnabled);
            ptr++;

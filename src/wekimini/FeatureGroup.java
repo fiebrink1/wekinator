@@ -30,12 +30,12 @@ public class FeatureGroup {
     private transient double[] lastInputs;
     private boolean dirtyFlag = true;
     private int currentID = 0;
-    protected FeatureLibrary featureLibrary;
+    private FeatureLibrary featureLibrary;
     
     public FeatureGroup(List<ModifiedInput> modifiers) 
     {
         this.modifiers = new LinkedList<>(modifiers);
-        featureLibrary = new FeatureLibrary();
+        featureLibrary = new FeatureLibrary(this);
         refreshState();
     }
     
@@ -179,21 +179,41 @@ public class FeatureGroup {
         refreshState();
     }
     
-    public void setSelectedFeatures(Boolean[] onOff)
+    public void setSelectedFeatures(boolean[] onOff)
     {
         int ptr = 0;
         for(Feature feature:featureLibrary.getLibrary())
         {
             if(onOff[ptr])
             {
-                featureLibrary.addFeatureForKey(this, feature.name);
+                featureLibrary.addFeatureForKey(feature.name);
             }
             else
             {
-                featureLibrary.removeFeatureForKey(this, feature.name);
+                featureLibrary.removeFeatureForKey(feature.name);
             }
             ptr++;
         }
+    }
+    
+    public void addFeatureForKey(String key)
+    {
+        featureLibrary.addFeatureForKey(key);
+    }
+    
+    public void removeFeatureForKey(String key)
+    {
+        featureLibrary.removeFeatureForKey(key);
+    }
+    
+    public boolean[] getConnections()
+    {
+        return featureLibrary.getConnections();
+    }
+    
+    public String[] getFeatureNames()
+    {
+        return featureLibrary.getNames();
     }
     
     //Dirty State

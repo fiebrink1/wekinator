@@ -582,44 +582,87 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     //newConnections[i][j] is true if input i is connected to output j
     @Override
-    public void updateInputOutputConnections(boolean[][] newConnections) {
-        if (newConnections.length != w.getInputManager().getInputNames().length
-                || newConnections[0].length != w.getOutputManager().getOutputGroup().getNumOutputs()) {
-            throw new IllegalArgumentException("newConnections must have same rows as number of inputs and same columns as number of outputs");
-        }
-
-        List<List<String>> newInputsForPaths = new ArrayList<>();
-        for (int i = 0; i < paths.size(); i++) {
-            List<String> next = new ArrayList<>();
-            newInputsForPaths.add(next);
-        }
-
-        for (int input = 0; input < newConnections.length; input++) {
-            for (int output = 0; output < newConnections[0].length; output++) {
-                if (newConnections[input][output]) {
-                    //Output output uses input
-                    newInputsForPaths.get(output).add(w.getInputManager().getInputNames()[input]);
+    public void updateInputOutputConnections(boolean[][] newConnections, boolean features) {
+        if(features)
+        {
+            List<FeatureGroup> groups = w.getDataManager().featureManager.getFeatureGroups();
+            for(int i = 0; i < groups.size(); i++)
+            {
+                FeatureGroup fg  =  groups.get(i);
+                boolean[] onOff = new boolean[newConnections.length];
+                for(int j = 0; j < onOff.length; j++)
+                {
+                    onOff[j] = newConnections[j][i];
                 }
+                fg.setSelectedFeatures(onOff);
             }
         }
-        int temp = 0; //Check here! TODO
-        for (int i = 0; i < paths.size(); i++) {
-            paths.get(i).setSelectedInputs(newInputsForPaths.get(i).toArray(new String[0]));
+        else
+        {
+
+            if (newConnections.length != w.getInputManager().getInputNames().length
+                    || newConnections[0].length != w.getOutputManager().getOutputGroup().getNumOutputs()) {
+                throw new IllegalArgumentException("newConnections must have same rows as number of inputs and same columns as number of outputs");
+            }
+
+            List<List<String>> newInputsForPaths = new ArrayList<>();
+            for (int i = 0; i < paths.size(); i++) {
+                List<String> next = new ArrayList<>();
+                newInputsForPaths.add(next);
+            }
+
+            for (int input = 0; input < newConnections.length; input++) {
+                for (int output = 0; output < newConnections[0].length; output++) {
+                    if (newConnections[input][output]) {
+                        //Output output uses input
+                        newInputsForPaths.get(output).add(w.getInputManager().getInputNames()[input]);
+                    }
+                }
+            }
+            int temp = 0; //Check here! TODO
+            for (int i = 0; i < paths.size(); i++) {
+                paths.get(i).setSelectedInputs(newInputsForPaths.get(i).toArray(new String[0]));
+            }
+            notifyNewInputOutputConnections(newConnections);
+            w.getStatusUpdateCenter().update(this, "Input/Output connections updated.");
         }
-        notifyNewInputOutputConnections(newConnections);
-        w.getStatusUpdateCenter().update(this, "Input/Output connections updated.");
     }
 
     @Override
-    public boolean[][] getConnectionMatrix() {
-        boolean[][] b = new boolean[w.getInputManager().getNumInputs()][w.getOutputManager().getOutputGroup().getNumOutputs()];
-        for (int input = 0; input < b.length; input++) {
-            for (int output = 0; output < b[0].length; output++) {
-                Path p = paths.get(output);
-                b[input][output] = p.isUsingInput(w.getInputManager().getInputNames()[input]);
+    public boolean[][] getConnectionMatrix(boolean features) {
+        if(features)
+        {
+            List<FeatureGroup> groups = w.getDataManager().featureManager.getFeatureGroups();
+            boolean[][] connections = new boolean[groups.size()][w.getDataManager().featureManager.getFeatureNames().length];
+            
+            for(int i = 0; i < groups.size(); i++)
+            {
+                FeatureGroup fg  =  groups.get(i);
+                connections[i] = fg.getConnections();
             }
+            
+            boolean[][] output = new boolean[w.getDataManager().featureManager.getFeatureNames().length][groups.size()];
+            for(int i = 0; i < output.length; i++)
+            {
+                for(int j = 0; j < output[i].length; j++)
+                {
+                    output[i][j] = connections[j][i];
+                }
+            }
+            return output;
         }
-        return b;
+        else
+        {
+            boolean[][] b = new boolean[w.getInputManager().getNumInputs()][w.getOutputManager().getOutputGroup().getNumOutputs()];
+            for (int input = 0; input < b.length; input++) {
+                for (int output = 0; output < b[0].length; output++) {
+                    Path p = paths.get(output);
+                    b[input][output] = p.isUsingInput(w.getInputManager().getInputNames()[input]);
+                }
+            }
+            return b;
+        }
+
     }
 
     //TODO (low): merge this with other init function
@@ -1350,12 +1393,12 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     }
 
     @Override
-    public void addConnectionsListener(ConnectsInputsToOutputs.InputOutputConnectionsListener l) {
+    public void addConnectionsListener(ConnectsInputsToOutputs.InputOutputConnectionsListener l, boolean features) {
         inputOutputConnectionsListeners.add(l);
     }
 
     @Override
-    public boolean removeConnectionsListener(ConnectsInputsToOutputs.InputOutputConnectionsListener l) {
+    public boolean removeConnectionsListener(ConnectsInputsToOutputs.InputOutputConnectionsListener l, boolean features) {
         return inputOutputConnectionsListeners.remove(l);
     }
 

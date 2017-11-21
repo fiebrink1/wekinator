@@ -95,12 +95,16 @@ class PassThrough extends Feature
     }
 }
 
-public class FeatureLibrary 
+public final class FeatureLibrary 
 {
     private final Map<String, List<Integer>> added = new HashMap<>();
     private final List<Feature> library = new ArrayList();
+    private String[] names;
+    private FeatureGroup fg;
     
-    public FeatureLibrary()
+    private FeatureLibrary(){};
+    
+    public FeatureLibrary(FeatureGroup fg)
     {
         int[] i1 = {0};
         library.add(new PassThrough("PassThroughFirst",i1));
@@ -108,6 +112,14 @@ public class FeatureLibrary
         library.add(new PassThrough("JustAccelerometer",i2));
         library.add(new MaxFFT("MaxFFT"));
         library.add(new MinFFT("MinFFT"));
+        names = new String[library.size()];
+        int ptr = 0;
+        for(Feature feature:library)
+        {
+            names[ptr] = feature.name;
+            ptr++;
+        }
+        this.fg = fg;
     }
     
     public List<Feature> getLibrary()
@@ -115,9 +127,15 @@ public class FeatureLibrary
         return library;
     }
     
-    public Boolean[] getConnections()
+    public String[] getNames()
     {
-        Boolean[] connections = new Boolean[library.size()];
+        return names;
+    }
+    
+    
+    public boolean[] getConnections()
+    {
+        boolean[] connections = new boolean[library.size()];
         int ptr = 0;
         for(Feature feature : library)
         {
@@ -127,7 +145,7 @@ public class FeatureLibrary
         return connections;
     }
             
-    public void addFeatureForKey(FeatureGroup fg, String key)
+    public void addFeatureForKey(String key)
     {
         if(added.containsKey(key))
         {
@@ -139,11 +157,12 @@ public class FeatureLibrary
             if(key.equals(feature.name))
             {
                 added.put(key,feature.addFeature(fg));
+                break;
             }
         }
     }
     
-    public void removeFeatureForKey(FeatureGroup fg, String key)
+    public void removeFeatureForKey(String key)
     {
         if(!added.containsKey(key))
         {

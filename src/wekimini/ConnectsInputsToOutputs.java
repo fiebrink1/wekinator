@@ -11,14 +11,14 @@ package wekimini;
  */
 public interface ConnectsInputsToOutputs {
 
-    public void addConnectionsListener(InputOutputConnectionsListener l);
+    public void addConnectionsListener(InputOutputConnectionsListener l, boolean features);
 
-    public boolean[][] getConnectionMatrix();
+    public boolean[][] getConnectionMatrix(boolean features);
 
-    public boolean removeConnectionsListener(InputOutputConnectionsListener l);
+    public boolean removeConnectionsListener(InputOutputConnectionsListener l, boolean features);
 
     //newConnections[i][j] is true if input i is connected to output j
-    public void updateInputOutputConnections(boolean[][] newConnections);
+    public void updateInputOutputConnections(boolean[][] newConnections, boolean features);
  
     public interface InputOutputConnectionsListener {
         public void newConnectionMatrix(boolean[][] connections);

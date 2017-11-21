@@ -28,6 +28,7 @@ public class LearningManager implements ConnectsInputsToOutputs {
     private SupervisedLearningManager supervisedLearningManager = null;
     private DtwLearningManager dtwLearningManager = null;
     private ConnectsInputsToOutputs connector;
+    private ConnectsInputsToOutputs featureConnector;
     
     private final Wekinator w;
     
@@ -36,27 +37,62 @@ public class LearningManager implements ConnectsInputsToOutputs {
     public static final String PROP_LEARNINGTYPE = "learningType";
     
     @Override
-    public void addConnectionsListener(InputOutputConnectionsListener l) {
-        assert (connector != null); //XXX check all these valid
-        connector.addConnectionsListener(l);
+    public void addConnectionsListener(InputOutputConnectionsListener l, boolean features) {
+        if(features)
+        {
+            assert (featureConnector != null); 
+            featureConnector.addConnectionsListener(l,features);
+        }
+        else
+        {
+            assert (connector != null); 
+            connector.addConnectionsListener(l,features);
+        }
+
     }
 
     @Override
-    public boolean[][] getConnectionMatrix() {
-        assert (connector != null);
-        return connector.getConnectionMatrix();
+    public boolean[][] getConnectionMatrix(boolean features) {
+        if(features)
+        {
+            assert (featureConnector != null);
+            return featureConnector.getConnectionMatrix(features);
+        }
+        else
+        {
+            assert (connector != null);
+            return connector.getConnectionMatrix(features);
+        }
     }
 
     @Override
-    public boolean removeConnectionsListener(InputOutputConnectionsListener l) {
-        assert (connector != null);
-        return connector.removeConnectionsListener(l);
+    public boolean removeConnectionsListener(InputOutputConnectionsListener l, boolean features) {
+        if(features)
+        {
+            assert (featureConnector != null);
+            return featureConnector.removeConnectionsListener(l, features); 
+        }
+        else
+        {
+            assert (connector != null);
+            return connector.removeConnectionsListener(l, features);
+        }
+
     }
 
     @Override
-    public void updateInputOutputConnections(boolean[][] newConnections) {
-        assert (connector != null);
-        connector.updateInputOutputConnections(newConnections);
+    public void updateInputOutputConnections(boolean[][] newConnections, boolean features) {
+        if(features)
+        {
+            assert (featureConnector != null);
+            featureConnector.updateInputOutputConnections(newConnections, features);
+        }
+        else
+        {
+            assert (connector != null);
+            connector.updateInputOutputConnections(newConnections, features);
+        }
+
     }
 
     boolean isLegalTrainingValue(int whichOutput, float value) {
@@ -142,6 +178,7 @@ public class LearningManager implements ConnectsInputsToOutputs {
         }   
         supervisedLearningManager = new SupervisedLearningManager(w);
         connector = supervisedLearningManager;
+        featureConnector = supervisedLearningManager;
         setLearningType(LearningType.SUPERVISED_LEARNING);
     }
     
@@ -151,6 +188,7 @@ public class LearningManager implements ConnectsInputsToOutputs {
         }   
         supervisedLearningManager = new SupervisedLearningManager(w, data, paths);
         connector = supervisedLearningManager;
+        featureConnector = supervisedLearningManager;
         setLearningType(LearningType.SUPERVISED_LEARNING);
     }
     
@@ -161,6 +199,7 @@ public class LearningManager implements ConnectsInputsToOutputs {
         }   
         dtwLearningManager = new DtwLearningManager(w, outputGroup);
         connector = dtwLearningManager;
+        featureConnector = dtwLearningManager;
         setLearningType(LearningType.TEMPORAL_MODELING);
         //initialize inputs and outputs etc?
     }

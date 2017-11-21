@@ -224,7 +224,7 @@ public class DtwData {
             public void newConnectionMatrix(boolean[][] connections) {
                 connectionsChanged();
             }
-        });
+        }, false);
     }
 
     private void connectionsChanged() {

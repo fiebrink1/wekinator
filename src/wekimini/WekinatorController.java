@@ -161,7 +161,7 @@ public class WekinatorController {
     //Requires whichInputs and outputNum are valid
     //WhichInputs and outputNum are indexed from 1 here
     public void setInputsForOutput(int[] whichInputs, int outputNum) {
-        boolean[][] currentConnections = w.getLearningManager().getConnectionMatrix();
+        boolean[][] currentConnections = w.getLearningManager().getConnectionMatrix(false);
         boolean[][] newConnections = new boolean[currentConnections.length][currentConnections[0].length];
         //currentConnections[i][j] is true if input i is connected to output j
         for (int i = 0; i < currentConnections.length; i++) {
@@ -171,7 +171,7 @@ public class WekinatorController {
         for (int i = 0; i < whichInputs.length; i++) {
             newConnections[whichInputs[i] - 1][outputNum - 1] = true;
         }
-        w.getLearningManager().updateInputOutputConnections(newConnections);
+        w.getLearningManager().updateInputOutputConnections(newConnections,false);
     }
 
     public void addInputNamesListener(NamesListener l) {
