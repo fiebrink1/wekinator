@@ -89,10 +89,8 @@ public class WindowedOperation extends ModifiedInputSingle {
         WindowedOperation bi = new WindowedOperation("feat1", avg, 0, 3, 1);
    
         for (int i = 0; i < 10; i++) {
-            System.out.print(i + ": ");
             bi.updateForInputs(new double[] {i});
             double d = bi.getValue();
-            System.out.println(d);
         }
     }
     

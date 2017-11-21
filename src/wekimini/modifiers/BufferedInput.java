@@ -78,7 +78,6 @@ public class BufferedInput extends ModifiedInputVector {
         for (int i= 0; i < s.length; i++) {
             System.out.print(s[i] + ",");
         }
-        System.out.println("");
                 
         for (int i = 0; i < 10; i++) {
             System.out.print(i + ": ");
@@ -87,7 +86,6 @@ public class BufferedInput extends ModifiedInputVector {
             for (int j = 0; j < bi.getSize(); j++) {
                 System.out.print(d[j] + " ");
             }
-            System.out.println("");
         }
     }
     

@@ -23,7 +23,6 @@ public class ThreeDimensionalMagnitude implements MultipleInputOperation {
         double dist1 = vals[0][frontPtr] - vals[0][startPtr];
         double dist2 = vals[1][frontPtr] - vals[1][startPtr];
         double dist3 = vals[2][frontPtr] - vals[2][startPtr];
-        System.out.println(dist1 + "," + dist2 + "," + dist3);
         return Math.sqrt(Math.pow(dist1,2) + Math.pow(dist2,2) + Math.pow(dist3,2)); 
     }
 
