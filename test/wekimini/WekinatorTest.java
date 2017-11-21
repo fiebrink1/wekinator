@@ -114,12 +114,12 @@ public class WekinatorTest {
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         ModifiedInput modifier1 = new PassThroughSingle("input-1a",0,0);
         modifier1.addRequiredInput(0);
-        ModifiedInput modifier2 = new PassThroughSingle("input-1b",0,0);
-        modifier2.addRequiredInput(1);
-        ModifiedInput modifier3 = new PassThroughSingle("input-1c",0,0);
-        modifier3.addRequiredInput(2);
         int id1 = w.getDataManager().featureManager.addModifierToOutput(modifier1, 0);
+        ModifiedInput modifier2 = new PassThroughSingle("input-1b",0,0);
+        modifier2.addRequiredInput(id1);
         int id2 = w.getDataManager().featureManager.addModifierToOutput(modifier2, 0);
+        ModifiedInput modifier3 = new PassThroughSingle("input-1c",0,0);
+        modifier3.addRequiredInput(id2);
         int id3 = w.getDataManager().featureManager.addModifierToOutput(modifier3, 0);
         w.getSupervisedLearningManager().buildAll();
         List<Instances> featureInstances = w.getDataManager().getFeatureInstances();

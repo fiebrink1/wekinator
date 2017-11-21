@@ -11,7 +11,7 @@ package wekimini.modifiers;
  */
 public class ModifiedInputVector extends ModifiedInput {
     
-    protected String[] names;
+    public String[] names;
     protected transient double[] values;
     
     @Override

@@ -19,8 +19,8 @@ public class NonexistantInputTest extends ModifierTest {
     @Override
     public void setUpFilters(int windowSize)
     {
-        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
+        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         ModifiedInput passThrough = new PassThroughSingle("1",0,0);
         passThrough.addRequiredInput(0);
         passThrough.addToOutput = true;
@@ -28,7 +28,7 @@ public class NonexistantInputTest extends ModifierTest {
         String[] names = {"1","2","3"};
         ModifiedInput passThrough2 = new PassThroughVector(names,0);
         //THIS IS A NONEXISTANT INPUT
-        passThrough2.addRequiredInput(4);
+        passThrough2.addRequiredInput(Integer.MAX_VALUE);
         passThrough2.addToOutput = true;
         int id2 = w.getDataManager().featureManager.addModifierToOutput(passThrough2, 0);
     }

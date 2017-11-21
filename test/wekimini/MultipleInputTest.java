@@ -20,8 +20,8 @@ public class MultipleInputTest extends ModifierTest {
     @Override
     public void setUpFilters(int windowSize)
     {
-        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
+        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         //Sequential 1->100
         ModifiedInput raw1 = new PassThroughSingle("0",0,0);
         raw1.addToOutput = false;

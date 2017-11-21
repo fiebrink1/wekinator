@@ -36,9 +36,9 @@ public class MagnitudeTest extends ModifierTest {
     
     @Override
     public void setUpFilters(int windowSize)
-    {        
+    {
+        w.getDataManager().featureManager.removeAllModifiersFromOutput(0);          
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
-        w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         
         // 2*1, 2*2, 2*3...2*n
         ModifiedInput raw1 = new PassThroughSingle("raw-1",0,0);

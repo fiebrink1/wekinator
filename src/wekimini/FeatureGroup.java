@@ -123,6 +123,23 @@ public class FeatureGroup {
 
     }
     
+    public void removeAllModifiers()
+    {
+        int [] ids = new int[modifiers.size()];
+        int ptr = 0;
+        for(ModifiedInput modifier: modifiers)
+        {
+            ids[ptr] = modifier.inputID;
+            ptr++;
+        }
+        for(int id:ids)
+        {
+            removeModifier(id);
+        }
+        removeOrphanedModifiers();
+        featureLibrary.clearAdded();
+    }
+    
     public void removeModifier(int id)
     {
         if(id > 0)
@@ -141,9 +158,13 @@ public class FeatureGroup {
             }
             if(canRemove)
             {
-                modifiers.remove(indexForID(id));
-                refreshState();
-                setDirty();
+                int index = indexForID(id);
+                if(index > 0)
+                {
+                    modifiers.remove(index);
+                    refreshState();
+                    setDirty();
+                }
             }
         }
     }
@@ -157,7 +178,7 @@ public class FeatureGroup {
                 return i;
             }
         }
-        return 0;
+        return -1;
     }
     
     public List<ModifiedInput> getModifiers() {

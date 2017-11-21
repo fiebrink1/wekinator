@@ -57,8 +57,11 @@ public class FeatureManager
             ArrayList<ModifiedInput> defaultModifiers = new ArrayList();
             ModifiedInput rawInput = new PassThroughVector(inputNames, 0);
             rawInput.inputID = 0;
+            rawInput.addToOutput = false;
             defaultModifiers.add(rawInput);
-            featureGroups.add(new FeatureGroup(defaultModifiers));
+            FeatureGroup fg = new FeatureGroup(defaultModifiers);
+            fg.addFeatureForKey("PassThroughAll");
+            featureGroups.add(fg);
         }
     }
     
@@ -111,16 +114,19 @@ public class FeatureManager
     
     protected void passThroughInputToOutput(boolean passThrough, int output)
     {
-        featureGroups.get(output).getModifiers().get(0).addToOutput = passThrough;
+        if(passThrough)
+        {
+            featureGroups.get(output).addFeatureForKey("PassThroughAll"); 
+        }
+        else
+        {
+            featureGroups.get(output).removeFeatureForKey("PassThroughAll");
+        }
     }
     
     protected void removeAllModifiersFromOutput(int output)
     {
-        int toRemove = featureGroups.get(output).getNumModifiers();
-        for(int i = toRemove-1; i > 0; i--)
-        {
-            removeModifierFromOutput(i, output);
-        }
+        featureGroups.get(output).removeAllModifiers();
     }
     
     public void removeModifierFromOutput(int modifierID, int output)

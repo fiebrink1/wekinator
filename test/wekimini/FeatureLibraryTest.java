@@ -22,15 +22,16 @@ public class FeatureLibraryTest {
         String[] names = {"1","2","3"};
         fm.addOutputs(1, names);
         assertEquals(1, fm.getFeatureGroups().size());
+        fm.passThroughInputToOutput(false, 0);
         fg = fm.getFeatureGroups().get(0);
     }
     
     @Test
     public void testSingle()
     {
-        fg.addFeatureForKey("PassThroughFirst");
+        fg.addFeatureForKey("PassThroughAll");
         assertEquals(2, fg.getModifiers().size());
-        fg.removeFeatureForKey("PassThroughFirst");
+        fg.removeFeatureForKey("PassThroughAll");
         assertEquals(1, fg.getModifiers().size());
     }
     
@@ -117,7 +118,7 @@ public class FeatureLibraryTest {
            assertEquals(ptr < 2, isEnabled);
            ptr++;
         }
-        assertEquals(4, fg.getModifiers().size());
+        assertEquals(5, fg.getModifiers().size());
         
     }
 }

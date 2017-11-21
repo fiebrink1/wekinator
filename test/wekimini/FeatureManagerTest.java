@@ -25,6 +25,7 @@ public class FeatureManagerTest {
         String[] names = {"1","2","3"};
         fm.addOutputs(1, names);
         assertEquals(1, fm.getFeatureGroups().size());
+        fm.passThroughInputToOutput(false, 0);
     }
     
     @Test

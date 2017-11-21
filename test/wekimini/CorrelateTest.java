@@ -29,8 +29,8 @@ public class CorrelateTest extends ModifierTest {
     @Override
     public void setUpFilters(int windowSize)
     {
-        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
+        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         
         //Sequential 0->100
         ModifiedInput raw1 = new PassThroughSingle("raw-1",0,0);

@@ -18,8 +18,8 @@ public class BufferTest extends ModifierTest {
     @Override
     public void setUpFilters(int windowSize)
     {
-        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
+        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         ModifiedInput buffer = new BufferedInput("input-1",0,windowSize,0);
         buffer.addRequiredInput(0);
         int id = w.getDataManager().featureManager.addModifierToOutput(buffer, 0);
@@ -29,7 +29,7 @@ public class BufferTest extends ModifierTest {
     public void testInputs(int instanceIndex, int windowSize, double[] inputs)
     {
         int numAttributes = inputs.length;
-        assertEquals(windowSize + 1,numAttributes);
+        assertEquals(windowSize + 1, numAttributes);
         for(int k = 0; k < windowSize; k++)
         {
             if((k + instanceIndex) < windowSize - 1)

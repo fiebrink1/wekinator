@@ -44,7 +44,7 @@ import weka.core.Instances;
     
     public void setUpFilters(int windowSize)
     {
-        
+
     }
     
     public void testInputs(int instanceIndex, int windowSize, double[] inputs)
@@ -135,6 +135,7 @@ import weka.core.Instances;
         setUpFilters(getMainWindowSize()*2);
         testForTraining(getMainWindowSize()*2);
     }
+    
 
    
 }

@@ -27,6 +27,7 @@ public class ModifiedInputSingle extends ModifiedInput {
     
     public double getValue()
     {
+        //System.out.println(value);
         return value;
     }
 }

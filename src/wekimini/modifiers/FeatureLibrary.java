@@ -95,6 +95,27 @@ class PassThrough extends Feature
     }
 }
 
+class PassThroughAll extends Feature
+{    
+    public PassThroughAll(String name) {
+        super(name);
+    }
+
+    @Override
+    public List<Integer> addFeature(FeatureGroup fg)
+    {
+        ArrayList<Integer> ids = new ArrayList();
+        String[] names = ((PassThroughVector)fg.getModifier(0)).names;
+        PassThroughVector modifier = new PassThroughVector(names, 0);
+        modifier.addToOutput = true;
+        modifier.addRequiredInput(0);
+        int id1 = fg.addModifier(modifier);
+        ids.add(id1);
+
+        return ids;
+    }
+}
+
 public final class FeatureLibrary 
 {
     private final Map<String, List<Integer>> added = new HashMap<>();
@@ -106,8 +127,7 @@ public final class FeatureLibrary
     
     public FeatureLibrary(FeatureGroup fg)
     {
-        int[] i1 = {0};
-        library.add(new PassThrough("PassThroughFirst",i1));
+        library.add(new PassThroughAll("PassThroughAll"));
         int[] i2 = {0,1,2};
         library.add(new PassThrough("JustAccelerometer",i2));
         library.add(new MaxFFT("MaxFFT"));
@@ -176,5 +196,10 @@ public final class FeatureLibrary
         fg.removeOrphanedModifiers();
         
         added.remove(key);
+    }
+    
+    public void clearAdded()
+    {
+        added.clear();
     }
 }

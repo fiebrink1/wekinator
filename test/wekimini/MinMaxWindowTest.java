@@ -21,8 +21,8 @@ public class MinMaxWindowTest extends ModifierTest {
     @Override
     public void setUpFilters(int windowSize)
     {
-        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
+        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         ModifiedInput windowMax = new WindowedOperation("input-1",new MaxWindowOperation(),0,windowSize,0);
         windowMax.addRequiredInput(0);
         ModifiedInput windowMin = new WindowedOperation("input-1",new MinWindowOperation(),0,windowSize,0);

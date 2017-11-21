@@ -37,10 +37,12 @@ public class ModifiedInput {
             if(comparator instanceof WindowedOperation)
             {
                 boolean operationMatch = ((WindowedOperation)this).getOp().getClass().equals(((WindowedOperation)obj).getOp().getClass());
-                if(!operationMatch)
+                boolean windowSizeMatch = ((WindowedOperation)this).windowSize == ((WindowedOperation)comparator).windowSize;
+                if(!operationMatch || !windowSizeMatch)
                 {
                     return false;
                 }
+                
             }
             if(comparator instanceof MultipleInputWindowedOperation)
             {

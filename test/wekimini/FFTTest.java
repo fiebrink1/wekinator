@@ -36,8 +36,8 @@ public class FFTTest {
     
     public void setUpFilters(int windowSize)
     {
-        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
+        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         ModifiedInput fft1 = new FFTModifier("input-1",0,50,bins);
         fft1.addRequiredInput(0);
         int id = w.getDataManager().featureManager.addModifierToOutput(fft1, 0);

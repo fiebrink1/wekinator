@@ -43,7 +43,7 @@ public class FeatureConnectionsTest {
         {
             for(int j = 0; j < connections[i].length; j++)
             {
-                assertEquals(false,connections[i][j]);
+                assertEquals(i == 0,connections[i][j]);
             }
         }
         
@@ -54,7 +54,7 @@ public class FeatureConnectionsTest {
         {
             for(int j = 0; j < connections[i].length; j++)
             {
-                assertEquals(i == 2 && j == 0,connections[i][j]);
+                assertEquals((i == 2 && j == 0) || ( i == 0), connections[i][j]);
             }
         }
     }
@@ -72,7 +72,7 @@ public class FeatureConnectionsTest {
         {
             for(int j = 0; j < connections[i].length; j++)
             {
-                assertEquals(false,connections[i][j]);
+                assertEquals(i == 0,connections[i][j]);
             }
         }
         
@@ -88,7 +88,7 @@ public class FeatureConnectionsTest {
         {
             for(int j = 0; j < connections[i].length; j++)
             {
-                assertEquals((i == 0 && j == 0) || (i == 2 && j == 2),connections[i][j]);
+                assertEquals((i == 0 && j == 0) || (i == 2 && j == 2), connections[i][j]);
             }
         }
     }

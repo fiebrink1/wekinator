@@ -10,7 +10,7 @@ package wekimini.modifiers;
  * @author rebecca
  */
 public class WindowedOperation extends ModifiedInputSingle {
-    private final int windowSize;
+    protected final int windowSize;
     private transient double[] history;
     private transient int startPointer;
     private final Operation op;

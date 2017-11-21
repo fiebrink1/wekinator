@@ -257,12 +257,10 @@ public class FeatureEditor extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         boolean[][] oldConnections = w.getLearningManager().getConnectionMatrix(true);
         boolean[][] c = gridPanel.getConnectionsFromForm();
-        if (gridPanel.checkValid(c)) {
-            w.getLearningManager().updateInputOutputConnections(c,true);
-            KadenzeLogging.getLogger().selectedFeatures(w, oldConnections, c);
-            this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-            this.dispose();
-        }
+        w.getLearningManager().updateInputOutputConnections(c,true);
+        KadenzeLogging.getLogger().selectedFeatures(w, oldConnections, c);
+        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+        this.dispose();
     }                                                   
 
     public class MyToggle extends JToggleButton {
