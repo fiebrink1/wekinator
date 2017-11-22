@@ -6,34 +6,37 @@
 package wekimini;
 
 import static org.junit.Assert.assertEquals;
-import wekimini.modifiers.MaxInputs;
-import wekimini.modifiers.MinInputs;
+import wekimini.modifiers.FirstOrderDifference;
 import wekimini.modifiers.ModifiedInput;
 
 /**
  *
  * @author louismccallum
  */
-public class MinMaxInputTest extends ModifierTest 
-{
+public class FirstOrderDifferenceTest extends ModifierTest {
+    
     @Override
     public void setUpFilters(int windowSize)
     {
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
-        ModifiedInput max = new MaxInputs("max",0,0);
-        max.addRequiredInput(0);
-        ModifiedInput min = new MinInputs("min",0,0);
-        min.addRequiredInput(0);
-        int idMax = w.getDataManager().featureManager.addModifierToOutput(max, 0);
-        int idMin = w.getDataManager().featureManager.addModifierToOutput(min, 0);
+        FirstOrderDifference fod = new FirstOrderDifference("FOD",0,0);
+        fod.addRequiredInput(0);
+        int idFOD = w.getDataManager().featureManager.addModifierToOutput(fod, 0);
+        FirstOrderDifference fod2 = new FirstOrderDifference("FOD",1,0);
+        fod2.addRequiredInput(0);
+        int idFOD2 = w.getDataManager().featureManager.addModifierToOutput(fod2, 0);
     }
     
     @Override
     public void testInputs(int instanceIndex, int windowSize, double[] inputs)
     {
-        assertEquals(instanceIndex % 10 == 9 ? 0.9 : 0.1, inputs[1], 0.0);
-        assertEquals(instanceIndex + 1, inputs[0], 0.0);
+        if(instanceIndex > 0)
+        {
+            assertEquals(0.0, inputs[1], 0.0);
+            assertEquals(1.0, inputs[0], 0.0);
+        }
+
     }
     
     @Override
