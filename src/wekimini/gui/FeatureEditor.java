@@ -34,6 +34,7 @@ public class FeatureEditor extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuItemDisableAll;
     private javax.swing.JMenuItem menuItemEnableAll;
     private javax.swing.JMenuItem menuItemRevert;
+    private javax.swing.JMenuItem menuItemAuto;
     private javax.swing.JPopupMenu popupMenuAction;
     private javax.swing.JScrollPane scrollPanel;
     
@@ -76,6 +77,7 @@ public class FeatureEditor extends javax.swing.JFrame {
     private void initComponents() {
 
         popupMenuAction = new javax.swing.JPopupMenu();
+        menuItemAuto = new javax.swing.JMenuItem();
         menuItemRevert = new javax.swing.JMenuItem();
         menuItemEnableAll = new javax.swing.JMenuItem();
         menuItemDisableAll = new javax.swing.JMenuItem();
@@ -88,6 +90,14 @@ public class FeatureEditor extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
 
+        menuItemAuto.setText("Automatically Set");
+        menuItemAuto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemAutoActionPerformed(evt);
+            }
+        });
+        popupMenuAction.add(menuItemAuto);
+        
         menuItemRevert.setText("Revert all changes");
         menuItemRevert.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -233,6 +243,10 @@ public class FeatureEditor extends javax.swing.JFrame {
         //System.out.println("KEY PRESSED");
     }                               
 
+    private void menuItemAutoActionPerformed(java.awt.event.ActionEvent evt) {                                               
+        w.getDataManager().selectFeaturesAutomatically();
+    }  
+    
     private void menuItemRevertActionPerformed(java.awt.event.ActionEvent evt) {                                               
         gridPanel.revert();
     }                                              

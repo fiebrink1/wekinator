@@ -24,6 +24,7 @@ import java.util.Enumeration;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import weka.classifiers.Classifier;
 import weka.core.Attribute;
 import weka.core.AttributeStats;
 import weka.core.FastVector;
@@ -34,9 +35,11 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.AddValues;
 import weka.filters.unsupervised.attribute.Reorder;
 import weka.filters.unsupervised.instance.RemoveWithValues;
+import wekimini.featureanalysis.WrapperSelector;
 import wekimini.gui.DatasetViewer;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
+import wekimini.learning.SupervisedLearningModel;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
@@ -738,6 +741,32 @@ public class DataManager {
         inputSavingFilters = insertIntoArray(s, inputSavingFilters, which);
     }
     
+    public void selectFeaturesAutomatically()
+    {
+        WrapperSelector wrapperSelector = new WrapperSelector();
+        int numOutputs = w.getSupervisedLearningManager().getPaths().size();
+        boolean[][] newConnections = new boolean[featureManager.getFeatureNames().length][numOutputs];
+        for(int index = 0; index < numOutputs; index++)
+        {
+            if(featureManager.isDirty(index))
+            {
+                updateFeatureInstances(index);
+            }
+            Instances data = featureInstances.get(index);
+            Path path = w.getSupervisedLearningManager().getPaths().get(index);
+            Classifier c = path.getModelBuilder().getClassifier();
+            wrapperSelector.classifier = c;
+            int[] indexes = wrapperSelector.getFeaturesForInstances(data);
+            boolean [] connections = new boolean[featureInstances.get(index).numAttributes()-1];
+            for(int i:indexes)
+            {
+                newConnections[i][index] = true;
+            }
+            System.out.println("completed model check:" + index);
+        }
+        w.getLearningManager().updateInputOutputConnections(newConnections, true);
+    }
+    
     private void updateFeatureInstances(int index)
     { 
         Instances newInstances = featureManager.getNewInstances(index);
@@ -756,6 +785,7 @@ public class DataManager {
                 Instance featureInstance = new Instance(1.0,withOutput);
                 newInstances.add(featureInstance);
             }
+            newInstances.setClassIndex(index);
             if(index < featureInstances.size())
             {
                featureInstances.set(index, newInstances);

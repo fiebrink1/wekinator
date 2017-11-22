@@ -6,9 +6,12 @@
 package wekimini;
 import java.util.List;
 import java.util.ArrayList;
+import weka.classifiers.Classifier;
 import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.Attribute;
+import wekimini.featureanalysis.WrapperSelector;
+import wekimini.learning.SupervisedLearningModel;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.PassThroughVector;
 /**
@@ -83,7 +86,9 @@ public class FeatureManager
         }
         
         ff.addElement(new Attribute("output"));
-        return new Instances("features" + output, ff, 100);
+        Instances newInst = new Instances("features" + output, ff, 100);
+        newInst.setClassIndex(length);
+        return newInst;
     }
     
     protected double[] modifyInputsForOutput(double[] newInputs, int output)
@@ -139,4 +144,5 @@ public class FeatureManager
             System.out.println("Error trying to remove modifier, index out of bounds");
         }
     }
+    
 }

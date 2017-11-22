@@ -12,6 +12,9 @@ import weka.attributeSelection.WrapperSubsetEval;
 import weka.attributeSelection.GreedyStepwise;
 import weka.core.Instances;
 import weka.classifiers.Classifier;
+import weka.core.converters.ArffSaver;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Remove;
 
 /**
  *
@@ -32,7 +35,13 @@ public class WrapperSelector implements FeatureSelector {
             search.setSearchBackwards(true);
             attsel.setEvaluator(eval);
             attsel.setSearch(search);
-            attsel.SelectAttributes(instances);
+            int classIndex = instances.classAttribute().index();
+            int [] toRemove = {classIndex};
+            Remove remove = new Remove();   
+            remove.setAttributeIndicesArray(toRemove);
+            remove.setInputFormat(instances);                          
+            Instances newData = Filter.useFilter(instances, remove);   
+            attsel.SelectAttributes(newData);
             int[] indices = attsel.selectedAttributes();
             return indices;
         } catch (Exception ex) {

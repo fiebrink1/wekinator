@@ -79,6 +79,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     private final List<PathEditedListener> pathEditedListeners = new LinkedList<>();
     private final List<ConnectsInputsToOutputs.InputOutputConnectionsListener> inputOutputConnectionsListeners = new LinkedList<>();
+    private final List<ConnectsInputsToOutputs.InputOutputConnectionsListener> featureConnectionListeners = new LinkedList<>();
     //Listeners for new output added
     private final List<OutputAddedListener> outputAddedListeners;
 
@@ -596,6 +597,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                 }
                 fg.setSelectedFeatures(onOff);
             }
+            notifyNewFeatureConnections(newConnections);
         }
         else
         {
@@ -1391,15 +1393,35 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             l.newConnectionMatrix(connections);
         }
     }
+    
+    private void notifyNewFeatureConnections(boolean[][] connections) {
+        for (ConnectsInputsToOutputs.InputOutputConnectionsListener l : featureConnectionListeners) {
+            l.newConnectionMatrix(connections);
+        }
+    }
 
     @Override
     public void addConnectionsListener(ConnectsInputsToOutputs.InputOutputConnectionsListener l, boolean features) {
-        inputOutputConnectionsListeners.add(l);
+        if(features)
+        {
+            featureConnectionListeners.add(l);
+        }
+        else
+        {
+            inputOutputConnectionsListeners.add(l);
+        }
     }
 
     @Override
     public boolean removeConnectionsListener(ConnectsInputsToOutputs.InputOutputConnectionsListener l, boolean features) {
-        return inputOutputConnectionsListeners.remove(l);
+        if(features)
+        {
+            return featureConnectionListeners.remove(l);
+        }
+        else
+        {
+            return inputOutputConnectionsListeners.remove(l);
+        }
     }
 
     public interface OutputAddedListener {

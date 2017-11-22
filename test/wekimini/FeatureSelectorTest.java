@@ -51,23 +51,7 @@ public class FeatureSelectorTest {
         {
             Path path = w.getSupervisedLearningManager().getPaths().get(ptr);
             SupervisedLearningModel model = (SupervisedLearningModel)path.getModel();
-            if(wrapperSelector != null)
-            {
-                System.out.println("wrapper not null");
-            }
-            if(path != null)
-            {
-                System.out.println("path not null");
-            }
-            if(model != null)
-            {
-                System.out.println("model not null");
-            }
             Classifier c = model.getClassifier();
-            if(c != null)
-            {
-                System.out.println("classifier not null");
-            }
             wrapperSelector.classifier = c;
             int[] indexes = wrapperSelector.getFeaturesForInstances(data);
             System.out.println("completed model check:" + ptr);
