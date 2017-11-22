@@ -35,7 +35,6 @@ public class SecondOrderDifferenceTest extends ModifierTest {
             assertEquals(0.0, inputs[1], 0.0);
             assertEquals(0.0, inputs[0], 0.0);
         }
-
     }
     
     @Override
