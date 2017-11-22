@@ -784,8 +784,8 @@ public class DataManager {
                 System.arraycopy(features, 0, withOutput, 0, features.length);
                 Instance featureInstance = new Instance(1.0,withOutput);
                 newInstances.add(featureInstance);
+                newInstances.setClassIndex(withOutput.length - 1);
             }
-            newInstances.setClassIndex(index);
             if(index < featureInstances.size())
             {
                featureInstances.set(index, newInstances);

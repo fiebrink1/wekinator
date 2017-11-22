@@ -64,7 +64,6 @@ public class CorrelateTest extends ModifierTest {
     @Override
     public void testInputs(int instanceIndex, int windowSize, double[] inputs)
     {
-        System.out.println(inputs[0]);
         //[0..windowSize] has erroneous 0 values 
         if(instanceIndex > windowSize)
         {

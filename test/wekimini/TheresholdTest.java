@@ -15,7 +15,7 @@ import wekimini.modifiers.ModifiedInput;
  */
 public class TheresholdTest extends ModifierTest {
     
-        @Override
+    @Override
     public void setUpFilters(int windowSize)
     {
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
