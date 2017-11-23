@@ -22,10 +22,13 @@ public class FeatureManager
 {
     //There is one feature group for each path/output
     protected ArrayList<FeatureGroup> featureGroups;
+    private FeatureGroup allFeatures;
+    private boolean isAllFeaturesDirty = true;
     
-    FeatureManager()
+    public FeatureManager()
     {
         featureGroups = new ArrayList<>();
+
     }
     
     public ArrayList<FeatureGroup> getFeatureGroups()
@@ -55,10 +58,21 @@ public class FeatureManager
     
     protected void addOutputs(int numOutputs, String[] inputNames)
     {
+        ArrayList<ModifiedInput> defaultModifiers = new ArrayList();
+        ModifiedInput rawInput = new PassThroughVector(inputNames, 0);
+        rawInput.inputID = 0;
+        rawInput.addToOutput = false;
+        defaultModifiers.add(rawInput);
+        allFeatures = new FeatureGroup(defaultModifiers);
+        for(String feature:allFeatures.getFeatureNames())
+        {
+            allFeatures.addFeatureForKey(feature);
+        }
+        
         for(int i = 0; i < numOutputs; i++)
         {
-            ArrayList<ModifiedInput> defaultModifiers = new ArrayList();
-            ModifiedInput rawInput = new PassThroughVector(inputNames, 0);
+            defaultModifiers = new ArrayList();
+            rawInput = new PassThroughVector(inputNames, 0);
             rawInput.inputID = 0;
             rawInput.addToOutput = false;
             defaultModifiers.add(rawInput);
@@ -144,5 +158,42 @@ public class FeatureManager
             System.out.println("Error trying to remove modifier, index out of bounds");
         }
     }
+    
+    //All Features
+    protected double[] modifyInputsForAllFeatures(double[] newInputs)
+    {        
+        return allFeatures.computeAndGetValuesForNewInputs(newInputs);
+    }
+    
+    protected Instances getAllFeaturesNewInstances()
+    {
+        int length = allFeatures.getOutputDimensionality();
+        FastVector ff = new FastVector(length);
+        for(int i = 0; i < length; i++)
+        {
+            ff.addElement(new Attribute("feature" + i));
+        }
+        
+        ff.addElement(new Attribute("output"));
+        Instances newInst = new Instances("allFeatures", ff, 100);
+        newInst.setClassIndex(length);
+        return newInst;
+    }
+    
+    protected boolean isAllFeaturesDirty()
+    {
+        return isAllFeaturesDirty;
+    }
+    
+    protected void didRecalculateAllFeatures()
+    {
+        isAllFeaturesDirty = false;
+    }
+    
+    public FeatureGroup getAllFeaturesGroup()
+    {
+        return allFeatures;
+    }
+            
     
 }

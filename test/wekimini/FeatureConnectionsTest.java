@@ -7,6 +7,8 @@ package wekimini;
 
 import org.junit.Before;
 import org.junit.Test;
+import java.util.List;
+import wekimini.modifiers.ModifiedInput;
 import static org.junit.Assert.*;
 /**
  *
@@ -91,5 +93,12 @@ public class FeatureConnectionsTest {
                 assertEquals((i == 0 && j == 0) || (i == 2 && j == 2), connections[i][j]);
             }
         }
+        
+        List<ModifiedInput> modifiers1 = w.getDataManager().featureManager.featureGroups.get(0).getModifiers();
+        assertEquals(2, modifiers1.size(), 0);
+        List<ModifiedInput> modifiers2 = w.getDataManager().featureManager.featureGroups.get(1).getModifiers();
+        assertEquals(1, modifiers2.size(), 0);
+        List<ModifiedInput> modifiers3 = w.getDataManager().featureManager.featureGroups.get(2).getModifiers();
+        assertEquals(3, modifiers3.size(), 0);
     }
 }

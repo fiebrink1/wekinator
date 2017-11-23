@@ -68,6 +68,7 @@ public class DataManager {
     private Instances inputInstances = null;
     private List<Instances> featureInstances = null;
     public FeatureManager featureManager;
+    private Instances allFeaturesInstances = null;
     private int nextID = 1;
     private int numOutputs = 0;
 
@@ -743,28 +744,31 @@ public class DataManager {
     
     public void selectFeaturesAutomatically()
     {
+        if(featureManager.isAllFeaturesDirty())
+        {
+            updateAllFeaturesInstances();
+            featureManager.didRecalculateAllFeatures();
+        }
+        Instances data = allFeaturesInstances;
+        
         WrapperSelector wrapperSelector = new WrapperSelector();
-        int numOutputs = w.getSupervisedLearningManager().getPaths().size();
         boolean[][] newConnections = new boolean[featureManager.getFeatureNames().length][numOutputs];
         for(int index = 0; index < numOutputs; index++)
         {
-            if(featureManager.isDirty(index))
-            {
-                updateFeatureInstances(index);
-            }
-            Instances data = featureInstances.get(index);
             Path path = w.getSupervisedLearningManager().getPaths().get(index);
             Classifier c = path.getModelBuilder().getClassifier();
             wrapperSelector.classifier = c;
-            int[] indexes = wrapperSelector.getFeaturesForInstances(data);
-            boolean [] connections = new boolean[featureInstances.get(index).numAttributes()-1];
-            for(int i:indexes)
+            Instances selectedInstances = wrapperSelector.getFilteredInstances(data);
+            if(index < featureInstances.size())
             {
-                newConnections[i][index] = true;
+               featureInstances.set(index, selectedInstances);
             }
-            System.out.println("completed model check:" + index);
+            else
+            {
+               featureInstances.add(selectedInstances);
+            }
+            featureManager.didRecalculateFeatures(index); 
         }
-        w.getLearningManager().updateInputOutputConnections(newConnections, true);
     }
     
     private void updateFeatureInstances(int index)
@@ -802,9 +806,41 @@ public class DataManager {
         }
     }
     
+    private void updateAllFeaturesInstances()
+    { 
+        Instances newInstances = featureManager.getAllFeaturesNewInstances();
+        try{
+            Instances filteredInputs = Filter.useFilter(inputInstances, trainingFilters[0]);
+            for (int i = 0; i < filteredInputs.numInstances(); i++)
+            {
+                double[] input = filteredInputs.instance(i).toDoubleArray();
+                double output = input[input.length-1];
+                double[] justInput = new double[input.length-1];
+                System.arraycopy(input, 0, justInput, 0, justInput.length);
+                double[] features = featureManager.modifyInputsForAllFeatures(justInput);
+                double[] withOutput = new double[features.length + 1];
+                withOutput[withOutput.length-1] = output;
+                System.arraycopy(features, 0, withOutput, 0, features.length);
+                Instance featureInstance = new Instance(1.0,withOutput);
+                newInstances.add(featureInstance);
+                newInstances.setClassIndex(withOutput.length - 1);
+            }
+            allFeaturesInstances = newInstances; 
+        } 
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
     protected List<Instances> getFeatureInstances()
     {
         return featureInstances;
+    }
+    
+    protected Instances getAllFeaturesInstances()
+    {
+        return allFeaturesInstances;
     }
 
     public Instances getTrainingDataForOutput(int index) {

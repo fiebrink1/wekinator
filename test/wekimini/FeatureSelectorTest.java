@@ -5,6 +5,7 @@
  */
 package wekimini;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import weka.core.Instances;
 import wekimini.featureanalysis.WrapperSelector;
 import wekimini.learning.SupervisedLearningModel;
 import weka.classifiers.Classifier;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -35,6 +37,36 @@ public class FeatureSelectorTest {
     public String getTestSetPath()
     {
        return "/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj";
+    }
+    
+    @Test 
+    public void testUpdateAllFeatures()
+    {
+        Method method;
+        try {
+            method = w.getDataManager().getClass().getDeclaredMethod("updateAllFeaturesInstances");
+            method.setAccessible(true);
+            method.invoke(w.getDataManager());
+            int attributes = w.getDataManager().getAllFeaturesInstances().numAttributes();
+            int allFeaturesOutputSize = w.getDataManager().featureManager.getAllFeaturesGroup().getOutputDimensionality();
+            assertEquals(allFeaturesOutputSize, attributes - 1, 0);
+        } catch (Exception e) {
+            
+        }
+    }
+    
+    @Test
+    public void testAutomaticSelect() throws InterruptedException
+    {
+        w.getDataManager().selectFeaturesAutomatically();
+        int attributes = w.getDataManager().getAllFeaturesInstances().numAttributes();
+        int allFeaturesOutputSize = w.getDataManager().featureManager.getAllFeaturesGroup().getOutputDimensionality();
+        assertEquals(allFeaturesOutputSize, attributes - 1, 0);
+        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getSupervisedLearningManager().buildAll();
+        Thread.sleep(50);
+        List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
     }
     
     @Test
