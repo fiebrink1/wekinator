@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import wekimini.FeatureGroup;
-
+import wekimini.modifiers.WindowedOperation.Operation;
 /**
  *
  * @author louismccallum
@@ -18,16 +18,20 @@ import wekimini.FeatureGroup;
 
 class MaxFFT extends FeatureSingleModifierOutput
 {
-
-    public MaxFFT(String name) {
+    
+    int totalBins;
+    int[] bins;
+    
+    public MaxFFT(String name, int totalBins, int[] selectedBins) {
         super(name);
+        this.bins = selectedBins;
+        this.totalBins = totalBins;
     }
 
     @Override
     public List<Integer> addFeature(FeatureGroup fg)
     {
-        int [] bins = {1,2,3,4,5};
-        FFTModifier fft = new FFTModifier("fft",0,64,bins);
+        FFTModifier fft = new FFTModifier("fft",0,totalBins,bins);
         fft.addToOutput= false;
         fft.addRequiredInput(0);
         int fftID = fg.addModifier(fft);
@@ -71,6 +75,28 @@ class MinFFT extends FeatureSingleModifierOutput
         
         setOutputModifierID(minID);
         
+        return ids;
+    }
+}
+
+class WindowedFeature extends FeatureSingleModifierOutput
+{
+    
+    ModifiedInput window;
+    
+    public WindowedFeature(String name, Operation op, int inputIndex, int windowSize) {
+        super(name);
+        this.window = new WindowedOperation("input-1",op,inputIndex,windowSize,0);
+        window.addRequiredInput(inputIndex);
+    }
+    
+    @Override
+    public List<Integer> addFeature(FeatureGroup fg)
+    {
+        ArrayList<Integer> ids = new ArrayList();
+        int id1 = fg.addModifier(window);
+        ids.add(id1);
+        setOutputModifierID(id1);
         return ids;
     }
 }
@@ -134,9 +160,23 @@ public final class FeatureLibrary
     {
         library.add(new PassThroughAll("PassThroughAll"));
         int[] i2 = {0,1,2};
-        library.add(new PassThrough("JustAccelerometer",i2));
-        library.add(new MaxFFT("MaxFFT"));
+        library.add(new PassThrough("AllAcc",i2));
+        library.add(new MaxFFT("MaxFFT",64,new int[]{0,8,16,24,36,48,60}));
         library.add(new MinFFT("MinFFT"));
+        int[] i3 = {3,4,5};
+        library.add(new PassThrough("AllGyro",i3));
+        library.add(new WindowedFeature("MeanAccX",new AverageWindowOperation(),0,10));
+        library.add(new WindowedFeature("MeanAccY",new AverageWindowOperation(),1,10));
+        library.add(new WindowedFeature("MeanAccZ",new AverageWindowOperation(),2,10));
+        library.add(new WindowedFeature("MeanGyroX",new AverageWindowOperation(),3,10));
+        library.add(new WindowedFeature("MeanGyroY",new AverageWindowOperation(),4,10));
+        library.add(new WindowedFeature("MeanGyroZ",new AverageWindowOperation(),5,10));
+        library.add(new WindowedFeature("StdDevAccX",new StdDevWindowOperation(),0,10));
+        library.add(new WindowedFeature("StdDevAccY",new StdDevWindowOperation(),1,10));
+        library.add(new WindowedFeature("StdDevAccZ",new StdDevWindowOperation(),2,10));
+        library.add(new WindowedFeature("StdDevGyroX",new StdDevWindowOperation(),3,10));
+        library.add(new WindowedFeature("StdDevGyroY",new StdDevWindowOperation(),4,10));
+        library.add(new WindowedFeature("StdDevGyroZ",new StdDevWindowOperation(),5,10));
         names = new String[library.size()];
         int ptr = 0;
         for(Feature feature:library)

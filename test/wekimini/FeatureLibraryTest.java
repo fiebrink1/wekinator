@@ -38,9 +38,9 @@ public class FeatureLibraryTest {
     @Test
     public void testMultipleModifiers()
     {
-        fg.addFeatureForKey("JustAccelerometer");
+        fg.addFeatureForKey("AllAcc");
         assertEquals(4, fg.getModifiers().size());
-        fg.removeFeatureForKey("JustAccelerometer");
+        fg.removeFeatureForKey("AllAcc");
         assertEquals(1, fg.getModifiers().size());
     }
     
@@ -71,11 +71,11 @@ public class FeatureLibraryTest {
     {
         fg.addFeatureForKey("MaxFFT");
         assertEquals(3, fg.getModifiers().size());
-        fg.addFeatureForKey("JustAccelerometer");
+        fg.addFeatureForKey("AllAcc");
         assertEquals(6, fg.getModifiers().size());
         fg.removeFeatureForKey("MaxFFT");
         assertEquals(4, fg.getModifiers().size());
-        fg.removeFeatureForKey("JustAccelerometer");
+        fg.removeFeatureForKey("AllAcc");
         assertEquals(1, fg.getModifiers().size());
     }
     
@@ -84,7 +84,7 @@ public class FeatureLibraryTest {
     {
        fg.addFeatureForKey("MaxFFT");
        assertEquals(3, fg.getModifiers().size()); 
-       fg.removeFeatureForKey("JustAccelerometer");
+       fg.removeFeatureForKey("AllAcc");
        assertEquals(3, fg.getModifiers().size()); 
     }
     
