@@ -19,42 +19,17 @@ import weka.filters.unsupervised.attribute.Remove;
  *
  * @author louismccallum
  */
-public class WrapperSelector implements FeatureSelector {
+public class WrapperSelector {
     
     public Classifier classifier;
     
-    @Override
-    public int[] getFeaturesForInstances(Instances instances)
+    public int[] getAttributeIndicesForInstances(Instances instances)
     {
         try {
-            AttributeSelection attsel = new AttributeSelection();
-            WrapperSubsetEval eval = new WrapperSubsetEval();
-            GreedyStepwise search = new GreedyStepwise();
-            eval.setClassifier(classifier);
-            search.setSearchBackwards(true);
-            attsel.setEvaluator(eval);
-            attsel.setSearch(search);
+            
             int classIndex = instances.classAttribute().index();
             int [] toRemove = {classIndex};
-            Remove remove = new Remove();   
-            remove.setAttributeIndicesArray(toRemove);
-            remove.setInputFormat(instances);                          
-            Instances newData = Filter.useFilter(instances, remove);   
-            attsel.SelectAttributes(newData);
-            int[] indices = attsel.selectedAttributes();
-            return indices;
-        } catch (Exception ex) {
-            Logger.getLogger(CFSelector.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return new int[0];
-    }
-    
-    public Instances getFilteredInstances(Instances instances)
-    {
-        try
-        {
-            int classIndex = instances.classAttribute().index();
-            int [] toRemove = {classIndex};
+            
             Remove removeClass = new Remove();   
             removeClass.setAttributeIndicesArray(toRemove);
             removeClass.setInputFormat(instances);                          
@@ -63,16 +38,30 @@ public class WrapperSelector implements FeatureSelector {
             AttributeSelection attsel = new AttributeSelection();
             WrapperSubsetEval eval = new WrapperSubsetEval();
             GreedyStepwise search = new GreedyStepwise();
+            
             eval.setClassifier(classifier);
             search.setSearchBackwards(true);
             attsel.setEvaluator(eval);
             attsel.setSearch(search);
             attsel.SelectAttributes(noClass);
-            int[] indices = attsel.selectedAttributes();
+                        
+            return attsel.selectedAttributes();
+            
+        } catch (Exception ex) {
+            Logger.getLogger(CFSelector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new int[0];
+    }
+    
+    public Instances filterInstances(Instances instances, int[] indices)
+    {
+        try
+        {
+            int classIndex = instances.classAttribute().index();
+            int [] toRemove = {classIndex};
             int[] withClassIndex = new int[indices.length+1];
             System.arraycopy(indices, 0, withClassIndex, 0, indices.length);
             System.arraycopy(toRemove, 0, withClassIndex, indices.length, toRemove.length);
-           
             Remove keep = new Remove();
             keep.setInvertSelection(true);
             keep.setAttributeIndicesArray(withClassIndex);

@@ -69,6 +69,7 @@ public class DataManager {
     private List<Instances> featureInstances = null;
     public FeatureManager featureManager;
     private Instances allFeaturesInstances = null;
+    public String[][] selectedFeatureNames;
     private int nextID = 1;
     private int numOutputs = 0;
 
@@ -752,22 +753,30 @@ public class DataManager {
         Instances data = allFeaturesInstances;
         
         WrapperSelector wrapperSelector = new WrapperSelector();
-        boolean[][] newConnections = new boolean[featureManager.getFeatureNames().length][numOutputs];
-        for(int index = 0; index < numOutputs; index++)
+        selectedFeatureNames = new String[numOutputs][];
+        for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
         {
-            Path path = w.getSupervisedLearningManager().getPaths().get(index);
+            Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
             Classifier c = path.getModelBuilder().getClassifier();
             wrapperSelector.classifier = c;
-            Instances selectedInstances = wrapperSelector.getFilteredInstances(data);
-            if(index < featureInstances.size())
+            int[] indices = wrapperSelector.getAttributeIndicesForInstances(data);
+            selectedFeatureNames[outputIndex] = new String[indices.length];
+            int ptr = 0;
+            for(int attributeIndex:indices)
             {
-               featureInstances.set(index, selectedInstances);
+                selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeaturesGroup().valueMap[attributeIndex];
+                ptr++;
+            }
+            Instances selectedInstances = wrapperSelector.filterInstances(data, indices);
+            if(outputIndex < featureInstances.size())
+            {
+               featureInstances.set(outputIndex, selectedInstances);
             }
             else
             {
                featureInstances.add(selectedInstances);
             }
-            featureManager.didRecalculateFeatures(index); 
+            featureManager.didRecalculateFeatures(outputIndex); 
         }
     }
     

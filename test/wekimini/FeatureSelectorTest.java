@@ -50,6 +50,7 @@ public class FeatureSelectorTest {
             int attributes = w.getDataManager().getAllFeaturesInstances().numAttributes();
             int allFeaturesOutputSize = w.getDataManager().featureManager.getAllFeaturesGroup().getOutputDimensionality();
             assertEquals(allFeaturesOutputSize, attributes - 1, 0);
+            //assertEquals(w.getDataManager().featureManager.getAllFeaturesGroup().valueMap)
         } catch (Exception e) {
             
         }
@@ -85,7 +86,7 @@ public class FeatureSelectorTest {
             SupervisedLearningModel model = (SupervisedLearningModel)path.getModel();
             Classifier c = model.getClassifier();
             wrapperSelector.classifier = c;
-            int[] indexes = wrapperSelector.getFeaturesForInstances(data);
+            int[] indexes = wrapperSelector.getAttributeIndicesForInstances(data);
             System.out.println("completed model check:" + ptr);
             ptr++;
         }
