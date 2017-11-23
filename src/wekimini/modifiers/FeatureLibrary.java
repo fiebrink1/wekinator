@@ -16,7 +16,7 @@ import wekimini.FeatureGroup;
  * @author louismccallum
  */
 
-class MaxFFT extends Feature
+class MaxFFT extends FeatureSingleModifierOutput
 {
 
     public MaxFFT(String name) {
@@ -39,13 +39,15 @@ class MaxFFT extends Feature
         ArrayList<Integer> ids = new ArrayList();
         ids.add(maxID);
         ids.add(fftID);
+        
+        setOutputModifierID(maxID);
+        
         return ids;
     }
 }
 
-class MinFFT extends Feature
+class MinFFT extends FeatureSingleModifierOutput
 {
-
     public MinFFT(String name) {
         super(name);
     }
@@ -66,11 +68,14 @@ class MinFFT extends Feature
         ArrayList<Integer> ids = new ArrayList();
         ids.add(minID);
         ids.add(fftID);
+        
+        setOutputModifierID(minID);
+        
         return ids;
     }
 }
 
-class PassThrough extends Feature
+class PassThrough extends FeatureMultipleModifierOutput
 {
     int[] indexes;
     
@@ -90,12 +95,12 @@ class PassThrough extends Feature
             int id1 = fg.addModifier(modifier);
             ids.add(id1);
         }
-
+        setOutputModifierIDs(ids.toArray(new Integer[ids.size()]));
         return ids;
     }
 }
 
-class PassThroughAll extends Feature
+class PassThroughAll extends FeatureSingleModifierOutput
 {    
     public PassThroughAll(String name) {
         super(name);
@@ -111,7 +116,7 @@ class PassThroughAll extends Feature
         modifier.addRequiredInput(0);
         int id1 = fg.addModifier(modifier);
         ids.add(id1);
-
+        setOutputModifierID(id1);
         return ids;
     }
 }
@@ -201,5 +206,32 @@ public final class FeatureLibrary
     public void clearAdded()
     {
         added.clear();
+    }
+    
+    public String getFeatureNameForModifierID(int id)
+    {
+        for(Feature feature:library)
+        {
+            if(feature instanceof FeatureSingleModifierOutput)
+            {
+                if(id == ((FeatureSingleModifierOutput) feature).getOutputModifierID())
+                {
+                    return ((FeatureSingleModifierOutput) feature).name;
+                }
+            }
+            else
+            {
+                int ptr = 0;
+                for(int matchID:((FeatureMultipleModifierOutput) feature).getOutputModifierIDs())
+                {
+                    if(id == matchID)
+                    {
+                        return ((FeatureMultipleModifierOutput) feature).name + ":" + Integer.toString(ptr);
+                    }
+                    ptr++;
+                }
+            }
+        }
+        return "not found";
     }
 }

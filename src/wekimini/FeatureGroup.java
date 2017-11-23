@@ -31,6 +31,7 @@ public class FeatureGroup {
     private boolean dirtyFlag = true;
     private int currentID = 0;
     private FeatureLibrary featureLibrary;
+    public String[] valueMap;
     
     public FeatureGroup(List<ModifiedInput> modifiers) 
     {
@@ -279,6 +280,7 @@ public class FeatureGroup {
         
         int outputIndex = 0;
         int matchingIndex = 0;
+        valueMap = new String[currentValues.length];
         ArrayList<ModifiedInput> completedModifiers = new ArrayList();
 
         for (ModifiedInput modifier : modifiers) 
@@ -286,6 +288,7 @@ public class FeatureGroup {
             modifier.prepareForNewInputs();
         }
         
+        //Get the raw inputs first
         ModifiedInput currentModifier = modifiers.get(0);
         currentModifier.updateForInputs(newInputs);
         completedModifiers.add(modifiers.get(0));
@@ -309,13 +312,20 @@ public class FeatureGroup {
                         completedModifiers.add(modifier);
                         if(modifier.addToOutput)
                         {
+                            //SAVE THE INDEX OF THE VALUE ADDED AND A REFERNCE TO ITS SOURCE (THE MODIFIER)
+                            String featureName = featureLibrary.getFeatureNameForModifierID(modifier.inputID);
                             if (modifier instanceof ModifiedInputSingle) 
                             {
                                 currentValues[outputIndex] = ((ModifiedInputSingle)modifier).getValue();
+                                valueMap[outputIndex] = featureName;
                             } 
                             else 
                             {
                                 System.arraycopy(((ModifiedInputVector)modifier).getValues(), 0, currentValues, outputIndex, modifier.getSize());
+                                for(int i = 0; i < modifier.getSize(); i++)
+                                {
+                                    valueMap[outputIndex + i] = featureName + ":" + i;
+                                }
                             }
                             outputIndex += modifier.getSize();
                         }
