@@ -190,6 +190,11 @@ public class FeatureManager
         isAllFeaturesDirty = false;
     }
     
+    protected void setAllFeaturesToDirty()
+    {
+        isAllFeaturesDirty = true;
+    }
+    
     public FeatureGroup getAllFeaturesGroup()
     {
         return allFeatures;

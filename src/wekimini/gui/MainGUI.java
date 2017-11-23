@@ -61,6 +61,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private ModelEvaluationFrame modelEvaluationFrame = null;
     private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
     private FeatureEditor featuresWindow = null;
+    private AutomaticFeaturesEditor autoFeatureWindow = null;
     private final Wekinator w;
     private boolean closeable = true; //flaseif this is the last window open
     private static final Logger logger = Logger.getLogger(MainGUI.class.getName());
@@ -624,6 +625,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuPerformanceCheck = new javax.swing.JCheckBoxMenuItem();
         menuConsole = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
+        jMenuItem9 = new javax.swing.JMenuItem();
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
         menuKadenze = new javax.swing.JMenu();
@@ -765,13 +767,21 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         jMenu2.add(menuConsole);
 
-        jMenuItem8.setText("Features");
+        jMenuItem8.setText("Manual Features");
         jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem8ActionPerformed(evt);
             }
         });
         jMenu2.add(jMenuItem8);
+
+        jMenuItem9.setText("Automatic Features");
+        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem9ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem9);
 
         jMenuBar1.add(jMenu2);
 
@@ -907,6 +917,11 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         showFeaturesWindow();
     }//GEN-LAST:event_jMenuItem8ActionPerformed
 
+    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
+        // TODO add your handling code here:
+        showAutomaticFeaturesWindow();
+    }//GEN-LAST:event_jMenuItem9ActionPerformed
+
     private void flushLogs() {
         KadenzeLogging.getLogger().flush();
     }
@@ -1007,7 +1022,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         }
     }
     
-    private void showFeaturesWindow()
+   private void showFeaturesWindow()
     {
         if (featuresWindow == null) {
             featuresWindow = new FeatureEditor(w);
@@ -1024,6 +1039,26 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             Util.callOnClosed(featuresWindow, callMe);
         } else {
             featuresWindow.toFront();
+        }
+    }
+    
+    private void showAutomaticFeaturesWindow()
+    {
+        if (autoFeatureWindow == null) {
+            autoFeatureWindow = new AutomaticFeaturesEditor(w);
+            autoFeatureWindow.setVisible(true);
+
+            //Problem: Won't call on button-triggered dispose...
+            Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                @Override
+                public void callMe() {
+                    autoFeatureWindow = null;
+                }
+            };
+
+            Util.callOnClosed(autoFeatureWindow, callMe);
+        } else {
+            autoFeatureWindow.toFront();
         }
     }
 
@@ -1102,6 +1137,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
     private wekimini.gui.SupervisedLearningPanel learningPanel1;
     private javax.swing.JMenu menuActions;
     private javax.swing.JMenuItem menuConsole;

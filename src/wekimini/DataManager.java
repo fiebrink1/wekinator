@@ -69,7 +69,7 @@ public class DataManager {
     private List<Instances> featureInstances = null;
     public FeatureManager featureManager;
     private Instances allFeaturesInstances = null;
-    public String[][] selectedFeatureNames;
+    public String[][] selectedFeatureNames = new String[0][0];
     private int nextID = 1;
     private int numOutputs = 0;
 
@@ -1131,6 +1131,7 @@ public class DataManager {
     private void fireStateChanged() {
         
         featureManager.setAllOutputsDirty();
+        featureManager.setAllFeaturesToDirty();
         
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
