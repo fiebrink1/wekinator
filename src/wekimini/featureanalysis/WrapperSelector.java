@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.attributeSelection.AttributeSelection;
 import weka.attributeSelection.WrapperSubsetEval;
-import weka.attributeSelection.GreedyStepwise;
+import weka.attributeSelection.BestFirst;
 import weka.core.Instances;
 import weka.classifiers.Classifier;
 import weka.filters.Filter;
@@ -26,7 +26,7 @@ public class WrapperSelector {
     public int[] getAttributeIndicesForInstances(Instances instances)
     {
         try {
-            
+
             int classIndex = instances.classAttribute().index();
             int [] toRemove = {classIndex};
             
@@ -35,16 +35,20 @@ public class WrapperSelector {
             removeClass.setInputFormat(instances);                          
             Instances noClass = Filter.useFilter(instances, removeClass);  
 
+            
             AttributeSelection attsel = new AttributeSelection();
             WrapperSubsetEval eval = new WrapperSubsetEval();
-            GreedyStepwise search = new GreedyStepwise();
+            BestFirst search = new BestFirst();
             
             eval.setClassifier(classifier);
-            search.setSearchBackwards(true);
             attsel.setEvaluator(eval);
             attsel.setSearch(search);
-            attsel.SelectAttributes(noClass);
-                        
+            instances.setClassIndex(instances.numAttributes() - 1);
+            
+            System.out.println("starting selection");
+            attsel.SelectAttributes(instances);
+            System.out.println("DONE");  
+            
             return attsel.selectedAttributes();
             
         } catch (Exception ex) {

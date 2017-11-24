@@ -13,13 +13,12 @@ public class MinInputs extends ModifiedInputSingle {
     
     private double[] values;
     
-    public MinInputs(String originalName, int index, int increment) {
+    public MinInputs(String originalName, int increment) {
         if (increment == 1) {
             this.name = originalName;
         } else {
             this.name = originalName + "(" + increment + ")";
         }
-        this.inputIndex = index;
     }
     
     @Override

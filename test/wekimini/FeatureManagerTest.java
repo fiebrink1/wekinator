@@ -32,7 +32,7 @@ public class FeatureManagerTest {
     public void testAddModifier()
     {
         PassThroughSingle modifier = new PassThroughSingle("1",0,0);
-        modifier.addRequiredInput(0);
+        modifier.addRequiredModifierID(0);
         fm.addModifierToOutput(modifier, 0);
         assertEquals(2, fm.getFeatureGroups().get(0).getModifiers().size());
     }
@@ -42,10 +42,10 @@ public class FeatureManagerTest {
     {
         //Exactly the same, skip second
         PassThroughSingle modifier = new PassThroughSingle("1",0,0);
-        modifier.addRequiredInput(0);
+        modifier.addRequiredModifierID(0);
         int id1 = fm.addModifierToOutput(modifier, 0);
         PassThroughSingle modifier2 = new PassThroughSingle("2",0,0);
-        modifier2.addRequiredInput(0);
+        modifier2.addRequiredModifierID(0);
         int id2 = fm.addModifierToOutput(modifier2, 0);
         assertEquals(2, fm.getFeatureGroups().get(0).getModifiers().size());
         assertTrue(id1 == id2);
@@ -57,7 +57,7 @@ public class FeatureManagerTest {
         
         //Differ on input index, should add
         PassThroughSingle modifier3 = new PassThroughSingle("3",1,0);
-        modifier3.addRequiredInput(0);
+        modifier3.addRequiredModifierID(0);
         fm.addModifierToOutput(modifier3, 0);
         assertEquals(4, fm.getFeatureGroups().get(0).getModifiers().size());
     }
@@ -66,7 +66,7 @@ public class FeatureManagerTest {
     public void testRemove()
     {
         PassThroughSingle modifier = new PassThroughSingle("1",0,0);
-        modifier.addRequiredInput(0);
+        modifier.addRequiredModifierID(0);
         int id1 = fm.addModifierToOutput(modifier, 0);
         assertEquals(2, fm.getFeatureGroups().get(0).getModifiers().size());
         
@@ -83,11 +83,11 @@ public class FeatureManagerTest {
     public void testRemoveChained()
     {
         PassThroughSingle modifier = new PassThroughSingle("1",0,0);
-        modifier.addRequiredInput(0);
+        modifier.addRequiredModifierID(0);
         int id1 = fm.addModifierToOutput(modifier, 0);
         
         PassThroughSingle modifier2 = new PassThroughSingle("1",1,0);
-        modifier2.addRequiredInput(id1);
+        modifier2.addRequiredModifierID(id1);
         int id2 = fm.addModifierToOutput(modifier2, 0);
         
         assertEquals(3, fm.getFeatureGroups().get(0).getModifiers().size());
@@ -106,11 +106,11 @@ public class FeatureManagerTest {
     public void testRemoveOrphaned()
     {
         PassThroughSingle modifier = new PassThroughSingle("1",0,0);
-        modifier.addRequiredInput(0);
+        modifier.addRequiredModifierID(0);
         int id1 = fm.addModifierToOutput(modifier, 0);
         
         PassThroughSingle modifier2 = new PassThroughSingle("1",1,0);
-        modifier2.addRequiredInput(Integer.MAX_VALUE);
+        modifier2.addRequiredModifierID(Integer.MAX_VALUE);
         int id2 = fm.addModifierToOutput(modifier2, 0);
         
         assertEquals(3, fm.getFeatureGroups().get(0).getModifiers().size());

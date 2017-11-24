@@ -759,7 +759,9 @@ public class DataManager {
             Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
             Classifier c = path.getModelBuilder().getClassifier();
             wrapperSelector.classifier = c;
+            System.out.println("selecting attributes for output " + outputIndex);
             int[] indices = wrapperSelector.getAttributeIndicesForInstances(data);
+            System.out.println("DONE selecting attributes for output " + outputIndex);
             selectedFeatureNames[outputIndex] = new String[indices.length];
             int ptr = 0;
             for(int attributeIndex:indices)
@@ -817,6 +819,7 @@ public class DataManager {
     
     private void updateAllFeaturesInstances()
     { 
+        System.out.println("calculating features for all instances");
         Instances newInstances = featureManager.getAllFeaturesNewInstances();
         try{
             Instances filteredInputs = Filter.useFilter(inputInstances, trainingFilters[0]);
@@ -833,7 +836,9 @@ public class DataManager {
                 Instance featureInstance = new Instance(1.0,withOutput);
                 newInstances.add(featureInstance);
                 newInstances.setClassIndex(withOutput.length - 1);
+                System.out.println("Calculated all features for instance " + i);
             }
+            System.out.println("DONE calculating all features for all instances");
             allFeaturesInstances = newInstances; 
         } 
         catch (Exception e)

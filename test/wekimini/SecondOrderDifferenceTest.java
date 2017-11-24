@@ -20,10 +20,10 @@ public class SecondOrderDifferenceTest extends ModifierTest {
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         SecondOrderDifference sod = new SecondOrderDifference("SOD",0,0);
-        sod.addRequiredInput(0);
+        sod.addRequiredModifierID(0);
         int idSOD = w.getDataManager().featureManager.addModifierToOutput(sod, 0);
         SecondOrderDifference sod2 = new SecondOrderDifference("SOD",1,0);
-        sod2.addRequiredInput(0);
+        sod2.addRequiredModifierID(0);
         int idSOD2 = w.getDataManager().featureManager.addModifierToOutput(sod2, 0);
     }
     

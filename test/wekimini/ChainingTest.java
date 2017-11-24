@@ -26,11 +26,11 @@ public class ChainingTest extends ModifierTest {
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         ModifiedInput window = new WindowedOperation("input-1a",new AverageWindowOperation(),0,meanWindowSize,0);
-        window.addRequiredInput(0);
+        window.addRequiredModifierID(0);
         window.addToOutput = false;
         int windowID = w.getDataManager().featureManager.addModifierToOutput(window, 0);
         ModifiedInput buffer = new BufferedInput("input-1b",0,windowSize,0);
-        buffer.addRequiredInput(windowID);
+        buffer.addRequiredModifierID(windowID);
         w.getDataManager().featureManager.addModifierToOutput(buffer, 0);
     }
     

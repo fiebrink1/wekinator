@@ -35,29 +35,29 @@ public class CorrelateTest extends ModifierTest {
         //Sequential 0->100
         ModifiedInput raw1 = new PassThroughSingle("raw-1",0,0);
         raw1.addToOutput = false;
-        raw1.addRequiredInput(0);
+        raw1.addRequiredModifierID(0);
         int rawID1 = w.getDataManager().featureManager.addModifierToOutput(raw1, 0);
         
         //Sequential 0->100
         ModifiedInput raw2 = new PassThroughSingle("raw-2",1,0);
         raw2.addToOutput = false;
-        raw2.addRequiredInput(0);
+        raw2.addRequiredModifierID(0);
         int rawID2 = w.getDataManager().featureManager.addModifierToOutput(raw2, 0);
         
         //Sequential 100->0
         ModifiedInput raw3 = new PassThroughSingle("raw-3",2,0);
         raw3.addToOutput = false;
-        raw3.addRequiredInput(0);
+        raw3.addRequiredModifierID(0);
         int rawID3 = w.getDataManager().featureManager.addModifierToOutput(raw3, 0);
         
         ModifiedInput correlatePos = new MultipleInputWindowedOperation("input-1",new CorrelateWindowOperation(),windowSize,0);
-        correlatePos.addRequiredInput(rawID1);
-        correlatePos.addRequiredInput(rawID2);
+        correlatePos.addRequiredModifierID(rawID1);
+        correlatePos.addRequiredModifierID(rawID2);
         int id1 = w.getDataManager().featureManager.addModifierToOutput(correlatePos, 0);
 
         ModifiedInput correlateNeg = new MultipleInputWindowedOperation("input-2",new CorrelateWindowOperation(),windowSize,0);
-        correlateNeg.addRequiredInput(rawID1);
-        correlateNeg.addRequiredInput(rawID3);
+        correlateNeg.addRequiredModifierID(rawID1);
+        correlateNeg.addRequiredModifierID(rawID3);
         int id2 = w.getDataManager().featureManager.addModifierToOutput(correlateNeg, 0);
     }
     

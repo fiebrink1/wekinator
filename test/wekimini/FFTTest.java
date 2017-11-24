@@ -39,7 +39,7 @@ public class FFTTest {
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         ModifiedInput fft1 = new FFTModifier("input-1",0,50,bins);
-        fft1.addRequiredInput(0);
+        fft1.addRequiredModifierID(0);
         int id = w.getDataManager().featureManager.addModifierToOutput(fft1, 0);
     }
     

@@ -47,33 +47,33 @@ public class FeatureLibraryTest {
     @Test
     public void testChained()
     {
-        fg.addFeatureForKey("MaxFFT");
+        fg.addFeatureForKey("MaxFFTAccX");
         assertEquals(3, fg.getModifiers().size());
-        fg.removeFeatureForKey("MaxFFT");
+        fg.removeFeatureForKey("MaxFFTAccX");
         assertEquals(1, fg.getModifiers().size());
     }
     
     @Test
     public void testShared()
     {
-        fg.addFeatureForKey("MaxFFT");
+        fg.addFeatureForKey("MaxFFTAccX");
         assertEquals(3, fg.getModifiers().size());
-        fg.addFeatureForKey("MinFFT");
+        fg.addFeatureForKey("MinFFTAccX");
         assertEquals(4, fg.getModifiers().size());
-        fg.removeFeatureForKey("MaxFFT");
+        fg.removeFeatureForKey("MaxFFTAccX");
         assertEquals(3, fg.getModifiers().size());
-        fg.removeFeatureForKey("MinFFT");
+        fg.removeFeatureForKey("MinFFTAccX");
         assertEquals(1, fg.getModifiers().size());
     }
     
     @Test
     public void testMultipleFeatures()
     {
-        fg.addFeatureForKey("MaxFFT");
+        fg.addFeatureForKey("MaxFFTAccX");
         assertEquals(3, fg.getModifiers().size());
         fg.addFeatureForKey("AllAcc");
         assertEquals(6, fg.getModifiers().size());
-        fg.removeFeatureForKey("MaxFFT");
+        fg.removeFeatureForKey("MaxFFTAccX");
         assertEquals(4, fg.getModifiers().size());
         fg.removeFeatureForKey("AllAcc");
         assertEquals(1, fg.getModifiers().size());
@@ -82,7 +82,7 @@ public class FeatureLibraryTest {
     @Test
     public void testRemoveNotAddedFeature()
     {
-       fg.addFeatureForKey("MaxFFT");
+       fg.addFeatureForKey("MaxFFTAccX");
        assertEquals(3, fg.getModifiers().size()); 
        fg.removeFeatureForKey("AllAcc");
        assertEquals(3, fg.getModifiers().size()); 
@@ -91,13 +91,13 @@ public class FeatureLibraryTest {
     @Test 
     public void testGetConnections()
     {
-       fg.addFeatureForKey("MaxFFT");
+       fg.addFeatureForKey("MaxFFTAccX");
        assertEquals(3, fg.getModifiers().size()); 
        boolean[] connections = fg.getConnections();
        int ptr = 0;
        for(boolean isEnabled:connections)
        {
-           assertEquals(ptr == 2, isEnabled);
+           assertEquals(ptr == 3, isEnabled);
            ptr++;
        }
     }
@@ -105,7 +105,7 @@ public class FeatureLibraryTest {
     @Test
     public void testSetConnections()
     {
-        fg.addFeatureForKey("MaxFFT");
+        fg.addFeatureForKey("MaxFFTAccX");
         assertEquals(3, fg.getModifiers().size()); 
         
         boolean[] onOff = {true,true,false,false};

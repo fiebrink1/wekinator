@@ -151,7 +151,7 @@ public class ModifiedInput {
         inputValues = new double[0];
     }
     
-    public void addRequiredInput(int id)
+    public void addRequiredModifierID(int id)
     {
         requiredInputs.add(id);
     }

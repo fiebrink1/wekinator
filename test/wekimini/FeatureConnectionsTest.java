@@ -49,14 +49,14 @@ public class FeatureConnectionsTest {
             }
         }
         
-        w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey("MaxFFT");
+        w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey("MaxFFTAccX");
         connections = w.getLearningManager().getConnectionMatrix(true);
         
         for(int i = 0; i < connections.length; i++)
         {
             for(int j = 0; j < connections[i].length; j++)
             {
-                assertEquals((i == 2 && j == 0) || ( i == 0), connections[i][j]);
+                assertEquals((i == 3 && j == 0) || ( i == 0), connections[i][j]);
             }
         }
     }
@@ -94,11 +94,14 @@ public class FeatureConnectionsTest {
             }
         }
         
+        //Pass through vector
         List<ModifiedInput> modifiers1 = w.getDataManager().featureManager.featureGroups.get(0).getModifiers();
         assertEquals(2, modifiers1.size(), 0);
+        //Jsut raw
         List<ModifiedInput> modifiers2 = w.getDataManager().featureManager.featureGroups.get(1).getModifiers();
         assertEquals(1, modifiers2.size(), 0);
+        //All Gyro
         List<ModifiedInput> modifiers3 = w.getDataManager().featureManager.featureGroups.get(2).getModifiers();
-        assertEquals(3, modifiers3.size(), 0);
+        assertEquals(4, modifiers3.size(), 0);
     }
 }

@@ -308,6 +308,7 @@ public class FeatureGroup {
                     modifier.isInputRequired(currentModifier);
                     if(modifier.hasAllInputs())
                     {
+                        //System.out.println("collating inputs for " + modifier.inputID);
                         modifier.collateInputsFromModifiers(modifiers);
                         completedModifiers.add(modifier);
                         if(modifier.addToOutput)

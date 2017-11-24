@@ -25,16 +25,16 @@ public class MultipleInputTest extends ModifierTest {
         //Sequential 1->100
         ModifiedInput raw1 = new PassThroughSingle("0",0,0);
         raw1.addToOutput = false;
-        raw1.addRequiredInput(0);
+        raw1.addRequiredModifierID(0);
         //All ones
         ModifiedInput raw2 = new PassThroughSingle("1",1,0);
         raw2.addToOutput = false;
-        raw2.addRequiredInput(0);
+        raw2.addRequiredModifierID(0);
         int rawID1 = w.getDataManager().featureManager.addModifierToOutput(raw1, 0);
         int rawID2 = w.getDataManager().featureManager.addModifierToOutput(raw2, 0);
         ModifiedInput sum = new MultipleInputWindowedOperation("input-1",new SumInputsWindowOperation(),windowSize,0);
-        sum.addRequiredInput(rawID1);
-        sum.addRequiredInput(rawID2);
+        sum.addRequiredModifierID(rawID1);
+        sum.addRequiredModifierID(rawID2);
         int id = w.getDataManager().featureManager.addModifierToOutput(sum, 0);
     }
     

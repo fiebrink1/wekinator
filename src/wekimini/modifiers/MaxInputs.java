@@ -13,13 +13,12 @@ public class MaxInputs extends ModifiedInputSingle {
     
     private double[] values;
     
-    public MaxInputs(String originalName, int index, int increment) {
+    public MaxInputs(String originalName, int increment) {
         if (increment == 1) {
             this.name = originalName;
         } else {
             this.name = originalName + "(" + increment + ")";
         }
-        this.inputIndex = index;
     }
     
     @Override

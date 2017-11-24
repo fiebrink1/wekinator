@@ -74,7 +74,7 @@ public class MultipleInputWindowedOperation extends ModifiedInputSingle {
     }
     
     @Override
-    public void addRequiredInput(int id)
+    public void addRequiredModifierID(int id)
     {
         requiredInputs.add(id);
         history = new double[requiredInputs.size()][windowSize];

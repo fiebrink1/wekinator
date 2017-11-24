@@ -22,13 +22,13 @@ public class NonexistantInputTest extends ModifierTest {
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         ModifiedInput passThrough = new PassThroughSingle("1",0,0);
-        passThrough.addRequiredInput(0);
+        passThrough.addRequiredModifierID(0);
         passThrough.addToOutput = true;
         int id1 = w.getDataManager().featureManager.addModifierToOutput(passThrough, 0);
         String[] names = {"1","2","3"};
         ModifiedInput passThrough2 = new PassThroughVector(names,0);
         //THIS IS A NONEXISTANT INPUT
-        passThrough2.addRequiredInput(Integer.MAX_VALUE);
+        passThrough2.addRequiredModifierID(Integer.MAX_VALUE);
         passThrough2.addToOutput = true;
         int id2 = w.getDataManager().featureManager.addModifierToOutput(passThrough2, 0);
     }

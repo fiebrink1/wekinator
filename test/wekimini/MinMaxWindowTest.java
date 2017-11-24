@@ -24,9 +24,9 @@ public class MinMaxWindowTest extends ModifierTest {
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         ModifiedInput windowMax = new WindowedOperation("input-1",new MaxWindowOperation(),0,windowSize,0);
-        windowMax.addRequiredInput(0);
+        windowMax.addRequiredModifierID(0);
         ModifiedInput windowMin = new WindowedOperation("input-1",new MinWindowOperation(),0,windowSize,0);
-        windowMin.addRequiredInput(0);
+        windowMin.addRequiredModifierID(0);
         int idMax = w.getDataManager().featureManager.addModifierToOutput(windowMax, 0);
         int idMin = w.getDataManager().featureManager.addModifierToOutput(windowMin, 0);
     }

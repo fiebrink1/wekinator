@@ -23,7 +23,7 @@ public class MedianTest extends ModifierTest {
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         ModifiedInput window = new WindowedOperation("input-1",new MedianWindowOperation(),0,windowSize,0);
-        window.addRequiredInput(0);
+        window.addRequiredModifierID(0);
         int id = w.getDataManager().featureManager.addModifierToOutput(window, 0);
     }
     

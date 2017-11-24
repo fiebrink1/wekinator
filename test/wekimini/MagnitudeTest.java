@@ -43,25 +43,25 @@ public class MagnitudeTest extends ModifierTest {
         // 2*1, 2*2, 2*3...2*n
         ModifiedInput raw1 = new PassThroughSingle("raw-1",0,0);
         raw1.addToOutput = false;
-        raw1.addRequiredInput(0);
+        raw1.addRequiredModifierID(0);
         int rawID1 = w.getDataManager().featureManager.addModifierToOutput(raw1, 0);
         
         // 10*1, 10*2, 10*3...10*n
         ModifiedInput raw2 = new PassThroughSingle("raw-2",1,0);
         raw2.addToOutput = false;
-        raw2.addRequiredInput(0);
+        raw2.addRequiredModifierID(0);
         int rawID2 = w.getDataManager().featureManager.addModifierToOutput(raw2, 0);
         
         // 11*1, 11*2, 11*3...11*n
         ModifiedInput raw3 = new PassThroughSingle("raw-3",2,0);
         raw3.addToOutput = false;
-        raw3.addRequiredInput(0);
+        raw3.addRequiredModifierID(0);
         int rawID3 = w.getDataManager().featureManager.addModifierToOutput(raw3, 0);
         
         ModifiedInput mag = new MultipleInputWindowedOperation("input-1",new ThreeDimensionalMagnitude(),windowSize,0);
-        mag.addRequiredInput(rawID1);
-        mag.addRequiredInput(rawID2);
-        mag.addRequiredInput(rawID3);
+        mag.addRequiredModifierID(rawID1);
+        mag.addRequiredModifierID(rawID2);
+        mag.addRequiredModifierID(rawID3);
         int id1 = w.getDataManager().featureManager.addModifierToOutput(mag, 0);
     }
     

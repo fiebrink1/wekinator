@@ -21,10 +21,10 @@ public class FirstOrderDifferenceTest extends ModifierTest {
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         FirstOrderDifference fod = new FirstOrderDifference("FOD",0,0);
-        fod.addRequiredInput(0);
+        fod.addRequiredModifierID(0);
         int idFOD = w.getDataManager().featureManager.addModifierToOutput(fod, 0);
         FirstOrderDifference fod2 = new FirstOrderDifference("FOD",1,0);
-        fod2.addRequiredInput(0);
+        fod2.addRequiredModifierID(0);
         int idFOD2 = w.getDataManager().featureManager.addModifierToOutput(fod2, 0);
     }
     

@@ -22,15 +22,15 @@ public class TheresholdTest extends ModifierTest {
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         Threshold thresh = new Threshold("thresh",0,0);
         thresh.threshold = 50.0;
-        thresh.addRequiredInput(0);
+        thresh.addRequiredModifierID(0);
         int idThresh = w.getDataManager().featureManager.addModifierToOutput(thresh, 0);
         Threshold thresh2 = new Threshold("thresh2",1,0);
         thresh2.threshold = 0.5;
-        thresh2.addRequiredInput(0);
+        thresh2.addRequiredModifierID(0);
         int idThresh2 = w.getDataManager().featureManager.addModifierToOutput(thresh2, 0);
         Threshold thresh3 = new Threshold("thresh3",2,0);
         thresh3.threshold = 0.5;
-        thresh3.addRequiredInput(0);
+        thresh3.addRequiredModifierID(0);
         int idThresh3 = w.getDataManager().featureManager.addModifierToOutput(thresh3, 0);
     }
     

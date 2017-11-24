@@ -21,10 +21,10 @@ public class MinMaxInputTest extends ModifierTest
     {
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
-        ModifiedInput max = new MaxInputs("max",0,0);
-        max.addRequiredInput(0);
-        ModifiedInput min = new MinInputs("min",0,0);
-        min.addRequiredInput(0);
+        ModifiedInput max = new MaxInputs("max",0);
+        max.addRequiredModifierID(0);
+        ModifiedInput min = new MinInputs("min",0);
+        min.addRequiredModifierID(0);
         int idMax = w.getDataManager().featureManager.addModifierToOutput(max, 0);
         int idMin = w.getDataManager().featureManager.addModifierToOutput(min, 0);
     }

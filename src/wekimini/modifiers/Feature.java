@@ -16,14 +16,15 @@ import wekimini.FeatureGroup;
 public class Feature 
 {
     public final String name;
+    public final ArrayList<Integer> ids = new ArrayList();
     
     public Feature(String name)
     {
         this.name = name;
     }
     
-    public List<Integer> addFeature(FeatureGroup fg)
+    public void addFeature(FeatureGroup fg)
     {
-        return new ArrayList();
+        
     }  
 }
