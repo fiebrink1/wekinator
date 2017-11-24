@@ -196,6 +196,59 @@ class BufferFeature extends FeatureSingleModifierOutput
     }
 }
 
+class MagnitudeFODFeature extends FeatureSingleModifierOutput
+{
+    int[] inputs;
+    int windowSize;
+    
+    public MagnitudeFODFeature(String name, int[] inputs, int windowSize)
+    {
+        super(name);
+        this.inputs = inputs;
+        this.windowSize = windowSize;
+    }
+    
+    @Override
+    public void addFeature(FeatureGroup fg)
+    {
+        
+        FirstOrderDifference fod1 = new FirstOrderDifference("FOD-1",inputs[0],0);
+        fod1.addRequiredModifierID(0);
+        int fod1ID = fg.addModifier(fod1);
+                    
+        FirstOrderDifference fod2 = new FirstOrderDifference("FOD-2",inputs[1],0);
+        fod2.addRequiredModifierID(0);
+        int fod2ID = fg.addModifier(fod2);
+         
+        FirstOrderDifference fod3 = new FirstOrderDifference("FOD-3",inputs[2],0);
+        fod3.addRequiredModifierID(0);
+        int fod3ID = fg.addModifier(fod3);
+        
+        ModifiedInput raw1 = new PassThroughSingle("raw-1",0,0);
+        raw1.addToOutput = false;
+        raw1.addRequiredModifierID(fod2ID);
+        int rawID1 = fg.addModifier(raw1);
+        
+        ModifiedInput raw2 = new PassThroughSingle("raw-2",0,0);
+        raw2.addToOutput = false;
+        raw2.addRequiredModifierID(fod3ID);
+        int rawID2 = fg.addModifier(raw2);
+        
+        ModifiedInput raw3 = new PassThroughSingle("raw-3",0,0);
+        raw3.addToOutput = false;
+        raw3.addRequiredModifierID(0);
+        int rawID3 = fg.addModifier(raw3);
+        
+        ModifiedInput mag = new MultipleInputWindowedOperation("input-1",new ThreeDimensionalMagnitude(),windowSize,0);
+        mag.addRequiredModifierID(rawID1);
+        mag.addRequiredModifierID(rawID2);
+        mag.addRequiredModifierID(rawID3);
+        int id1 = fg.addModifier(mag);
+        ids.add(id1);
+        setOutputModifierID(id1);
+    }
+}
+
 class MagnitudeFeature extends FeatureSingleModifierOutput
 {
     int[] inputs;
@@ -371,6 +424,8 @@ public final class FeatureLibrary
         library.add(new BufferFeature("Buffer10GyroZ", 5, 10));
         library.add(new MagnitudeFeature("MagAcc", new int[]{0,1,2}, 2));
         library.add(new MagnitudeFeature("MagGyro", new int[]{3,4,5}, 2));
+        library.add(new MagnitudeFODFeature("MagFODAcc", new int[]{0,1,2}, 2));
+        library.add(new MagnitudeFODFeature("MagFODGyro", new int[]{3,4,5}, 2));
         library.add(new FODRaw("AccXFOD", 0));
         library.add(new FODRaw("AccYFOD", 1));
         library.add(new FODRaw("AccZFOD", 2));

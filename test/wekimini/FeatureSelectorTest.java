@@ -5,12 +5,16 @@
  */
 package wekimini;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import weka.core.Instances;
 import wekimini.featureanalysis.WrapperSelector;
+import wekimini.featureanalysis.InfoGainSelector;
 import wekimini.learning.SupervisedLearningModel;
 import weka.classifiers.Classifier;
 import static org.junit.Assert.assertEquals;
@@ -37,11 +41,11 @@ public class FeatureSelectorTest {
     
     public String getTestSetPath()
     {
-       return "/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/6_inputTest/6_inputTest/6_inputTest.wekproj";
+       return "/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/Small6-1/Small6-1/Small6-1.wekproj";
     }
     
     @Test 
-    public void testUpdateAllFeatures()
+    @Ignore public void testUpdateAllFeatures()
     {
         Method method;
         try {
@@ -58,7 +62,7 @@ public class FeatureSelectorTest {
     }
     
     @Test
-    public void testAutomaticSelect() throws InterruptedException
+    @Ignore public void testAutomaticSelect() throws InterruptedException
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
@@ -92,6 +96,35 @@ public class FeatureSelectorTest {
             ptr++;
         }
 
+        System.out.println("done");
+    }
+    
+    @Test
+    public void testInfoGainSelection() throws InterruptedException
+    {
+        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getSupervisedLearningManager().buildAll();
+        Thread.sleep(50);
+        List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
+        InfoGainSelector sel = new InfoGainSelector();
+        int ptr = 0;
+        for(Instances data:featureInstances)
+        {
+            int[] indexes = sel.getAttributeIndicesForInstances(data);
+            System.out.println("completed model check:" + ptr);
+            ptr++;
+        }
+        Method method;
+        try {
+            method = w.getDataManager().getClass().getDeclaredMethod("updateAllFeaturesInstances");
+            method.setAccessible(true);
+            method.invoke(w.getDataManager());
+        } catch (Exception ex) {
+            Logger.getLogger(FeatureSelectorTest.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+        Instances allFeatures = w.getDataManager().getAllFeaturesInstances();
+        int[] indexes = sel.getAttributeIndicesForInstances(allFeatures);
         System.out.println("done");
     }
     

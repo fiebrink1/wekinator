@@ -13,6 +13,7 @@ import weka.attributeSelection.InfoGainAttributeEval;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
+import weka.filters.unsupervised.attribute.Discretize;
 
 /**
  *
@@ -20,6 +21,8 @@ import weka.filters.unsupervised.attribute.Remove;
  */
 public class InfoGainSelector extends FeatureSelector {
  
+    double threshold = 0.2;
+    
     @Override
     public int[] getAttributeIndicesForInstances(Instances instances)
     {
@@ -33,6 +36,10 @@ public class InfoGainSelector extends FeatureSelector {
             removeClass.setInputFormat(instances);                          
             Instances noClass = Filter.useFilter(instances, removeClass);  
 
+            Discretize dis = new Discretize();
+            dis.setInputFormat(noClass);     
+            Instances discreted = Filter.useFilter(noClass, dis); 
+            
             AttributeSelection attsel = new AttributeSelection();
             InfoGainAttributeEval eval = new InfoGainAttributeEval();
             Ranker search = new Ranker();
@@ -42,10 +49,15 @@ public class InfoGainSelector extends FeatureSelector {
             instances.setClassIndex(instances.numAttributes() - 1);
             
             System.out.println("starting selection");
-            attsel.SelectAttributes(instances);
+            attsel.SelectAttributes(discreted);
             System.out.println("DONE");  
             
-            return attsel.selectedAttributes();
+            //Return best results from ranked array
+            int[] ranked =  attsel.selectedAttributes();
+            int i = (int)(((double)ranked.length)*threshold);
+            int[] thresholded = new int[i];
+            System.arraycopy(ranked, 0, thresholded, 0, i);
+            return thresholded;
             
         } catch (Exception ex) {
             Logger.getLogger(InfoGainSelector.class.getName()).log(Level.SEVERE, null, ex);
