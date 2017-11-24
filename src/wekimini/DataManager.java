@@ -36,6 +36,8 @@ import weka.filters.unsupervised.attribute.AddValues;
 import weka.filters.unsupervised.attribute.Reorder;
 import weka.filters.unsupervised.instance.RemoveWithValues;
 import wekimini.featureanalysis.WrapperSelector;
+import wekimini.featureanalysis.InfoGainSelector;
+import wekimini.featureanalysis.FeatureSelector;
 import wekimini.gui.DatasetViewer;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
@@ -752,15 +754,15 @@ public class DataManager {
         }
         Instances data = allFeaturesInstances;
         
-        WrapperSelector wrapperSelector = new WrapperSelector();
+        FeatureSelector sel = new WrapperSelector();
         selectedFeatureNames = new String[numOutputs][];
         for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
         {
             Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
             Classifier c = path.getModelBuilder().getClassifier();
-            wrapperSelector.classifier = c;
+            ((WrapperSelector)sel).classifier = c;
             System.out.println("selecting attributes for output " + outputIndex);
-            int[] indices = wrapperSelector.getAttributeIndicesForInstances(data);
+            int[] indices = sel.getAttributeIndicesForInstances(data);
             System.out.println("DONE selecting attributes for output " + outputIndex);
             selectedFeatureNames[outputIndex] = new String[indices.length];
             int ptr = 0;
@@ -769,7 +771,7 @@ public class DataManager {
                 selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeaturesGroup().valueMap[attributeIndex];
                 ptr++;
             }
-            Instances selectedInstances = wrapperSelector.filterInstances(data, indices);
+            Instances selectedInstances = sel.filterInstances(data, indices);
             if(outputIndex < featureInstances.size())
             {
                featureInstances.set(outputIndex, selectedInstances);
@@ -836,7 +838,7 @@ public class DataManager {
                 Instance featureInstance = new Instance(1.0,withOutput);
                 newInstances.add(featureInstance);
                 newInstances.setClassIndex(withOutput.length - 1);
-                System.out.println("Calculated all features for instance " + i);
+                //System.out.println("Calculated all features for instance " + i);
             }
             System.out.println("DONE calculating all features for all instances");
             allFeaturesInstances = newInstances; 

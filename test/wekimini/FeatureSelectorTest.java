@@ -72,7 +72,7 @@ public class FeatureSelectorTest {
     }
     
     @Test
-    public void testWrapperSelection() throws InterruptedException
+    @Ignore public void testWrapperSelection() throws InterruptedException
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);

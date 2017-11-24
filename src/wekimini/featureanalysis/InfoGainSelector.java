@@ -8,10 +8,9 @@ package wekimini.featureanalysis;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.attributeSelection.AttributeSelection;
-import weka.attributeSelection.WrapperSubsetEval;
-import weka.attributeSelection.BestFirst;
+import weka.attributeSelection.Ranker;
+import weka.attributeSelection.InfoGainAttributeEval;
 import weka.core.Instances;
-import weka.classifiers.Classifier;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
 
@@ -19,11 +18,8 @@ import weka.filters.unsupervised.attribute.Remove;
  *
  * @author louismccallum
  */
-
-public class WrapperSelector extends FeatureSelector {
-    
-    public Classifier classifier;
-    
+public class InfoGainSelector extends FeatureSelector {
+ 
     @Override
     public int[] getAttributeIndicesForInstances(Instances instances)
     {
@@ -38,26 +34,23 @@ public class WrapperSelector extends FeatureSelector {
             Instances noClass = Filter.useFilter(instances, removeClass);  
 
             AttributeSelection attsel = new AttributeSelection();
-            WrapperSubsetEval eval = new WrapperSubsetEval();
-            BestFirst search = new BestFirst();
-            
-            eval.setClassifier(classifier);
+            InfoGainAttributeEval eval = new InfoGainAttributeEval();
+            Ranker search = new Ranker();
+            search.setOptions(new String[]{"-T","0.05"});
             attsel.setEvaluator(eval);
             attsel.setSearch(search);
             instances.setClassIndex(instances.numAttributes() - 1);
             
             System.out.println("starting selection");
-            attsel.SelectAttributes(noClass);
+            attsel.SelectAttributes(instances);
             System.out.println("DONE");  
             
             return attsel.selectedAttributes();
             
         } catch (Exception ex) {
-            Logger.getLogger(WrapperSelector.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(InfoGainSelector.class.getName()).log(Level.SEVERE, null, ex);
         }
         return new int[0];
     }
-    
-
     
 }
