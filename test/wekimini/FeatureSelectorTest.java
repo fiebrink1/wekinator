@@ -5,21 +5,29 @@
  */
 package wekimini;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import weka.core.Instances;
+import weka.core.Instance;
 import wekimini.featureanalysis.WrapperSelector;
 import wekimini.featureanalysis.InfoGainSelector;
 import wekimini.learning.SupervisedLearningModel;
 import weka.classifiers.Classifier;
 import static org.junit.Assert.assertEquals;
 import org.junit.Ignore;
-
+import weka.core.Attribute;
+import weka.core.FastVector;
+import java.util.Random;
+import weka.classifiers.lazy.IBk;
+import weka.core.converters.ArffSaver;
 /**
  *
  * @author louismccallum
@@ -41,7 +49,63 @@ public class FeatureSelectorTest {
     
     public String getTestSetPath()
     {
-       return "/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/Small6-1/Small6-1/Small6-1.wekproj";
+       return "/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/Smallest6/WekinatorProject1/WekinatorProject1.wekproj";
+    }
+    
+    public Instances getTestSet(int numInstances, int numClasses, int goodFeatures, int badFeatures, double howGood)
+    {
+        int numAtt = goodFeatures + badFeatures;
+        FastVector ff = new FastVector(numAtt);
+        for(int i = 0; i < numAtt; i++)
+        {
+            ff.addElement(new Attribute("feature" + i));
+        }
+        
+        ff.addElement(new Attribute("output"));
+        Instances newInst = new Instances("testSet", ff, numInstances);
+
+        Random rand = new Random();
+        for(double i = 0; i < numInstances; i++)
+        {
+            double [] vals = new double[numAtt + 1];
+            double outputClass = Math.floor((i / (double)numInstances) * numClasses);
+            for(int j = 0; j < numAtt; j ++)
+            {
+                double r = rand.nextDouble();
+                if(j < goodFeatures)
+                {
+                    if(rand.nextDouble() < howGood)
+                    {
+                        r = r / (double)numClasses;
+                        vals[j] = ((outputClass+1.0)/(double)numClasses) - r;
+                    }
+                    else
+                    {
+                        vals[j] = r;
+                    }
+                    //System.out.println("val["+j+"] = " + vals[j] + " outputClass = " + outputClass + " r = " + r);
+                }
+                else
+                {
+                    vals[j] = r;
+                }
+                    
+            }
+            vals[numAtt] = outputClass;
+            Instance example = new Instance(1.0, vals);
+            newInst.add(example);
+
+        }     
+        newInst.setClassIndex(numAtt);
+        return newInst;
+    }
+    
+    @Test
+    @Ignore public void testSetGenerator()
+    {
+        Instances data = getTestSet(50, 2, 2, 10, 1.0);
+        assertEquals(13, data.numAttributes(), 0);
+        assertEquals(50, data.numInstances(), 0);
     }
     
     @Test 
@@ -62,18 +126,44 @@ public class FeatureSelectorTest {
     }
     
     @Test
-    @Ignore public void testAutomaticSelect() throws InterruptedException
+    public void testAutomaticSelect() throws InterruptedException
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getSupervisedLearningManager().buildAll();
         Thread.sleep(50);
         w.getDataManager().selectFeaturesAutomatically();
-        int attributes = w.getDataManager().getAllFeaturesInstances().numAttributes();
-        int allFeaturesOutputSize = w.getDataManager().featureManager.getAllFeaturesGroup().getOutputDimensionality();
-        assertEquals(allFeaturesOutputSize, attributes - 1, 0);
-        List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
+        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getSupervisedLearningManager().buildAll();
+        Thread.sleep(2000);
+        assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+        for(int instanceIndex = 0; instanceIndex < 50; instanceIndex++)
+        {
+            double[] oscInputs = {instanceIndex + 1, 1.0, instanceIndex % 10 == 9 ? 0.9 : 0.1, 0, 0, 0};
+            Instance instance = w.getDataManager().getClassifiableInstanceForOutput(oscInputs, 0);
+            double [] computed = w.getSupervisedLearningManager().computeValues(oscInputs, new boolean[]{true});
+            assertEquals(5.0, instance.numAttributes(),0);
+            assertEquals(1.0, computed.length,0);
+        } 
     }
+    
+    @Test
+    @Ignore public void testWrapperKnn() throws IOException
+    {
+        Instances data = getTestSet(500, 4, 4, 150, 0.5);
+        ArffSaver saver = new ArffSaver();
+        saver.setInstances(data);
+        saver.setFile(new File("./data/test_" + System.currentTimeMillis() + ".arff"));
+        saver.writeBatch();
+        WrapperSelector wrapperSelector = new WrapperSelector();
+        IBk knn = new IBk();
+        knn.setKNN(1);
+        wrapperSelector.classifier = knn;
+        int[] indexes = wrapperSelector.getAttributeIndicesForInstances(data);
+        System.out.println("Selected : " + Arrays.toString(indexes));
+    } 
     
     @Test
     @Ignore public void testWrapperSelection() throws InterruptedException
@@ -100,21 +190,9 @@ public class FeatureSelectorTest {
     }
     
     @Test
-    public void testInfoGainSelection() throws InterruptedException
+    @Ignore public void testInfoGainSelection() throws InterruptedException
     {
-        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
-        w.getSupervisedLearningManager().buildAll();
-        Thread.sleep(50);
-        List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
         InfoGainSelector sel = new InfoGainSelector();
-        int ptr = 0;
-        for(Instances data:featureInstances)
-        {
-            int[] indexes = sel.getAttributeIndicesForInstances(data);
-            System.out.println("completed model check:" + ptr);
-            ptr++;
-        }
         Method method;
         try {
             method = w.getDataManager().getClass().getDeclaredMethod("updateAllFeaturesInstances");

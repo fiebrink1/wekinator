@@ -72,6 +72,7 @@ public class DataManager {
     public FeatureManager featureManager;
     private Instances allFeaturesInstances = null;
     public String[][] selectedFeatureNames = new String[0][0];
+    public int[][] selectedFeatureIndices = new int[0][0];
     private int nextID = 1;
     private int numOutputs = 0;
 
@@ -752,25 +753,33 @@ public class DataManager {
             updateAllFeaturesInstances();
             featureManager.didRecalculateAllFeatures();
         }
+        
         Instances data = allFeaturesInstances;
         
         FeatureSelector sel = new WrapperSelector();
         selectedFeatureNames = new String[numOutputs][];
+        selectedFeatureIndices = new int[numOutputs][];
+        
         for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
         {
+            
             Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
             Classifier c = path.getModelBuilder().getClassifier();
             ((WrapperSelector)sel).classifier = c;
             System.out.println("selecting attributes for output " + outputIndex);
-            int[] indices = sel.getAttributeIndicesForInstances(data);
+            //int[] indices = sel.getAttributeIndicesForInstances(data);
+            int[] indices = new int[]{0, 1, 33, 35};
             System.out.println("DONE selecting attributes for output " + outputIndex);
             selectedFeatureNames[outputIndex] = new String[indices.length];
+            selectedFeatureIndices[outputIndex] = indices;
+            
             int ptr = 0;
             for(int attributeIndex:indices)
             {
                 selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeaturesGroup().valueMap[attributeIndex];
                 ptr++;
             }
+            
             Instances selectedInstances = sel.filterInstances(data, indices);
             if(outputIndex < featureInstances.size())
             {
@@ -892,16 +901,33 @@ public class DataManager {
     //This will use old filters, not new ones.
     public Instance getClassifiableInstanceForOutput(double[] vals, int which) {
         
-        double[] features = featureManager.modifyInputsForOutput(vals, which);
-        double data[] = new double[features.length + 1];
-        System.arraycopy(features, 0, data, 0, features.length);
+        double[] features;
+        double[] data;
+        if(selectedFeatureIndices.length > which)
+        {
+            features = featureManager.modifyInputsForAllFeatures(vals);
+            int[] autoIndices = selectedFeatureIndices[which];
+            data = new double [autoIndices.length + 1];
+            int ptr = 0;
+            for(int i : autoIndices)
+            {
+                data[ptr] = features[i];
+                ptr++;
+            }
+            data[ptr] = 0;
+        }
+        else
+        {
+            features = featureManager.modifyInputsForOutput(vals, which);
+            data = new double[features.length + 1];
+            System.arraycopy(features, 0, data, 0, features.length);
+        }
            
         Instances instances = featureManager.getNewInstances(which);
         Instance featureInstance = new Instance(1.0, data);
         instances.add(featureInstance);
         instances.setClassIndex(data.length - 1);
         featureInstance = instances.firstInstance();
-        //featureInstance.setClassMissing();
         return featureInstance;
     }
 

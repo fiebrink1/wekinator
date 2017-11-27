@@ -29,14 +29,6 @@ public class WrapperSelector extends FeatureSelector {
     {
         try {
 
-            int classIndex = instances.classAttribute().index();
-            int [] toRemove = {classIndex};
-            
-            Remove removeClass = new Remove();   
-            removeClass.setAttributeIndicesArray(toRemove);
-            removeClass.setInputFormat(instances);                          
-            Instances noClass = Filter.useFilter(instances, removeClass);  
-
             AttributeSelection attsel = new AttributeSelection();
             WrapperSubsetEval eval = new WrapperSubsetEval();
             BestFirst search = new BestFirst();
@@ -44,13 +36,26 @@ public class WrapperSelector extends FeatureSelector {
             eval.setClassifier(classifier);
             attsel.setEvaluator(eval);
             attsel.setSearch(search);
-            instances.setClassIndex(instances.numAttributes() - 1);
-            
+            int classIndex = instances.numAttributes() - 1;
+            instances.setClassIndex(classIndex);
+            double start = System.currentTimeMillis();
             System.out.println("starting selection");
-            attsel.SelectAttributes(noClass);
-            System.out.println("DONE");  
-            
-            return attsel.selectedAttributes();
+            attsel.SelectAttributes(instances);
+            double timeTaken = System.currentTimeMillis() - start;
+            System.out.println("DONE: " + timeTaken / 1000.0 + "s : ");  
+            int [] selected = attsel.selectedAttributes();
+            //Remove classIndex if it picked it
+            for(int s:selected)
+            {
+                if(s == classIndex)
+                {
+                    System.out.println("removing class index");
+                    int[] noClass = new int[selected.length-1];
+                    System.arraycopy(selected, 0, noClass, 0, noClass.length);
+                    return noClass;
+                }
+            }
+            return selected;
             
         } catch (Exception ex) {
             Logger.getLogger(WrapperSelector.class.getName()).log(Level.SEVERE, null, ex);
