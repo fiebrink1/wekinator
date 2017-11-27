@@ -169,9 +169,9 @@ public class FeatureSelectorTest {
     }
     
     @Test
-    @Ignore public void testWrapperKnn() throws IOException
+    public void testWrapperKnn() throws IOException
     {
-        Instances data = getTestSet(500, 4, 4, 150, 0.5);
+        Instances data = getTestSet(100, 4, 4, 10, 0.5);
         ArffSaver saver = new ArffSaver();
         saver.setInstances(data);
         saver.setFile(new File("./data/test_" + System.currentTimeMillis() + ".arff"));
