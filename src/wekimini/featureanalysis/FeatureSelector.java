@@ -22,7 +22,7 @@ public class FeatureSelector {
     }
     
     
-    public Instances filterInstances(Instances instances, int[] indices)
+    public static Instances filterInstances(Instances instances, int[] indices)
     {
         try
         {

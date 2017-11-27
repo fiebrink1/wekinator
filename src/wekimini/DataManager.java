@@ -73,6 +73,7 @@ public class DataManager {
     private Instances allFeaturesInstances = null;
     public String[][] selectedFeatureNames = new String[0][0];
     public int[][] selectedFeatureIndices = new int[0][0];
+    private boolean useAutomaticFeatures = false;
     private int nextID = 1;
     private int numOutputs = 0;
 
@@ -746,6 +747,28 @@ public class DataManager {
         inputSavingFilters = insertIntoArray(s, inputSavingFilters, which);
     }
     
+    private void setFeaturesInstancesFromAutomatic(int outputIndex)
+    {
+        if(featureManager.isAllFeaturesDirty())
+        {
+            updateAllFeaturesInstances();
+            featureManager.didRecalculateAllFeatures();
+        }
+        
+        Instances data = allFeaturesInstances;
+            
+        Instances selectedInstances = FeatureSelector.filterInstances(data, selectedFeatureIndices[outputIndex]);
+        if(outputIndex < featureInstances.size())
+        {
+           featureInstances.set(outputIndex, selectedInstances);
+        }
+        else
+        {
+           featureInstances.add(selectedInstances);
+        }
+        featureManager.didRecalculateFeatures(outputIndex);
+    }
+    
     public void selectFeaturesAutomatically(boolean test)
     {
         if(featureManager.isAllFeaturesDirty())
@@ -762,7 +785,6 @@ public class DataManager {
         
         for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
         {
-            
             Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
             Classifier c = path.getModelBuilder().getClassifier();
             ((WrapperSelector)sel).classifier = c;
@@ -778,52 +800,50 @@ public class DataManager {
                 selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeaturesGroup().valueMap[attributeIndex];
                 ptr++;
             }
-            
-            Instances selectedInstances = sel.filterInstances(data, indices);
-            if(outputIndex < featureInstances.size())
-            {
-               featureInstances.set(outputIndex, selectedInstances);
-            }
-            else
-            {
-               featureInstances.add(selectedInstances);
-            }
-            featureManager.didRecalculateFeatures(outputIndex); 
+            setFeaturesInstancesFromAutomatic(outputIndex);
         }
+        fireStateChanged();
     }
     
     private void updateFeatureInstances(int index)
     { 
-        Instances newInstances = featureManager.getNewInstances(index);
-        try{
-            Instances filteredInputs = Filter.useFilter(inputInstances, trainingFilters[index]);
-            for (int i = 0; i < filteredInputs.numInstances(); i++)
-            {
-                double[] input = filteredInputs.instance(i).toDoubleArray();
-                double output = input[input.length-1];
-                double[] justInput = new double[input.length-1];
-                System.arraycopy(input, 0, justInput, 0, justInput.length);
-                double[] features = featureManager.modifyInputsForOutput(justInput, index);
-                double[] withOutput = new double[features.length + 1];
-                withOutput[withOutput.length-1] = output;
-                System.arraycopy(features, 0, withOutput, 0, features.length);
-                Instance featureInstance = new Instance(1.0,withOutput);
-                newInstances.add(featureInstance);
-                newInstances.setClassIndex(withOutput.length - 1);
-            }
-            if(index < featureInstances.size())
-            {
-               featureInstances.set(index, newInstances);
-            }
-            else
-            {
-               featureInstances.add(newInstances);
-            }
-            featureManager.didRecalculateFeatures(index); 
-        } 
-        catch (Exception e)
+        if(useAutomaticFeatures)
         {
-            e.printStackTrace();
+            setFeaturesInstancesFromAutomatic(index);
+        }
+        else
+        {
+            Instances newInstances = featureManager.getNewInstances(index);
+            try{
+                Instances filteredInputs = Filter.useFilter(inputInstances, trainingFilters[index]);
+                for (int i = 0; i < filteredInputs.numInstances(); i++)
+                {
+                    double[] input = filteredInputs.instance(i).toDoubleArray();
+                    double output = input[input.length-1];
+                    double[] justInput = new double[input.length-1];
+                    System.arraycopy(input, 0, justInput, 0, justInput.length);
+                    double[] features = featureManager.modifyInputsForOutput(justInput, index);
+                    double[] withOutput = new double[features.length + 1];
+                    withOutput[withOutput.length-1] = output;
+                    System.arraycopy(features, 0, withOutput, 0, features.length);
+                    Instance featureInstance = new Instance(1.0,withOutput);
+                    newInstances.add(featureInstance);
+                    newInstances.setClassIndex(withOutput.length - 1);
+                }
+                if(index < featureInstances.size())
+                {
+                   featureInstances.set(index, newInstances);
+                }
+                else
+                {
+                   featureInstances.add(newInstances);
+                }
+                featureManager.didRecalculateFeatures(index); 
+            } 
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
     
@@ -896,13 +916,30 @@ public class DataManager {
             return null;
         }
     }
+    
+    public void setUseAutomatic(Boolean auto)
+    {
+        if(auto && selectedFeatureIndices.length > 0)
+        {
+            useAutomaticFeatures = true;
+        }
+        else
+        {
+            useAutomaticFeatures = false;
+            for(int i = 0; i < numOutputs; i++)
+            {
+                updateFeatureInstances(i);
+            }
+        }
+        fireStateChanged();
+    }
 
     //This will use old filters, not new ones.
     public Instance getClassifiableInstanceForOutput(double[] vals, int which) {
         
         double[] features;
         double[] data;
-        if(selectedFeatureIndices.length > which)
+        if(useAutomaticFeatures)
         {
             features = featureManager.modifyInputsForAllFeatures(vals);
             int[] autoIndices = selectedFeatureIndices[which];
