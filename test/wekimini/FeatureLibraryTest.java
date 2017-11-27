@@ -97,7 +97,7 @@ public class FeatureLibraryTest {
        int ptr = 0;
        for(boolean isEnabled:connections)
        {
-           assertEquals(ptr == 3, isEnabled);
+           assertEquals(ptr == 67, isEnabled);
            ptr++;
        }
     }
@@ -108,7 +108,9 @@ public class FeatureLibraryTest {
         fg.addFeatureForKey("MaxFFTAccX");
         assertEquals(3, fg.getModifiers().size()); 
         
-        boolean[] onOff = {true,true,false,false};
+        boolean[] onOff = new boolean[fg.getFeatureNames().length];
+        onOff[0] = true;
+        onOff[1] = true;
         fg.setSelectedFeatures(onOff);
         
         boolean[] connections = fg.getConnections();

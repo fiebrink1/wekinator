@@ -130,7 +130,7 @@ public class AutomaticFeaturesEditor extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        w.getDataManager().selectFeaturesAutomatically();
+        w.getDataManager().selectFeaturesAutomatically(false);
         setupTable(w.getDataManager().selectedFeatureNames);
     }//GEN-LAST:event_jButton1ActionPerformed
 

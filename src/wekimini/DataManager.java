@@ -746,7 +746,7 @@ public class DataManager {
         inputSavingFilters = insertIntoArray(s, inputSavingFilters, which);
     }
     
-    public void selectFeaturesAutomatically()
+    public void selectFeaturesAutomatically(boolean test)
     {
         if(featureManager.isAllFeaturesDirty())
         {
@@ -767,8 +767,7 @@ public class DataManager {
             Classifier c = path.getModelBuilder().getClassifier();
             ((WrapperSelector)sel).classifier = c;
             System.out.println("selecting attributes for output " + outputIndex);
-            //int[] indices = sel.getAttributeIndicesForInstances(data);
-            int[] indices = new int[]{0, 1, 33, 35};
+            int[] indices = test ? new int[]{0, 1, 33, 35} : sel.getAttributeIndicesForInstances(data);
             System.out.println("DONE selecting attributes for output " + outputIndex);
             selectedFeatureNames[outputIndex] = new String[indices.length];
             selectedFeatureIndices[outputIndex] = indices;

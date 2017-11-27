@@ -101,7 +101,7 @@ public class FeatureSelectorTest {
     }
     
     @Test
-    @Ignore public void testSetGenerator()
+    public void testSetGenerator()
     {
         Instances data = getTestSet(50, 2, 2, 10, 1.0);
         assertEquals(13, data.numAttributes(), 0);
@@ -109,7 +109,7 @@ public class FeatureSelectorTest {
     }
     
     @Test 
-    @Ignore public void testUpdateAllFeatures()
+    public void testUpdateAllFeatures()
     {
         Method method;
         try {
@@ -132,7 +132,7 @@ public class FeatureSelectorTest {
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getSupervisedLearningManager().buildAll();
         Thread.sleep(50);
-        w.getDataManager().selectFeaturesAutomatically();
+        w.getDataManager().selectFeaturesAutomatically(true);
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getSupervisedLearningManager().buildAll();
@@ -150,7 +150,7 @@ public class FeatureSelectorTest {
     }
     
     @Test
-    @Ignore public void testWrapperKnn() throws IOException
+    public void testWrapperKnn() throws IOException
     {
         Instances data = getTestSet(500, 4, 4, 150, 0.5);
         ArffSaver saver = new ArffSaver();
@@ -166,7 +166,7 @@ public class FeatureSelectorTest {
     } 
     
     @Test
-    @Ignore public void testWrapperSelection() throws InterruptedException
+    public void testWrapperSelection() throws InterruptedException
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
@@ -190,7 +190,7 @@ public class FeatureSelectorTest {
     }
     
     @Test
-    @Ignore public void testInfoGainSelection() throws InterruptedException
+    public void testInfoGainSelection() throws InterruptedException
     {
         InfoGainSelector sel = new InfoGainSelector();
         Method method;

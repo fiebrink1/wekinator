@@ -56,7 +56,7 @@ public class FeatureConnectionsTest {
         {
             for(int j = 0; j < connections[i].length; j++)
             {
-                assertEquals((i == 3 && j == 0) || ( i == 0), connections[i][j]);
+                assertEquals((i == 67 && j == 0) || ( i == 0), connections[i][j]);
             }
         }
     }
