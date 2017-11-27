@@ -23,7 +23,6 @@ public class FeatureManager
     //There is one feature group for each path/output
     protected ArrayList<FeatureGroup> featureGroups;
     private FeatureGroup allFeatures;
-    private boolean isAllFeaturesDirty = true;
     
     public FeatureManager()
     {
@@ -182,23 +181,21 @@ public class FeatureManager
     
     protected boolean isAllFeaturesDirty()
     {
-        return isAllFeaturesDirty;
+        return allFeatures.isDirty();
     }
     
     protected void didRecalculateAllFeatures()
     {
-        isAllFeaturesDirty = false;
+        allFeatures.didRecalculateFeatures();
     }
     
     protected void setAllFeaturesToDirty()
     {
-        isAllFeaturesDirty = true;
+        allFeatures.setDirty();
     }
     
     public FeatureGroup getAllFeaturesGroup()
     {
         return allFeatures;
     }
-            
-    
 }

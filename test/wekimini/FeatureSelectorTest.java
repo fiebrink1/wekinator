@@ -116,10 +116,12 @@ public class FeatureSelectorTest {
             method = w.getDataManager().getClass().getDeclaredMethod("updateAllFeaturesInstances");
             method.setAccessible(true);
             method.invoke(w.getDataManager());
-            int attributes = w.getDataManager().getAllFeaturesInstances().numAttributes();
+            Instances firstInstances = w.getDataManager().getAllFeaturesInstances();
+            int attributes = firstInstances.numAttributes();
             int allFeaturesOutputSize = w.getDataManager().featureManager.getAllFeaturesGroup().getOutputDimensionality();
             assertEquals(allFeaturesOutputSize, attributes - 1, 0);
             //assertEquals(w.getDataManager().featureManager.getAllFeaturesGroup().valueMap)
+            //method.invoke(w.getDataManager());
         } catch (Exception e) {
             
         }
@@ -224,5 +226,6 @@ public class FeatureSelectorTest {
         int[] indexes = sel.getAttributeIndicesForInstances(allFeatures);
         System.out.println("done");
     }
+
     
 }
