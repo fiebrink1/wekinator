@@ -89,9 +89,8 @@ public class FeatureManager
         }
     }
     
-    protected Instances getNewInstances(int output)
+    protected Instances getNewInstancesOfLength(int length)
     {
-        int length = numModifiedInputs(output);
         FastVector ff = new FastVector(length);
         for(int i = 0; i < length; i++)
         {
@@ -99,9 +98,15 @@ public class FeatureManager
         }
         
         ff.addElement(new Attribute("output"));
-        Instances newInst = new Instances("features" + output, ff, 100);
+        Instances newInst = new Instances("features", ff, 100);
         newInst.setClassIndex(length);
         return newInst;
+    }
+    
+    protected Instances getNewInstances(int output)
+    {
+        int length = numModifiedInputs(output);
+        return getNewInstancesOfLength(length);
     }
     
     protected double[] modifyInputsForOutput(double[] newInputs, int output)
@@ -167,16 +172,7 @@ public class FeatureManager
     protected Instances getAllFeaturesNewInstances()
     {
         int length = allFeatures.getOutputDimensionality();
-        FastVector ff = new FastVector(length);
-        for(int i = 0; i < length; i++)
-        {
-            ff.addElement(new Attribute("feature" + i));
-        }
-        
-        ff.addElement(new Attribute("output"));
-        Instances newInst = new Instances("allFeatures", ff, 100);
-        newInst.setClassIndex(length);
-        return newInst;
+        return getNewInstancesOfLength(length);
     }
     
     protected boolean isAllFeaturesDirty()

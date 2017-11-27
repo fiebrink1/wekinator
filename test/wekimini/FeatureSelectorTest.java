@@ -134,7 +134,7 @@ public class FeatureSelectorTest {
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getSupervisedLearningManager().buildAll();
         Thread.sleep(50);
-        w.getDataManager().selectFeaturesAutomatically(true);
+        w.getDataManager().selectFeaturesAutomatically(true,true);
         //When we are running on the 4 selected automatic features the computed output for running should be 4 + 1
         w.getDataManager().setUseAutomatic(true);
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);

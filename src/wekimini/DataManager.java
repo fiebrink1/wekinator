@@ -769,7 +769,7 @@ public class DataManager {
         featureManager.didRecalculateFeatures(outputIndex);
     }
     
-    public void selectFeaturesAutomatically(boolean test)
+    public void selectFeaturesAutomatically(boolean wrapper, boolean test)
     {
         if(featureManager.isAllFeaturesDirty())
         {
@@ -779,15 +779,18 @@ public class DataManager {
         
         Instances data = allFeaturesInstances;
         
-        FeatureSelector sel = new WrapperSelector();
+        FeatureSelector sel = wrapper ? new WrapperSelector():new InfoGainSelector();
         selectedFeatureNames = new String[numOutputs][];
         selectedFeatureIndices = new int[numOutputs][];
         
         for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
         {
-            Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
-            Classifier c = path.getModelBuilder().getClassifier();
-            ((WrapperSelector)sel).classifier = c;
+            if(wrapper)
+            {
+                Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
+                Classifier c = path.getModelBuilder().getClassifier();
+                ((WrapperSelector)sel).classifier = c;
+            }
             System.out.println("selecting attributes for output " + outputIndex);
             int[] indices = test ? new int[]{0, 1, 33, 35} : sel.getAttributeIndicesForInstances(data);
             System.out.println("DONE selecting attributes for output " + outputIndex);
@@ -939,6 +942,7 @@ public class DataManager {
         
         double[] features;
         double[] data;
+        Instances instances;
         if(useAutomaticFeatures)
         {
             features = featureManager.modifyInputsForAllFeatures(vals);
@@ -951,20 +955,21 @@ public class DataManager {
                 ptr++;
             }
             data[ptr] = 0;
+            instances = featureManager.getNewInstancesOfLength(autoIndices.length);
         }
         else
         {
             features = featureManager.modifyInputsForOutput(vals, which);
             data = new double[features.length + 1];
             System.arraycopy(features, 0, data, 0, features.length);
+            instances = featureManager.getNewInstances(which);
         }
-           
-        Instances instances = featureManager.getNewInstances(which);
         Instance featureInstance = new Instance(1.0, data);
         instances.add(featureInstance);
         instances.setClassIndex(data.length - 1);
         featureInstance = instances.firstInstance();
         return featureInstance;
+
     }
 
     //Could probably make this more efficient...

@@ -12,8 +12,8 @@ import weka.attributeSelection.Ranker;
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.core.Instances;
 import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.Remove;
 import weka.filters.unsupervised.attribute.Discretize;
+import weka.filters.unsupervised.attribute.NumericToNominal;
 
 /**
  *
@@ -28,17 +28,12 @@ public class InfoGainSelector extends FeatureSelector {
     {
         try {
 
-            int classIndex = instances.classAttribute().index();
-            int [] toRemove = {classIndex};
-            
-            Remove removeClass = new Remove();   
-            removeClass.setAttributeIndicesArray(toRemove);
-            removeClass.setInputFormat(instances);                          
-            Instances noClass = Filter.useFilter(instances, removeClass);  
-
             Discretize dis = new Discretize();
-            dis.setInputFormat(noClass);     
-            Instances discreted = Filter.useFilter(noClass, dis); 
+            dis.setInputFormat(instances);     
+            Instances discreted = Filter.useFilter(instances, dis); 
+            NumericToNominal nom = new NumericToNominal();
+            nom.setInputFormat(discreted);   
+            discreted = Filter.useFilter(discreted, nom);
             
             AttributeSelection attsel = new AttributeSelection();
             InfoGainAttributeEval eval = new InfoGainAttributeEval();
@@ -46,7 +41,8 @@ public class InfoGainSelector extends FeatureSelector {
             search.setOptions(new String[]{"-T","0.05"});
             attsel.setEvaluator(eval);
             attsel.setSearch(search);
-            instances.setClassIndex(instances.numAttributes() - 1);
+            int classIndex = discreted.numAttributes() - 1;
+            discreted.setClassIndex(classIndex);
             
             System.out.println("starting selection");
             attsel.SelectAttributes(discreted);
@@ -57,6 +53,16 @@ public class InfoGainSelector extends FeatureSelector {
             int i = (int)(((double)ranked.length)*threshold);
             int[] thresholded = new int[i];
             System.arraycopy(ranked, 0, thresholded, 0, i);
+            for(int s:thresholded)
+            {
+                if(s == classIndex)
+                {
+                    System.out.println("removing class index");
+                    int[] noClass = new int[thresholded.length-1];
+                    System.arraycopy(thresholded, 0, noClass, 0, noClass.length);
+                    return noClass;
+                }
+            }
             return thresholded;
             
         } catch (Exception ex) {

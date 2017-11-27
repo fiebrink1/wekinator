@@ -299,7 +299,6 @@ public class OutputManager {
             throw new IllegalArgumentException("values is null or wrong length");
         }
         System.arraycopy(values, 0, currentValues, 0, values.length);
-        System.out.print("new vals");
         for(double val:currentValues)
         {
             System.out.print(" : " + val);
