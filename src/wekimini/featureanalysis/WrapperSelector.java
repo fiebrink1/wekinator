@@ -12,6 +12,7 @@ import weka.attributeSelection.WrapperSubsetEval;
 import weka.attributeSelection.BestFirst;
 import weka.core.Instances;
 import weka.classifiers.Classifier;
+import weka.classifiers.functions.MultilayerPerceptron;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
 
@@ -28,15 +29,14 @@ public class WrapperSelector extends FeatureSelector {
     public int[] getAttributeIndicesForInstances(Instances instances)
     {
         try {
+            int classIndex = instances.numAttributes() - 1;
 
             AttributeSelection attsel = new AttributeSelection();
             WrapperSubsetEval eval = new WrapperSubsetEval();
             BestFirst search = new BestFirst();
-            
             eval.setClassifier(classifier);
             attsel.setEvaluator(eval);
             attsel.setSearch(search);
-            int classIndex = instances.numAttributes() - 1;
             instances.setClassIndex(classIndex);
             double start = System.currentTimeMillis();
             System.out.println("starting selection");

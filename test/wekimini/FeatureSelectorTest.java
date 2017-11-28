@@ -26,8 +26,10 @@ import org.junit.Ignore;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import java.util.Random;
+import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.lazy.IBk;
 import weka.core.converters.ArffSaver;
+import wekimini.learning.NeuralNetModelBuilder;
 /**
  *
  * @author louismccallum
@@ -182,6 +184,23 @@ public class FeatureSelectorTest {
         IBk knn = new IBk();
         knn.setKNN(1);
         wrapperSelector.classifier = knn;
+        int[] indexes = wrapperSelector.getAttributeIndicesForInstances(data);
+        System.out.println("Selected : " + Arrays.toString(indexes));
+    } 
+    
+        
+    @Test
+    public void testWrapperPerceptron() throws IOException
+    {
+        Instances data = getTestSet(50, 4, 4, 10, 0.5);
+        ArffSaver saver = new ArffSaver();
+        saver.setInstances(data);
+        saver.setFile(new File("./data/test_" + System.currentTimeMillis() + ".arff"));
+        saver.writeBatch();
+        WrapperSelector wrapperSelector = new WrapperSelector();
+        NeuralNetModelBuilder builder = new NeuralNetModelBuilder();
+        MultilayerPerceptron classifier = (MultilayerPerceptron)builder.getClassifier();
+        wrapperSelector.classifier = classifier;
         int[] indexes = wrapperSelector.getAttributeIndicesForInstances(data);
         System.out.println("Selected : " + Arrays.toString(indexes));
     } 
