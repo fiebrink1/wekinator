@@ -50,6 +50,9 @@ public class FeatureEditor extends javax.swing.JFrame {
                 gridPanel.setNewOriginal(connections);
             }
         }, true);
+        
+        this.setPreferredSize(new Dimension(400, 800));
+        setSize(new Dimension(400, 800));
 
     }
 
