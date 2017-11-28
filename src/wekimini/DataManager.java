@@ -38,6 +38,7 @@ import weka.filters.unsupervised.instance.RemoveWithValues;
 import wekimini.featureanalysis.WrapperSelector;
 import wekimini.featureanalysis.InfoGainSelector;
 import wekimini.featureanalysis.FeatureSelector;
+import wekimini.featureanalysis.RandomSelector;
 import wekimini.gui.DatasetViewer;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
@@ -99,6 +100,10 @@ public class DataManager {
     private DatasetViewer viewer = null;
     private static final Logger logger = Logger.getLogger(DataManager.class.getName());
 
+    public enum AutoSelect {
+        WRAPPER,INFOGAIN,RANDOM
+    }
+    
     /**
      * Get the value of numExamplesPerOutput
      *
@@ -769,7 +774,7 @@ public class DataManager {
         featureManager.didRecalculateFeatures(outputIndex);
     }
     
-    public void selectFeaturesAutomatically(boolean wrapper, boolean test)
+    public void selectFeaturesAutomatically(AutoSelect autoSelect, boolean test)
     {
         if(featureManager.isAllFeaturesDirty())
         {
@@ -779,13 +784,25 @@ public class DataManager {
         
         Instances data = allFeaturesInstances;
         
-        FeatureSelector sel = wrapper ? new WrapperSelector():new InfoGainSelector();
+        FeatureSelector sel;
+        switch(autoSelect)
+        {
+            case WRAPPER : sel = new WrapperSelector();
+            break;
+            case RANDOM : sel = new RandomSelector();
+            break;
+            case INFOGAIN : sel = new InfoGainSelector();
+            break;
+            default:INFOGAIN : sel = new InfoGainSelector();
+            break;
+        }
+        
         selectedFeatureNames = new String[numOutputs][];
         selectedFeatureIndices = new int[numOutputs][];
         
         for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
         {
-            if(wrapper)
+            if(autoSelect == AutoSelect.WRAPPER)
             {
                 Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
                 Classifier c = path.getModelBuilder().getClassifier();

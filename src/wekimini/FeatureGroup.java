@@ -279,7 +279,7 @@ public class FeatureGroup {
     private void computeValuesForNewInputs(double[] newInputs) {
         
         int outputIndex = 0;
-        int matchingIndex = 0;
+        int completedIndex = 0;
         valueMap = new String[currentValues.length];
         ArrayList<ModifiedInput> completedModifiers = new ArrayList();
 
@@ -289,51 +289,51 @@ public class FeatureGroup {
         }
         
         //Get the raw inputs first
-        ModifiedInput currentModifier = modifiers.get(0);
-        currentModifier.updateForInputs(newInputs);
+        ModifiedInput completedModifier = modifiers.get(0);
+        completedModifier.updateForInputs(newInputs);
         completedModifiers.add(modifiers.get(0));
-        if(currentModifier.addToOutput)
+        if(completedModifier.addToOutput)
         {
-            System.arraycopy(((ModifiedInputVector)currentModifier).getValues(), 0, currentValues, outputIndex, currentModifier.getSize());
-            outputIndex += currentModifier.getSize();
+            System.arraycopy(((ModifiedInputVector)completedModifier).getValues(), 0, currentValues, outputIndex, completedModifier.getSize());
+            outputIndex += completedModifier.getSize();
         }
 
-        while(matchingIndex < completedModifiers.size())
+        while(completedIndex < completedModifiers.size())
         {
-            currentModifier = completedModifiers.get(matchingIndex);
-            for (ModifiedInput modifier : modifiers) 
+            completedModifier = completedModifiers.get(completedIndex);
+            for (ModifiedInput toComplete : modifiers) 
             {
-                if(!modifier.hasAllInputs()) 
+                if(!toComplete.hasAllInputs()) 
                 {
-                    modifier.isInputRequired(currentModifier);
-                    if(modifier.hasAllInputs())
+                    toComplete.isInputRequired(completedModifier);
+                    if(toComplete.hasAllInputs())
                     {
-                        //System.out.println("collating inputs for " + modifier.inputID);
-                        modifier.collateInputsFromModifiers(modifiers);
-                        completedModifiers.add(modifier);
-                        if(modifier.addToOutput)
+                        //System.out.println("collating inputs for " + toComplete.inputID);
+                        toComplete.collateInputsFromModifiers(modifiers);
+                        completedModifiers.add(toComplete);
+                        if(toComplete.addToOutput)
                         {
                             //SAVE THE INDEX OF THE VALUE ADDED AND A REFERNCE TO ITS SOURCE (THE MODIFIER)
-                            String featureName = featureLibrary.getFeatureNameForModifierID(modifier.inputID);
-                            if (modifier instanceof ModifiedInputSingle) 
+                            String featureName = featureLibrary.getFeatureNameForModifierID(toComplete.inputID);
+                            if (toComplete instanceof ModifiedInputSingle) 
                             {
-                                currentValues[outputIndex] = ((ModifiedInputSingle)modifier).getValue();
+                                currentValues[outputIndex] = ((ModifiedInputSingle)toComplete).getValue();
                                 valueMap[outputIndex] = featureName;
                             } 
                             else 
                             {
-                                System.arraycopy(((ModifiedInputVector)modifier).getValues(), 0, currentValues, outputIndex, modifier.getSize());
-                                for(int i = 0; i < modifier.getSize(); i++)
+                                System.arraycopy(((ModifiedInputVector)toComplete).getValues(), 0, currentValues, outputIndex, toComplete.getSize());
+                                for(int i = 0; i < toComplete.getSize(); i++)
                                 {
                                     valueMap[outputIndex + i] = featureName + ":" + i;
                                 }
                             }
-                            outputIndex += modifier.getSize();
+                            outputIndex += toComplete.getSize();
                         }
                     }
                 }
             }
-            matchingIndex++;
+            completedIndex++;
         }
     }
 

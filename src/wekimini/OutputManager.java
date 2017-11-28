@@ -301,9 +301,9 @@ public class OutputManager {
         System.arraycopy(values, 0, currentValues, 0, values.length);
         for(double val:currentValues)
         {
-            System.out.print(" : " + val);
+            //System.out.print(" : " + val);
         }
-        System.out.println(".");
+        //System.out.println(".");
         
         notifyOutputGroupComputedListeners(values);
 

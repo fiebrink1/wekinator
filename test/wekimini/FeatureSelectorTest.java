@@ -29,6 +29,8 @@ import java.util.Random;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.lazy.IBk;
 import weka.core.converters.ArffSaver;
+import wekimini.DataManager.AutoSelect;
+import wekimini.featureanalysis.RandomSelector;
 import wekimini.learning.NeuralNetModelBuilder;
 /**
  *
@@ -136,7 +138,7 @@ public class FeatureSelectorTest {
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getSupervisedLearningManager().buildAll();
         Thread.sleep(50);
-        w.getDataManager().selectFeaturesAutomatically(true,true);
+        w.getDataManager().selectFeaturesAutomatically(AutoSelect.WRAPPER,true);
         //When we are running on the 4 selected automatic features the computed output for running should be 4 + 1
         w.getDataManager().setUseAutomatic(true);
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
@@ -243,8 +245,25 @@ public class FeatureSelectorTest {
         } 
         Instances allFeatures = w.getDataManager().getAllFeaturesInstances();
         int[] indexes = sel.getAttributeIndicesForInstances(allFeatures);
+        assertEquals(0.2,(double)indexes.length/(double)allFeatures.numAttributes(),0.01);
         System.out.println("done");
     }
-
     
+    @Test
+    public void testRandomSelection() throws InterruptedException
+    {
+        RandomSelector sel = new RandomSelector();
+        Method method;
+        try {
+            method = w.getDataManager().getClass().getDeclaredMethod("updateAllFeaturesInstances");
+            method.setAccessible(true);
+            method.invoke(w.getDataManager());
+        } catch (Exception ex) {
+            Logger.getLogger(FeatureSelectorTest.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+        Instances allFeatures = w.getDataManager().getAllFeaturesInstances();
+        int[] indexes = sel.getAttributeIndicesForInstances(allFeatures);
+        assertEquals(0.2,(double)indexes.length/(double)allFeatures.numAttributes(),0.01);
+        System.out.println("done");
+    }
 }
