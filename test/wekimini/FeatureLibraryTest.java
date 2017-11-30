@@ -4,9 +4,13 @@
  * and open the template in the editor.
  */
 package wekimini;
+import java.lang.reflect.Field;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
+import wekimini.modifiers.FeatureLibrary;
 /**
  *
  * @author louismccallum
@@ -122,5 +126,40 @@ public class FeatureLibraryTest {
         }
         assertEquals(5, fg.getModifiers().size());
         
+    }
+    
+    @Test
+    public void testChangeWindowSize()
+    {
+        Field field;
+        try {
+            field = fg.getClass().getDeclaredField("featureLibrary");
+            field.setAccessible(true);
+            FeatureLibrary library = (FeatureLibrary)field.get(fg);
+            fg.addFeatureForKey("BufferAccX");
+            assertEquals(2, fg.getModifiers().size()); 
+            assertEquals(10, fg.getOutputDimensionality());
+            int ptr = 0;
+            boolean [] connections = library.getConnections();
+            for(boolean onOff:connections)
+            {
+                assertEquals(ptr == 27, onOff);
+                ptr++;
+            }
+            
+            fg.setFeatureWindowSize(20);
+            assertEquals(2, fg.getModifiers().size()); 
+            assertEquals(20, fg.getOutputDimensionality());
+            ptr = 0;
+            connections = library.getConnections();
+            for(boolean onOff:connections)
+            {
+                assertEquals(ptr == 27, onOff);
+                ptr++;
+            }
+        } catch (Exception e)
+        {
+            
+        }
     }
 }

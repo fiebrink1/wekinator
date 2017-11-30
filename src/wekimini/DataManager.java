@@ -760,11 +760,10 @@ public class DataManager {
             featureManager.didRecalculateAllFeatures();
         }
         
-        Instances data = allFeaturesInstances;
         Instances format = featureManager.getAllFeaturesNewInstances(isDiscrete[outputIndex], numClasses[outputIndex]);
-        for(int i = 0; i < data.numInstances(); i++)
+        for(int i = 0; i < allFeaturesInstances.numInstances(); i++)
         {
-            format.add(data.instance(i));
+            format.add(allFeaturesInstances.instance(i));
         }
         
         Instances selectedInstances = FeatureSelector.filterInstances(format, selectedFeatureIndices[outputIndex]);
@@ -806,11 +805,10 @@ public class DataManager {
         
         for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
         {
-            Instances data = allFeaturesInstances;
             Instances format = featureManager.getAllFeaturesNewInstances(isDiscrete[outputIndex], numClasses[outputIndex]);
-            for(int i = 0; i < data.numInstances(); i++)
+            for(int i = 0; i < allFeaturesInstances.numInstances(); i++)
             {
-                format.add(data.instance(i));
+                format.add(allFeaturesInstances.instance(i));
             }
             if(autoSelect == AutoSelect.WRAPPER)
             {

@@ -347,6 +347,11 @@ public class FeatureGroup {
         return lastInputs; //is returning null when nothing is computed yet...
     }
     
+    public void setFeatureWindowSize(int windowSize)
+    {
+        featureLibrary.initLibrary(windowSize);
+    }
+    
     public String[] getOutputNames() {
         int currentIndex = 0;
         String[] s = new String[getOutputDimensionality()];
