@@ -89,7 +89,7 @@ public class FeatureManager
         }
     }
     
-    protected Instances getNewInstancesOfLength(int length)
+    protected Instances getNewInstancesOfLength(int length, boolean isDiscrete, int numClasses)
     {
         FastVector ff = new FastVector(length);
         for(int i = 0; i < length; i++)
@@ -97,16 +97,21 @@ public class FeatureManager
             ff.addElement(new Attribute("feature" + i));
         }
         
-        ff.addElement(new Attribute("output"));
+        FastVector classes = new FastVector(numClasses);
+        classes.addElement("0"); 
+        for (int val = 0; val < numClasses; val++) {
+            classes.addElement((new Integer(val + 1)).toString());
+        }
+        ff.addElement(new Attribute("output", classes));
         Instances newInst = new Instances("features", ff, 100);
         newInst.setClassIndex(length);
         return newInst;
     }
     
-    protected Instances getNewInstances(int output)
+    protected Instances getNewInstances(int output, boolean isDiscrete, int numClasses)
     {
         int length = numModifiedInputs(output);
-        return getNewInstancesOfLength(length);
+        return getNewInstancesOfLength(length, isDiscrete, numClasses);
     }
     
     protected double[] modifyInputsForOutput(double[] newInputs, int output)
@@ -172,7 +177,13 @@ public class FeatureManager
     protected Instances getAllFeaturesNewInstances()
     {
         int length = allFeatures.getOutputDimensionality();
-        return getNewInstancesOfLength(length);
+        return getNewInstancesOfLength(length, false, 0);
+    }
+    
+    protected Instances getAllFeaturesNewInstances(boolean isDiscrete, int numOutputs)
+    {
+        int length = allFeatures.getOutputDimensionality();
+        return getNewInstancesOfLength(length, isDiscrete, numOutputs);
     }
     
     protected boolean isAllFeaturesDirty()
