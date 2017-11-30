@@ -89,7 +89,7 @@ public class FeatureManager
         }
     }
     
-    protected Instances getNewInstancesOfLength(int length, boolean isDiscrete, int numClasses)
+    protected Instances getNewInstancesOfLength(int length, int numClasses)
     {
         FastVector ff = new FastVector(length);
         for(int i = 0; i < length; i++)
@@ -97,21 +97,29 @@ public class FeatureManager
             ff.addElement(new Attribute("feature" + i));
         }
         
-        FastVector classes = new FastVector(numClasses);
-        classes.addElement("0"); 
-        for (int val = 0; val < numClasses; val++) {
-            classes.addElement((new Integer(val + 1)).toString());
+        if(numClasses > 0)
+        {
+            FastVector classes = new FastVector(numClasses);
+            classes.addElement("0"); 
+            for (int val = 0; val < numClasses; val++) {
+                classes.addElement((new Integer(val + 1)).toString());
+            }
+            ff.addElement(new Attribute("output", classes));
+        }  
+        else
+        {
+            ff.addElement(new Attribute("output"));
         }
-        ff.addElement(new Attribute("output", classes));
+
         Instances newInst = new Instances("features", ff, 100);
         newInst.setClassIndex(length);
         return newInst;
     }
     
-    protected Instances getNewInstances(int output, boolean isDiscrete, int numClasses)
+    protected Instances getNewInstances(int output, int numClasses)
     {
         int length = numModifiedInputs(output);
-        return getNewInstancesOfLength(length, isDiscrete, numClasses);
+        return getNewInstancesOfLength(length, numClasses);
     }
     
     protected double[] modifyInputsForOutput(double[] newInputs, int output)
@@ -177,13 +185,13 @@ public class FeatureManager
     protected Instances getAllFeaturesNewInstances()
     {
         int length = allFeatures.getOutputDimensionality();
-        return getNewInstancesOfLength(length, false, 0);
+        return getNewInstancesOfLength(length, 0);
     }
     
-    protected Instances getAllFeaturesNewInstances(boolean isDiscrete, int numOutputs)
+    protected Instances getAllFeaturesNewInstances(int numClasses)
     {
         int length = allFeatures.getOutputDimensionality();
-        return getNewInstancesOfLength(length, isDiscrete, numOutputs);
+        return getNewInstancesOfLength(length, numClasses);
     }
     
     protected boolean isAllFeaturesDirty()

@@ -760,13 +760,9 @@ public class DataManager {
             featureManager.didRecalculateAllFeatures();
         }
         
-        Instances format = featureManager.getAllFeaturesNewInstances(isDiscrete[outputIndex], numClasses[outputIndex]);
-        for(int i = 0; i < allFeaturesInstances.numInstances(); i++)
-        {
-            format.add(allFeaturesInstances.instance(i));
-        }
+        Instances formatted = getAllFeaturesInstances(outputIndex);
         
-        Instances selectedInstances = FeatureSelector.filterInstances(format, selectedFeatureIndices[outputIndex]);
+        Instances selectedInstances = FeatureSelector.filterInstances(formatted, selectedFeatureIndices[outputIndex]);
         if(outputIndex < featureInstances.size())
         {
            featureInstances.set(outputIndex, selectedInstances);
@@ -805,11 +801,8 @@ public class DataManager {
         
         for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
         {
-            Instances format = featureManager.getAllFeaturesNewInstances(isDiscrete[outputIndex], numClasses[outputIndex]);
-            for(int i = 0; i < allFeaturesInstances.numInstances(); i++)
-            {
-                format.add(allFeaturesInstances.instance(i));
-            }
+            Instances formatted = getAllFeaturesInstances(outputIndex);
+            
             if(autoSelect == AutoSelect.WRAPPER)
             {
                 Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
@@ -817,7 +810,7 @@ public class DataManager {
                 ((WrapperSelector)sel).classifier = c;
             }
             System.out.println("selecting attributes for output " + outputIndex);
-            int[] indices = test ? new int[]{0, 1, 33, 35} : sel.getAttributeIndicesForInstances(format);
+            int[] indices = test ? new int[]{0, 1, 33, 35} : sel.getAttributeIndicesForInstances(formatted);
             System.out.println("DONE selecting attributes for output " + outputIndex);
             selectedFeatureNames[outputIndex] = new String[indices.length];
             selectedFeatureIndices[outputIndex] = indices;
@@ -842,7 +835,7 @@ public class DataManager {
         }
         else
         {
-            Instances newInstances = featureManager.getNewInstances(index, isDiscrete[index], numClasses[index]);
+            Instances newInstances = featureManager.getNewInstances(index, numClasses[index]);
             try{
                 Instances filteredInputs = Filter.useFilter(inputInstances, trainingFilters[index]);
                 for (int i = 0; i < filteredInputs.numInstances(); i++)
@@ -911,9 +904,14 @@ public class DataManager {
         return featureInstances;
     }
     
-    protected Instances getAllFeaturesInstances()
+    protected Instances getAllFeaturesInstances(int outputIndex)
     {
-        return allFeaturesInstances;
+        Instances formatted =  w.getDataManager().featureManager.getAllFeaturesNewInstances(numClasses[outputIndex]);
+        for(int i = 0; i < allFeaturesInstances.numInstances(); i++)
+        {
+            formatted.add(allFeaturesInstances.instance(i));
+        }
+        return formatted;
     }
 
     public Instances getTrainingDataForOutput(int index) {
@@ -982,14 +980,14 @@ public class DataManager {
                 ptr++;
             }
             data[ptr] = 0;
-            instances = featureManager.getNewInstancesOfLength(autoIndices.length, isDiscrete[which], numClasses[which]);
+            instances = featureManager.getNewInstancesOfLength(autoIndices.length, numClasses[which]);
         }
         else
         {
             features = featureManager.modifyInputsForOutput(vals, which);
             data = new double[features.length + 1];
             System.arraycopy(features, 0, data, 0, features.length);
-            instances = featureManager.getNewInstances(which, isDiscrete[which], numClasses[which]);
+            instances = featureManager.getNewInstances(which, numClasses[which]);
         }
         Instance featureInstance = new Instance(1.0, data);
         instances.add(featureInstance);
