@@ -822,6 +822,7 @@ public class DataManager {
             }
             setFeaturesInstancesFromAutomatic(outputIndex);
         }
+        w.getSupervisedLearningManager().setAbleToRun(false);
         fireStateChanged();
     }
     
@@ -937,8 +938,9 @@ public class DataManager {
         }
     }
     
-    public void setUseAutomatic(Boolean auto)
+    public void setUseAutomatic(boolean auto)
     {
+        w.getSupervisedLearningManager().setAbleToRun(false);
         if(auto && selectedFeatureIndices.length > 0)
         {
             useAutomaticFeatures = true;

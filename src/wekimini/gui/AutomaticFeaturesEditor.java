@@ -188,7 +188,7 @@ public class AutomaticFeaturesEditor extends javax.swing.JFrame {
 
     private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
         // TODO add your handling code here:
-        w.getDataManager().setUseAutomatic(jToggleButton1.isSelected());
+        w.getDataManager().setUseAutomatic((boolean)jToggleButton1.isSelected());
         System.out.println("button + " + jToggleButton1.isSelected());
     }//GEN-LAST:event_jToggleButton1ActionPerformed
 

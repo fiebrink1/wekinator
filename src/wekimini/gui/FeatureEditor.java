@@ -143,7 +143,7 @@ public class FeatureEditor extends javax.swing.JFrame {
 
         scrollPanel.setViewportView(jPanel1);
 
-        jLabel5.setText("<html>An \"X\" means that the value of the output corresponding to the column will be influenced by the value of the input corresponding to the row.</html>");
+        jLabel5.setText("<html>An \"X\" means that that feature will be including. Changes are not made until OK button is pressed </html>");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);

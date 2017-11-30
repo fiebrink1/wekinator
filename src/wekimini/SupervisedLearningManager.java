@@ -587,6 +587,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         if(features)
         {
             List<FeatureGroup> groups = w.getDataManager().featureManager.getFeatureGroups();
+            setAbleToRun(false);
             for(int i = 0; i < groups.size(); i++)
             {
                 FeatureGroup fg  =  groups.get(i);
