@@ -24,6 +24,7 @@ public class FeatureManager
     protected ArrayList<FeatureGroup> featureGroups;
     private FeatureGroup allFeatures;
     boolean testSetDirty = true;
+    private int windowSize = 10;
     
     public FeatureManager()
     {
@@ -196,14 +197,20 @@ public class FeatureManager
         }
     }
     
+    public int getFeatureWindowSize()
+    {
+        return windowSize;
+    }
+    
     public void setFeatureWindowSize(int size)
     {
+        windowSize = size;
         int output = 0;
         for(FeatureGroup fg:featureGroups)
         {
             setTestSetDirty(output);
             output++;
-            fg.setFeatureWindowSize(size);
+            fg.setFeatureWindowSize(windowSize);
         }
     }
     

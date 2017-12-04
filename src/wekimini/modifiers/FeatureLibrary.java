@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import wekimini.FeatureGroup;
 import wekimini.modifiers.WindowedOperation.Operation;
@@ -493,7 +494,7 @@ public final class FeatureLibrary
             ptr++;
         }
         
-        Set<String> keys = added.keySet();
+        HashSet<String> keys = new HashSet(added.keySet());
         for(String key:keys)
         {
             removeFeatureForKey(key);

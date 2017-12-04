@@ -25,6 +25,7 @@ import wekimini.kadenze.KadenzeLogging;
 public class FeatureEditor extends javax.swing.JFrame {
     private Wekinator w;
     private LabeledButtonGridPanel gridPanel;
+    int windowSize = 0;
     
     public FeatureEditor(Wekinator w) {
         initComponents();
@@ -55,6 +56,9 @@ public class FeatureEditor extends javax.swing.JFrame {
 
         gridPanel = new LabeledButtonGridPanel(rowNames, colNames, enabled);
         scrollPanel.setViewportView(gridPanel);
+        windowSize = w.getDataManager().featureManager.getFeatureWindowSize();
+        windowSizeSlider.setValue(windowSize);
+        windowSizeLabel.setText(Integer.toString(windowSize));
         repaint();
     }
 
@@ -79,7 +83,7 @@ public class FeatureEditor extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
-        jSlider1 = new javax.swing.JSlider();
+        windowSizeSlider = new javax.swing.JSlider();
         jLabel1 = new javax.swing.JLabel();
         windowSizeLabel = new javax.swing.JLabel();
 
@@ -181,11 +185,11 @@ public class FeatureEditor extends javax.swing.JFrame {
             }
         });
 
-        jSlider1.setMajorTickSpacing(5);
-        jSlider1.setMinimum(1);
-        jSlider1.addChangeListener(new javax.swing.event.ChangeListener() {
+        windowSizeSlider.setMajorTickSpacing(5);
+        windowSizeSlider.setMinimum(1);
+        windowSizeSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jSlider1StateChanged(evt);
+                windowSizeSliderStateChanged(evt);
             }
         });
 
@@ -201,7 +205,7 @@ public class FeatureEditor extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(windowSizeSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -219,7 +223,7 @@ public class FeatureEditor extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(windowSizeSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -279,21 +283,21 @@ public class FeatureEditor extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         boolean[][] oldConnections = w.getLearningManager().getConnectionMatrix(true);
         boolean[][] c = gridPanel.getConnectionsFromForm();
+        w.getDataManager().featureManager.setFeatureWindowSize(windowSize);
         w.getLearningManager().updateInputOutputConnections(c,true);
         KadenzeLogging.getLogger().selectedFeatures(w, oldConnections, c);
         this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider1StateChanged
+    private void windowSizeSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_windowSizeSliderStateChanged
         JSlider source = (JSlider)evt.getSource();
         if (!source.getValueIsAdjusting()) {
-            int windowSize = (int)source.getValue();
-            w.getDataManager().featureManager.setFeatureWindowSize(windowSize);
+            windowSize = (int)source.getValue();
             windowSizeLabel.setText(Integer.toString(windowSize));
         } 
         
-    }//GEN-LAST:event_jSlider1StateChanged
+    }//GEN-LAST:event_windowSizeSliderStateChanged
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -305,13 +309,13 @@ public class FeatureEditor extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JSlider jSlider1;
     private javax.swing.JMenuItem menuItemDisableAll;
     private javax.swing.JMenuItem menuItemEnableAll;
     private javax.swing.JMenuItem menuItemRevert;
     private javax.swing.JPopupMenu popupMenuAction;
     private javax.swing.JScrollPane scrollPanel;
     private javax.swing.JLabel windowSizeLabel;
+    private javax.swing.JSlider windowSizeSlider;
     // End of variables declaration//GEN-END:variables
 
 
