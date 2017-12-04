@@ -407,7 +407,10 @@ public class DataManager {
             if (!outputMask[i]) {
                 in.setMissing(numMetaData + getNumInputs() + i);
             } else {
-                setNumExamplesPerOutput(i, getNumExamplesPerOutput(i) + 1);
+                if(!testing)
+                {
+                    setNumExamplesPerOutput(i, getNumExamplesPerOutput(i) + 1);
+                }
                 // outputInstanceCounts[i]++;
             }
         }
@@ -797,7 +800,14 @@ public class DataManager {
         {
            featureInstances.add(selectedInstances);
         }
-        featureManager.didRecalculateFeatures(outputIndex);
+        if(testing)
+        {
+            featureManager.didRecalculateTestSetFeatures(outputIndex);
+        }
+        else
+        {
+            featureManager.didRecalculateFeatures(outputIndex);
+        }
     }
     
     public void selectFeaturesAutomatically(AutoSelect autoSelect, boolean test)
@@ -887,7 +897,15 @@ public class DataManager {
                 {
                    featureInstances.add(newInstances);
                 }
-                featureManager.didRecalculateFeatures(index); 
+                if(testing)
+                {
+                    featureManager.didRecalculateTestSetFeatures(index);
+                }
+                else
+                {
+                    featureManager.didRecalculateFeatures(index);
+                }
+                
             } 
             catch (Exception e)
             {
@@ -949,7 +967,7 @@ public class DataManager {
     public Instances getTestingDataForOutput(int index)
     {
         try {
-            if(featureManager.isDirty(index))
+            if(featureManager.isTestSetDirty(index))
             {
                 updateFeatureInstances(index, true);
             }

@@ -23,6 +23,7 @@ public class FeatureManager
     //There is one feature group for each path/output
     protected ArrayList<FeatureGroup> featureGroups;
     private FeatureGroup allFeatures;
+    boolean testSetDirty = true;
     
     public FeatureManager()
     {
@@ -53,6 +54,21 @@ public class FeatureManager
     protected void didRecalculateFeatures(int output)
     {
         featureGroups.get(output).didRecalculateFeatures();
+    }
+    
+    protected boolean isTestSetDirty(int output)
+    {
+        return testSetDirty;
+    }
+    
+    protected void setTestSetDirty(int output)
+    {
+       testSetDirty = true;
+    }
+    
+    protected void didRecalculateTestSetFeatures(int output)
+    {
+        testSetDirty = false;
     }
     
     protected void addOutputs(int numOutputs, String[] inputNames)
