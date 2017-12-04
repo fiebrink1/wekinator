@@ -435,7 +435,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     }
 
     //TODO (low priority: merge constructors into one)
-    public SupervisedLearningManager(Wekinator w, Instances data, List<Path> paths) {
+    public SupervisedLearningManager(Wekinator w, Instances data, Instances testData, List<Path> paths) {
         this.w = w;
         controller = new WekinatorSupervisedLearningController(this, w);
         inputNamesToIndices = new HashMap<>();
@@ -485,7 +485,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             }
         });
         //updateAbleToRecord();
-        initializeInputsAndOutputsWithExisting(data, paths);
+        initializeInputsAndOutputsWithExisting(data, testData, paths);
         updateAbleToRecord();
         updateAbleToRun();
     }
@@ -669,7 +669,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     }
 
     //TODO (low): merge this with other init function
-    public void initializeInputsAndOutputsWithExisting(Instances data, List<Path> paths) {
+    public void initializeInputsAndOutputsWithExisting(Instances data, Instances testData, List<Path> paths) {
         String[] inputNames = w.getInputManager().getInputNames();
         initializeInputIndices(inputNames);
         int numOutputs = w.getOutputManager().getOutputGroup().getNumOutputs();
@@ -705,7 +705,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
         //Without this, paths will think that examples have changed since their training    
         notifyPathsOfDatasetChange = false;
-        w.getDataManager().initialize(inputNames, w.getOutputManager().getOutputGroup(), data);
+        w.getDataManager().initialize(inputNames, w.getOutputManager().getOutputGroup(), data, testData);
         notifyPathsOfDatasetChange = true;
 
         updateLearningStateFromPathStates();

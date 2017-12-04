@@ -5,6 +5,7 @@
  */
 package wekimini;
 
+import java.lang.reflect.Method;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import wekimini.modifiers.BufferedInput;
 import wekimini.modifiers.ModifiedInput;
+import wekimini.WekinatorSaver;
 
 /**
  *
@@ -22,7 +24,6 @@ public class TestSetTest {
     
     public Wekinator w;
     
-    @Before
     public void setUp() {
         String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj");
         try{
@@ -37,6 +38,8 @@ public class TestSetTest {
     @Test
     public void testRecordingData()
     {
+        setUp();
+        w.getDataManager().deleteTestSet();
         w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
         double[] inputs = {1,2,3};
         w.getSupervisedLearningManager().updateInputs(inputs);
@@ -53,6 +56,8 @@ public class TestSetTest {
     @Test
     public void testModifyingTestData()
     {
+        setUp();
+        w.getDataManager().deleteTestSet();
         w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
         for(int i = 0; i < 100; i++)
         {
@@ -70,7 +75,6 @@ public class TestSetTest {
         ModifiedInput buffer = new BufferedInput("input-1", 0, windowSize, 0);
         buffer.addRequiredModifierID(0);
         int id = w.getDataManager().featureManager.addModifierToOutput(buffer, 0);
-        
         testSet = w.getDataManager().getTestingDataForOutput(0);
         assertEquals(100, testSet.numInstances(), 0);
         for(int instanceIndex = 0; instanceIndex < 100; instanceIndex++)
@@ -88,6 +92,65 @@ public class TestSetTest {
                 }  
             }
         }
+    }
+    
+    public void testLoadedData()
+    {
+        setUp();
+        
+        Instances testSet = w.getDataManager().getTestingDataForOutput(0);
+        assertEquals(100, testSet.numInstances(), 0);
+        Instance in = testSet.firstInstance();
+        assertEquals(1, in.value(0), 0);
+       
+        int windowSize = 10;
+        w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
+        w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
+        ModifiedInput buffer = new BufferedInput("input-1", 0, windowSize, 0);
+        buffer.addRequiredModifierID(0);
+        int id = w.getDataManager().featureManager.addModifierToOutput(buffer, 0);
+        testSet = w.getDataManager().getTestingDataForOutput(0);
+        assertEquals(100, testSet.numInstances(), 0);
+        for(int instanceIndex = 0; instanceIndex < 100; instanceIndex++)
+        {
+            double[] inputs = testSet.instance(instanceIndex).toDoubleArray();
+            for(int k = 0; k < windowSize; k++)
+            {
+                if((k + instanceIndex) < windowSize - 1)
+                {
+                    assertEquals(0.0, inputs[k], 0.0);
+                }
+                else
+                {
+                   assertEquals( k + (instanceIndex - (windowSize - 2)), inputs[k], 0.0); 
+                }  
+            }
+        }
+    }
+    
+    @Test
+    public void testSavingTestData()
+    {
+        setUp();
+        
+        w.getDataManager().deleteTestSet();
+        
+        w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
+        for(int i = 0; i < 100; i++)
+        {
+            double[] inputs = {i + 1, 2, 3};
+            w.getSupervisedLearningManager().updateInputs(inputs);
+        }
+        
+        w.save();
+        
+        testLoadedData();
+    }
+    
+    @Test
+    public void testLoadingTestData()
+    {
+        testLoadedData();
     }
     
 }

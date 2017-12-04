@@ -109,7 +109,19 @@ public class LearningManager implements ConnectsInputsToOutputs {
     void writeDataToFile(File projectDir, String baseFilename) throws IOException {
         if (learningType == LearningType.SUPERVISED_LEARNING) {
            File f = new File(projectDir + baseFilename + ".arff");
-           w.getDataManager().writeInstancesToArff(f);
+           w.getDataManager().writeInstancesToArff(f, false);
+        } else if (learningType == LearningType.TEMPORAL_MODELING) {
+            dtwLearningManager.writeDataToFile(projectDir, baseFilename);
+        } else {
+            logger.log(Level.WARNING, "Unknown learning manager type");
+        }
+    
+    }
+    
+    void writeTestDataToFile(File projectDir, String baseFilename) throws IOException {
+        if (learningType == LearningType.SUPERVISED_LEARNING) {
+           File f = new File(projectDir + baseFilename + ".arff");
+           w.getDataManager().writeInstancesToArff(f, true);
         } else if (learningType == LearningType.TEMPORAL_MODELING) {
             dtwLearningManager.writeDataToFile(projectDir, baseFilename);
         } else {
@@ -182,11 +194,11 @@ public class LearningManager implements ConnectsInputsToOutputs {
         setLearningType(LearningType.SUPERVISED_LEARNING);
     }
     
-    public void setSupervisedLearningWithExisting(Instances data, List<Path> paths) {
+    public void setSupervisedLearningWithExisting(Instances data, Instances testData, List<Path> paths) {
         if (learningType != LearningType.INITIALIZATION) {
             throw new IllegalStateException("Learning type cannot be changed after initialization is complete");
         }   
-        supervisedLearningManager = new SupervisedLearningManager(w, data, paths);
+        supervisedLearningManager = new SupervisedLearningManager(w, data, testData, paths);
         connector = supervisedLearningManager;
         featureConnector = supervisedLearningManager;
         setLearningType(LearningType.SUPERVISED_LEARNING);

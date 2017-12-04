@@ -161,11 +161,13 @@ public class FeatureManager
     
     public int addModifierToOutput(ModifiedInput modifier, int output)
     {
+        setTestSetDirty(output);
         return featureGroups.get(output).addModifier(modifier);
     }
     
     protected void passThroughInputToOutput(boolean passThrough, int output)
     {
+        setTestSetDirty(output);
         if(passThrough)
         {
             featureGroups.get(output).addFeatureForKey("PassThroughAll"); 
@@ -178,11 +180,13 @@ public class FeatureManager
     
     protected void removeAllModifiersFromOutput(int output)
     {
+        setTestSetDirty(output);
         featureGroups.get(output).removeAllModifiers();
     }
     
     public void removeModifierFromOutput(int modifierID, int output)
     {
+        setTestSetDirty(output);
         try {
             featureGroups.get(output).removeModifier(modifierID);      
         } 

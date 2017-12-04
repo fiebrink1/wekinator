@@ -250,7 +250,7 @@ public class DatasetViewer extends javax.swing.JFrame {
                     this);
             if (file != null) {
                 try {
-                    dataManager.writeInstancesToArff(file);
+                    dataManager.writeInstancesToArff(file, false);
                     /* if (WekinatorRunner.isLogging()) {
                      Plog.log(Msg.DATA_VIEWER_SAVE_ARFF_BUTTON, file.getAbsolutePath() + "/" + file.getName());
                      } */

@@ -445,11 +445,28 @@ public class DataManager {
         return outputNames[i];
     }
 
-    public void initialize(String[] inputNames, OSCOutputGroup outputGroup, Instances data) {
+    public void initialize(String[] inputNames, OSCOutputGroup outputGroup, Instances data, Instances testData) {
         initialize(inputNames, outputGroup);
         setFromDataset(data);
+        setTestDataFromDataset(testData);
+    }
+    
+    public void deleteTestSet()
+    {
+        initializeInstances(false, true);
     }
 
+    private void setTestDataFromDataset(Instances data) {
+        if(data.numInstances() == 0)
+        {
+            initializeInstances(false, true);
+        }
+        else
+        {
+            testInstances = new Instances(data);
+        }
+    }
+    
     private void setFromDataset(Instances data) {
         inputInstances = new Instances(data);
         updateOutputCounts();
@@ -505,7 +522,7 @@ public class DataManager {
         
         initializeOutputData();
         initializeInputLists();
-        initializeInstances();
+        initializeInstances(true, true);
 
         try {
             setupFilters();
@@ -534,7 +551,7 @@ public class DataManager {
         return r.getAttributeIndices();
     }
     
-    private void initializeInstances() {
+    private void initializeInstances(boolean inputs, boolean testSet) {
         //Set up instances
         FastVector ff = new FastVector(getNumInputs() + numOutputs + numMetaData); //Include ID, timestamp, training round
         //add ID, timestamp, and training round #
@@ -567,8 +584,14 @@ public class DataManager {
             }
         }
 
-        inputInstances = new Instances("dataset", ff, 100);
-        testInstances = new Instances("test-dataset", ff, 100);
+        if(inputs)
+        {
+            inputInstances = new Instances("dataset", ff, 100);
+        }
+        if(testSet)
+        {
+           testInstances = new Instances("test-dataset", ff, 100);
+        }
         //Set up dummy instances to reflect state of actual instances
         dummyInstances = new Instances(inputInstances);
     }
@@ -1311,9 +1334,9 @@ public class DataManager {
         }
     }
 
-    public void writeInstancesToArff(File file) throws IOException {
+    public void writeInstancesToArff(File file, boolean testSet) throws IOException {
         ArffSaver saver = new ArffSaver();
-        Instances temp = new Instances(inputInstances);
+        Instances temp = testSet ? new Instances(testInstances) : new Instances(inputInstances);
         saver.setInstances(temp);
         saver.setFile(file);
         saver.writeBatch();

@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import weka.core.Attribute;
+import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 import wekimini.PathAndDataLoader;
@@ -36,7 +38,8 @@ public class WekinatorSaver {
     private final static String stashAppend = File.separator + "saved";
     private final static String inputFilename = File.separator + "inputConfig.xml";
     private final static String outputFilename = File.separator + "outputConfig.xml";
-    private final static String dataFilename = File.separator + currentAppend + File.separator + "currentData"; //No extension: Will not be arff for DTW
+    private final static String dataFilename = File.separator + currentAppend + File.separator + "currentData";
+    private final static String testDataFilename = File.separator + currentAppend + File.separator + "testData";//No extension: Will not be arff for DTW
     private final static String jsonFilename = File.separator + currentAppend + File.separator + "modelSetDescription.json";
 
     private static final Logger logger = Logger.getLogger(WekinatorSaver.class.getName());
@@ -59,7 +62,8 @@ public class WekinatorSaver {
         }
         if (isSupervised) {
            Instances data = loadDataFromArff(projectDir);
-           w = instantiateSupervisedWekinator(wfd, ig, og, data, paths, projectDir);
+           Instances testData = loadTestDataFromArff(projectDir);
+           w = instantiateSupervisedWekinator(wfd, ig, og, data, testData, paths, projectDir);
            GlobalSettings.getInstance().setStringValue("wekinatorProjectLoadLocation", projectDir);
 
         } else {
@@ -84,6 +88,7 @@ public class WekinatorSaver {
 
     private static void saveData(File projectDir, Wekinator w) throws IOException {
         w.getLearningManager().writeDataToFile(projectDir, dataFilename);
+        w.getLearningManager().writeTestDataToFile(projectDir, testDataFilename);
     }
 
     private static void saveInputs(File projectDir, Wekinator w) throws IOException {
@@ -210,6 +215,22 @@ public class WekinatorSaver {
         al.setFile(new File(projectDir + dataFilename + ".arff"));
         return al.getDataSet();
     }
+    
+    private static Instances loadTestDataFromArff(String projectDir) {
+        ArffLoader al = new ArffLoader();
+        FastVector ff = new FastVector(1);
+        ff.addElement(new Attribute("ID"));
+        Instances testData = new Instances("testset",ff,1);
+        try{
+            al.setFile(new File(projectDir + testDataFilename + ".arff"));
+            testData = al.getDataSet();
+        } catch(IOException e)
+        {
+            
+        }
+        
+        return testData;
+    }
 
     private static List<Path> loadPaths(String projectDir, int howMany) throws Exception {
         String pathsDirectory = projectDir + modelsAppend + File.separator;
@@ -244,7 +265,7 @@ public class WekinatorSaver {
         
     }
     
-    private static Wekinator instantiateSupervisedWekinator(WekinatorFileData wfd, OSCInputGroup ig, OSCOutputGroup og, Instances data, List<Path> tempPaths, String projectDir) throws IOException {
+    private static Wekinator instantiateSupervisedWekinator(WekinatorFileData wfd, OSCInputGroup ig, OSCOutputGroup og, Instances data, Instances testData, List<Path> tempPaths, String projectDir) throws IOException {
         Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
         KadenzeLogging.getLogger().loadedFromFile(w, wfd.getProjectName());
         w.setProjectLocation(projectDir);
@@ -259,7 +280,7 @@ public class WekinatorSaver {
         }
         
         w.getOSCSender().setHostnameAndPort(InetAddress.getByName(og.getHostname()), og.getOutputPort());
-        w.getLearningManager().setSupervisedLearningWithExisting(data, paths);
+        w.getLearningManager().setSupervisedLearningWithExisting(data, testData, paths);
         // the above calls w.getDataManager().initialize(...) with data
         w.getStatusUpdateCenter().update(null, "Successfully loaded Wekinator project from file.");
         return w;
