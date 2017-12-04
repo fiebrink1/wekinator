@@ -282,7 +282,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     public static enum RecordingState {
 
-        RECORDING, NOT_RECORDING
+        RECORDING_TRAIN, RECORDING_TEST, NOT_RECORDING
     };
 
     public void addPathEditedListener(PathEditedListener l) {
@@ -352,7 +352,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         // KadenzeLogging.getLogger().logEvent(w, Assignment12Logger.KEvent.SUPERVISED_RECORD_START);
         KadenzeLogging.getLogger().supervisedLearningRecordStarted(w);
         setRecordingRound(recordingRound + 1);
-        setRecordingState(RecordingState.RECORDING);
+        setRecordingState(RecordingState.RECORDING_TRAIN);
     }
 
     public void stopRecording() {
@@ -957,29 +957,18 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         return outputs;
     }
 
-    public void addToTraining(double[] inputs, double[] outputs, boolean[] inputMask, boolean[] outputMask) {
-        /*double[] trainingOutputs = new double[outputs.length];
-        
-         for (int i = 0; i < outputs.length; i++) {
-         if (recordingMask[i]) {
-                
-         }
-         } */
+    public void addToTrainingFromFile(double[] inputs, double[] outputs, boolean[] inputMask, boolean[] outputMask) {
         setNumExamplesThisRound(numExamplesThisRound + 1);
-        w.getDataManager().addToTraining(inputs, outputs, inputMask, outputMask, recordingRound);
+        w.getDataManager().addToDataSet(inputs, outputs, inputMask, outputMask, recordingRound, false);
     }
 
     
-    public void addToTraining(double[] inputs, double[] outputs, boolean[] recordingMask) {
-        /*double[] trainingOutputs = new double[outputs.length];
-        
-         for (int i = 0; i < outputs.length; i++) {
-         if (recordingMask[i]) {
-                
-         }
-         } */
-        setNumExamplesThisRound(numExamplesThisRound + 1);
-        w.getDataManager().addToTraining(inputs, outputs, recordingMask, recordingRound);
+    public void addToDataSet(double[] inputs, double[] outputs, boolean[] recordingMask, boolean testing) {
+        if(!testing)
+        {
+            setNumExamplesThisRound(numExamplesThisRound + 1);
+        }
+        w.getDataManager().addToDataSet(inputs, outputs, new boolean[0],recordingMask, recordingRound, testing);
     }
 
     
@@ -993,7 +982,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             for (int i = 0; i < numInputs; i++) {
                 nextInputs[i] = thisList.get(i);
             }
-            w.getDataManager().addToTraining(nextInputs, outputs, recordingMask, recordingRound);
+            w.getDataManager().addToDataSet(nextInputs, outputs, new boolean[0], recordingMask, recordingRound, false);
         }
     }
 
@@ -1024,10 +1013,12 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     //
     //TODO: Want ability to compute distribution to be done model by model! (in model editor)
     public void updateInputs(double[] inputs) {
-        if (recordingState == RecordingState.RECORDING) {
-            addToTraining(inputs, w.getOutputManager().getCurrentValues(), pathRecordingMask);
-        } else if (runningState == RunningState.RUNNING) {
-
+        if (recordingState != RecordingState.NOT_RECORDING) 
+        {
+            addToDataSet(inputs, w.getOutputManager().getCurrentValues(), pathRecordingMask, recordingState == RecordingState.RECORDING_TEST);
+        } 
+        else if (runningState == RunningState.RUNNING) 
+        {
             double[] d = computeValues(inputs, pathRunningMask);
             w.getOutputManager().setNewComputedValues(d);
 
@@ -1044,7 +1035,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     }
 
     private void updateInputBundle(List<List<Double>> values) {
-        if (recordingState == RecordingState.RECORDING) {
+        if (recordingState == RecordingState.RECORDING_TRAIN) {
             //addToTraining(inputs, w.getOutputManager().getCurrentValues(), pathRecordingMask);
             addBundleToTraining(values, w.getOutputManager().getCurrentValues(), pathRecordingMask);
         } else if (runningState == RunningState.RUNNING) {

@@ -287,7 +287,7 @@ public class SupervisedLearningPanel extends javax.swing.JPanel {
     }
 
     private void updateRecordingButton() {
-        if (w.getSupervisedLearningManager().getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING) {
+        if (w.getSupervisedLearningManager().getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING_TRAIN) {
             buttonRecord.setText("Stop Recording");
             buttonRecord.setForeground(Color.red);
         } else {
@@ -522,7 +522,7 @@ public class SupervisedLearningPanel extends javax.swing.JPanel {
             // w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         } */
 
-        if (w.getSupervisedLearningManager().getRecordingState() != SupervisedLearningManager.RecordingState.RECORDING) {
+        if (w.getSupervisedLearningManager().getRecordingState() != SupervisedLearningManager.RecordingState.RECORDING_TRAIN) {
            w.getSupervisedLearningManager().getSupervisedLearningController().startRecord();
             /* w.getSupervisedLearningManager().startRecording();
              w.getStatusUpdateCenter().update(this, "Recording - waiting for inputs to arrive"); */

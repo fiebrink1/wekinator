@@ -84,7 +84,7 @@ public class WekinatorTest {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getSupervisedLearningManager().buildAll();
-        List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
+        List<Instances> featureInstances = w.getDataManager().getFeatureInstances(false);
         for(int i = 0; i < featureInstances.size(); i++)
         {
             Instances instances = featureInstances.get(i);
@@ -122,7 +122,7 @@ public class WekinatorTest {
         modifier3.addRequiredModifierID(id2);
         int id3 = w.getDataManager().featureManager.addModifierToOutput(modifier3, 0);
         w.getSupervisedLearningManager().buildAll();
-        List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
+        List<Instances> featureInstances = w.getDataManager().getFeatureInstances(false);
         for(int i = 0; i < featureInstances.size(); i++)
         {
             Instances instances = featureInstances.get(i);

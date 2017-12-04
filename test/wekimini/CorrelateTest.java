@@ -87,7 +87,7 @@ public class CorrelateTest extends ModifierTest {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getSupervisedLearningManager().buildAll();
-        List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
+        List<Instances> featureInstances = w.getDataManager().getFeatureInstances(false);
         for(int outputIndex = 0; outputIndex < featureInstances.size(); outputIndex++)
         {
             Instances instances = featureInstances.get(outputIndex);

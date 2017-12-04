@@ -76,7 +76,7 @@ public class DataTableModel extends AbstractTableModel {
         double[] inputs = new double[numInputs];
         double[] outputs = new double[numOutputs];
         boolean[] mask = new boolean[numOutputs];
-        m.addToTraining(inputs, outputs, mask, recordingRound);
+        m.addToDataSet(inputs, outputs, new boolean[0], mask, recordingRound, false);
         int row = m.getNumExamples()-1;
         fireTableRowsInserted(row, row);
     }

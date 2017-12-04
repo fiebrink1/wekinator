@@ -49,7 +49,7 @@ public class WekinatorSupervisedLearningController {
     }
     
     public boolean isRecording() {
-        return (m.getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING);
+        return (m.getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING_TRAIN);
     }
     
     public void train() {
@@ -65,7 +65,7 @@ public class WekinatorSupervisedLearningController {
     }
 
     public void startRun() {
-        if (m.getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING) {
+        if (m.getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING_TRAIN) {
             m.stopRecording();
         }
         if (m.getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING) {

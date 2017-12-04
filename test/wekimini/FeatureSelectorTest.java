@@ -214,7 +214,7 @@ public class FeatureSelectorTest {
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getSupervisedLearningManager().buildAll();
         Thread.sleep(50);
-        List<Instances> featureInstances = w.getDataManager().getFeatureInstances();
+        List<Instances> featureInstances = w.getDataManager().getFeatureInstances(false);
         WrapperSelector wrapperSelector = new WrapperSelector();
         int ptr = 0;
         for(Instances data:featureInstances)

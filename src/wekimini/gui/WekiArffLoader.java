@@ -322,7 +322,7 @@ public class WekiArffLoader {
                     }
                 }
                 if (!ignoreWithNoOutputs || numOutputsMissing < numOutputs) {
-                    w.getSupervisedLearningManager().addToTraining(inputs, outputs, inputMask, outputMask);
+                    w.getSupervisedLearningManager().addToTrainingFromFile(inputs, outputs, inputMask, outputMask);
                 }
                 nextInstance = af.getNextInstance(structure);
             }

@@ -69,13 +69,16 @@ public class DataManager {
     private List<int[]> inputListsForOutputsTraining;
     private List<int[]> inputListsForOutputsRunning; //TODO: Output after a model or all models are trained
     private Instances inputInstances = null;
-    private List<Instances> featureInstances = null;
+    private List<Instances> trainingFeatureInstances = null;
+    private List<Instances> testingFeatureInstances = null;
     public FeatureManager featureManager;
     private Instances allFeaturesInstances = null;
+    private Instances testInstances = null;
     public String[][] selectedFeatureNames = new String[0][0];
     public int[][] selectedFeatureIndices = new int[0][0];
     private boolean useAutomaticFeatures = false;
-    private int nextID = 1;
+    private int nextTrainingID = 1;
+    private int nextTestingID = 1;
     private int numOutputs = 0;
 
     private static final int numMetaData = 3; //TODO
@@ -369,9 +372,10 @@ public class DataManager {
         }
     }
 
-    public void addToTraining(double[] inputs, double[] outputs, boolean[] recordingMask, int recordingRound) {
-        int thisId = nextID;
-        nextID++;
+    public void addToDataSet(double[] inputs, double[] outputs , boolean[] inputMask, boolean[] outputMask, int recordingRound, boolean testing) {
+        
+        int thisId = testing ? nextTestingID : nextTrainingID;
+        Instances instancesToUpdate = testing ? testInstances :inputInstances;
 
         double myVals[] = new double[numMetaData + getNumInputs() + numOutputs];
         myVals[idIndex] = thisId;
@@ -381,7 +385,7 @@ public class DataManager {
 
         String pretty = prettyDateFormat.format(now);
         try {
-            myVals[timestampIndex] = inputInstances.attribute(timestampIndex).parseDate(pretty);
+            myVals[timestampIndex] = instancesToUpdate.attribute(timestampIndex).parseDate(pretty);
         } catch (ParseException ex) {
             myVals[timestampIndex] = 0;
             Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -390,17 +394,35 @@ public class DataManager {
         System.arraycopy(outputs, 0, myVals, numMetaData + getNumInputs(), outputs.length);
 
         Instance in = new Instance(1.0, myVals);
-        for (int i = 0; i < recordingMask.length; i++) {
-            if (!recordingMask[i]) {
+        if(inputMask.length > 0)
+        {
+            for (int i = 0; i < inputMask.length; i++) {
+                if (!inputMask[i]) {
+                    in.setMissing(numMetaData + i);
+                }
+            }
+        }
+
+        for (int i = 0; i < outputMask.length; i++) {
+            if (!outputMask[i]) {
                 in.setMissing(numMetaData + getNumInputs() + i);
             } else {
                 setNumExamplesPerOutput(i, getNumExamplesPerOutput(i) + 1);
                 // outputInstanceCounts[i]++;
             }
         }
-        in.setDataset(inputInstances);
-        inputInstances.add(in);
-        setHasInstances(true);
+        in.setDataset(instancesToUpdate);
+        instancesToUpdate.add(in);
+        if(!testing)
+        {
+            setHasInstances(true);
+            nextTrainingID++;
+        }
+        else
+        {
+            nextTestingID++;
+        }
+        
         fireStateChanged();
     }
 
@@ -438,7 +460,7 @@ public class DataManager {
 
     private void updateNextId() {
         AttributeStats a = inputInstances.attributeStats(idIndex);
-        nextID = (int) a.numericStats.max + 1;
+        nextTrainingID = (int) a.numericStats.max + 1;
     }
 
     //Problem: gets called when loading from file...
@@ -522,7 +544,8 @@ public class DataManager {
         for (int i = 0; i < getNumInputs(); i++) {
             ff.addElement(new Attribute(this.inputNames[i]));
         }
-        featureInstances = new ArrayList(numOutputs);
+        trainingFeatureInstances = new ArrayList(numOutputs);
+        testingFeatureInstances = new ArrayList(numOutputs);
 
         //Add outputs
         for (int i = 0; i < numOutputs; i++) {
@@ -542,6 +565,7 @@ public class DataManager {
         }
 
         inputInstances = new Instances("dataset", ff, 100);
+        testInstances = new Instances("test-dataset", ff, 100);
         //Set up dummy instances to reflect state of actual instances
         dummyInstances = new Instances(inputInstances);
     }
@@ -752,8 +776,10 @@ public class DataManager {
         inputSavingFilters = insertIntoArray(s, inputSavingFilters, which);
     }
     
-    private void setFeaturesInstancesFromAutomatic(int outputIndex)
+    private void setFeaturesInstancesFromAutomatic(int outputIndex, boolean testing)
     {
+        List<Instances> featureInstances = testing ? testingFeatureInstances : trainingFeatureInstances;
+        
         if(featureManager.isAllFeaturesDirty())
         {
             updateAllFeaturesInstances();
@@ -782,7 +808,6 @@ public class DataManager {
             featureManager.didRecalculateAllFeatures();
         }
        
-        
         FeatureSelector sel;
         switch(autoSelect)
         {
@@ -821,23 +846,24 @@ public class DataManager {
                 selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeaturesGroup().valueMap[attributeIndex];
                 ptr++;
             }
-            setFeaturesInstancesFromAutomatic(outputIndex);
+            setFeaturesInstancesFromAutomatic(outputIndex, false);
         }
         w.getSupervisedLearningManager().setAbleToRun(false);
         fireStateChanged();
     }
     
-    private void updateFeatureInstances(int index)
+    private void updateFeatureInstances(int index, boolean testing)
     { 
         if(useAutomaticFeatures)
         {
-            setFeaturesInstancesFromAutomatic(index);
+            setFeaturesInstancesFromAutomatic(index, testing);
         }
         else
         {
             Instances newInstances = featureManager.getNewInstances(index, numClasses[index]);
             try{
-                Instances filteredInputs = Filter.useFilter(inputInstances, trainingFilters[index]);
+                Instances in = testing ? testInstances : inputInstances;
+                Instances filteredInputs = Filter.useFilter(in, trainingFilters[index]);
                 for (int i = 0; i < filteredInputs.numInstances(); i++)
                 {
                     double[] input = filteredInputs.instance(i).toDoubleArray();
@@ -852,6 +878,7 @@ public class DataManager {
                     newInstances.add(featureInstance);
                     newInstances.setClassIndex(withOutput.length - 1);
                 }
+                List<Instances> featureInstances = testing ? testingFeatureInstances : trainingFeatureInstances;
                 if(index < featureInstances.size())
                 {
                    featureInstances.set(index, newInstances);
@@ -899,9 +926,9 @@ public class DataManager {
         }
     }
     
-    protected List<Instances> getFeatureInstances()
+    protected List<Instances> getFeatureInstances(boolean testing)
     {
-        return featureInstances;
+        return testing ? testingFeatureInstances : trainingFeatureInstances;
     }
     
     protected Instances getAllFeaturesInstances(int outputIndex)
@@ -913,14 +940,36 @@ public class DataManager {
         }
         return formatted;
     }
+    
+    protected Instances getTestInstances()
+    {
+        return testInstances;
+    }
+    
+    public Instances getTestingDataForOutput(int index)
+    {
+        try {
+            if(featureManager.isDirty(index))
+            {
+                updateFeatureInstances(index, true);
+            }
+            Instances in = testingFeatureInstances.get(index);
+            in.setClassIndex(in.numAttributes() - 1);
+            in.deleteWithMissingClass();
+            return in;
+        } catch (Exception ex) {
+            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } 
+    }
 
     public Instances getTrainingDataForOutput(int index) {
         try {
             if(featureManager.isDirty(index))
             {
-                updateFeatureInstances(index);
+                updateFeatureInstances(index, false);
             }
-            Instances in = featureInstances.get(index);
+            Instances in = trainingFeatureInstances.get(index);
             in.setClassIndex(in.numAttributes() - 1);
             in.deleteWithMissingClass();
             return in;
@@ -956,7 +1005,8 @@ public class DataManager {
             useAutomaticFeatures = false;
             for(int i = 0; i < numOutputs; i++)
             {
-                updateFeatureInstances(i);
+                updateFeatureInstances(i, true);
+                updateFeatureInstances(i, false);
             }
         }
         fireStateChanged();
@@ -1386,8 +1436,8 @@ public class DataManager {
         
         for (int i = 0; i < numInstances; i++) {
             Instance instance = loadedInstances.instance(i);
-            int thisId = nextID;
-            nextID++;
+            int thisId = nextTrainingID;
+            nextTrainingID++;
             double myVals[] = new double[numMetaData + getNumInputs() + numOutputs];
             myVals[idIndex] = thisId;
             myVals[recordingRoundIndex] = recordingRound;
@@ -1469,46 +1519,5 @@ public class DataManager {
             newArray[i] = existingArray[i-1];
         }
         return newArray;
-    }
-
-    void addToTraining(double[] inputs, double[] outputs, boolean[] inputMask, boolean[] outputMask, int recordingRound) {
-        int thisId = nextID;
-        nextID++;
-
-        double myVals[] = new double[numMetaData + getNumInputs() + numOutputs];
-        myVals[idIndex] = thisId;
-        myVals[recordingRoundIndex] = recordingRound;
-
-        Date now = new Date();
-
-        String pretty = prettyDateFormat.format(now);
-        try {
-            myVals[timestampIndex] = inputInstances.attribute(timestampIndex).parseDate(pretty);
-        } catch (ParseException ex) {
-            myVals[timestampIndex] = 0;
-            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        System.arraycopy(inputs, 0, myVals, numMetaData, inputs.length); //TODO DOUBLECHECK
-        System.arraycopy(outputs, 0, myVals, numMetaData + getNumInputs(), outputs.length);
-
-        Instance in = new Instance(1.0, myVals);
-        for (int i = 0; i < inputMask.length; i++) {
-            if (!inputMask[i]) {
-                in.setMissing(numMetaData + i);
-            }
-        }
-        
-        for (int i = 0; i < outputMask.length; i++) {
-            if (!outputMask[i]) {
-                in.setMissing(numMetaData + getNumInputs() + i);
-            } else {
-                setNumExamplesPerOutput(i, getNumExamplesPerOutput(i) + 1);
-            }
-        }
-        in.setDataset(inputInstances);
-        inputInstances.add(in);
-        setHasInstances(true);
-        fireStateChanged();
-    }
-    
+    }  
 }
