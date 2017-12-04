@@ -404,6 +404,14 @@ public class DataManager {
         }
 
         for (int i = 0; i < outputMask.length; i++) {
+            if(testing)
+            {
+                featureManager.setTestSetDirty(i);
+            }
+            else
+            {
+                featureManager.setDirty(i);
+            }
             if (!outputMask[i]) {
                 in.setMissing(numMetaData + getNumInputs() + i);
             } else {
