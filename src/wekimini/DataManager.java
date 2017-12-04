@@ -582,6 +582,8 @@ public class DataManager {
             } else {
                 ff.addElement(new Attribute(outputNames[i]));
             }
+            featureManager.setTestSetDirty(i);
+            featureManager.setDirty(i);
         }
 
         if(inputs)

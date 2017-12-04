@@ -350,6 +350,7 @@ public class FeatureGroup {
     public void setFeatureWindowSize(int windowSize)
     {
         featureLibrary.initLibrary(windowSize);
+        setDirty();
     }
     
     public String[] getOutputNames() {

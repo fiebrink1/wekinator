@@ -196,6 +196,17 @@ public class FeatureManager
         }
     }
     
+    public void setFeatureWindowSize(int size)
+    {
+        int output = 0;
+        for(FeatureGroup fg:featureGroups)
+        {
+            setTestSetDirty(output);
+            output++;
+            fg.setFeatureWindowSize(size);
+        }
+    }
+    
     //All Features
     protected double[] modifyInputsForAllFeatures(double[] newInputs)
     {        

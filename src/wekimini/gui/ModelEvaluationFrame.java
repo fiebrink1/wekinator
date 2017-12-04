@@ -61,6 +61,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             Logger.getLogger(ModelEvaluationFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         w = ww;
+        testSetSizeLabel.setText(Integer.toString(w.getDataManager().getTestingDataForOutput(0).numInstances()));
     }
 
     public ModelEvaluationFrame(String[] outputNames, Wekinator w) {
@@ -69,6 +70,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         initModelDropdown(outputNames);
         initRows(outputNames);
         setTitle("Model evaluation");
+        testSetSizeLabel.setText(Integer.toString(w.getDataManager().getTestingDataForOutput(0).numInstances()));
     }
 
     private void initModelDropdown(String[] outputNames) {
@@ -127,7 +129,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         progressBar = new javax.swing.JProgressBar();
         buttonCompute = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        testSetSizeLabel = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
@@ -231,7 +233,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
 
         jLabel2.setText("Test Set");
 
-        jLabel3.setText("0");
+        testSetSizeLabel.setText("0");
 
         jLabel4.setText("examples");
 
@@ -258,7 +260,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel2)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(jLabel3)
+                                        .addComponent(testSetSizeLabel)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jLabel4)))))
                         .addGap(0, 0, Short.MAX_VALUE))
@@ -286,7 +288,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
+                            .addComponent(testSetSizeLabel)
                             .addComponent(jLabel4))
                         .addGap(9, 9, 9)
                         .addComponent(panelFoldsParent, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -560,11 +562,13 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
            recordingButton.setText("Start Recording Test Set");
            w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.NOT_RECORDING);
        }
-
+       testSetSizeLabel.setText(Integer.toString(w.getDataManager().getTestingDataForOutput(0).numInstances()));
     }//GEN-LAST:event_recordingButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         // TODO add your handling code here:
+        w.getDataManager().deleteTestSet();
+        testSetSizeLabel.setText(Integer.toString(w.getDataManager().getTestingDataForOutput(0).numInstances()));
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     /**
@@ -618,7 +622,6 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -637,6 +640,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JButton recordingButton;
     private javax.swing.JScrollPane scrollPaneInputs;
+    private javax.swing.JLabel testSetSizeLabel;
     private javax.swing.JTextField textNumFolds;
     // End of variables declaration//GEN-END:variables
 
