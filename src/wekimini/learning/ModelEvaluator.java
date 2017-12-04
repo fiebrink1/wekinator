@@ -221,11 +221,11 @@ public class ModelEvaluator {
                                     eval.evaluateModel(c2, instances);
                                     break;
                                 case TESTING_SET:
-                                    instances = w.getSupervisedLearningManager().getTestingDataForPath(p, false);
-                                    eval = new Evaluation(instances);
+                                    Instances testingInstances = w.getSupervisedLearningManager().getTestingDataForPath(p, false);
+                                    eval = new Evaluation(testingInstances);
                                     c2 = Classifier.makeCopy(c);
                                     c2.buildClassifier(instances);
-                                    eval.evaluateModel(c2, instances);
+                                    eval.evaluateModel(c2, testingInstances);
                             }
                             String result;
                             if (p.getModelBuilder() instanceof ClassificationModelBuilder) {
