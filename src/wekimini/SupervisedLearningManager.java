@@ -1090,6 +1090,10 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         return w.getDataManager().getTrainingDataForOutput(pathsToOutputIndices.get(p));
     }
     
+    public Instances getTestingDataForPath(Path p, boolean includeMetadataFields) {
+        return w.getDataManager().getTestingDataForOutput(pathsToOutputIndices.get(p));
+    }
+    
     public Instances getInputDataForPath(Path p, boolean includeMetadataFields) {
         return w.getDataManager().getInputDataForOutput(pathsToOutputIndices.get(p), includeMetadataFields);
     }

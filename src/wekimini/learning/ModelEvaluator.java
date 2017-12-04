@@ -23,6 +23,7 @@ import weka.core.Instances;
 import wekimini.LearningModelBuilder;
 import wekimini.Path;
 import wekimini.Wekinator;
+import wekimini.gui.ModelEvaluationFrame.EvaluationMode;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.util.Util;
 
@@ -167,7 +168,7 @@ public class ModelEvaluator {
         fireCancelled();
     }
     
-    public void evaluateAll(final List<Path> paths, final boolean isTraining, final int numFolds, PropertyChangeListener listener) {
+    public void evaluateAll(final List<Path> paths, final EvaluationMode mode, final int numFolds, PropertyChangeListener listener) {
         final List<Instances> data = new LinkedList<>();
         for (Path p : paths) {
             Instances i = w.getSupervisedLearningManager().getTrainingDataForPath(p, false);
@@ -207,13 +208,24 @@ public class ModelEvaluator {
                             Instances instances = w.getSupervisedLearningManager().getTrainingDataForPath(p, false);
                             Evaluation eval = new Evaluation(instances);
                             Classifier c = ((LearningModelBuilder)p.getModelBuilder()).getClassifier();
-                            if (! isTraining) {
-                                Random r = new Random();
-                                eval.crossValidateModel(c, instances, numFolds, r);
-                            } else {
-                                Classifier c2 = Classifier.makeCopy(c);
-                                c2.buildClassifier(instances);
-                                eval.evaluateModel(c2, instances);
+                            Classifier c2;
+                            switch(mode)
+                            {
+                                case CROSS_VALIDATION:
+                                    Random r = new Random();
+                                    eval.crossValidateModel(c, instances, numFolds, r);
+                                    break;
+                                case TRAINING_SET:
+                                    c2 = Classifier.makeCopy(c);
+                                    c2.buildClassifier(instances);
+                                    eval.evaluateModel(c2, instances);
+                                    break;
+                                case TESTING_SET:
+                                    instances = w.getSupervisedLearningManager().getTestingDataForPath(p, false);
+                                    eval = new Evaluation(instances);
+                                    c2 = Classifier.makeCopy(c);
+                                    c2.buildClassifier(instances);
+                                    eval.evaluateModel(c2, instances);
                             }
                             String result;
                             if (p.getModelBuilder() instanceof ClassificationModelBuilder) {
@@ -221,7 +233,7 @@ public class ModelEvaluator {
                             } else {
                                 result = dFormat.format(eval.errorRate()) + " (RMS)";
                             }
-                            if (!isTraining) {
+                            if (mode == EvaluationMode.CROSS_VALIDATION) {
                                 KadenzeLogging.getLogger().crossValidationComputed(w, i, numFolds, result);
                             } else {
                                 KadenzeLogging.getLogger().trainingAccuracyComputed(w, i, result);

@@ -30,6 +30,7 @@ import wekimini.util.Util;
  *
  * @author rebecca
  */
+
 public class ModelEvaluationFrame extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(ModelEvaluationFrame.class.getName());
@@ -43,6 +44,10 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
     int modelsComputed = 0;
     int singleModelOffset = 0;
     private boolean wasCancelled = false;
+    
+    public enum EvaluationMode {
+        CROSS_VALIDATION, TRAINING_SET, TESTING_SET
+    }
 
     /**
      * Creates new form PathEditorFrame
@@ -180,7 +185,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
 
         panelFoldsParent.add(cardNone, "cardNone");
 
-        recordingButton.setText("Start Recording");
+        recordingButton.setLabel("Start Recording Test Set");
         recordingButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 recordingButtonActionPerformed(evt);
@@ -188,7 +193,6 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         });
 
         deleteButton.setText("Delete Test Set");
-        deleteButton.setActionCommand("Delete Test Set");
         deleteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButtonActionPerformed(evt);
@@ -208,7 +212,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             }
         });
 
-        comboMethod.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Cross-validation accuracy", "Training accuracy" }));
+        comboMethod.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Cross-validation accuracy", "Training accuracy", "Testing Accuracy" }));
         comboMethod.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboMethodActionPerformed(evt);
@@ -384,7 +388,19 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             }
             return;
         }
-        boolean isTraining = (comboMethod.getSelectedIndex() == 1);
+        EvaluationMode eval = EvaluationMode.CROSS_VALIDATION;
+        switch(comboMethod.getSelectedIndex())
+        {
+            case 0:
+                eval = EvaluationMode.CROSS_VALIDATION;
+                break;
+            case 1:
+                eval = EvaluationMode.TRAINING_SET;
+                break;
+            case 2:
+                eval = EvaluationMode.TESTING_SET;
+                break;
+        }
 
         List<Path> paths;
         if (comboModelToEvaluate.getSelectedIndex() == 0) {
@@ -398,7 +414,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         }
 
         int numFolds = 0;
-        if (!isTraining) {
+        if (eval == EvaluationMode.CROSS_VALIDATION) {
             try {
                 numFolds = Integer.parseInt(textNumFolds.getText());
             } catch (NumberFormatException ex) {
@@ -420,7 +436,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             Util.showPrettyErrorPane(this, "Cannot compute evaluation: please supply some training examples first.");
             return;
         }
-        if (!isTraining) {
+        if (eval == EvaluationMode.CROSS_VALIDATION) {
             if (numFolds > numExamples) {
                 Util.showPrettyWarningPromptPane(this, "The number of folds you have chosen is greater than the number of training examples; Setting number of folds to " + numExamples);
                 numFolds = numExamples;
@@ -450,7 +466,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         modelsComputed = 0;
         progressBar.setMaximum(numModelsToCompute + 1);
         progressBar.setValue(1);
-        e.evaluateAll(paths, isTraining, numFolds, new PropertyChangeListener() {
+        e.evaluateAll(paths, eval, numFolds, new PropertyChangeListener() {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -515,12 +531,12 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
     private void recordingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordingButtonActionPerformed
        if(w.getSupervisedLearningManager().getRecordingState() != SupervisedLearningManager.RecordingState.RECORDING_TEST)
        {
-           recordingButton.setText("Stop Recording");
+           recordingButton.setText("Stop Recording Test Set");
            w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
        }
        else
        {
-           recordingButton.setText("Start Recording");
+           recordingButton.setText("Start Recording Test Set");
            w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.NOT_RECORDING);
        }
 
