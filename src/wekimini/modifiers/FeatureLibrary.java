@@ -520,7 +520,6 @@ public final class FeatureLibrary
     
     public void removeFeatureForKey(String key)
     {
-        System.out.println("removing feature:" + key);
         if(!added.containsKey(key))
         {
             return;

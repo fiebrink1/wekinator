@@ -86,6 +86,7 @@ public class FeatureEditor extends javax.swing.JFrame {
         windowSizeSlider = new javax.swing.JSlider();
         jLabel1 = new javax.swing.JLabel();
         windowSizeLabel = new javax.swing.JLabel();
+        setFeaturesButton = new javax.swing.JButton();
 
         menuItemRevert.setText("Revert all changes");
         menuItemRevert.addActionListener(new java.awt.event.ActionListener() {
@@ -197,6 +198,13 @@ public class FeatureEditor extends javax.swing.JFrame {
 
         windowSizeLabel.setText("10");
 
+        setFeaturesButton.setText("jButton4");
+        setFeaturesButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                setFeaturesButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -213,6 +221,8 @@ public class FeatureEditor extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(setFeaturesButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -233,7 +243,8 @@ public class FeatureEditor extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton3)
-                    .addComponent(jButton2))
+                    .addComponent(jButton2)
+                    .addComponent(setFeaturesButton))
                 .addContainerGap())
         );
 
@@ -299,6 +310,15 @@ public class FeatureEditor extends javax.swing.JFrame {
         
     }//GEN-LAST:event_windowSizeSliderStateChanged
 
+    private void setFeaturesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setFeaturesButtonActionPerformed
+        // TODO add your handling code here:
+        boolean[][] oldConnections = w.getLearningManager().getConnectionMatrix(true);
+        boolean[][] c = gridPanel.getConnectionsFromForm();
+        w.getDataManager().featureManager.setFeatureWindowSize(windowSize);
+        w.getLearningManager().updateInputOutputConnections(c,true);
+        KadenzeLogging.getLogger().selectedFeatures(w, oldConnections, c);
+    }//GEN-LAST:event_setFeaturesButtonActionPerformed
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -314,6 +334,7 @@ public class FeatureEditor extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuItemRevert;
     private javax.swing.JPopupMenu popupMenuAction;
     private javax.swing.JScrollPane scrollPanel;
+    private javax.swing.JButton setFeaturesButton;
     private javax.swing.JLabel windowSizeLabel;
     private javax.swing.JSlider windowSizeSlider;
     // End of variables declaration//GEN-END:variables
