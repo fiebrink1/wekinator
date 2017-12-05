@@ -89,6 +89,45 @@ public class FeatureGroup {
         return currentID;
     }
     
+    public void removeDeadEnds()
+    {
+        ArrayList<ModifiedInput> toRemove = new ArrayList();
+        for(ModifiedInput modifier:modifiers)
+        {
+            Boolean doesOutput = modifier.addToOutput;
+            Boolean atLeastOneChild = false;
+            if(!doesOutput)
+            {
+                INNER:
+                for(ModifiedInput existing:modifiers)
+                {
+                    for(Integer input:existing.getRequiredInputs())
+                    {
+                        if(modifier.inputID == input)
+                        {
+                            atLeastOneChild = true;
+                            break INNER;
+                        }
+                    }
+
+                }
+            }
+            if(!atLeastOneChild && !doesOutput && modifier.inputID > 0)
+            {
+                toRemove.add(modifier);
+            }
+        }
+        for(ModifiedInput remove:toRemove)
+        {
+            removeModifier(remove.inputID);
+        }
+        if(toRemove.size() > 0)
+        {
+            refreshState();
+            setDirty();
+        }
+    }
+    
     public void removeOrphanedModifiers()
     {
         ArrayList<ModifiedInput> toRemove = new ArrayList();
@@ -114,7 +153,7 @@ public class FeatureGroup {
         }
         for(ModifiedInput remove:toRemove)
         {
-            removeModifier(modifiers.indexOf(remove));
+            removeModifier(remove.inputID);
         }
         if(toRemove.size() > 0)
         {
@@ -138,6 +177,7 @@ public class FeatureGroup {
             removeModifier(id);
         }
         removeOrphanedModifiers();
+        removeDeadEnds();
         featureLibrary.clearAdded();
     }
     
@@ -146,6 +186,7 @@ public class FeatureGroup {
         if(id > 0)
         {
             Boolean canRemove = true;
+            INNER:
             for(ModifiedInput existing:modifiers)
             {
                 for(Integer input : existing.getRequiredInputs())
@@ -153,7 +194,7 @@ public class FeatureGroup {
                     if(input == id)
                     {
                         canRemove = false;
-                        break;
+                        break INNER;
                     }
                 }
             }

@@ -206,6 +206,7 @@ public class FeatureManager
     {
         windowSize = size;
         int output = 0;
+        allFeatures.setFeatureWindowSize(windowSize);
         for(FeatureGroup fg:featureGroups)
         {
             setTestSetDirty(output);

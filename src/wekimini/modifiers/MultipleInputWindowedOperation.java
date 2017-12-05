@@ -12,7 +12,7 @@ package wekimini.modifiers;
 
 public class MultipleInputWindowedOperation extends ModifiedInputSingle {
     
-    private final int windowSize;
+    public final int windowSize;
     private double[][] history;
     private transient int startPointer;
     private final MultipleInputOperation op;

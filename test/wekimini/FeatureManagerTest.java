@@ -8,7 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+import wekimini.modifiers.BufferedInput;
+import wekimini.modifiers.ModifiedInput;
+import wekimini.modifiers.MultipleInputWindowedOperation;
 import wekimini.modifiers.PassThroughSingle;
+import wekimini.modifiers.WindowedOperation;
 
 /**
  *
@@ -117,6 +121,65 @@ public class FeatureManagerTest {
         
         fm.getFeatureGroups().get(0).removeOrphanedModifiers();
         assertEquals(2, fm.getFeatureGroups().get(0).getModifiers().size());   
+    }
+    
+    @Test
+    public void testRemoveDeadEnds()
+    {
+        PassThroughSingle modifierDeadEnd = new PassThroughSingle("1",0,0);
+        modifierDeadEnd.addRequiredModifierID(0);
+        modifierDeadEnd.addToOutput = false;
+        int id1 = fm.addModifierToOutput(modifierDeadEnd, 0);
+        
+        PassThroughSingle modifierParent = new PassThroughSingle("1",0,0);
+        modifierParent.addRequiredModifierID(0);
+        modifierParent.addToOutput = false;
+        int id2 = fm.addModifierToOutput(modifierParent, 0);
+        
+        PassThroughSingle modifierChild = new PassThroughSingle("1",0,0);
+        modifierChild.addRequiredModifierID(id2);
+        modifierChild.addToOutput = true;
+        int id3 = fm.addModifierToOutput(modifierChild, 0);
+        
+        fm.getFeatureGroups().get(0).removeDeadEnds();
+        
+        assertEquals(3, fm.getFeatureGroups().get(0).getModifiers().size());
+        
+    }
+    
+    @Test
+    public void testChangingWindowSize()
+    {
+        int ws = 20;
+        fm.setFeatureWindowSize(ws);
+        for(FeatureGroup fg:fm.getFeatureGroups())
+        {
+            testWindowSizeForFeatureGroup(ws, fg);
+        }
+        testWindowSizeForFeatureGroup(ws, fm.getAllFeaturesGroup());
+        
+        ws = 5;
+        fm.setFeatureWindowSize(ws);
+        for(FeatureGroup fg:fm.getFeatureGroups())
+        {
+            testWindowSizeForFeatureGroup(ws, fg);
+        }
+        testWindowSizeForFeatureGroup(ws, fm.getAllFeaturesGroup());
+    }
+    
+    public void testWindowSizeForFeatureGroup(int ws, FeatureGroup fg)
+    {
+            for(ModifiedInput modifier:fg.getModifiers())
+            {
+                if(modifier instanceof WindowedOperation)
+                {
+                   assertEquals(ws,((WindowedOperation)modifier).windowSize);
+                }
+                else if (modifier instanceof BufferedInput)
+                {
+                    assertEquals(ws,((BufferedInput)modifier).bufferSize);
+                }
+            }
     }
     
 }

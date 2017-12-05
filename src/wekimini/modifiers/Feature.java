@@ -22,9 +22,16 @@ public class Feature
     {
         this.name = name;
     }
-    
+
     public void addFeature(FeatureGroup fg)
     {
         
+    }  
+    
+    public int addModifier(FeatureGroup fg, ModifiedInput mod)
+    {
+        int id = fg.addModifier(mod);
+        ids.add(id);
+        return id;
     }  
 }
