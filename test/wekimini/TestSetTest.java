@@ -54,6 +54,41 @@ public class TestSetTest {
     }
     
     @Test
+    public void testAutoSelectingTestData() throws InterruptedException
+    {
+        String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/Circles_2/multimodel/multimodel.wekproj");
+        try{
+            w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
+        } 
+        catch (Exception e)
+        {
+            
+        }
+        w.getDataManager().deleteTestSet();
+        w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
+        for(int i = 0; i < 100; i++)
+        {
+            double[] inputs = {i + 1, 2, 3, 4, 5, 6};
+            w.getSupervisedLearningManager().updateInputs(inputs);
+        }
+        
+        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
+        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getSupervisedLearningManager().buildAll();
+        
+        Thread.sleep(50);
+        
+        w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.RANDOM, true);
+        w.getDataManager().setUseAutomatic(true);
+        Instances testSet = w.getDataManager().getTestingDataForOutput(0);
+        assertEquals(5, testSet.numAttributes(), 0);
+        testSet = w.getDataManager().getTestingDataForOutput(1);
+        assertEquals(5, testSet.numAttributes(), 0);
+        testSet = w.getDataManager().getTestingDataForOutput(2);
+        assertEquals(5, testSet.numAttributes(), 0);
+    }
+    
+    @Test
     public void testModifyingTestData()
     {
         setUp();
@@ -91,6 +126,28 @@ public class TestSetTest {
                    assertEquals( k + (instanceIndex - (windowSize - 2)), inputs[k], 0.0); 
                 }  
             }
+        }
+        
+        //Remaining two models pass through data
+        
+        testSet = w.getDataManager().getTestingDataForOutput(1);
+        assertEquals(100, testSet.numInstances(), 0);
+        for(int instanceIndex = 0; instanceIndex < 100; instanceIndex++)
+        {
+            double[] inputs = testSet.instance(instanceIndex).toDoubleArray();
+            assertEquals(instanceIndex + 1, inputs[0] ,0);
+            assertEquals(2, inputs[1] ,0);
+            assertEquals(3, inputs[2] ,0);
+        }
+        
+        testSet = w.getDataManager().getTestingDataForOutput(2);
+        assertEquals(100, testSet.numInstances(), 0);
+        for(int instanceIndex = 0; instanceIndex < 100; instanceIndex++)
+        {
+            double[] inputs = testSet.instance(instanceIndex).toDoubleArray();
+            assertEquals(instanceIndex + 1, inputs[0] ,0);
+            assertEquals(2, inputs[1] ,0);
+            assertEquals(3, inputs[2] ,0);
         }
     }
     

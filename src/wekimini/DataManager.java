@@ -901,7 +901,6 @@ public class DataManager {
                 selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeaturesGroup().valueMap[attributeIndex];
                 ptr++;
             }
-            setFeaturesInstancesFromAutomatic(outputIndex, false);
         }
         w.getSupervisedLearningManager().setAbleToRun(false);
         fireStateChanged();

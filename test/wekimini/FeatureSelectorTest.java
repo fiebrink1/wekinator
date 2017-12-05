@@ -237,9 +237,9 @@ public class FeatureSelectorTest {
         InfoGainSelector sel = new InfoGainSelector();
         Method method;
         try {
-            method = w.getDataManager().getClass().getDeclaredMethod("updateAllFeaturesInstances");
+            method = w.getDataManager().getClass().getDeclaredMethod("updateAllFeaturesInstances", int.class, boolean.class);
             method.setAccessible(true);
-            method.invoke(w.getDataManager());
+            method.invoke(w.getDataManager(), 0, false);
         } catch (Exception ex) {
             Logger.getLogger(FeatureSelectorTest.class.getName()).log(Level.SEVERE, null, ex);
         } 
@@ -255,9 +255,9 @@ public class FeatureSelectorTest {
         RandomSelector sel = new RandomSelector();
         Method method;
         try {
-            method = w.getDataManager().getClass().getDeclaredMethod("updateAllFeaturesInstances");
+            method = w.getDataManager().getClass().getDeclaredMethod("updateAllFeaturesInstances", int.class, boolean.class);
             method.setAccessible(true);
-            method.invoke(w.getDataManager());
+            method.invoke(w.getDataManager(), 0, false);
         } catch (Exception ex) {
             Logger.getLogger(FeatureSelectorTest.class.getName()).log(Level.SEVERE, null, ex);
         } 
