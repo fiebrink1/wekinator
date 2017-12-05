@@ -24,6 +24,7 @@ public class FeatureManager
     protected ArrayList<FeatureGroup> featureGroups;
     private FeatureGroup allFeatures;
     boolean testSetDirty = true;
+    boolean testSetAllFeaturesDirty = true;
     private int windowSize = 10;
     
     public FeatureManager()
@@ -100,9 +101,12 @@ public class FeatureManager
     
     protected void setAllOutputsDirty()
     {
-        for(FeatureGroup modifier:featureGroups)
+        int ptr = 0;
+        for(FeatureGroup fg:featureGroups)
         {
-            modifier.setDirty();
+            setTestSetDirty(ptr);
+            fg.setDirty();
+            ptr++;
         }
     }
     
@@ -233,19 +237,33 @@ public class FeatureManager
         return getNewInstancesOfLength(length, numClasses);
     }
     
-    protected boolean isAllFeaturesDirty()
+    protected boolean isAllFeaturesDirty(boolean testing)
     {
-        return allFeatures.isDirty();
+        return testing ? testSetAllFeaturesDirty : allFeatures.isDirty();
     }
     
-    protected void didRecalculateAllFeatures()
+    protected void didRecalculateAllFeatures(boolean testing)
     {
-        allFeatures.didRecalculateFeatures();
+        if(testing)
+        {
+            testSetAllFeaturesDirty = false;
+        }
+        else
+        {
+            allFeatures.didRecalculateFeatures();
+        }
     }
     
-    protected void setAllFeaturesToDirty()
+    protected void setAllFeaturesToDirty(boolean testing)
     {
-        allFeatures.setDirty();
+         if(testing)
+        {
+            testSetAllFeaturesDirty = true;
+        }
+        else
+        {
+            allFeatures.setDirty();
+        }
     }
     
     public FeatureGroup getAllFeaturesGroup()

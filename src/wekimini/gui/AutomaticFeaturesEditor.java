@@ -95,45 +95,45 @@ public class AutomaticFeaturesEditor extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        wrapperButton = new javax.swing.JButton();
+        useAutoButton = new javax.swing.JToggleButton();
+        infoGainButton = new javax.swing.JButton();
+        randomButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jScrollPane1.setViewportView(jTable1);
 
-        jButton1.setText("Wrapper");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        wrapperButton.setText("Wrapper");
+        wrapperButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                wrapperButtonActionPerformed(evt);
             }
         });
 
-        jToggleButton1.setText("Use Auto");
-        jToggleButton1.addChangeListener(new javax.swing.event.ChangeListener() {
+        useAutoButton.setText("Use Auto");
+        useAutoButton.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jToggleButton1StateChanged(evt);
+                useAutoButtonStateChanged(evt);
             }
         });
-        jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
+        useAutoButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButton1ActionPerformed(evt);
-            }
-        });
-
-        jButton2.setText("InfoGain");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                useAutoButtonActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Random");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        infoGainButton.setText("InfoGain");
+        infoGainButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                infoGainButtonActionPerformed(evt);
+            }
+        });
+
+        randomButton.setText("Random");
+        randomButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                randomButtonActionPerformed(evt);
             }
         });
 
@@ -144,13 +144,13 @@ public class AutomaticFeaturesEditor extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(wrapperButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)
+                        .addComponent(infoGainButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3)
+                        .addComponent(randomButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jToggleButton1))
+                        .addComponent(useAutoButton))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -161,56 +161,57 @@ public class AutomaticFeaturesEditor extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jToggleButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3)))
+                    .addComponent(wrapperButton)
+                    .addComponent(useAutoButton)
+                    .addComponent(infoGainButton)
+                    .addComponent(randomButton)))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void wrapperButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wrapperButtonActionPerformed
         // TODO add your handling code here:
         w.getDataManager().selectFeaturesAutomatically(AutoSelect.WRAPPER, false);
         setupTable(w.getDataManager().selectedFeatureNames);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_wrapperButtonActionPerformed
 
-    private void jToggleButton1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jToggleButton1StateChanged
+    private void useAutoButtonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_useAutoButtonStateChanged
         // TODO add your handling code here:
         //w.getDataManager().setUseAutomatic(jToggleButton1.isEnabled());
-        ButtonModel buttonModel = jToggleButton1.getModel();
+        ButtonModel buttonModel = useAutoButton.getModel();
         boolean armed = buttonModel.isArmed();
         boolean pressed = buttonModel.isPressed();
         boolean selected = buttonModel.isSelected();
         //System.out.println("Changed: " + armed + "/" + pressed + "/" + selected);
-    }//GEN-LAST:event_jToggleButton1StateChanged
+    }//GEN-LAST:event_useAutoButtonStateChanged
 
-    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+    private void useAutoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_useAutoButtonActionPerformed
         // TODO add your handling code here:
-        w.getDataManager().setUseAutomatic((boolean)jToggleButton1.isSelected());
-        System.out.println("button + " + jToggleButton1.isSelected());
-    }//GEN-LAST:event_jToggleButton1ActionPerformed
+        useAutoButton.setText(useAutoButton.isSelected() ? "Use Manual" : "Use Auto");
+        w.getDataManager().setUseAutomatic((boolean)useAutoButton.isSelected());
+        System.out.println("button + " + useAutoButton.isSelected());
+    }//GEN-LAST:event_useAutoButtonActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void infoGainButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoGainButtonActionPerformed
         // TODO add your handling code here:
         w.getDataManager().selectFeaturesAutomatically(AutoSelect.INFOGAIN, false);
         setupTable(w.getDataManager().selectedFeatureNames);
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_infoGainButtonActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void randomButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_randomButtonActionPerformed
         // TODO add your handling code here:
         w.getDataManager().selectFeaturesAutomatically(AutoSelect.RANDOM, false);
         setupTable(w.getDataManager().selectedFeatureNames);
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_randomButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton infoGainButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JToggleButton jToggleButton1;
+    private javax.swing.JButton randomButton;
+    private javax.swing.JToggleButton useAutoButton;
+    private javax.swing.JButton wrapperButton;
     // End of variables declaration//GEN-END:variables
 }

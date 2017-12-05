@@ -120,7 +120,7 @@ public class FeatureSelectorTest {
             method = w.getDataManager().getClass().getDeclaredMethod("updateAllFeaturesInstances");
             method.setAccessible(true);
             method.invoke(w.getDataManager());
-            Instances firstInstances = w.getDataManager().getAllFeaturesInstances(0);
+            Instances firstInstances = w.getDataManager().getAllFeaturesInstances(0, false);
             int attributes = firstInstances.numAttributes();
             int allFeaturesOutputSize = w.getDataManager().featureManager.getAllFeaturesGroup().getOutputDimensionality();
             assertEquals(allFeaturesOutputSize, attributes - 1, 0);
@@ -243,7 +243,7 @@ public class FeatureSelectorTest {
         } catch (Exception ex) {
             Logger.getLogger(FeatureSelectorTest.class.getName()).log(Level.SEVERE, null, ex);
         } 
-        Instances allFeatures = w.getDataManager().getAllFeaturesInstances(0);
+        Instances allFeatures = w.getDataManager().getAllFeaturesInstances(0, false);
         int[] indexes = sel.getAttributeIndicesForInstances(allFeatures);
         assertEquals(0.2,(double)indexes.length/(double)allFeatures.numAttributes(),0.01);
         System.out.println("done");
@@ -261,7 +261,7 @@ public class FeatureSelectorTest {
         } catch (Exception ex) {
             Logger.getLogger(FeatureSelectorTest.class.getName()).log(Level.SEVERE, null, ex);
         } 
-        Instances allFeatures = w.getDataManager().getAllFeaturesInstances(0);
+        Instances allFeatures = w.getDataManager().getAllFeaturesInstances(0, false);
         int[] indexes = sel.getAttributeIndicesForInstances(allFeatures);
         assertEquals(0.2,(double)indexes.length/(double)allFeatures.numAttributes(),0.01);
         System.out.println("done");

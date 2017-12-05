@@ -73,6 +73,7 @@ public class DataManager {
     private List<Instances> testingFeatureInstances = null;
     public FeatureManager featureManager;
     private Instances allFeaturesInstances = null;
+    private Instances allFeaturesTestInstances = null;
     private Instances testInstances = null;
     public String[][] selectedFeatureNames = new String[0][0];
     public int[][] selectedFeatureIndices = new int[0][0];
@@ -816,13 +817,13 @@ public class DataManager {
     {
         List<Instances> featureInstances = testing ? testingFeatureInstances : trainingFeatureInstances;
         
-        if(featureManager.isAllFeaturesDirty())
+        if(featureManager.isAllFeaturesDirty(testing))
         {
-            updateAllFeaturesInstances();
-            featureManager.didRecalculateAllFeatures();
+            updateAllFeaturesInstances(testing);
+            featureManager.didRecalculateAllFeatures(testing);
         }
         
-        Instances formatted = getAllFeaturesInstances(outputIndex);
+        Instances formatted = getAllFeaturesInstances(outputIndex, testing);
         
         Instances selectedInstances = FeatureSelector.filterInstances(formatted, selectedFeatureIndices[outputIndex]);
         if(outputIndex < featureInstances.size())
@@ -835,20 +836,22 @@ public class DataManager {
         }
         if(testing)
         {
+            testingFeatureInstances = featureInstances;
             featureManager.didRecalculateTestSetFeatures(outputIndex);
         }
         else
         {
+            trainingFeatureInstances = featureInstances;
             featureManager.didRecalculateFeatures(outputIndex);
         }
     }
     
     public void selectFeaturesAutomatically(AutoSelect autoSelect, boolean test)
     {
-        if(featureManager.isAllFeaturesDirty())
+        if(featureManager.isAllFeaturesDirty(false))
         {
-            updateAllFeaturesInstances();
-            featureManager.didRecalculateAllFeatures();
+            updateAllFeaturesInstances(false);
+            featureManager.didRecalculateAllFeatures(false);
         }
        
         FeatureSelector sel;
@@ -869,7 +872,7 @@ public class DataManager {
         
         for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
         {
-            Instances formatted = getAllFeaturesInstances(outputIndex);
+            Instances formatted = getAllFeaturesInstances(outputIndex, false);
             
             if(autoSelect == AutoSelect.WRAPPER)
             {
@@ -932,13 +935,14 @@ public class DataManager {
                 }
                 if(testing)
                 {
+                    testingFeatureInstances = featureInstances;
                     featureManager.didRecalculateTestSetFeatures(index);
                 }
                 else
                 {
+                    trainingFeatureInstances = featureInstances;
                     featureManager.didRecalculateFeatures(index);
                 }
-                
             } 
             catch (Exception e)
             {
@@ -947,12 +951,13 @@ public class DataManager {
         }
     }
     
-    private void updateAllFeaturesInstances()
+    private void updateAllFeaturesInstances(boolean testing)
     { 
         System.out.println("calculating features for all instances");
         Instances newInstances = featureManager.getAllFeaturesNewInstances();
         try{
-            Instances filteredInputs = Filter.useFilter(inputInstances, trainingFilters[0]);
+            Instances in = testing ? testInstances : inputInstances;
+            Instances filteredInputs = Filter.useFilter(in, trainingFilters[0]);
             for (int i = 0; i < filteredInputs.numInstances(); i++)
             {
                 double[] input = filteredInputs.instance(i).toDoubleArray();
@@ -969,7 +974,15 @@ public class DataManager {
                 //System.out.println("Calculated all features for instance " + i);
             }
             System.out.println("DONE calculating all features for all instances");
-            allFeaturesInstances = newInstances; 
+            if(testing)
+            {
+                allFeaturesTestInstances = newInstances; 
+            }
+            else
+            {
+                allFeaturesInstances = newInstances; 
+            }
+            
         } 
         catch (Exception e)
         {
@@ -982,12 +995,13 @@ public class DataManager {
         return testing ? testingFeatureInstances : trainingFeatureInstances;
     }
     
-    protected Instances getAllFeaturesInstances(int outputIndex)
+    protected Instances getAllFeaturesInstances(int outputIndex, boolean testing)
     {
         Instances formatted =  w.getDataManager().featureManager.getAllFeaturesNewInstances(numClasses[outputIndex]);
-        for(int i = 0; i < allFeaturesInstances.numInstances(); i++)
+        Instances in = testing ? allFeaturesTestInstances : allFeaturesInstances;
+        for(int i = 0; i < in.numInstances(); i++)
         {
-            formatted.add(allFeaturesInstances.instance(i));
+            formatted.add(in.instance(i));
         }
         return formatted;
     }
@@ -1054,11 +1068,11 @@ public class DataManager {
         else
         {
             useAutomaticFeatures = false;
-            for(int i = 0; i < numOutputs; i++)
-            {
-                updateFeatureInstances(i, true);
-                updateFeatureInstances(i, false);
-            }
+        }
+        for(int i = 0; i < numOutputs; i++)
+        {
+            updateFeatureInstances(i, true);
+            updateFeatureInstances(i, false);
         }
         fireStateChanged();
     }
@@ -1331,7 +1345,8 @@ public class DataManager {
     private void fireStateChanged() {
         
         featureManager.setAllOutputsDirty();
-        featureManager.setAllFeaturesToDirty();
+        featureManager.setAllFeaturesToDirty(true);
+        featureManager.setAllFeaturesToDirty(false);
         
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {

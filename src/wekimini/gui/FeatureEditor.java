@@ -80,8 +80,8 @@ public class FeatureEditor extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jButton3 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        cancelButton = new javax.swing.JButton();
+        okButton = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         windowSizeSlider = new javax.swing.JSlider();
         jLabel1 = new javax.swing.JLabel();
@@ -164,17 +164,17 @@ public class FeatureEditor extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
-        jButton3.setText("Cancel");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        cancelButton.setText("Cancel");
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                cancelButtonActionPerformed(evt);
             }
         });
 
-        jButton2.setText("OK");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        okButton.setText("OK");
+        okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                okButtonActionPerformed(evt);
             }
         });
 
@@ -224,9 +224,9 @@ public class FeatureEditor extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(setFeaturesButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton3)
+                        .addComponent(cancelButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)))
+                        .addComponent(okButton)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -242,8 +242,8 @@ public class FeatureEditor extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jButton3)
-                    .addComponent(jButton2)
+                    .addComponent(cancelButton)
+                    .addComponent(okButton)
                     .addComponent(setFeaturesButton))
                 .addContainerGap())
         );
@@ -286,12 +286,12 @@ public class FeatureEditor extends javax.swing.JFrame {
         gridPanel.setAll(false);
     }//GEN-LAST:event_menuItemDisableAllActionPerformed
     
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         this.dispose();
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_cancelButtonActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         boolean[][] oldConnections = w.getLearningManager().getConnectionMatrix(true);
         boolean[][] c = gridPanel.getConnectionsFromForm();
         w.getDataManager().featureManager.setFeatureWindowSize(windowSize);
@@ -299,7 +299,7 @@ public class FeatureEditor extends javax.swing.JFrame {
         KadenzeLogging.getLogger().selectedFeatures(w, oldConnections, c);
         this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         this.dispose();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_okButtonActionPerformed
 
     private void windowSizeSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_windowSizeSliderStateChanged
         JSlider source = (JSlider)evt.getSource();
@@ -321,9 +321,8 @@ public class FeatureEditor extends javax.swing.JFrame {
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton cancelButton;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
@@ -332,6 +331,7 @@ public class FeatureEditor extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuItemDisableAll;
     private javax.swing.JMenuItem menuItemEnableAll;
     private javax.swing.JMenuItem menuItemRevert;
+    private javax.swing.JButton okButton;
     private javax.swing.JPopupMenu popupMenuAction;
     private javax.swing.JScrollPane scrollPanel;
     private javax.swing.JButton setFeaturesButton;

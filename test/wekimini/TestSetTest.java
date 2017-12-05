@@ -99,7 +99,7 @@ public class TestSetTest {
         setUp();
         
         Instances testSet = w.getDataManager().getTestingDataForOutput(0);
-        assertEquals(100, testSet.numInstances(), 0);
+        assertEquals(200, testSet.numInstances(), 0);
         Instance in = testSet.firstInstance();
         assertEquals(1, in.value(0), 0);
        
@@ -110,8 +110,8 @@ public class TestSetTest {
         buffer.addRequiredModifierID(0);
         int id = w.getDataManager().featureManager.addModifierToOutput(buffer, 0);
         testSet = w.getDataManager().getTestingDataForOutput(0);
-        assertEquals(100, testSet.numInstances(), 0);
-        for(int instanceIndex = 0; instanceIndex < 100; instanceIndex++)
+        assertEquals(200, testSet.numInstances(), 0);
+        for(int instanceIndex = 0; instanceIndex < 200; instanceIndex++)
         {
             double[] inputs = testSet.instance(instanceIndex).toDoubleArray();
             for(int k = 0; k < windowSize; k++)
@@ -136,7 +136,7 @@ public class TestSetTest {
         w.getDataManager().deleteTestSet();
         
         w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
-        for(int i = 0; i < 100; i++)
+        for(int i = 0; i < 200; i++)
         {
             double[] inputs = {i + 1, 2, 3};
             w.getSupervisedLearningManager().updateInputs(inputs);
