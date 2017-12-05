@@ -373,10 +373,10 @@ public class DataManager {
         }
     }
 
-    public void addToDataSet(double[] inputs, double[] outputs , boolean[] inputMask, boolean[] outputMask, int recordingRound, boolean testing) {
+    public void addToDataSet(double[] inputs, double[] outputs , boolean[] inputMask, boolean[] outputMask, int recordingRound, boolean testSet) {
         
-        int thisId = testing ? nextTestingID : nextTrainingID;
-        Instances instancesToUpdate = testing ? testInstances :inputInstances;
+        int thisId = testSet ? nextTestingID : nextTrainingID;
+        Instances instancesToUpdate = testSet ? testInstances :inputInstances;
 
         double myVals[] = new double[numMetaData + getNumInputs() + numOutputs];
         myVals[idIndex] = thisId;
@@ -405,7 +405,7 @@ public class DataManager {
         }
 
         for (int i = 0; i < outputMask.length; i++) {
-            if(testing)
+            if(testSet)
             {
                 featureManager.setTestSetDirty(i);
             }
@@ -416,7 +416,7 @@ public class DataManager {
             if (!outputMask[i]) {
                 in.setMissing(numMetaData + getNumInputs() + i);
             } else {
-                if(!testing)
+                if(!testSet)
                 {
                     setNumExamplesPerOutput(i, getNumExamplesPerOutput(i) + 1);
                 }
@@ -425,7 +425,7 @@ public class DataManager {
         }
         in.setDataset(instancesToUpdate);
         instancesToUpdate.add(in);
-        if(!testing)
+        if(!testSet)
         {
             setHasInstances(true);
             nextTrainingID++;
@@ -813,17 +813,17 @@ public class DataManager {
         inputSavingFilters = insertIntoArray(s, inputSavingFilters, which);
     }
     
-    private void setFeaturesInstancesFromAutomatic(int outputIndex, boolean testing)
+    private void setFeaturesInstancesFromAutomatic(int outputIndex, boolean testSet)
     {
-        List<Instances> featureInstances = testing ? testingFeatureInstances : trainingFeatureInstances;
+        List<Instances> featureInstances = testSet ? testingFeatureInstances : trainingFeatureInstances;
         
-        if(featureManager.isAllFeaturesDirty(testing))
+        if(featureManager.isAllFeaturesDirty(testSet))
         {
-            updateAllFeaturesInstances(testing);
-            featureManager.didRecalculateAllFeatures(testing);
+            updateAllFeaturesInstances(testSet);
+            featureManager.didRecalculateAllFeatures(testSet);
         }
         
-        Instances formatted = getAllFeaturesInstances(outputIndex, testing);
+        Instances formatted = getAllFeaturesInstances(outputIndex, testSet);
         
         Instances selectedInstances = FeatureSelector.filterInstances(formatted, selectedFeatureIndices[outputIndex]);
         if(outputIndex < featureInstances.size())
@@ -834,7 +834,7 @@ public class DataManager {
         {
            featureInstances.add(selectedInstances);
         }
-        if(testing)
+        if(testSet)
         {
             testingFeatureInstances = featureInstances;
             featureManager.didRecalculateTestSetFeatures(outputIndex);
@@ -898,17 +898,17 @@ public class DataManager {
         fireStateChanged();
     }
     
-    private void updateFeatureInstances(int index, boolean testing)
+    private void updateFeatureInstances(int index, boolean testSet)
     { 
         if(useAutomaticFeatures)
         {
-            setFeaturesInstancesFromAutomatic(index, testing);
+            setFeaturesInstancesFromAutomatic(index, testSet);
         }
         else
         {
             Instances newInstances = featureManager.getNewInstances(index, numClasses[index]);
             try{
-                Instances in = testing ? testInstances : inputInstances;
+                Instances in = testSet ? testInstances : inputInstances;
                 Instances filteredInputs = Filter.useFilter(in, trainingFilters[index]);
                 for (int i = 0; i < filteredInputs.numInstances(); i++)
                 {
@@ -924,7 +924,7 @@ public class DataManager {
                     newInstances.add(featureInstance);
                     newInstances.setClassIndex(withOutput.length - 1);
                 }
-                List<Instances> featureInstances = testing ? testingFeatureInstances : trainingFeatureInstances;
+                List<Instances> featureInstances = testSet ? testingFeatureInstances : trainingFeatureInstances;
                 if(index < featureInstances.size())
                 {
                    featureInstances.set(index, newInstances);
@@ -933,7 +933,7 @@ public class DataManager {
                 {
                    featureInstances.add(newInstances);
                 }
-                if(testing)
+                if(testSet)
                 {
                     testingFeatureInstances = featureInstances;
                     featureManager.didRecalculateTestSetFeatures(index);
@@ -951,12 +951,12 @@ public class DataManager {
         }
     }
     
-    private void updateAllFeaturesInstances(boolean testing)
+    private void updateAllFeaturesInstances(boolean testSet)
     { 
         System.out.println("calculating features for all instances");
         Instances newInstances = featureManager.getAllFeaturesNewInstances();
         try{
-            Instances in = testing ? testInstances : inputInstances;
+            Instances in = testSet ? testInstances : inputInstances;
             Instances filteredInputs = Filter.useFilter(in, trainingFilters[0]);
             for (int i = 0; i < filteredInputs.numInstances(); i++)
             {
@@ -974,7 +974,7 @@ public class DataManager {
                 //System.out.println("Calculated all features for instance " + i);
             }
             System.out.println("DONE calculating all features for all instances");
-            if(testing)
+            if(testSet)
             {
                 allFeaturesTestInstances = newInstances; 
             }
@@ -990,15 +990,15 @@ public class DataManager {
         }
     }
     
-    protected List<Instances> getFeatureInstances(boolean testing)
+    protected List<Instances> getFeatureInstances(boolean testSet)
     {
-        return testing ? testingFeatureInstances : trainingFeatureInstances;
+        return testSet ? testingFeatureInstances : trainingFeatureInstances;
     }
     
-    protected Instances getAllFeaturesInstances(int outputIndex, boolean testing)
+    protected Instances getAllFeaturesInstances(int outputIndex, boolean testSet)
     {
         Instances formatted =  w.getDataManager().featureManager.getAllFeaturesNewInstances(numClasses[outputIndex]);
-        Instances in = testing ? allFeaturesTestInstances : allFeaturesInstances;
+        Instances in = testSet ? allFeaturesTestInstances : allFeaturesInstances;
         for(int i = 0; i < in.numInstances(); i++)
         {
             formatted.add(in.instance(i));

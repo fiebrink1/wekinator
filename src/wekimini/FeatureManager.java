@@ -237,14 +237,14 @@ public class FeatureManager
         return getNewInstancesOfLength(length, numClasses);
     }
     
-    protected boolean isAllFeaturesDirty(boolean testing)
+    protected boolean isAllFeaturesDirty(boolean testSet)
     {
-        return testing ? testSetAllFeaturesDirty : allFeatures.isDirty();
+        return testSet ? testSetAllFeaturesDirty : allFeatures.isDirty();
     }
     
-    protected void didRecalculateAllFeatures(boolean testing)
+    protected void didRecalculateAllFeatures(boolean testSet)
     {
-        if(testing)
+        if(testSet)
         {
             testSetAllFeaturesDirty = false;
         }
@@ -254,9 +254,9 @@ public class FeatureManager
         }
     }
     
-    protected void setAllFeaturesToDirty(boolean testing)
+    protected void setAllFeaturesToDirty(boolean testSet)
     {
-         if(testing)
+         if(testSet)
         {
             testSetAllFeaturesDirty = true;
         }
