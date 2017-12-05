@@ -29,6 +29,7 @@ public class FeatureGroup {
     private transient double[] currentValues;
     private transient double[] lastInputs;
     private boolean dirtyFlag = true;
+    private boolean testSetDirtyFlag = true;
     private int currentID = 0;
     private FeatureLibrary featureLibrary;
     public String[] valueMap;
@@ -79,7 +80,8 @@ public class FeatureGroup {
             modifiers.add(modifier);
         }
         refreshState();
-        setDirty();
+        setDirty(true);
+        setDirty(false);
         return modifier.inputID;
     }
     
@@ -124,7 +126,8 @@ public class FeatureGroup {
         if(toRemove.size() > 0)
         {
             refreshState();
-            setDirty();
+            setDirty(true);
+            setDirty(false);
         }
     }
     
@@ -158,7 +161,8 @@ public class FeatureGroup {
         if(toRemove.size() > 0)
         {
             refreshState();
-            setDirty();
+            setDirty(true);
+            setDirty(false);
         }
 
     }
@@ -205,7 +209,8 @@ public class FeatureGroup {
                 {
                     modifiers.remove(index);
                     refreshState();
-                    setDirty();
+                    setDirty(true);
+                    setDirty(false);
                 }
             }
         }
@@ -238,7 +243,8 @@ public class FeatureGroup {
     protected void passThroughInputToOutput(boolean passThrough)
     {
         modifiers.get(0).addToOutput = passThrough;
-        setDirty();
+        setDirty(true);
+        setDirty(false);
         refreshState();
     }
     
@@ -281,23 +287,38 @@ public class FeatureGroup {
     
     //Dirty State
     
-    protected boolean isDirty()
+    protected boolean isDirty(boolean testSet)
     {
-        return dirtyFlag;
+        return testSet ? testSetDirtyFlag : dirtyFlag;
     }
     
-    protected void setDirty()
+    protected void setDirty(boolean testSet)
     {
-       dirtyFlag = true;
+       if(testSet)
+       {
+           testSetDirtyFlag = true;
+       }
+       else
+       {
+           dirtyFlag = true;
+       }
+       
        for(ModifiedInput modifier:modifiers)
        {
            modifier.reset();
        }
     }
     
-    protected void didRecalculateFeatures()
+    protected void didRecalculateFeatures(boolean testSet)
     {
-        dirtyFlag = false;
+        if(testSet)
+       {
+           testSetDirtyFlag = false;
+       }
+       else
+       {
+           dirtyFlag = false;
+       }
     }
     
     //Outputs
@@ -391,7 +412,8 @@ public class FeatureGroup {
     public void setFeatureWindowSize(int windowSize)
     {
         featureLibrary.initLibrary(windowSize);
-        setDirty();
+        setDirty(true);
+        setDirty(false);
     }
     
     public String[] getOutputNames() {

@@ -23,8 +23,6 @@ public class FeatureManager
     //There is one feature group for each path/output
     protected ArrayList<FeatureGroup> featureGroups;
     private FeatureGroup allFeatures;
-    boolean testSetDirty = true;
-    boolean testSetAllFeaturesDirty = true;
     private int windowSize = 10;
     
     public FeatureManager()
@@ -45,32 +43,32 @@ public class FeatureManager
     
     protected boolean isDirty(int output)
     {
-        return featureGroups.get(output).isDirty();
+        return featureGroups.get(output).isDirty(false);
     }
     
     protected void setDirty(int output)
     {
-       featureGroups.get(output).setDirty();
+       featureGroups.get(output).setDirty(false);
     }
     
     protected void didRecalculateFeatures(int output)
     {
-        featureGroups.get(output).didRecalculateFeatures();
+        featureGroups.get(output).didRecalculateFeatures(false);
     }
     
     protected boolean isTestSetDirty(int output)
     {
-        return testSetDirty;
+        return featureGroups.get(output).isDirty(true);
     }
     
     protected void setTestSetDirty(int output)
     {
-       testSetDirty = true;
+       featureGroups.get(output).setDirty(true);
     }
     
     protected void didRecalculateTestSetFeatures(int output)
     {
-        testSetDirty = false;
+        featureGroups.get(output).didRecalculateFeatures(true);
     }
     
     protected void addOutputs(int numOutputs, String[] inputNames)
@@ -104,8 +102,8 @@ public class FeatureManager
         int ptr = 0;
         for(FeatureGroup fg:featureGroups)
         {
-            setTestSetDirty(ptr);
-            fg.setDirty();
+            fg.setDirty(false);
+            fg.setDirty(true);
             ptr++;
         }
     }
@@ -239,31 +237,17 @@ public class FeatureManager
     
     protected boolean isAllFeaturesDirty(boolean testSet)
     {
-        return testSet ? testSetAllFeaturesDirty : allFeatures.isDirty();
+        return allFeatures.isDirty(testSet);
     }
     
     protected void didRecalculateAllFeatures(boolean testSet)
     {
-        if(testSet)
-        {
-            testSetAllFeaturesDirty = false;
-        }
-        else
-        {
-            allFeatures.didRecalculateFeatures();
-        }
+        allFeatures.didRecalculateFeatures(testSet);
     }
     
     protected void setAllFeaturesToDirty(boolean testSet)
     {
-         if(testSet)
-        {
-            testSetAllFeaturesDirty = true;
-        }
-        else
-        {
-            allFeatures.setDirty();
-        }
+        allFeatures.setDirty(testSet);
     }
     
     public FeatureGroup getAllFeaturesGroup()
