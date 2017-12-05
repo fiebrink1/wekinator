@@ -198,7 +198,7 @@ public class FeatureEditor extends javax.swing.JFrame {
 
         windowSizeLabel.setText("10");
 
-        setFeaturesButton.setText("jButton4");
+        setFeaturesButton.setText("Set");
         setFeaturesButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 setFeaturesButtonActionPerformed(evt);
