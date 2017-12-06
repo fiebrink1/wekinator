@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -678,12 +679,15 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
     public class ConfusionComponent extends JPanel
     {
         private JTextArea filler;
+        private JScrollPane scroll;
         
         ConfusionComponent(String text)
         {
             filler = new JTextArea(text);
+            filler.setEditable(false);
+            scroll = new JScrollPane(filler);
             setLayout(new GridLayout(1, 1));
-            add(filler);
+            add(scroll);
         }
         
         public void setText(String text)
