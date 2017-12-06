@@ -9,9 +9,12 @@ import java.awt.event.ItemEvent;
 import javax.swing.ButtonModel;
 import javax.swing.JFrame;
 import javax.swing.table.AbstractTableModel;
+import org.jdesktop.swingworker.SwingWorker;
 import wekimini.DataManager;
 import wekimini.DataManager.AutoSelect;
 import wekimini.Wekinator;
+import java.lang.Integer;
+import java.lang.Void;
 
 /**
  *
@@ -170,12 +173,32 @@ public class AutomaticFeaturesEditor extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void select(AutoSelect mode)
+    {
+        SwingWorker worker = new SwingWorker<AutoSelect,Void>()
+        {            
+            @Override
+            public AutoSelect doInBackground()
+            {
+                w.getDataManager().selectFeaturesAutomatically(mode, false);
+                return mode;
+            }
+            
+            @Override
+            public void done()
+            {
+                setupTable(w.getDataManager().selectedFeatureNames);
+            }
+        };
+        worker.execute();
+    }
+    
     private void wrapperButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wrapperButtonActionPerformed
         // TODO add your handling code here:
-        w.getDataManager().selectFeaturesAutomatically(AutoSelect.WRAPPER, false);
-        setupTable(w.getDataManager().selectedFeatureNames);
+        select(AutoSelect.WRAPPER);
     }//GEN-LAST:event_wrapperButtonActionPerformed
 
+    
     private void useAutoButtonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_useAutoButtonStateChanged
         // TODO add your handling code here:
         //w.getDataManager().setUseAutomatic(jToggleButton1.isEnabled());
@@ -195,14 +218,12 @@ public class AutomaticFeaturesEditor extends javax.swing.JFrame {
 
     private void infoGainButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoGainButtonActionPerformed
         // TODO add your handling code here:
-        w.getDataManager().selectFeaturesAutomatically(AutoSelect.INFOGAIN, false);
-        setupTable(w.getDataManager().selectedFeatureNames);
+        select(AutoSelect.INFOGAIN);
     }//GEN-LAST:event_infoGainButtonActionPerformed
 
     private void randomButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_randomButtonActionPerformed
         // TODO add your handling code here:
-        w.getDataManager().selectFeaturesAutomatically(AutoSelect.RANDOM, false);
-        setupTable(w.getDataManager().selectedFeatureNames);
+        select(AutoSelect.RANDOM);
     }//GEN-LAST:event_randomButtonActionPerformed
 
 
