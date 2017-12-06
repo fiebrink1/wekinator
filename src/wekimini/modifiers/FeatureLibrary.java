@@ -369,10 +369,10 @@ public final class FeatureLibrary
     public FeatureLibrary(FeatureGroup fg)
     {
         this.fg = fg;
-        initLibrary(10);
+        initLibrary(10, 10);
     }
     
-    public void initLibrary(int windowSize)
+    public void initLibrary(int windowSize, int bufferSize)
     {
         
         library.clear();
@@ -404,12 +404,12 @@ public final class FeatureLibrary
         library.add(new WindowedFeature("EnergyGyroX",new EnergyWindowOperation(),GYROX,windowSize));
         library.add(new WindowedFeature("EnergyGyroY",new EnergyWindowOperation(),GYROY,windowSize));
         library.add(new WindowedFeature("EnergyGyroZ",new EnergyWindowOperation(),GYROZ,windowSize));
-        library.add(new BufferFeature("BufferAccX", ACCX, windowSize));
-        library.add(new BufferFeature("BufferAccY", ACCY, windowSize));
-        library.add(new BufferFeature("BufferAccZ", ACCZ, windowSize));
-        library.add(new BufferFeature("BufferGyroX", GYROX, windowSize));
-        library.add(new BufferFeature("BufferGyroY", GYROY, windowSize));
-        library.add(new BufferFeature("BufferGyroZ", GYROZ, windowSize));
+        library.add(new BufferFeature("BufferAccX", ACCX, bufferSize));
+        library.add(new BufferFeature("BufferAccY", ACCY, bufferSize));
+        library.add(new BufferFeature("BufferAccZ", ACCZ, bufferSize));
+        library.add(new BufferFeature("BufferGyroX", GYROX, bufferSize));
+        library.add(new BufferFeature("BufferGyroY", GYROY, bufferSize));
+        library.add(new BufferFeature("BufferGyroZ", GYROZ, bufferSize));
         library.add(new MagnitudeFeature("MagAcc", new int[]{ACCX,ACCY,ACCZ}, 2));
         library.add(new MagnitudeFeature("MagGyro", new int[]{GYROX,GYROY,GYROZ}, 2));
         library.add(new MagnitudeFODFeature("MagFODAcc", new int[]{ACCX,ACCY,ACCZ}, 2));

@@ -147,7 +147,7 @@ public class FeatureLibraryTest {
                 ptr++;
             }
             
-            fg.setFeatureWindowSize(20);
+            fg.setFeatureWindowSize(10,20);
             assertEquals(2, fg.getModifiers().size()); 
             assertEquals(20, fg.getOutputDimensionality());
             ptr = 0;

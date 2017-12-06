@@ -151,35 +151,37 @@ public class FeatureManagerTest {
     public void testChangingWindowSize()
     {
         int ws = 20;
-        fm.setFeatureWindowSize(ws);
+        int bs = 30;
+        fm.setFeatureWindowSize(ws,bs);
         for(FeatureGroup fg:fm.getFeatureGroups())
         {
-            testWindowSizeForFeatureGroup(ws, fg);
+            testWindowSizeForFeatureGroup(ws, bs, fg);
         }
-        testWindowSizeForFeatureGroup(ws, fm.getAllFeaturesGroup());
+        testWindowSizeForFeatureGroup(ws, bs, fm.getAllFeaturesGroup());
         
         ws = 5;
-        fm.setFeatureWindowSize(ws);
+        bs = 50;
+        fm.setFeatureWindowSize(ws,bs);
         for(FeatureGroup fg:fm.getFeatureGroups())
         {
-            testWindowSizeForFeatureGroup(ws, fg);
+            testWindowSizeForFeatureGroup(ws, bs, fg);
         }
-        testWindowSizeForFeatureGroup(ws, fm.getAllFeaturesGroup());
+        testWindowSizeForFeatureGroup(ws, bs, fm.getAllFeaturesGroup());
     }
     
-    public void testWindowSizeForFeatureGroup(int ws, FeatureGroup fg)
+    public void testWindowSizeForFeatureGroup(int ws, int bs, FeatureGroup fg)
     {
-            for(ModifiedInput modifier:fg.getModifiers())
+        for(ModifiedInput modifier:fg.getModifiers())
+        {
+            if(modifier instanceof WindowedOperation)
             {
-                if(modifier instanceof WindowedOperation)
-                {
-                   assertEquals(ws,((WindowedOperation)modifier).windowSize);
-                }
-                else if (modifier instanceof BufferedInput)
-                {
-                    assertEquals(ws,((BufferedInput)modifier).bufferSize);
-                }
+               assertEquals(ws,((WindowedOperation)modifier).windowSize);
             }
+            else if (modifier instanceof BufferedInput)
+            {
+                assertEquals(bs,((BufferedInput)modifier).bufferSize);
+            }
+        }
     }
     
 }

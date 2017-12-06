@@ -24,6 +24,7 @@ public class FeatureManager
     protected ArrayList<FeatureGroup> featureGroups;
     private FeatureGroup allFeatures;
     private int windowSize = 10;
+    private int bufferSize = 10;
     
     public FeatureManager()
     {
@@ -204,16 +205,23 @@ public class FeatureManager
         return windowSize;
     }
     
-    public void setFeatureWindowSize(int size)
+    public int getFeatureBufferSize()
     {
-        windowSize = size;
+        return windowSize;
+    }
+
+    
+    public void setFeatureWindowSize(int wSize, int bSize)
+    {
+        windowSize = wSize;
+        bufferSize = bSize;
         int output = 0;
-        allFeatures.setFeatureWindowSize(windowSize);
+        allFeatures.setFeatureWindowSize(windowSize, bufferSize);
         for(FeatureGroup fg:featureGroups)
         {
             setTestSetDirty(output);
             output++;
-            fg.setFeatureWindowSize(windowSize);
+            fg.setFeatureWindowSize(windowSize, bufferSize);
         }
     }
     

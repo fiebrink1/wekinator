@@ -26,6 +26,7 @@ public class FeatureEditor extends javax.swing.JFrame {
     private Wekinator w;
     private LabeledButtonGridPanel gridPanel;
     int windowSize = 0;
+    int bufferSize = 0;
     
     public FeatureEditor(Wekinator w) {
         initComponents();
@@ -59,6 +60,9 @@ public class FeatureEditor extends javax.swing.JFrame {
         windowSize = w.getDataManager().featureManager.getFeatureWindowSize();
         windowSizeSlider.setValue(windowSize);
         windowSizeLabel.setText(Integer.toString(windowSize));
+        bufferSize = w.getDataManager().featureManager.getFeatureBufferSize();
+        bufferSizeSlider.setValue(bufferSize);
+        bufferSizeLabel.setText(Integer.toString(bufferSize));
         repaint();
     }
 
@@ -87,6 +91,9 @@ public class FeatureEditor extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         windowSizeLabel = new javax.swing.JLabel();
         setFeaturesButton = new javax.swing.JButton();
+        bufferSizeSlider = new javax.swing.JSlider();
+        jLabel2 = new javax.swing.JLabel();
+        bufferSizeLabel = new javax.swing.JLabel();
 
         menuItemRevert.setText("Revert all changes");
         menuItemRevert.addActionListener(new java.awt.event.ActionListener() {
@@ -130,7 +137,7 @@ public class FeatureEditor extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 453, Short.MAX_VALUE)
+            .addGap(0, 528, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -148,7 +155,7 @@ public class FeatureEditor extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrollPanel)
+                    .addComponent(scrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -158,7 +165,7 @@ public class FeatureEditor extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                .addComponent(scrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -194,7 +201,7 @@ public class FeatureEditor extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Buffer Size:");
+        jLabel1.setText("Window Size:");
 
         windowSizeLabel.setText("10");
 
@@ -205,6 +212,18 @@ public class FeatureEditor extends javax.swing.JFrame {
             }
         });
 
+        bufferSizeSlider.setMajorTickSpacing(5);
+        bufferSizeSlider.setMinimum(1);
+        bufferSizeSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                bufferSizeSliderStateChanged(evt);
+            }
+        });
+
+        jLabel2.setText("Buffer Size:");
+
+        bufferSizeLabel.setText("10");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -213,20 +232,25 @@ public class FeatureEditor extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(windowSizeSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(windowSizeLabel)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(setFeaturesButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
                         .addComponent(cancelButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(okButton)))
+                        .addComponent(okButton))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(windowSizeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
+                            .addComponent(bufferSizeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(windowSizeLabel)
+                            .addComponent(bufferSizeLabel))))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -239,7 +263,17 @@ public class FeatureEditor extends javax.swing.JFrame {
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(windowSizeLabel))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                        .addComponent(bufferSizeSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(bufferSizeLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(cancelButton)
@@ -294,7 +328,7 @@ public class FeatureEditor extends javax.swing.JFrame {
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         boolean[][] oldConnections = w.getLearningManager().getConnectionMatrix(true);
         boolean[][] c = gridPanel.getConnectionsFromForm();
-        w.getDataManager().featureManager.setFeatureWindowSize(windowSize);
+        w.getDataManager().featureManager.setFeatureWindowSize(windowSize, bufferSize);
         w.getLearningManager().updateInputOutputConnections(c,true);
         KadenzeLogging.getLogger().selectedFeatures(w, oldConnections, c);
         this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
@@ -314,16 +348,27 @@ public class FeatureEditor extends javax.swing.JFrame {
         // TODO add your handling code here:
         boolean[][] oldConnections = w.getLearningManager().getConnectionMatrix(true);
         boolean[][] c = gridPanel.getConnectionsFromForm();
-        w.getDataManager().featureManager.setFeatureWindowSize(windowSize);
+        w.getDataManager().featureManager.setFeatureWindowSize(windowSize, bufferSize);
         w.getLearningManager().updateInputOutputConnections(c,true);
         KadenzeLogging.getLogger().selectedFeatures(w, oldConnections, c);
     }//GEN-LAST:event_setFeaturesButtonActionPerformed
 
+    private void bufferSizeSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_bufferSizeSliderStateChanged
+        JSlider source = (JSlider)evt.getSource();
+        if (!source.getValueIsAdjusting()) {
+            bufferSize = (int)source.getValue();
+            bufferSizeLabel.setText(Integer.toString(bufferSize));
+        } 
+    }//GEN-LAST:event_bufferSizeSliderStateChanged
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel bufferSizeLabel;
+    private javax.swing.JSlider bufferSizeSlider;
     private javax.swing.JButton cancelButton;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

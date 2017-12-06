@@ -409,12 +409,13 @@ public class FeatureGroup {
         return lastInputs; //is returning null when nothing is computed yet...
     }
     
-    public void setFeatureWindowSize(int windowSize)
+    public void setFeatureWindowSize(int windowSize, int bufferSize)
     {
-        featureLibrary.initLibrary(windowSize);
+        featureLibrary.initLibrary(windowSize, bufferSize);
         setDirty(true);
         setDirty(false);
     }
+    
     
     public String[] getOutputNames() {
         int currentIndex = 0;
