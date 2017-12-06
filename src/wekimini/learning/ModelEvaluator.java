@@ -239,7 +239,7 @@ public class ModelEvaluator {
                                 KadenzeLogging.getLogger().trainingAccuracyComputed(w, i, result);
                             }
                             setResults(i, result);  
-                            finishedModel(i, result);
+                            finishedModel(i, result, eval.toMatrixString());
                             numEvaluated++;
 
                             if (isCancelled()) {
@@ -285,8 +285,8 @@ public class ModelEvaluator {
         return isEvaluating;
     }
     
-    protected void finishedModel(int modelNum, String result) {
-        receiver.finishedModel(modelNum, result);
+    protected void finishedModel(int modelNum, String result, String confusion) {
+        receiver.finishedModel(modelNum, result, confusion );
     }
     
     protected void finished() {
@@ -294,7 +294,7 @@ public class ModelEvaluator {
     }
 
     public interface EvaluationResultsReceiver {
-        public void finishedModel(int modelNum, String results);
+        public void finishedModel(int modelNum, String results, String confusion);
         public void finished(String[] results);
         public void cancelled();
     }

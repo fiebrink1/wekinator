@@ -6,6 +6,7 @@
 package wekimini.gui;
 
 import java.awt.CardLayout;
+import java.awt.GridLayout;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -14,6 +15,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import wekimini.learning.ModelEvaluator;
@@ -38,6 +43,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
     private final String[] outputNames = null;
     private final Wekinator w;
     private final LinkedList<NameValueRow> rows = new LinkedList<>();
+    private ConfusionComponent[] tabs;
     private boolean isComputing = false;
     private ModelEvaluator e = null;
     int numModelsToCompute = 0;
@@ -69,6 +75,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         this.w = w;
         initModelDropdown(outputNames);
         initRows(outputNames);
+        initConfusionTabs(outputNames);
         setTitle("Model evaluation");
         testSetSizeLabel.setText(Integer.toString(w.getDataManager().getTestingDataForOutput(0).numInstances()));
     }
@@ -132,6 +139,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         testSetSizeLabel = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        confusionTab = new javax.swing.JTabbedPane();
         jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -334,13 +342,6 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
 
         jLabel1.setText("Results:");
 
-        jButton4.setText("Close");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -351,9 +352,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(scrollPaneInputs, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton4)))
+                    .addComponent(confusionTab, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -365,7 +364,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(scrollPaneInputs, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton4)
+                .addComponent(confusionTab, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -380,17 +379,28 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
+        jButton4.setText("Close");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jButton4))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 58, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton4))
         );
 
         pack();
@@ -468,8 +478,8 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         e = new ModelEvaluator(w, new EvaluationResultsReceiver() {
 
             @Override
-            public void finishedModel(int modelNum, String results) {
-                cvModelFinished(modelNum, results);
+            public void finishedModel(int modelNum, String results, String confusion) {
+                cvModelFinished(modelNum, results, confusion);
             }
 
             @Override
@@ -503,10 +513,11 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         System.out.println("CV property changed");
     }
 
-    private void cvModelFinished(int modelNum, String results) {
+    private void cvModelFinished(int modelNum, String results, String confusion) {
         System.out.println("Model " + modelNum + ": " + results);
         modelsComputed++;
         rows.get(singleModelOffset + modelNum).setValue(results);
+        tabs[singleModelOffset + modelNum].setText(confusion);
         if (!wasCancelled) {
             progressBar.setValue(modelsComputed + 1);
         }
@@ -618,6 +629,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
     private javax.swing.JPanel cardNone;
     private javax.swing.JComboBox comboMethod;
     private javax.swing.JComboBox comboModelToEvaluate;
+    private javax.swing.JTabbedPane confusionTab;
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
@@ -653,5 +665,32 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         }
         panelResultsList.repaint();
     }
+    
+    private void initConfusionTabs(String[] outputNames) {
+        tabs = new ConfusionComponent[outputNames.length];
+        for (int i = 0; i < outputNames.length; i++) {
+            ConfusionComponent panel = new ConfusionComponent(outputNames[i]);
+            tabs[i] = panel;
+            confusionTab.add(outputNames[i], panel);
+        }
+    }
+    
+    public class ConfusionComponent extends JPanel
+    {
+        private JTextArea filler;
+        
+        ConfusionComponent(String text)
+        {
+            filler = new JTextArea(text);
+            setLayout(new GridLayout(1, 1));
+            add(filler);
+        }
+        
+        public void setText(String text)
+        {
+            filler.setText(text);
+        }
+    }
+
 
 }
