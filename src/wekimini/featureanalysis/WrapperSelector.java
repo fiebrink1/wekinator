@@ -34,6 +34,9 @@ public class WrapperSelector extends FeatureSelector {
             AttributeSelection attsel = new AttributeSelection();
             WrapperSubsetEval eval = new WrapperSubsetEval();
             BestFirst search = new BestFirst();
+            //String[] options = {"D","0"};
+            //search.setOptions(options);
+            search.setSearchTermination(10);
             eval.setClassifier(classifier);
             attsel.setEvaluator(eval);
             attsel.setSearch(search);

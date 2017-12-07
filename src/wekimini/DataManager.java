@@ -831,7 +831,7 @@ public class DataManager {
         
         Instances formatted = getAllFeaturesInstances(outputIndex, testSet);
         
-        Instances selectedInstances = FeatureSelector.filterInstances(formatted, selectedFeatureIndices[outputIndex]);
+        Instances selectedInstances = FeatureSelector.filterAttributes(formatted, selectedFeatureIndices[outputIndex]);
         if(outputIndex < featureInstances.size())
         {
            featureInstances.set(outputIndex, selectedInstances);

@@ -29,7 +29,7 @@ public class RandomSelector extends FeatureSelector {
         return thresholded;
     }
     
-    private static void shuffleArray(int[] array)
+    public static void shuffleArray(int[] array)
     {
         int index, temp;
         Random random = new Random();
