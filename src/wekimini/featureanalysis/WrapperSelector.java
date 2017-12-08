@@ -29,6 +29,9 @@ public class WrapperSelector extends FeatureSelector {
     public int[] getAttributeIndicesForInstances(Instances instances)
     {
         try {
+            
+            instances = FeatureSelector.downSample(instances, 0.1);
+            
             int classIndex = instances.numAttributes() - 1;
 
             AttributeSelection attsel = new AttributeSelection();

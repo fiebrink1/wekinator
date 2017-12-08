@@ -25,6 +25,78 @@ public class FeatureSelector {
         return new int[0];
     }
     
+    public static int numInstancesPicked(ArrayList<Integer>[] indices)
+    {
+        int sum = 0;
+        for(ArrayList<Integer> i : indices)
+        {
+            sum += i.size();
+        }
+        return sum;
+    }
+    
+    public static boolean hasReachedEnd(int[] startPtrs, int numInstances)
+    {
+        for(int startPtr:startPtrs)
+        {
+            if(startPtr < numInstances - 1)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+        
+    public static Instances sequentialDownSample(Instances instances, double proportion)
+    {
+        try
+        {
+            int numClasses = instances.numClasses() - 1;
+            int numInstances = instances.numInstances();
+            int targetSize = (int) Math.floor((double)numInstances * proportion);
+            int[] startPtrs = new int[numClasses];
+            ArrayList<Integer>[] indices = new ArrayList[numClasses];
+            for(int i = 0; i < numClasses; i++)
+            {
+                indices[i] = new ArrayList();
+            }
+            while(numInstancesPicked(indices) < targetSize && !hasReachedEnd(startPtrs, numInstances))
+            {
+                int toAdd = (int) Math.ceil((double)(targetSize - numInstancesPicked(indices)) / (double)numClasses);
+                for(int i = 0; i < numClasses; i++)
+                {
+                    int added = 0;
+                    while(startPtrs[i] < numInstances && added < toAdd)
+                    {
+                        Instance in = instances.instance(startPtrs[i]);
+                        int classValue = (int)in.classValue();
+                        if(classValue == i + 1)
+                        {
+                            indices[i].add(startPtrs[i]);
+                            added++;
+                        }
+                        startPtrs[i]++;
+                    }
+                }
+            }
+            Instances downSampled = new Instances(instances,0,0);
+            for(int i = 0; i < numClasses; i++)
+            {
+                for(Integer index:indices[i])
+                {
+                    downSampled.add(instances.instance(index));
+                }
+            }
+            return downSampled;
+        } 
+        catch (Exception ex) 
+        {
+            Logger.getLogger(FeatureSelector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return instances;
+    }
+    
     public static Instances downSample(Instances instances, double proportion)
     {
         try

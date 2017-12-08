@@ -185,10 +185,6 @@ public class FeatureSelectorTest {
     public void testWrapperKnn() throws IOException
     {
         Instances data = getTestSet(2000, 5, 5, 25, 0.5);
-        ArffSaver saver = new ArffSaver();
-        saver.setInstances(data);
-        saver.setFile(new File("./data/test_" + System.currentTimeMillis() + ".arff"));
-        saver.writeBatch();
         WrapperSelector wrapperSelector = new WrapperSelector();
         IBk knn = new IBk();
         knn.setKNN(1);
@@ -202,10 +198,6 @@ public class FeatureSelectorTest {
     public void testWrapperPerceptron() throws IOException
     {
         Instances data = getTestSet(50, 4, 4, 10, 0.5);
-        ArffSaver saver = new ArffSaver();
-        saver.setInstances(data);
-        saver.setFile(new File("./data/test_" + System.currentTimeMillis() + ".arff"));
-        saver.writeBatch();
         WrapperSelector wrapperSelector = new WrapperSelector();
         NeuralNetModelBuilder builder = new NeuralNetModelBuilder();
         MultilayerPerceptron classifier = (MultilayerPerceptron)builder.getClassifier();
@@ -285,6 +277,29 @@ public class FeatureSelectorTest {
         double proportion = 0.2;
         Instances data = getTestSet((int)examples, classes, 4, 10, 0.5);
         Instances downSample = FeatureSelector.downSample(data, proportion);
+        int[] classCtr = new int[classes + 1];
+        assertEquals(examples*proportion, downSample.numInstances(), 0.0);
+        for(int i = 0; i < downSample.numInstances(); i++)
+        {
+            Instance in = downSample.instance(i);
+            int classVal =(int)in.classValue(); 
+            classCtr[classVal]++; 
+        }
+        
+        for(int i = 1; i < classCtr.length; i++)
+        {
+            assertEquals((examples*proportion)/classes, classCtr[i], 0);
+        }
+    }
+    
+    @Test
+    public void testSequentialDownSample()
+    {
+        int classes = 10;
+        double examples = 200;
+        double proportion = 0.2;
+        Instances data = getTestSet((int)examples, classes, 4, 10, 0.5);
+        Instances downSample = FeatureSelector.sequentialDownSample(data, proportion);
         int[] classCtr = new int[classes + 1];
         assertEquals(examples*proportion, downSample.numInstances(), 0.0);
         for(int i = 0; i < downSample.numInstances(); i++)

@@ -27,7 +27,7 @@ public class InfoGainSelector extends FeatureSelector {
     public int[] getAttributeIndicesForInstances(Instances instances)
     {
         try {
-
+                        
             Discretize dis = new Discretize();
             dis.setInputFormat(instances);     
             Instances discreted = Filter.useFilter(instances, dis); 
