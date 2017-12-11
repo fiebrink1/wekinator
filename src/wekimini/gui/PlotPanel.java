@@ -24,8 +24,9 @@ import javax.swing.JPanel;
  */
 public class PlotPanel extends JPanel {
     
-    private final static int AREA_SIZE = 200;
-    private BufferedImage image = new BufferedImage(AREA_SIZE, AREA_SIZE, BufferedImage.TYPE_INT_ARGB);
+    private final static int PLOT_W = 500;
+    private final static int PLOT_H = 75;
+    private BufferedImage image = new BufferedImage(PLOT_W, PLOT_H, BufferedImage.TYPE_INT_ARGB);
     int pointsPerRow = 100;
     ArrayList<Plot> plots = new ArrayList<Plot>(1);
     //Gap at top of screen
@@ -35,16 +36,19 @@ public class PlotPanel extends JPanel {
     
     public PlotPanel()
     {
-        setPreferredSize(new Dimension(AREA_SIZE, AREA_SIZE));
+        setPreferredSize(new Dimension(PLOT_W, PLOT_H));
         setBackground(Color.white);
-        Plot p = new Plot(AREA_SIZE - 20, AREA_SIZE - topGap - 10, pointsPerRow, 10, topGap);
-        plots.add(p);
+        for(int i = 0; i < 10; i++)
+        {
+            Plot p = new Plot(PLOT_W - 20, PLOT_H - topGap - 10, pointsPerRow, 10, topGap + (i * (vertGap + PLOT_H)));
+            plots.add(p);
+        }
     }
     
     @Override
     public Dimension getPreferredSize()
     {
-        return isPreferredSizeSet() ? super.getPreferredSize() : new Dimension(AREA_SIZE, AREA_SIZE);
+        return isPreferredSizeSet() ? super.getPreferredSize() : new Dimension(PLOT_W, PLOT_H);
     }
 
     @Override
@@ -104,7 +108,6 @@ public class PlotPanel extends JPanel {
     {
         //System.out.println("new point added");
         plots.get(plot).addPoint(pt);
-        repaint();
     }        
             
     

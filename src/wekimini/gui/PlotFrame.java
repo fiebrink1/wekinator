@@ -34,8 +34,10 @@ public class PlotFrame extends javax.swing.JFrame {
         this.w = w;
         Timer timer = new Timer(20, new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
-            
-            plotPanel1.addPoint((r.nextFloat() * 2) - 1,0);
+            for(int i = 0; i < 10; i++)
+            {
+                plotPanel1.addPoint((r.nextFloat() * 2) - 1,i);
+            }
             plotPanel1.repaint();
             //System.out.println("width:" + plotPanel1.getWidth() + " height:" + plotPanel1.getHeight());
         }    

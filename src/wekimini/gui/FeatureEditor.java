@@ -44,9 +44,7 @@ public class FeatureEditor extends javax.swing.JFrame {
         
         this.setPreferredSize(new Dimension(400, 800));
         setSize(new Dimension(400, 800));
-        
-        //processing = new ProcessingApplet();
-        
+                
     }
 
     private void setup(String[] rowNames, String[] colNames, boolean[][] enabled) {
