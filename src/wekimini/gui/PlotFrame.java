@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 import javax.swing.Timer;
+import weka.core.Instance;
 import wekimini.Wekinator;
 
 /**
@@ -32,13 +33,20 @@ public class PlotFrame extends javax.swing.JFrame {
     public PlotFrame(Wekinator w) {
         initComponents();
         this.w = w;
+        plotPanel1.setUp(6);
         Timer timer = new Timer(20, new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
-            for(int i = 0; i < 10; i++)
+            Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
+            if(in != null)
             {
-                plotPanel1.addPoint((r.nextFloat() * 2) - 1,i);
+                int numPlots = 6;
+                for(int i = 0; i < numPlots; i++)
+                {
+                    plotPanel1.addPoint((float)in.value(i), i);
+                }
+                plotPanel1.repaint();
             }
-            plotPanel1.repaint();
+
             //System.out.println("width:" + plotPanel1.getWidth() + " height:" + plotPanel1.getHeight());
         }    
         });  

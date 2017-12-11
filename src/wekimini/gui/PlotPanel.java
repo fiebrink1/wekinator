@@ -26,7 +26,8 @@ public class PlotPanel extends JPanel {
     
     private final static int PLOT_W = 500;
     private final static int PLOT_H = 75;
-    private BufferedImage image = new BufferedImage(PLOT_W, PLOT_H, BufferedImage.TYPE_INT_ARGB);
+    private final static int WINDOW_H = 800;
+    private BufferedImage image = new BufferedImage(PLOT_W, WINDOW_H, BufferedImage.TYPE_INT_ARGB);
     int pointsPerRow = 100;
     ArrayList<Plot> plots = new ArrayList<Plot>(1);
     //Gap at top of screen
@@ -36,9 +37,15 @@ public class PlotPanel extends JPanel {
     
     public PlotPanel()
     {
-        setPreferredSize(new Dimension(PLOT_W, PLOT_H));
+        setPreferredSize(new Dimension(PLOT_W, WINDOW_H));
         setBackground(Color.white);
-        for(int i = 0; i < 10; i++)
+
+    }
+    
+    public void setUp(int numPlots)
+    {
+        plots.clear();
+        for(int i = 0; i < numPlots; i++)
         {
             Plot p = new Plot(PLOT_W - 20, PLOT_H - topGap - 10, pointsPerRow, 10, topGap + (i * (vertGap + PLOT_H)));
             plots.add(p);
@@ -48,7 +55,7 @@ public class PlotPanel extends JPanel {
     @Override
     public Dimension getPreferredSize()
     {
-        return isPreferredSizeSet() ? super.getPreferredSize() : new Dimension(PLOT_W, PLOT_H);
+        return isPreferredSizeSet() ? super.getPreferredSize() : new Dimension(PLOT_W, WINDOW_H);
     }
 
     @Override

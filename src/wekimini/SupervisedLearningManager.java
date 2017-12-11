@@ -84,6 +84,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     private final List<OutputAddedListener> outputAddedListeners;
 
     private boolean computeDistribution = false;
+    private Instance currentInputInstance;
     
     /**
      * Get the value of computeDistribution
@@ -927,11 +928,17 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         // System.out.println("What do we do? Path changed for output: " + p.getOSCOutput().getName());
     }
 
+    public Instance getCurrentInputInstance()
+    {
+        return currentInputInstance;
+    }
+    
     //Right now, this simply won't change indices where mask is false
     public double[] computeValues(double[] inputs, boolean[] computeMask) {
         for (int i = 0; i < computeMask.length; i++) {
             if (computeMask[i] && paths.get(i).canCompute()) {
                 Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, i);
+                currentInputInstance = instance;
                 try {
                     myComputedOutputs[i] = paths.get(i).compute(instance);
                 } catch (Exception ex) {
