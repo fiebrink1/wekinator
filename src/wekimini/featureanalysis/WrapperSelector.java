@@ -30,7 +30,7 @@ public class WrapperSelector extends FeatureSelector {
     {
         try {
             
-            instances = FeatureSelector.downSample(instances, 0.1);
+            //instances = FeatureSelector.sequentialDownSample(instances, 0.5);
             
             int classIndex = instances.numAttributes() - 1;
 
@@ -39,7 +39,7 @@ public class WrapperSelector extends FeatureSelector {
             BestFirst search = new BestFirst();
             //String[] options = {"D","0"};
             //search.setOptions(options);
-            search.setSearchTermination(10);
+            search.setSearchTermination(6);
             eval.setClassifier(classifier);
             attsel.setEvaluator(eval);
             attsel.setSearch(search);

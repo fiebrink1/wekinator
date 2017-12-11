@@ -187,6 +187,8 @@ public final class WekiMiniRunner {
                 }
             }
         });
+        
+        //PApplet.main(new String[]{wekimini.processing.ProcessingApplet.class.getName()}); 
     }
 
     public int numRunningProjects() {
