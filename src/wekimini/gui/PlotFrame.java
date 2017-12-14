@@ -57,7 +57,9 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
                     PlotRowModel model = tableModel.getValueAt(i, 0);
                     if(model.isStreaming)
                     {
-                        model.addPoint((float) in.value(model.featureIndex));
+                        float val = (float) in.value(model.featureIndex);
+                        //System.out.print("adding " + val + " to model " + model.featureIndex);
+                        model.addPoint(val);
                     }
                 }
             }
@@ -174,7 +176,6 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
     public void modelChanged(PlotRowModel model)
     {
         tableModel.data.set(model.rowIndex, model);
-        System.out.println("model " + model.rowIndex + " changed");
         updateTable();
     }
     
@@ -205,7 +206,6 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         {
             int y = ptr * rowHeight;
             int x = 0;
-            System.out.println("x:" + x + " y:" + y);
             PlotRowPanel row = new PlotRowPanel(outputs, features, this);
             model.rowIndex = ptr;
             row.updateModel(model);
@@ -247,6 +247,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
                         points.removeFirst();
                     }
                 }
+                rows.get(rowIndex).updateModel(this);
             }
         } 
     }

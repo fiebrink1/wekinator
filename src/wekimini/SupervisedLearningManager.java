@@ -85,6 +85,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     private boolean computeDistribution = false;
     private Instance currentInputInstance;
+    public boolean isPlotting = false;
     
     /**
      * Get the value of computeDistribution
@@ -935,10 +936,11 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     
     //Right now, this simply won't change indices where mask is false
     public double[] computeValues(double[] inputs, boolean[] computeMask) {
+        currentInputInstance = w.getDataManager().getClassifiableInstanceForPlot(inputs);
         for (int i = 0; i < computeMask.length; i++) {
+            Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, i);
             if (computeMask[i] && paths.get(i).canCompute()) {
-                Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, i);
-                currentInputInstance = instance;
+                
                 try {
                     myComputedOutputs[i] = paths.get(i).compute(instance);
                 } catch (Exception ex) {
@@ -1024,19 +1026,23 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         {
             addToDataSet(inputs, w.getOutputManager().getCurrentValues(), pathRecordingMask, recordingState == RecordingState.RECORDING_TEST);
         } 
-        else if (runningState == RunningState.RUNNING) 
+        else if (runningState != RunningState.NOT_RUNNING || isPlotting) 
         {
             double[] d = computeValues(inputs, pathRunningMask);
-            w.getOutputManager().setNewComputedValues(d);
+            
+            if(runningState == RunningState.RUNNING)
+            {
+                w.getOutputManager().setNewComputedValues(d);
 
-            //TODO: Get rid of search every time : slows us down!
-            for (int i = 0; i < w.getOutputManager().getOutputGroup().getNumOutputs(); i++) {
-                if ((w.getOutputManager().getOutputGroup().getOutput(i) instanceof OSCClassificationOutput)
-                        && ((OSCClassificationOutput) w.getOutputManager().getOutputGroup().getOutput(i)).isSendingDistribution()) {
-                    double[] dist = computeProbabilisticOutputs(inputs, i);
-                    w.getOutputManager().setDistribution(i, dist);
+                //TODO: Get rid of search every time : slows us down!
+                for (int i = 0; i < w.getOutputManager().getOutputGroup().getNumOutputs(); i++) {
+                    if ((w.getOutputManager().getOutputGroup().getOutput(i) instanceof OSCClassificationOutput)
+                            && ((OSCClassificationOutput) w.getOutputManager().getOutputGroup().getOutput(i)).isSendingDistribution()) {
+                        double[] dist = computeProbabilisticOutputs(inputs, i);
+                        w.getOutputManager().setDistribution(i, dist);
+                    }
+
                 }
-
             }
         }
     }

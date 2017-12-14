@@ -1094,6 +1094,19 @@ public class DataManager {
         fireStateChanged();
     }
 
+    public Instance getClassifiableInstanceForPlot(double[] vals)
+    {
+        double[] features;
+        Instances instances;
+        features = featureManager.modifyInputsForAllFeatures(vals);
+        instances = featureManager.getNewInstancesOfLength(features.length, numClasses[0]);
+        Instance featureInstance = new Instance(1.0, features);
+        instances.add(featureInstance);
+        instances.setClassIndex(features.length - 1);
+        featureInstance = instances.firstInstance();
+        return featureInstance;
+    }
+    
     //This will use old filters, not new ones.
     public Instance getClassifiableInstanceForOutput(double[] vals, int which) {
         

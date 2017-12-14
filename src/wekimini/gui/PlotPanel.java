@@ -72,7 +72,12 @@ public class PlotPanel extends JPanel {
     public void updatePoints(LinkedList<Float> points)
     {
         this.points = points;
-        repaint();
+        if(points.size() > 0)
+        {
+            rescaleWithPoint(points.getLast());
+            repaint();
+        }
+
     }
 
     @Override
@@ -111,42 +116,41 @@ public class PlotPanel extends JPanel {
         }
     }
     
-       //Resize plot after it's been created
    public void resize(int newWidth, int newHeight, int newX, int newY) {
-     this.pHeight = newHeight;
-      this.totalWidth = newWidth;
-      this.plotWidth = totalWidth - labelWidth;
-      this.x = newX;
-      this.y = newY;  
-      rescale();
+        this.pHeight = newHeight;
+        this.totalWidth = newWidth;
+        this.plotWidth = totalWidth - labelWidth;
+        this.x = newX;
+        this.y = newY;  
+        rescale();
    }  
    
    //Call when min, max, width, or number of points to plot changes
-   protected void rescale() {
-     horizontalScale = (double)plotWidth/(double)pointsPerRow;
-     sMin = Float.toString(min);
-     sMax = Float.toString(max);
+   protected void rescale() 
+   {
+        horizontalScale = (double)plotWidth/(double)pointsPerRow;
+        sMin = Float.toString(min);
+        sMax = Float.toString(max);
    }
    
-   //Add a new point to the data series we're plotting
-   public void rescaleWithPoint(float p) {
-     if (firstData) {
-       min = (float) (p - 0.0001);
-       max = (float) (p + 0.0001);
-       rescale();
-       firstData = false;
-     }
+   public void rescaleWithPoint(float p) 
+   {
+        if (firstData) {
+          min = (float) (p - 0.0001);
+          max = (float) (p + 0.0001);
+          rescale();
+          firstData = false;
+        }
      
-     if (p < min) {
-       min = p;
-       rescale();
-     }
-     if (p > max) {
-       max = p;
-       rescale();
-     }
+        if (p < min) {
+          min = p;
+          rescale();
+        }
+        if (p > max) {
+          max = p;
+          rescale();
+        }
      
-     //Use synchronized so we don't read from and edit linkedlist simultaneously
    }
     
     public void clear()

@@ -1062,12 +1062,13 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         if (plotFrame == null) {
             plotFrame = new PlotFrame(w);
             plotFrame.setVisible(true);
-
+            w.getSupervisedLearningManager().isPlotting = true;
             //Problem: Won't call on button-triggered dispose...
             Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
                 @Override
                 public void callMe() {
                     plotFrame = null;
+                    w.getSupervisedLearningManager().isPlotting = false;
                 }
             };
 

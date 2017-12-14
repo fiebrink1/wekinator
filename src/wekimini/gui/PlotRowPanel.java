@@ -24,6 +24,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
     private String[] features = new String[0];
     private String state;
     private PlotRowDelegate delegate;
+    private PlotPanel plotPanel;
     
     public PlotRowPanel(String[] outputs, String[] features, PlotRowDelegate delegate) {
         initComponents();
@@ -39,6 +40,9 @@ public class PlotRowPanel extends javax.swing.JPanel {
         {
             featureComboBox.addItem(feature);
         }
+        plotPanel = new PlotPanel();
+        plotPanel.setBounds(0, 0, plotScrollPanel.getWidth(), plotScrollPanel.getHeight());
+        plotScrollPanel.setViewportView(plotPanel);
     }
     
     public void updateModel(PlotRowModel model)
@@ -48,6 +52,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
         outputComboBox.setSelectedIndex(model.outputIndex);
         featureComboBox.setSelectedIndex(model.featureIndex);
         liveToggle.setSelected(model.isStreaming);
+        repaint();
     }
 
     /**
@@ -59,24 +64,11 @@ public class PlotRowPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        plotPanel = new wekimini.gui.PlotPanel();
         outputComboBox = new javax.swing.JComboBox<>();
         featureComboBox = new javax.swing.JComboBox<>();
         liveToggle = new javax.swing.JCheckBox();
         closeButton = new javax.swing.JButton();
-
-        plotPanel.setPreferredSize(new java.awt.Dimension(500, 100));
-
-        javax.swing.GroupLayout plotPanelLayout = new javax.swing.GroupLayout(plotPanel);
-        plotPanel.setLayout(plotPanelLayout);
-        plotPanelLayout.setHorizontalGroup(
-            plotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 518, Short.MAX_VALUE)
-        );
-        plotPanelLayout.setVerticalGroup(
-            plotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
+        plotScrollPanel = new javax.swing.JScrollPane();
 
         outputComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -109,29 +101,28 @@ public class PlotRowPanel extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(plotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 518, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(outputComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(featureComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(liveToggle)
-                        .addGap(18, 18, 18)
-                        .addComponent(closeButton)))
-                .addGap(0, 57, Short.MAX_VALUE))
+                .addComponent(outputComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(featureComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(liveToggle)
+                .addGap(18, 18, 18)
+                .addComponent(closeButton)
+                .addContainerGap(243, Short.MAX_VALUE))
+            .addComponent(plotScrollPanel)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 6, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(outputComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(featureComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(liveToggle)
                     .addComponent(closeButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(plotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(plotScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -172,6 +163,6 @@ public class PlotRowPanel extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> featureComboBox;
     private javax.swing.JCheckBox liveToggle;
     private javax.swing.JComboBox<String> outputComboBox;
-    private wekimini.gui.PlotPanel plotPanel;
+    private javax.swing.JScrollPane plotScrollPanel;
     // End of variables declaration//GEN-END:variables
 }
