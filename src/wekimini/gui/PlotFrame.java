@@ -26,7 +26,7 @@ import wekimini.Wekinator;
  *
  * @author louismccallum
  */
-public class PlotFrame extends javax.swing.JFrame {
+public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
 
     /**
      * Creates new form PlotFrame
@@ -36,6 +36,7 @@ public class PlotFrame extends javax.swing.JFrame {
     private final int REFRESH_RATE = 20;
     private PlotTableModel tableModel = new PlotTableModel();
     private final static int POINTS_PER_ROW = 100;
+    private ArrayList<PlotRowPanel> rows = new ArrayList();
 
     public PlotFrame() {
         initComponents();
@@ -125,7 +126,7 @@ public class PlotFrame extends javax.swing.JFrame {
     private void addPlotButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPlotButtonActionPerformed
         // TODO add your handling code here:
         tableModel.data.add(new PlotRowModel());
-        updateTable();
+        redrawTable();
     }//GEN-LAST:event_addPlotButtonActionPerformed
 
     /**
@@ -169,7 +170,22 @@ public class PlotFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane plotScrollView;
     // End of variables declaration//GEN-END:variables
 
-    public void updateTable()
+    @Override
+    public void modelChanged(PlotRowModel model)
+    {
+        tableModel.data.set(model.rowIndex, model);
+        System.out.println("model " + model.rowIndex + " changed");
+        updateTable();
+    }
+    
+    @Override
+    public void closeButtonPressed(PlotRowModel model)
+    {
+        tableModel.data.remove(model);
+        redrawTable();
+    }
+    
+    public void redrawTable()
     {
         int ptr = 0;
         int rowHeight = 100;
@@ -180,6 +196,7 @@ public class PlotFrame extends javax.swing.JFrame {
         }
         String[] features = w.getDataManager().featureManager.getAllFeaturesGroup().valueMap;
         int numRows = tableModel.data.size();
+        rows = new ArrayList(numRows);
         JPanel content = new JPanel();
         content.setBounds(0,0,plotScrollView.getWidth(),rowHeight * numRows);
         GridLayout layout = new GridLayout(numRows,1);
@@ -189,14 +206,27 @@ public class PlotFrame extends javax.swing.JFrame {
             int y = ptr * rowHeight;
             int x = 0;
             System.out.println("x:" + x + " y:" + y);
-            PlotRowPanel row = new PlotRowPanel(outputs, features);
+            PlotRowPanel row = new PlotRowPanel(outputs, features, this);
+            model.rowIndex = ptr;
             row.updateModel(model);
             row.setBounds(x, y, content.getWidth(), rowHeight);
             content.add(row);
+            rows.add(row);
             ptr++;
         }
         plotScrollView.setViewportView(content);
         plotScrollView.revalidate();
+    }
+    
+    public void updateTable()
+    {
+        int ptr = 0;
+        for(PlotRowPanel row : rows)
+        {
+            PlotRowModel model  = tableModel.data.get(ptr);
+            row.updateModel(model);
+            ptr++;
+        }
     }
     
     public class PlotRowModel
@@ -204,6 +234,7 @@ public class PlotFrame extends javax.swing.JFrame {
         int featureIndex = 0;
         int outputIndex = 0;
         boolean isStreaming = false;
+        int rowIndex = 0;
         protected LinkedList<Float> points = new LinkedList();
         
         public void addPoint(float pt)

@@ -23,9 +23,11 @@ public class PlotRowPanel extends javax.swing.JPanel {
     private String[] outputs = new String[0];
     private String[] features = new String[0];
     private String state;
+    private PlotRowDelegate delegate;
     
-    public PlotRowPanel(String[] outputs, String[] features) {
+    public PlotRowPanel(String[] outputs, String[] features, PlotRowDelegate delegate) {
         initComponents();
+        this.delegate = delegate;
         this.outputs = outputs;
         this.features = features;
         for(String output : outputs)
@@ -37,29 +39,15 @@ public class PlotRowPanel extends javax.swing.JPanel {
         {
             featureComboBox.addItem(feature);
         }
-        outputComboBox.setActionCommand("output");
-        featureComboBox.setActionCommand("feature");
-        liveToggle.setActionCommand("streaming");
-        closeButton.setActionCommand("close");
-        
-        ActionListener listener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                state = e.getActionCommand();
-                System.out.println("State = " + state);
-            }
-        };
-        outputComboBox.addActionListener(listener);
-        featureComboBox.addActionListener(listener);
-        liveToggle.addActionListener(listener);
-        closeButton.addActionListener(listener);
-        
     }
     
     public void updateModel(PlotRowModel model)
     {
         this.model = model;
         plotPanel.updatePoints(model.points);
+        outputComboBox.setSelectedIndex(model.outputIndex);
+        featureComboBox.setSelectedIndex(model.featureIndex);
+        liveToggle.setSelected(model.isStreaming);
     }
 
     /**
@@ -83,7 +71,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
         plotPanel.setLayout(plotPanelLayout);
         plotPanelLayout.setHorizontalGroup(
             plotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
+            .addGap(0, 518, Short.MAX_VALUE)
         );
         plotPanelLayout.setVerticalGroup(
             plotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -103,6 +91,11 @@ public class PlotRowPanel extends javax.swing.JPanel {
         });
 
         liveToggle.setText("Streaming");
+        liveToggle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                liveToggleActionPerformed(evt);
+            }
+        });
 
         closeButton.setText("Close");
         closeButton.addActionListener(new java.awt.event.ActionListener() {
@@ -117,7 +110,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(plotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(plotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 518, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(outputComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -126,7 +119,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
                         .addComponent(liveToggle)
                         .addGap(18, 18, 18)
                         .addComponent(closeButton)))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 57, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -144,6 +137,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
 
     private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
         // TODO add your handling code here:
+        delegate.closeButtonPressed(model);
     }//GEN-LAST:event_closeButtonActionPerformed
 
     private void outputComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputComboBoxActionPerformed
@@ -152,6 +146,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
         if(i > 0)
         {
             model.outputIndex = i;
+            delegate.modelChanged(model);
         }
     }//GEN-LAST:event_outputComboBoxActionPerformed
 
@@ -161,8 +156,15 @@ public class PlotRowPanel extends javax.swing.JPanel {
         if(i > 0)
         {
             model.featureIndex = i;
+            delegate.modelChanged(model);
         }
     }//GEN-LAST:event_featureComboBoxActionPerformed
+
+    private void liveToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_liveToggleActionPerformed
+        // TODO add your handling code here:
+        model.isStreaming = liveToggle.isSelected();
+        delegate.modelChanged(model);
+    }//GEN-LAST:event_liveToggleActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
