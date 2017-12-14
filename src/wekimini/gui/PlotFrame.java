@@ -6,11 +6,19 @@
 package wekimini.gui;
 
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.Timer;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 import weka.core.Instance;
 import wekimini.Wekinator;
 
@@ -25,6 +33,9 @@ public class PlotFrame extends javax.swing.JFrame {
      */
     private Wekinator w;
     private Random r = new Random();
+    private final int REFRESH_RATE = 20;
+    private PlotTableModel tableModel = new PlotTableModel();
+    private final static int POINTS_PER_ROW = 100;
 
     public PlotFrame() {
         initComponents();
@@ -33,21 +44,22 @@ public class PlotFrame extends javax.swing.JFrame {
     public PlotFrame(Wekinator w) {
         initComponents();
         this.w = w;
-        plotPanel1.setUp(6);
-        Timer timer = new Timer(20, new ActionListener() {
+                
+        Timer timer = new Timer(REFRESH_RATE, new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
             Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
             if(in != null)
             {
-                int numPlots = 6;
+                int numPlots = tableModel.getRowCount();
                 for(int i = 0; i < numPlots; i++)
                 {
-                    plotPanel1.addPoint((float)in.value(i), i);
+                    PlotRowModel model = tableModel.getValueAt(i, 0);
+                    if(model.isStreaming)
+                    {
+                        model.addPoint((float) in.value(model.featureIndex));
+                    }
                 }
-                plotPanel1.repaint();
             }
-
-            //System.out.println("width:" + plotPanel1.getWidth() + " height:" + plotPanel1.getHeight());
         }    
         });  
         timer.start();
@@ -64,34 +76,57 @@ public class PlotFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        plotPanel1 = new wekimini.gui.PlotPanel();
+        jPanel1 = new javax.swing.JPanel();
+        addPlotButton = new javax.swing.JButton();
+        plotScrollView = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        javax.swing.GroupLayout plotPanel1Layout = new javax.swing.GroupLayout(plotPanel1);
-        plotPanel1.setLayout(plotPanel1Layout);
-        plotPanel1Layout.setHorizontalGroup(
-            plotPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+        addPlotButton.setText("Add Plot");
+        addPlotButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addPlotButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(addPlotButton)
+                .addGap(0, 303, Short.MAX_VALUE))
         );
-        plotPanel1Layout.setVerticalGroup(
-            plotPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(0, 15, Short.MAX_VALUE)
+                .addComponent(addPlotButton))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(plotPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(plotScrollView)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(plotPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(plotScrollView, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void addPlotButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPlotButtonActionPerformed
+        // TODO add your handling code here:
+        tableModel.data.add(new PlotRowModel());
+        updateTable();
+    }//GEN-LAST:event_addPlotButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -129,6 +164,89 @@ public class PlotFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private wekimini.gui.PlotPanel plotPanel1;
+    private javax.swing.JButton addPlotButton;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane plotScrollView;
     // End of variables declaration//GEN-END:variables
+
+    public void updateTable()
+    {
+        int ptr = 0;
+        int rowHeight = 100;
+        String[] outputs = {"1", "2","3"};
+        String[] features = {"1", "2", "3", "4", "5"};
+        int numRows = tableModel.data.size();
+        JPanel content = new JPanel();
+        content.setBounds(0,0,plotScrollView.getWidth(),rowHeight * numRows);
+        GridLayout layout = new GridLayout(numRows,1);
+        content.setLayout(layout);
+        for(PlotRowModel model : tableModel.data)
+        {
+            int y = ptr * rowHeight;
+            int x = 0;
+            System.out.println("x:" + x + " y:" + y);
+            PlotRowPanel row = new PlotRowPanel(outputs, features);
+            row.updateModel(model);
+            row.setBounds(x, y, content.getWidth(), rowHeight);
+            content.add(row);
+            ptr++;
+        }
+        plotScrollView.setViewportView(content);
+        plotScrollView.revalidate();
+    }
+    
+    public class PlotRowModel
+    {
+        int featureIndex = 0;
+        int outputIndex = 0;
+        boolean isStreaming = false;
+        protected LinkedList<Float> points = new LinkedList();
+        
+        public void addPoint(float pt)
+        {
+            synchronized(this) {
+                points.add(pt);
+                if(isStreaming)
+                {
+                    while (points.size() > POINTS_PER_ROW) {
+                        points.removeFirst();
+                    }
+                }
+            }
+        } 
+    }
+    
+    public class PlotTableModel
+    {
+        private String[] columnNames = {"Plots"};
+        public ArrayList<PlotRowModel> data = new ArrayList();
+
+        public int getColumnCount() {
+            return 1;
+        }
+
+        public int getRowCount() {
+            return data.size();
+        }
+
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+
+        public PlotRowModel getValueAt(int row, int col) {
+            return data.get(row);
+        }
+
+        public void setValueAt(PlotRowModel value, int row, int col) {
+            data.set(row, value);
+        }
+
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+        
+        public boolean isCellEditable(int row, int col) {
+            return true;        
+        }
+    }
 }
