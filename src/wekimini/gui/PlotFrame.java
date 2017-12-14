@@ -173,8 +173,12 @@ public class PlotFrame extends javax.swing.JFrame {
     {
         int ptr = 0;
         int rowHeight = 100;
-        String[] outputs = {"1", "2","3"};
-        String[] features = {"1", "2", "3", "4", "5"};
+        String[] outputs = new String[w.getDataManager().getNumOutputs()];
+        for(int i = 0; i < outputs.length; i++)
+        {
+            outputs[i] = w.getDataManager().getOutputName(i);
+        }
+        String[] features = w.getDataManager().featureManager.getAllFeaturesGroup().valueMap;
         int numRows = tableModel.data.size();
         JPanel content = new JPanel();
         content.setBounds(0,0,plotScrollView.getWidth(),rowHeight * numRows);

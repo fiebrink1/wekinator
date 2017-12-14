@@ -84,6 +84,7 @@ public class FeatureManager
         {
             allFeatures.addFeatureForKey(feature);
         }
+        allFeatures.computeAndGetValuesForNewInputs(new double[inputNames.length]);
         
         for(int i = 0; i < numOutputs; i++)
         {

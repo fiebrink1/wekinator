@@ -20,8 +20,8 @@ public class PlotRowPanel extends javax.swing.JPanel {
      */
     
     public PlotRowModel model;
-    private String[] outputs;
-    private String[] features;
+    private String[] outputs = new String[0];
+    private String[] features = new String[0];
     private String state;
     
     public PlotRowPanel(String[] outputs, String[] features) {
