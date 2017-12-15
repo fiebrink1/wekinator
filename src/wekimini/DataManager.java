@@ -1094,6 +1094,25 @@ public class DataManager {
         fireStateChanged();
     }
 
+    public double[] getTrainingDataForFeature(int outputIndex, int featureIndex)
+    {
+        if(featureManager.isAllFeaturesDirty(false))
+        {
+            for(int i = 0; i < numOutputs; i++)
+            {
+                updateAllFeaturesInstances(i, false);
+            }
+            featureManager.didRecalculateAllFeatures(false);
+        }
+        Instances allFeatures = getAllFeaturesInstances(outputIndex, false);
+        double [] vals = new double[allFeatures.numInstances()];
+        for(int i = 0; i < allFeatures.numInstances(); i++)
+        {
+            vals[i] = allFeatures.instance(i).value(featureIndex);
+        }
+        return vals;
+    }
+    
     public Instance getClassifiableInstanceForPlot(double[] vals)
     {
         double[] features;

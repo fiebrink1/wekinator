@@ -5,8 +5,12 @@
  */
 package wekimini.gui;
 
+import java.awt.Adjustable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS;
 import wekimini.gui.PlotFrame.PlotRowModel;
 
 /**
@@ -25,6 +29,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
     private String state;
     private PlotRowDelegate delegate;
     private PlotPanel plotPanel;
+    private boolean ignoreDelegate = false;
     
     public PlotRowPanel(String[] outputs, String[] features, PlotRowDelegate delegate) {
         initComponents();
@@ -40,20 +45,71 @@ public class PlotRowPanel extends javax.swing.JPanel {
         {
             featureComboBox.addItem(feature);
         }
-        plotPanel = new PlotPanel();
-        plotPanel.setBounds(0, 0, plotScrollPanel.getWidth(), plotScrollPanel.getHeight());
+        plotPanel = new PlotPanel();        
         plotScrollPanel.setViewportView(plotPanel);
+        plotScrollPanel.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
+//        AdjustmentListener listener = new MyAdjustmentListener();
+//        plotScrollPanel.getHorizontalScrollBar().addAdjustmentListener(listener);
     }
     
     public void updateModel(PlotRowModel model)
     {
         this.model = model;
         plotPanel.updatePoints(model.points);
+        
+        if(!model.isStreaming)
+        {
+            plotPanel.updateWidth();
+            repaint();
+            plotScrollPanel.revalidate();
+            validate();
+            plotScrollPanel.setViewportView(plotPanel);
+            plotScrollPanel.revalidate();
+            validate();
+            System.out.println("panel width:" + plotPanel.getWidth());
+        }
+        
+        ignoreDelegate = true;
         outputComboBox.setSelectedIndex(model.outputIndex);
         featureComboBox.setSelectedIndex(model.featureIndex);
         liveToggle.setSelected(model.isStreaming);
-        repaint();
+        ignoreDelegate = false;
+
     }
+    
+    class MyAdjustmentListener implements AdjustmentListener {
+        public void adjustmentValueChanged(AdjustmentEvent evt) {
+          Adjustable source = evt.getAdjustable();
+          if (evt.getValueIsAdjusting()) {
+            return;
+          }
+          int orient = source.getOrientation();
+          if (orient == Adjustable.HORIZONTAL) {
+            System.out.println("from horizontal scrollbar"); 
+          } else {
+            System.out.println("from vertical scrollbar");
+          }
+          int type = evt.getAdjustmentType();
+          switch (type) {
+          case AdjustmentEvent.UNIT_INCREMENT:
+            System.out.println("Scrollbar was increased by one unit");
+            break;
+          case AdjustmentEvent.UNIT_DECREMENT:
+            System.out.println("Scrollbar was decreased by one unit");
+            break;
+          case AdjustmentEvent.BLOCK_INCREMENT:
+            System.out.println("Scrollbar was increased by one block");
+            break;
+          case AdjustmentEvent.BLOCK_DECREMENT:
+            System.out.println("Scrollbar was decreased by one block");
+            break;
+          case AdjustmentEvent.TRACK:
+            System.out.println("The knob on the scrollbar was dragged");
+            break;
+          }
+          int value = evt.getValue();
+        }
+      }
 
     /**
      * This method is called from within the constructor to  the form.
@@ -108,8 +164,8 @@ public class PlotRowPanel extends javax.swing.JPanel {
                 .addComponent(liveToggle)
                 .addGap(18, 18, 18)
                 .addComponent(closeButton)
-                .addContainerGap(243, Short.MAX_VALUE))
-            .addComponent(plotScrollPanel)
+                .addContainerGap(251, Short.MAX_VALUE))
+            .addComponent(plotScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -134,7 +190,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
     private void outputComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputComboBoxActionPerformed
         // TODO add your handling code here:
         int i = outputComboBox.getSelectedIndex();
-        if(i > 0)
+        if(i > 0 && !ignoreDelegate)
         {
             model.outputIndex = i;
             delegate.modelChanged(model);
@@ -144,8 +200,9 @@ public class PlotRowPanel extends javax.swing.JPanel {
     private void featureComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_featureComboBoxActionPerformed
         // TODO add your handling code here:
         int i = featureComboBox.getSelectedIndex();
-        if(i > 0)
+        if(i > 0 && !ignoreDelegate)
         {
+            System.out.println("feature combo box action performed");
             model.featureIndex = i;
             delegate.modelChanged(model);
         }
@@ -154,7 +211,11 @@ public class PlotRowPanel extends javax.swing.JPanel {
     private void liveToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_liveToggleActionPerformed
         // TODO add your handling code here:
         model.isStreaming = liveToggle.isSelected();
-        delegate.modelChanged(model);
+        if(!ignoreDelegate)
+        {
+            delegate.streamingToggleChanged(model);
+            delegate.modelChanged(model);
+        }
     }//GEN-LAST:event_liveToggleActionPerformed
 
 

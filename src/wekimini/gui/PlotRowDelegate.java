@@ -15,5 +15,5 @@ public interface PlotRowDelegate {
     
     public void modelChanged(PlotRowModel model); 
     public void closeButtonPressed(PlotRowModel model);
-    
+    public void streamingToggleChanged(PlotRowModel model);
 }

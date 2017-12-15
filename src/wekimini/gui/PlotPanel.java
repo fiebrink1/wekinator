@@ -36,14 +36,14 @@ public class PlotPanel extends JPanel {
     protected int plotWidth = totalWidth - labelWidth;
     protected int x = 0;
     protected int y = 0;
-    protected float min = (float) 0.0001;
-    protected float max = (float) 0.; 
+    protected double min = 0.0001;
+    protected double max = 0.; 
     protected double horizontalScale = 1;
     String sMin = "0.0001";
     String sMax = "0.0";
-    boolean firstData = true;
-    int pointsPerRow = 0;
-    private LinkedList<Float> points;
+    public boolean firstData = true;
+    private int pointsPerRow = 0;
+    private LinkedList<Double> points;
     private final static int POINTS_PER_ROW = 100;
     
     public PlotPanel()
@@ -53,7 +53,6 @@ public class PlotPanel extends JPanel {
     
     public void setUp(int pointsPerRow)
     {
-        setPreferredSize(new Dimension(PLOT_W, PLOT_H));
         setBackground(Color.white);
         totalWidth = PLOT_W - 20;
         pHeight = PLOT_H - topGap - 10;
@@ -63,13 +62,7 @@ public class PlotPanel extends JPanel {
         this.pointsPerRow = pointsPerRow;
     }
     
-    @Override
-    public Dimension getPreferredSize()
-    {
-        return isPreferredSizeSet() ? super.getPreferredSize() : new Dimension(PLOT_W, WINDOW_H);
-    }
-    
-    public void updatePoints(LinkedList<Float> points)
+    public void updatePoints(LinkedList<Double> points)
     {
         this.points = points;
         if(points.size() > 0)
@@ -79,12 +72,18 @@ public class PlotPanel extends JPanel {
         }
 
     }
+    
+    public void updateWidth()
+    {
+        int width = (int)(labelWidth + (horizontalScale * points.size()));
+        setPreferredSize(new Dimension(width,getHeight()));
+        createEmptyImage(width);
+    }
 
     @Override
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
-        //System.out.println("repaint");
         if (image != null)
         {
             g.drawImage(image, 0, 0, null);
@@ -92,78 +91,67 @@ public class PlotPanel extends JPanel {
 
         Graphics2D g2d = (Graphics2D)g;
         g2d.setColor(Color.BLUE);
-        float lastPointX = 0;
-        float lastPointY = 0;
-        int numPts = points.size();
-        double ptSize = (double)plotWidth / (double)numPts;
-        int n = 0;
-        for(float f : points)
+        double lastPointX = 0;
+        double lastPointY = 0;
+        int numPts = points.size() < POINTS_PER_ROW ? points.size() : POINTS_PER_ROW;
+        for(int n = 0; n < points.size(); n++)
         {
-            float thisX = labelWidth + (float)(n * horizontalScale) + x;
-            n++;
-            float thisY = y + pHeight - ((f - min)/(max - min)) * pHeight;
-
-            if (n == 1) {
-              //It's the first point
-              lastPointX = (float)thisX;
-              lastPointY = (float)thisY;
-            } else {
-              //Draw a line from the last point to this point
-              g2d.draw(new Line2D.Double(lastPointX, lastPointY, thisX, thisY));
-              lastPointX = thisX;
-              lastPointY = thisY;
+            double f  = points.get(n);
+            double thisX = labelWidth + (double)(n * horizontalScale) + x;
+            double thisY = y + pHeight - (((f - min)/(max - min)) * pHeight);
+            if (n == 0) 
+            {
+                lastPointX = thisX;
+                lastPointY = thisY;
+            } 
+            else 
+            {
+                g2d.draw(new Line2D.Double(lastPointX, lastPointY, thisX, thisY));
+                lastPointX = thisX;
+                lastPointY = thisY;
             }
         }
     }
-    
-   public void resize(int newWidth, int newHeight, int newX, int newY) {
-        this.pHeight = newHeight;
-        this.totalWidth = newWidth;
-        this.plotWidth = totalWidth - labelWidth;
-        this.x = newX;
-        this.y = newY;  
-        rescale();
-   }  
    
-   //Call when min, max, width, or number of points to plot changes
    protected void rescale() 
    {
         horizontalScale = (double)plotWidth/(double)pointsPerRow;
-        sMin = Float.toString(min);
-        sMax = Float.toString(max);
+        sMin = Double.toString(min);
+        sMax = Double.toString(max);
    }
    
-   public void rescaleWithPoint(float p) 
+   public void rescaleWithPoint(double p) 
    {
-        if (firstData) {
-          min = (float) (p - 0.0001);
-          max = (float) (p + 0.0001);
-          rescale();
-          firstData = false;
+        if (firstData) 
+        {
+            min = (double) (p - 0.0001);
+            max = (double) (p + 0.0001);
+            rescale();
+            firstData = false;
         }
      
-        if (p < min) {
-          min = p;
-          rescale();
+        if (p < min) 
+        {
+            min = p;
+            rescale();
         }
-        if (p > max) {
-          max = p;
-          rescale();
+        
+        if (p > max) 
+        {
+            max = p;
+            rescale();
         }
      
    }
     
     public void clear()
     {
-        createEmptyImage();
+        createEmptyImage(getWidth());
         repaint();
     }
 
-    private void createEmptyImage()
+    private void createEmptyImage(int width)
     {
-        image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = (Graphics2D)image.getGraphics();
-        g2d.setColor(Color.BLACK);
-        g2d.drawString("Add a rectangle by doing mouse press, drag and release!", 40, 15);
+        image = new BufferedImage(width, WINDOW_H, BufferedImage.TYPE_INT_ARGB);
     }       
 }
