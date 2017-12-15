@@ -27,14 +27,7 @@ public class PlotPanel extends JPanel {
     
     private final static int PLOT_W = 600;
     private final static int PLOT_H = 75;
-    private final static int WINDOW_H = 800;
-    private BufferedImage image = new BufferedImage(PLOT_W, WINDOW_H, BufferedImage.TYPE_INT_ARGB);
-    int topGap = 30;
-    int vertGap = 10;
-    protected int pHeight = 100;
-    protected int totalWidth = 200;
-    protected int labelWidth = 50;
-    protected int plotWidth = totalWidth - labelWidth;
+    private BufferedImage image = new BufferedImage(PLOT_W, PLOT_H, BufferedImage.TYPE_INT_ARGB);
     protected int x = 0;
     protected int y = 0;
     protected double min = 0.0001;
@@ -56,11 +49,8 @@ public class PlotPanel extends JPanel {
     public void setUp(int pointsPerRow)
     {
         setBackground(Color.white);
-        totalWidth = PLOT_W - 20;
-        pHeight = PLOT_H - topGap - 10;
-        plotWidth = totalWidth - labelWidth;
-        x = 10;
-        y = topGap;
+        x = 0;
+        y = 0;
         this.pointsPerRow = pointsPerRow;
     }
     
@@ -79,9 +69,11 @@ public class PlotPanel extends JPanel {
 
     }
     
-    public void updateWidth()
+    public void updateWidth(boolean isStreaming)
     {
-        int width = (int)(labelWidth + (horizontalScale * points.size()));
+        
+        int width = isStreaming ? PLOT_W : (int)((horizontalScale * points.size()));
+        width = width < 1 ? 1 : width;
         setPreferredSize(new Dimension(width,getHeight()));
         createEmptyImage(width);
     }
@@ -123,7 +115,7 @@ public class PlotPanel extends JPanel {
             double thisX = (double)(n * horizontalScale);
             double proportion = ((f - min)/(max - min));
             //System.out.println("f:" + f + " max:" + max + " min:" + min + " proportion:" + proportion);
-            double thisY = y + pHeight - (proportion * pHeight);
+            double thisY = y + PLOT_H - (proportion * PLOT_H);
             //System.out.println("n:" + n + " x:" + thisX + " y:" + thisY);
             if (n == 0) 
             {
@@ -145,7 +137,7 @@ public class PlotPanel extends JPanel {
    
    protected void rescale() 
    {
-        horizontalScale = (double)plotWidth/(double)pointsPerRow;
+        horizontalScale = (double)PLOT_W/(double)pointsPerRow;
         sMin = Double.toString(min);
         sMax = Double.toString(max);
    }
@@ -183,6 +175,6 @@ public class PlotPanel extends JPanel {
 
     private void createEmptyImage(int width)
     {
-        image = new BufferedImage(width, WINDOW_H, BufferedImage.TYPE_INT_ARGB);
+        image = new BufferedImage(width, PLOT_H, BufferedImage.TYPE_INT_ARGB);
     }       
 }

@@ -55,16 +55,13 @@ public class PlotRowPanel extends javax.swing.JPanel {
         this.model = model;
         plotPanel.updateModel(model);
         
-        if(!model.isStreaming)
-        {
-            plotPanel.updateWidth();
-            repaint();
-            plotScrollPanel.revalidate();
-            validate();
-            plotScrollPanel.setViewportView(plotPanel);
-            plotScrollPanel.revalidate();
-            validate();
-        }
+        plotPanel.updateWidth(model.isStreaming);
+        repaint();
+        plotScrollPanel.revalidate();
+        validate();
+        plotScrollPanel.setViewportView(plotPanel);
+        plotScrollPanel.revalidate();
+        validate();
         
         ignoreDelegate = true;
         outputComboBox.setSelectedIndex(model.outputIndex);

@@ -84,7 +84,10 @@ public class FeatureManager
         {
             allFeatures.addFeatureForKey(feature);
         }
-        allFeatures.computeAndGetValuesForNewInputs(new double[inputNames.length]);
+        if(inputNames.length == 6)
+        {
+            allFeatures.computeAndGetValuesForNewInputs(new double[inputNames.length]);
+        }
         
         for(int i = 0; i < numOutputs; i++)
         {
@@ -227,9 +230,17 @@ public class FeatureManager
     }
     
     //All Features
-    protected double[] modifyInputsForAllFeatures(double[] newInputs)
+    protected synchronized double[] modifyInputsForAllFeatures(double[] newInputs)
     {        
         return allFeatures.computeAndGetValuesForNewInputs(newInputs);
+    }
+    
+    protected void resetAllFeaturesModifiers()
+    {
+        for(ModifiedInput m:allFeatures.getModifiers())
+        {
+            m.reset();
+        }
     }
     
     protected Instances getAllFeaturesNewInstances()

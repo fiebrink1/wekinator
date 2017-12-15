@@ -180,22 +180,34 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
 
     }
     
+    public boolean areAnyRowsStreaming()
+    {
+        for(PlotRowModel model : tableModel.data)
+        {
+            if(model.isStreaming)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     @Override
     public void modelChanged(PlotRowModel model)
     {
         System.out.println("model changed");
         tableModel.data.set(model.rowIndex, model);
+        model.points = new LinkedList();
+        model.classes = new LinkedList();
+        w.getSupervisedLearningManager().isPlotting = areAnyRowsStreaming();
         if(model.isStreaming)
         {
             
         }
         else
         {
-            model.points = new LinkedList();
-            model.classes = new LinkedList();
             double[][] vals = w.getDataManager().getTrainingDataForFeature(model.outputIndex, model.featureIndex);
-            int max = vals.length;
-            for(int i = 0; i < max; i ++)
+            for(int i = 0; i < vals.length; i ++)
             {
                 model.points.add(vals[i][0]);
                 model.classes.add(vals[i][1]);
