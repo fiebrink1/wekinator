@@ -67,7 +67,10 @@ public class PlotPanel extends JPanel {
         this.points = points;
         if(points.size() > 0)
         {
-            rescaleWithPoint(points.getLast());
+            for(double pt : points)
+            {
+                rescaleWithPoint(pt);
+            }
             repaint();
         }
 
@@ -97,8 +100,11 @@ public class PlotPanel extends JPanel {
         for(int n = 0; n < points.size(); n++)
         {
             double f  = points.get(n);
-            double thisX = labelWidth + (double)(n * horizontalScale) + x;
-            double thisY = y + pHeight - (((f - min)/(max - min)) * pHeight);
+            double thisX = (double)(n * horizontalScale);
+            double proportion = ((f - min)/(max - min));
+            //System.out.println("f:" + f + " max:" + max + " min:" + min + " proportion:" + proportion);
+            double thisY = y + pHeight - (proportion * pHeight);
+            //System.out.println("n:" + n + " x:" + thisX + " y:" + thisY);
             if (n == 0) 
             {
                 lastPointX = thisX;
@@ -122,6 +128,7 @@ public class PlotPanel extends JPanel {
    
    public void rescaleWithPoint(double p) 
    {
+        //System.out.println("new point:" + p);
         if (firstData) 
         {
             min = (double) (p - 0.0001);
@@ -141,7 +148,7 @@ public class PlotPanel extends JPanel {
             max = p;
             rescale();
         }
-     
+        //System.out.println("max:" + max + " min:" + min);
    }
     
     public void clear()
