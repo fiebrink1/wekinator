@@ -972,7 +972,6 @@ public class DataManager {
                 double[] input = filteredInputs.instance(i).toDoubleArray();
                 double output = input[input.length-1];
                 double[] justInput = new double[input.length-1];
-                System.out.println("modifyInputsForAllFeatures:" + i + " input length:" + justInput.length);
                 System.arraycopy(input, 0, justInput, 0, justInput.length);
                 double[] features = featureManager.modifyInputsForAllFeatures(justInput);
                 double[] withOutput = new double[features.length + 1];
