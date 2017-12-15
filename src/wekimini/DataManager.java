@@ -980,10 +980,12 @@ public class DataManager {
                 Instance featureInstance = new Instance(1.0,withOutput);
                 newInstances.add(featureInstance);
                 newInstances.setClassIndex(withOutput.length - 1);
-                //System.out.println("Calculated all features for instance " + i);
             }
+            
             System.out.println("DONE calculating all features for all instances");
+            
             List<Instances> featureInstances = testSet ? allFeaturesTestInstances : allFeaturesInstances;
+     
             if(outputIndex < featureInstances.size())
             {
                featureInstances.set(outputIndex, newInstances);
@@ -992,6 +994,7 @@ public class DataManager {
             {
                featureInstances.add(newInstances);
             }
+            
             if(testSet)
             {
                 allFeaturesTestInstances = featureInstances; 

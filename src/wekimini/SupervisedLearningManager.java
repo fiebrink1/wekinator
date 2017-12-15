@@ -936,7 +936,10 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     
     //Right now, this simply won't change indices where mask is false
     public double[] computeValues(double[] inputs, boolean[] computeMask) {
-        currentInputInstance = w.getDataManager().getClassifiableInstanceForPlot(inputs);
+        if(isPlotting)
+        {
+            currentInputInstance = w.getDataManager().getClassifiableInstanceForPlot(inputs);
+        }
         for (int i = 0; i < computeMask.length; i++) {
             Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, i);
             if (computeMask[i] && paths.get(i).canCompute()) {

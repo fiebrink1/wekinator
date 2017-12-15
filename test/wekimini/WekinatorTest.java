@@ -172,6 +172,7 @@ public class WekinatorTest {
         Thread.sleep(2000);
         assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
         double[] inputs = {1,1,1};
+        w.getSupervisedLearningManager().isPlotting = false;
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
         w.getSupervisedLearningManager().updateInputs(inputs);
     }
