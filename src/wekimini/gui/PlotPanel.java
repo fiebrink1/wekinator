@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import javafx.scene.shape.Line;
 import javax.swing.JPanel;
+import wekimini.gui.PlotFrame.PlotRowModel;
 
 /**
  *
@@ -24,7 +25,7 @@ import javax.swing.JPanel;
  */
 public class PlotPanel extends JPanel {
     
-    private final static int PLOT_W = 500;
+    private final static int PLOT_W = 600;
     private final static int PLOT_H = 75;
     private final static int WINDOW_H = 800;
     private BufferedImage image = new BufferedImage(PLOT_W, WINDOW_H, BufferedImage.TYPE_INT_ARGB);
@@ -44,6 +45,7 @@ public class PlotPanel extends JPanel {
     public boolean firstData = true;
     private int pointsPerRow = 0;
     private LinkedList<Double> points;
+    private LinkedList<Double> classes;
     private final static int POINTS_PER_ROW = 100;
     
     public PlotPanel()
@@ -62,9 +64,10 @@ public class PlotPanel extends JPanel {
         this.pointsPerRow = pointsPerRow;
     }
     
-    public void updatePoints(LinkedList<Double> points)
+    public void updateModel(PlotRowModel model)
     {
-        this.points = points;
+        this.points = model.points;
+        this.classes = model.classes;
         if(points.size() > 0)
         {
             for(double pt : points)
@@ -81,6 +84,23 @@ public class PlotPanel extends JPanel {
         int width = (int)(labelWidth + (horizontalScale * points.size()));
         setPreferredSize(new Dimension(width,getHeight()));
         createEmptyImage(width);
+    }
+    
+    public Color colorForClass(double classVal)
+    {
+        switch((int)classVal)
+        {
+            case 1: return Color.BLUE;
+            case 2: return Color.RED;
+            case 3: return Color.YELLOW;
+            case 4: return Color.GREEN;
+            case 5: return Color.BLACK;
+            case 6: return Color.CYAN;
+            case 7: return Color.MAGENTA;
+            case 8: return Color.PINK;
+            case 9: return Color.ORANGE;
+        }
+        return Color.BLUE;
     }
 
     @Override
@@ -112,6 +132,10 @@ public class PlotPanel extends JPanel {
             } 
             else 
             {
+                if(classes.size() > n)
+                {
+                    g2d.setColor(colorForClass(classes.get(n)));
+                }
                 g2d.draw(new Line2D.Double(lastPointX, lastPointY, thisX, thisY));
                 lastPointX = thisX;
                 lastPointY = thisY;

@@ -98,7 +98,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(addPlotButton)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 564, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -114,7 +114,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(plotScrollView, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(plotScrollView)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -192,12 +192,13 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         else
         {
             model.points = new LinkedList();
-            double[] vals = w.getDataManager().getTrainingDataForFeature(model.outputIndex, model.featureIndex);
+            model.classes = new LinkedList();
+            double[][] vals = w.getDataManager().getTrainingDataForFeature(model.outputIndex, model.featureIndex);
             int max = vals.length;
             for(int i = 0; i < max; i ++)
             {
-                double d  = vals[i];
-                model.points.add(d);
+                model.points.add(vals[i][0]);
+                model.classes.add(vals[i][1]);
             }
             redrawTable();
         }
@@ -225,7 +226,6 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         int numRows = tableModel.data.size();
         rows = new ArrayList(numRows);
         JPanel content = new JPanel();
-        content.setBounds(0, 0, plotScrollView.getWidth(), rowHeight * numRows);
         GridLayout layout = new GridLayout(numRows,1);
         content.setLayout(layout);
         for(PlotRowModel model : tableModel.data)
@@ -235,8 +235,6 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
             PlotRowPanel row = new PlotRowPanel(outputs, features, this);
             model.rowIndex = ptr;
             row.updateModel(model);
-            int width =  content.getWidth();
-            row.setBounds(x, y, width, rowHeight);
             content.add(row);
             rows.add(row);
             ptr++;
@@ -264,6 +262,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         boolean isStreaming = false;
         int rowIndex = 0;
         protected LinkedList<Double> points = new LinkedList();
+        protected LinkedList<Double> classes = new LinkedList();
         
         public void addPoint(double pt)
         {

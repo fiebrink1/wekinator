@@ -24,9 +24,9 @@
               <Component id="liveToggle" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="closeButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="251" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
-          <Component id="plotScrollPanel" alignment="0" min="-2" pref="500" max="-2" attributes="0"/>
+          <Component id="plotScrollPanel" alignment="0" min="-2" pref="600" max="-2" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">

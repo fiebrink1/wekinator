@@ -48,14 +48,12 @@ public class PlotRowPanel extends javax.swing.JPanel {
         plotPanel = new PlotPanel();        
         plotScrollPanel.setViewportView(plotPanel);
         plotScrollPanel.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
-//        AdjustmentListener listener = new MyAdjustmentListener();
-//        plotScrollPanel.getHorizontalScrollBar().addAdjustmentListener(listener);
     }
     
     public void updateModel(PlotRowModel model)
     {
         this.model = model;
-        plotPanel.updatePoints(model.points);
+        plotPanel.updateModel(model);
         
         if(!model.isStreaming)
         {
@@ -66,7 +64,6 @@ public class PlotRowPanel extends javax.swing.JPanel {
             plotScrollPanel.setViewportView(plotPanel);
             plotScrollPanel.revalidate();
             validate();
-            System.out.println("panel width:" + plotPanel.getWidth());
         }
         
         ignoreDelegate = true;
@@ -164,8 +161,8 @@ public class PlotRowPanel extends javax.swing.JPanel {
                 .addComponent(liveToggle)
                 .addGap(18, 18, 18)
                 .addComponent(closeButton)
-                .addContainerGap(251, Short.MAX_VALUE))
-            .addComponent(plotScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(plotScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

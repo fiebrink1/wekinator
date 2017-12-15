@@ -1094,7 +1094,7 @@ public class DataManager {
         fireStateChanged();
     }
 
-    public double[] getTrainingDataForFeature(int outputIndex, int featureIndex)
+    public double[][] getTrainingDataForFeature(int outputIndex, int featureIndex)
     {
         if(featureManager.isAllFeaturesDirty(false))
         {
@@ -1105,10 +1105,11 @@ public class DataManager {
             featureManager.didRecalculateAllFeatures(false);
         }
         Instances allFeatures = getAllFeaturesInstances(outputIndex, false);
-        double [] vals = new double[allFeatures.numInstances()];
+        double [][] vals = new double[allFeatures.numInstances()][2];
         for(int i = 0; i < allFeatures.numInstances(); i++)
         {
-            vals[i] = allFeatures.instance(i).value(featureIndex);
+            vals[i][0] = allFeatures.instance(i).value(featureIndex);
+            vals[i][1] = allFeatures.instance(i).classValue();
         }
         return vals;
     }
