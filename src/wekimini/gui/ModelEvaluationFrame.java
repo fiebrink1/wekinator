@@ -5,7 +5,9 @@
  */
 package wekimini.gui;
 
+import java.awt.Color;
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
@@ -24,6 +26,7 @@ import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 import wekimini.learning.ModelEvaluator;
 import wekimini.learning.ModelEvaluator.EvaluationResultsReceiver;
 import wekimini.Path;
@@ -721,8 +724,8 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         
         ConfusionComponent()
         {
-            
             table = new JTable();
+            table.setDefaultRenderer(Integer.class, new ConfusionTableRenderer());
             setLayout(new GridLayout(1, 1));
             scroll = new JScrollPane(table);
             add(scroll);
@@ -738,18 +741,84 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             scroll.validate();
         }
         
+        public class ConfusionTableRenderer extends JLabel implements TableCellRenderer 
+        {
+            
+            ConfusionTableRenderer()
+            {
+                setOpaque(true);
+            }
+            
+            @Override
+            public JLabel getTableCellRendererComponent(
+                            JTable table, Object value,
+                            boolean isSelected, boolean hasFocus,
+                            int row, int column) {
+                Integer val = (Integer)value;
+                ConfusionTableModel model = (ConfusionTableModel)table.getModel();
+                
+                if(row > 0 && column > 0)
+                {
+                    float error = model.error(row, column);
+                    System.out.println("row:" + row + " col:" + column + " val:" + value + " error:" + error);
+                    if(row == column)
+                    {
+                        //setBackground(new Color(0.0f, error, 0.0f));
+                        setBackground(Color.getHSBColor(102.0f/255.0f, error, 240.0f/255.0f));
+                    }
+                    else
+                    {
+                        setBackground(Color.getHSBColor(7.0f/255.0f, error, 240.0f/255.0f));
+                    }
+                }
+                else
+                {
+                    setBackground(new Color(1.0f, 1.0f, 1.0f));
+                }
+                if(column == 0)
+                {
+                    setText(((Integer)row).toString());
+                }
+                else
+                {
+                    setText(val.toString());
+                }
+                return this;
+            }
+        }
+        
         public class ConfusionTableModel extends AbstractTableModel
         {
             int[][] data;    
             
+            public float error(int row, int column)
+            {
+                int sum = 0;
+                for(int i = 0; i < getColumnCount(); i++)
+                {
+                    sum += data[row][i];
+                }
+                
+                return (float)data[row][column]/(float)sum;
+            }
+            
+            @Override
+            public String getColumnName(int column)
+            {
+                return ((Integer)column).toString();
+            }
+            
+            @Override
             public int getColumnCount() {
                 return data.length;
             }
 
+            @Override
             public int getRowCount() {
                 return data.length;
             }
 
+            @Override
             public Integer getValueAt(int row, int col) {
                 return data[row][col];
             }
@@ -758,10 +827,12 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
                 data[row][col] = value;
             }
 
+            @Override
             public Class getColumnClass(int c) {
                 return getValueAt(0, c).getClass();
             }
 
+            @Override
             public boolean isCellEditable(int row, int col) {
                 return true;        
             }
