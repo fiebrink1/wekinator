@@ -19,9 +19,11 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.AbstractTableModel;
 import wekimini.learning.ModelEvaluator;
 import wekimini.learning.ModelEvaluator.EvaluationResultsReceiver;
 import wekimini.Path;
@@ -30,6 +32,7 @@ import wekimini.SupervisedLearningManager.LearningState;
 import wekimini.Wekinator;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
+import wekimini.util.ConfusionParser;
 import wekimini.util.Util;
 
 /**
@@ -549,7 +552,9 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         System.out.println("Model " + modelNum + ": " + results);
         modelsComputed++;
         rows.get(singleModelOffset + modelNum).setValue(results);
-        tabs[singleModelOffset + modelNum].setText(confusion);
+        int[][] arr = ConfusionParser.parseMatrix(confusion);
+
+        tabs[singleModelOffset + modelNum].setModel(arr);
         if (!wasCancelled) {
             progressBar.setValue(modelsComputed + 1);
         }
@@ -703,7 +708,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
     private void initConfusionTabs(String[] outputNames) {
         tabs = new ConfusionComponent[outputNames.length];
         for (int i = 0; i < outputNames.length; i++) {
-            ConfusionComponent panel = new ConfusionComponent(outputNames[i]);
+            ConfusionComponent panel = new ConfusionComponent();
             tabs[i] = panel;
             confusionTab.add(outputNames[i], panel);
         }
@@ -711,21 +716,55 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
     
     public class ConfusionComponent extends JPanel
     {
-        private JTextArea filler;
-        private JScrollPane scroll;
+        private final JTable table;
+        private final JScrollPane scroll;
         
-        ConfusionComponent(String text)
+        ConfusionComponent()
         {
-            filler = new JTextArea(text);
-            filler.setEditable(false);
-            scroll = new JScrollPane(filler);
+            
+            table = new JTable();
             setLayout(new GridLayout(1, 1));
+            scroll = new JScrollPane(table);
             add(scroll);
         }
         
-        public void setText(String text)
+        public void setModel(int[][] matrix)
         {
-            filler.setText(text);
+            ConfusionTableModel model = new ConfusionTableModel();
+            model.data = matrix;
+            table.setModel(model);
+            table.validate();
+            scroll.setViewportView(table);
+            scroll.validate();
+        }
+        
+        public class ConfusionTableModel extends AbstractTableModel
+        {
+            int[][] data;    
+            
+            public int getColumnCount() {
+                return data.length;
+            }
+
+            public int getRowCount() {
+                return data.length;
+            }
+
+            public Integer getValueAt(int row, int col) {
+                return data[row][col];
+            }
+
+            public void setValueAt(int value, int row, int col) {
+                data[row][col] = value;
+            }
+
+            public Class getColumnClass(int c) {
+                return getValueAt(0, c).getClass();
+            }
+
+            public boolean isCellEditable(int row, int col) {
+                return true;        
+            }
         }
     }
 
