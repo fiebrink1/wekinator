@@ -101,6 +101,7 @@ public class DataManager {
     public static final String PROP_NUMEXAMPLESPEROUTPUT = "numExamplesPerOutput";
 
     private Instance[] deletedTrainingRound = null;
+    private int deleteTestSetUntilIndex = 0;
     private DatasetViewer viewer = null;
     private static final Logger logger = Logger.getLogger(DataManager.class.getName());
 
@@ -464,6 +465,27 @@ public class DataManager {
     {
         initializeInstances(false, true);
     }
+    
+    public void setDeleteTestSetUntilIndex()
+    {
+        deleteTestSetUntilIndex = testInstances.numInstances() - 1;
+    }
+    
+    public void deleteLastTestSetRound()
+    {
+        int index = testInstances.numInstances() - 1;
+        
+        while(index > deleteTestSetUntilIndex)
+        {
+            testInstances.delete(index);
+            index--;
+        }
+        
+        for (int i = 0; i < numOutputs; i++) 
+        {
+            featureManager.setTestSetDirty(i);
+        }
+    }
 
     private void setTestDataFromDataset(Instances data) {
         if(data.numInstances() == 0)
@@ -604,7 +626,7 @@ public class DataManager {
         }
         if(testSet)
         {
-           testInstances = new Instances("test-dataset", ff, 100);
+            testInstances = new Instances("test-dataset", ff, 100);
         }
         //Set up dummy instances to reflect state of actual instances
         dummyInstances = new Instances(inputInstances);
@@ -1027,7 +1049,7 @@ public class DataManager {
         return formatted;
     }
     
-    protected Instances getTestInstances()
+    public Instances getTestInstances()
     {
         return testInstances;
     }

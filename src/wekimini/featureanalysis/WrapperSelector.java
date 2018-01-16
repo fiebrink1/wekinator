@@ -12,9 +12,6 @@ import weka.attributeSelection.WrapperSubsetEval;
 import weka.attributeSelection.BestFirst;
 import weka.core.Instances;
 import weka.classifiers.Classifier;
-import weka.classifiers.functions.MultilayerPerceptron;
-import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.Remove;
 
 /**
  *
