@@ -6,6 +6,7 @@
 package wekimini.gui;
 
 import java.awt.Adjustable;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
@@ -48,6 +49,8 @@ public class PlotRowPanel extends javax.swing.JPanel {
         plotPanel = new PlotPanel();        
         plotScrollPanel.setViewportView(plotPanel);
         plotScrollPanel.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
+        AdjustmentListener listener = new MyAdjustmentListener();
+        plotScrollPanel.getHorizontalScrollBar().addAdjustmentListener(listener);
     }
     
     public void updateModel(PlotRowModel model)
@@ -75,35 +78,41 @@ public class PlotRowPanel extends javax.swing.JPanel {
         public void adjustmentValueChanged(AdjustmentEvent evt) {
           Adjustable source = evt.getAdjustable();
           if (evt.getValueIsAdjusting()) {
-            return;
+            //return;
           }
           int orient = source.getOrientation();
           if (orient == Adjustable.HORIZONTAL) {
-            System.out.println("from horizontal scrollbar"); 
+            //System.out.println("from horizontal scrollbar" + plotScrollPanel.getViewport().getViewPosition().x); 
           } else {
-            System.out.println("from vertical scrollbar");
+            //System.out.println("from vertical scrollbar");
           }
           int type = evt.getAdjustmentType();
           switch (type) {
           case AdjustmentEvent.UNIT_INCREMENT:
-            System.out.println("Scrollbar was increased by one unit");
+            //System.out.println("Scrollbar was increased by one unit");
             break;
           case AdjustmentEvent.UNIT_DECREMENT:
-            System.out.println("Scrollbar was decreased by one unit");
+            //System.out.println("Scrollbar was decreased by one unit");
             break;
           case AdjustmentEvent.BLOCK_INCREMENT:
-            System.out.println("Scrollbar was increased by one block");
+            //System.out.println("Scrollbar was increased by one block");
             break;
           case AdjustmentEvent.BLOCK_DECREMENT:
-            System.out.println("Scrollbar was decreased by one block");
+            //System.out.println("Scrollbar was decreased by one block");
             break;
           case AdjustmentEvent.TRACK:
-            System.out.println("The knob on the scrollbar was dragged");
+            //System.out.println("The knob on the scrollbar was dragged");
+            delegate.wasScrolled(plotScrollPanel.getViewport().getViewPosition().x);
             break;
           }
           int value = evt.getValue();
         }
       }
+    
+    public void scroll(int xPos)
+    {
+        plotScrollPanel.getViewport().setViewPosition(new Point(xPos,0));
+    }
 
     /**
      * This method is called from within the constructor to  the form.

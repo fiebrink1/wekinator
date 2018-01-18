@@ -45,7 +45,9 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <Component id="addPlotButton" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="0" pref="564" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="linkScrollToggle" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="0" pref="460" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -53,7 +55,10 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace min="0" pref="15" max="32767" attributes="0"/>
-                  <Component id="addPlotButton" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="addPlotButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="linkScrollToggle" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
           </Group>
         </DimensionLayout>
@@ -65,6 +70,14 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addPlotButtonActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="linkScrollToggle">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Link Scroll"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="linkScrollToggleActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

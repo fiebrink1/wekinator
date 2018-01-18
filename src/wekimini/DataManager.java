@@ -68,11 +68,17 @@ public class DataManager {
     private String[] outputNames;
     private List<int[]> inputListsForOutputsTraining;
     private List<int[]> inputListsForOutputsRunning; //TODO: Output after a model or all models are trained
+    //Contains the raw input instances, the final n values are the class values for n outputs
     private Instances inputInstances = null;
+    //Contains the raw test instances, the final n values are the class values for n outputs
     private Instances testInstances = null;
+    //Array of instances (one for each output) with the selected features calculated from the raw input. 
     private List<Instances> trainingFeatureInstances = null;
+    //Array of instances (one for each output) with the selected features calculated from the test set. 
     private List<Instances> testingFeatureInstances = null;
+    //Array of instances (one for each output) with the all the possible features calculated from the raw input (for use in automatic selection) 
     private List<Instances> allFeaturesInstances = null;
+    //Array of instances (one for each output) with the all the possible features calculated from the test set (for use in automatic selection) 
     private List<Instances> allFeaturesTestInstances = null;
     public FeatureManager featureManager;
     public String[][] selectedFeatureNames = new String[0][0];

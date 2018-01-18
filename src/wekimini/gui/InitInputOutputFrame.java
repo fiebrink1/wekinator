@@ -68,7 +68,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private final static int COMBO_SVM_INDEX = 1;
     private final static int COMBO_J48_INDEX = 3;
     
-    private int lastNumOutputs = 5;
+    private int lastNumOutputs = 6;
 
     private final ButtonGroup classificationRadioGroup = new ButtonGroup();
     private LearningModelBuilder[] classificationModelBuilders;
@@ -477,7 +477,12 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
         jLabel3.setText("# inputs:");
 
-        fieldNumInputs.setText("5");
+        fieldNumInputs.setText("6");
+        fieldNumInputs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fieldNumInputsActionPerformed(evt);
+            }
+        });
         fieldNumInputs.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 fieldNumInputsKeyTyped(evt);
@@ -543,7 +548,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
         jLabel5.setText("# outputs:");
 
-        fieldNumOutputs.setText("5");
+        fieldNumOutputs.setText("1");
         fieldNumOutputs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 fieldNumOutputsActionPerformed(evt);
@@ -704,7 +709,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
         jLabel14.setText("Port:");
 
-        fieldSendPort.setText("12000");
+        fieldSendPort.setText("57120");
         fieldSendPort.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 fieldSendPortKeyTyped(evt);
@@ -1520,6 +1525,10 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private void fieldNumDtwTypesKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldNumDtwTypesKeyTyped
         // TODO add your handling code here:
     }//GEN-LAST:event_fieldNumDtwTypesKeyTyped
+
+    private void fieldNumInputsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldNumInputsActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fieldNumInputsActionPerformed
 
     private void removeListeners() {
         w.getWekinatorController().removeInputNamesListener(inputNamesListener);

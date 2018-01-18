@@ -364,9 +364,10 @@
             </Component>
             <Component class="javax.swing.JTextField" name="fieldNumInputs">
               <Properties>
-                <Property name="text" type="java.lang.String" value="5"/>
+                <Property name="text" type="java.lang.String" value="6"/>
               </Properties>
               <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fieldNumInputsActionPerformed"/>
                 <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="fieldNumInputsKeyTyped"/>
               </Events>
             </Component>
@@ -486,7 +487,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="fieldNumOutputs">
               <Properties>
-                <Property name="text" type="java.lang.String" value="5"/>
+                <Property name="text" type="java.lang.String" value="1"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fieldNumOutputsActionPerformed"/>
@@ -739,7 +740,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="fieldSendPort">
               <Properties>
-                <Property name="text" type="java.lang.String" value="12000"/>
+                <Property name="text" type="java.lang.String" value="57120"/>
               </Properties>
               <Events>
                 <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="fieldSendPortKeyTyped"/>

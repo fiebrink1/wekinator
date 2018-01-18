@@ -5,20 +5,15 @@
  */
 package wekimini.gui;
 
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.Timer;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
 import weka.core.Instance;
 import wekimini.Wekinator;
 
@@ -40,12 +35,13 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
 
     public PlotFrame() {
         initComponents();
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
     
     public PlotFrame(Wekinator w) {
         initComponents();
         this.w = w;
-                
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE)  ;   
         Timer timer = new Timer(REFRESH_RATE, new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
             Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
@@ -81,6 +77,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
 
         jPanel1 = new javax.swing.JPanel();
         addPlotButton = new javax.swing.JButton();
+        linkScrollToggle = new javax.swing.JRadioButton();
         plotScrollView = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -92,19 +89,30 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
             }
         });
 
+        linkScrollToggle.setText("Link Scroll");
+        linkScrollToggle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                linkScrollToggleActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(addPlotButton)
-                .addGap(0, 564, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(linkScrollToggle)
+                .addGap(0, 460, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(0, 15, Short.MAX_VALUE)
-                .addComponent(addPlotButton))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addPlotButton)
+                    .addComponent(linkScrollToggle)))
         );
 
         plotScrollView.setHorizontalScrollBar(null);
@@ -132,6 +140,11 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         tableModel.data.add(new PlotRowModel());
         redrawTable();
     }//GEN-LAST:event_addPlotButtonActionPerformed
+
+    private void linkScrollToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_linkScrollToggleActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_linkScrollToggleActionPerformed
 
     /**
      * @param args the command line arguments
@@ -171,6 +184,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addPlotButton;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JRadioButton linkScrollToggle;
     private javax.swing.JScrollPane plotScrollView;
     // End of variables declaration//GEN-END:variables
 
@@ -253,6 +267,18 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         }
         plotScrollView.setViewportView(content);
         plotScrollView.revalidate();
+    }
+    
+    @Override
+    public void wasScrolled(int xPos)
+    {
+        if(linkScrollToggle.isSelected())
+        {
+            for(PlotRowPanel panel : rows)
+            {
+               panel.scroll(xPos);
+            }
+        }
     }
     
     public void updateTable()
