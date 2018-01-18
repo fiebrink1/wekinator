@@ -276,7 +276,10 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         {
             for(PlotRowPanel panel : rows)
             {
-               panel.scroll(xPos);
+                if(!panel.model.isStreaming)
+                {
+                    panel.scroll(xPos);
+                }
             }
         }
     }
