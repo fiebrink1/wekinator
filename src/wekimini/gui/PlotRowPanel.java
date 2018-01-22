@@ -203,9 +203,8 @@ public class PlotRowPanel extends javax.swing.JPanel {
     private void featureComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_featureComboBoxActionPerformed
         // TODO add your handling code here:
         int i = featureComboBox.getSelectedIndex();
-        if(i > 0 && !ignoreDelegate)
+        if(model != null && !ignoreDelegate)
         {
-            System.out.println("feature combo box action performed");
             model.featureIndex = i;
             delegate.modelChanged(model);
         }
