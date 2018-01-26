@@ -852,7 +852,7 @@ public class DataManager {
         {
             for(int i = 0; i < numOutputs; i++)
             {
-                updateAllFeaturesInstances(i, testSet);
+                updateFeatureInstances(i, testSet, true);
             }
             featureManager.didRecalculateAllFeatures(testSet);
         }
@@ -886,7 +886,7 @@ public class DataManager {
         {
             for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
             {
-                updateAllFeaturesInstances(outputIndex, false);
+                updateFeatureInstances(outputIndex, false, true);
             }
             featureManager.didRecalculateAllFeatures(false);
         }
@@ -934,31 +934,44 @@ public class DataManager {
         fireStateChanged();
     }
     
-    private void updateFeatureInstances(int index, boolean testSet)
+    private void updateFeatureInstances(int index, boolean testSet, boolean allFeatures)
     { 
-        if(useAutomaticFeatures)
+        if(useAutomaticFeatures && !allFeatures)
         {
             setFeaturesInstancesFromAutomatic(index, testSet);
         }
         else
         {
-            Instances newInstances = featureManager.getNewInstances(index, numClasses[index]);
+            Instances newInstances;
+            if(allFeatures)
+            {
+                newInstances = featureManager.getAllFeaturesNewInstances();
+                featureManager.resetAllFeaturesModifiers();
+            }
+            else
+            {
+                newInstances = featureManager.getNewInstances(index, numClasses[index]);
+            }
             try{
                 Instances in = testSet ? testInstances : inputInstances;
                 Instances filteredInputs = Filter.useFilter(in, trainingFilters[index]);
                 for (int i = 0; i < filteredInputs.numInstances(); i++)
                 {
-                    double[] input = filteredInputs.instance(i).toDoubleArray();
-                    double output = input[input.length-1];
-                    double[] justInput = new double[input.length-1];
-                    System.arraycopy(input, 0, justInput, 0, justInput.length);
-                    double[] features = featureManager.modifyInputsForOutput(justInput, index);
-                    double[] withOutput = new double[features.length + 1];
-                    withOutput[withOutput.length-1] = output;
-                    System.arraycopy(features, 0, withOutput, 0, features.length);
-                    Instance featureInstance = new Instance(1.0,withOutput);
-                    newInstances.add(featureInstance);
-                    newInstances.setClassIndex(withOutput.length - 1);
+                    Instance inputInstance = filteredInputs.instance(i);
+                    if(!isOutputMissing(i,index, testSet))
+                    {
+                        double[] input = inputInstance.toDoubleArray();
+                        double output = input[input.length-1];
+                        double[] justInput = new double[input.length-1];
+                        System.arraycopy(input, 0, justInput, 0, justInput.length);
+                        double[] features = allFeatures ? featureManager.modifyInputsForAllFeatures(justInput): featureManager.modifyInputsForOutput(justInput, index);
+                        double[] withOutput = new double[features.length + 1];
+                        withOutput[withOutput.length-1] = output;
+                        System.arraycopy(features, 0, withOutput, 0, features.length);
+                        Instance featureInstance = new Instance(1.0,withOutput);
+                        newInstances.add(featureInstance);
+                        newInstances.setClassIndex(withOutput.length - 1);
+                    }
                 }
                 List<Instances> featureInstances = testSet ? testingFeatureInstances : trainingFeatureInstances;
                 if(index < featureInstances.size())
@@ -969,73 +982,37 @@ public class DataManager {
                 {
                    featureInstances.add(newInstances);
                 }
-                if(testSet)
+                
+                if(allFeatures)
                 {
-                    testingFeatureInstances = featureInstances;
-                    featureManager.didRecalculateTestSetFeatures(index);
+                    if(testSet)
+                    {
+                        allFeaturesTestInstances = featureInstances; 
+                    }
+                    else
+                    {
+                        allFeaturesInstances = featureInstances; 
+                    }
                 }
                 else
                 {
-                    trainingFeatureInstances = featureInstances;
-                    featureManager.didRecalculateFeatures(index);
+                    if(testSet)
+                    {
+                        testingFeatureInstances = featureInstances;
+                        featureManager.didRecalculateTestSetFeatures(index);
+                    }
+                    else
+                    {
+                        trainingFeatureInstances = featureInstances;
+                        featureManager.didRecalculateFeatures(index);
+                    }
                 }
+
             } 
             catch (Exception e)
             {
                 e.printStackTrace();
             }
-        }
-    }
-    
-    private void updateAllFeaturesInstances(int outputIndex, boolean testSet)
-    { 
-        System.out.println("calculating features for all instances");
-        Instances newInstances = featureManager.getAllFeaturesNewInstances();
-        featureManager.resetAllFeaturesModifiers();
-        try{
-            Instances in = testSet ? testInstances : inputInstances;
-            Instances filteredInputs = Filter.useFilter(in, trainingFilters[outputIndex]);
-            for (int i = 0; i < filteredInputs.numInstances(); i++)
-            {
-                double[] input = filteredInputs.instance(i).toDoubleArray();
-                double output = input[input.length-1];
-                double[] justInput = new double[input.length-1];
-                System.arraycopy(input, 0, justInput, 0, justInput.length);
-                double[] features = featureManager.modifyInputsForAllFeatures(justInput);
-                double[] withOutput = new double[features.length + 1];
-                withOutput[withOutput.length-1] = output;
-                System.arraycopy(features, 0, withOutput, 0, features.length);
-                Instance featureInstance = new Instance(1.0,withOutput);
-                newInstances.add(featureInstance);
-                newInstances.setClassIndex(withOutput.length - 1);
-            }
-            
-            System.out.println("DONE calculating all features for all instances");
-            
-            List<Instances> featureInstances = testSet ? allFeaturesTestInstances : allFeaturesInstances;
-     
-            if(outputIndex < featureInstances.size())
-            {
-               featureInstances.set(outputIndex, newInstances);
-            }
-            else
-            {
-               featureInstances.add(newInstances);
-            }
-            
-            if(testSet)
-            {
-                allFeaturesTestInstances = featureInstances; 
-            }
-            else
-            {
-                allFeaturesInstances = featureInstances; 
-            }
-            
-        } 
-        catch (Exception e)
-        {
-            e.printStackTrace();
         }
     }
     
@@ -1065,7 +1042,7 @@ public class DataManager {
         try {
             if(featureManager.isTestSetDirty(index))
             {
-                updateFeatureInstances(index, true);
+                updateFeatureInstances(index, true, false);
             }
             Instances in = testingFeatureInstances.get(index);
             in.setClassIndex(in.numAttributes() - 1);
@@ -1081,7 +1058,7 @@ public class DataManager {
         try {
             if(featureManager.isDirty(index))
             {
-                updateFeatureInstances(index, false);
+                updateFeatureInstances(index, false, false);
             }
             Instances in = trainingFeatureInstances.get(index);
             in.setClassIndex(in.numAttributes() - 1);
@@ -1120,8 +1097,8 @@ public class DataManager {
         }
         for(int i = 0; i < numOutputs; i++)
         {
-            updateFeatureInstances(i, true);
-            updateFeatureInstances(i, false);
+            updateFeatureInstances(i, true, false);
+            updateFeatureInstances(i, false, false);
         }
         fireStateChanged();
     }
@@ -1132,7 +1109,7 @@ public class DataManager {
         {
             for(int i = 0; i < numOutputs; i++)
             {
-                updateAllFeaturesInstances(i, false);
+                updateFeatureInstances(i, false, true);
             }
             featureManager.didRecalculateAllFeatures(false);
         }
@@ -1354,8 +1331,8 @@ public class DataManager {
         setNumExamplesPerOutput(outputNum, 0);
     }
 
-    public boolean isOutputMissing(int index, int outputNum) {
-        Instance i = inputInstances.instance(index);
+    public boolean isOutputMissing(int index, int outputNum, boolean testSet) {
+        Instance i = testSet ? testInstances.instance(index) : inputInstances.instance(index);
         return (i.isMissing(numMetaData + getNumInputs() + outputNum));
     }
 

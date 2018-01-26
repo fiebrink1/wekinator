@@ -123,9 +123,9 @@ public class FeatureSelectorTest {
     {
         Method method;
         try {
-            method = w.getDataManager().getClass().getDeclaredMethod("updateAllFeaturesInstances");
+            method = w.getDataManager().getClass().getDeclaredMethod("updateFeatureInstances", int.class, boolean.class, boolean.class);
             method.setAccessible(true);
-            method.invoke(w.getDataManager());
+            method.invoke(w.getDataManager(), 0, false, true);
             Instances firstInstances = w.getDataManager().getAllFeaturesInstances(0, false);
             int attributes = firstInstances.numAttributes();
             int allFeaturesOutputSize = w.getDataManager().featureManager.getAllFeaturesGroup().getOutputDimensionality();
@@ -231,16 +231,15 @@ public class FeatureSelectorTest {
         System.out.println("done");
     }
     
-    
     @Test
     public void testInfoGainSelection() throws InterruptedException
     {
         InfoGainSelector sel = new InfoGainSelector();
         Method method;
         try {
-            method = w.getDataManager().getClass().getDeclaredMethod("updateAllFeaturesInstances", int.class, boolean.class);
+            method = w.getDataManager().getClass().getDeclaredMethod("updateFeatureInstances", int.class, boolean.class, boolean.class);
             method.setAccessible(true);
-            method.invoke(w.getDataManager(), 0, false);
+            method.invoke(w.getDataManager(), 0, false, true);
         } catch (Exception ex) {
             Logger.getLogger(FeatureSelectorTest.class.getName()).log(Level.SEVERE, null, ex);
         } 
@@ -250,15 +249,16 @@ public class FeatureSelectorTest {
         System.out.println("done");
     }
     
+    
     @Test
     public void testRandomSelection() throws InterruptedException
     {
         RandomSelector sel = new RandomSelector();
         Method method;
         try {
-            method = w.getDataManager().getClass().getDeclaredMethod("updateAllFeaturesInstances", int.class, boolean.class);
+            method = w.getDataManager().getClass().getDeclaredMethod("updateFeatureInstances", int.class, boolean.class, boolean.class);
             method.setAccessible(true);
-            method.invoke(w.getDataManager(), 0, false);
+            method.invoke(w.getDataManager(), 0, false, true);
         } catch (Exception ex) {
             Logger.getLogger(FeatureSelectorTest.class.getName()).log(Level.SEVERE, null, ex);
         } 

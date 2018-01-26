@@ -371,7 +371,7 @@ public class DatasetViewer extends javax.swing.JFrame {
             public boolean include(RowFilter.Entry<? extends DataTableModel, ? extends Integer> entry) {
                 DataTableModel m = entry.getModel();
                 int i = entry.getIdentifier();
-                return !dataManager.isOutputMissing(i, whichOutput);
+                return !dataManager.isOutputMissing(i, whichOutput, false);
             }
                 
             };
