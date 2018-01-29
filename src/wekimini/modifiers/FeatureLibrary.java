@@ -36,7 +36,7 @@ class FFTFeature extends FeatureSingleModifierOutput
     public void addFeature(FeatureGroup fg)
     {
         FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
-        fft.addToOutput= false;
+        fft.addToOutput= true;
         fft.addRequiredModifierID(0);
         int fftID = addModifier(fg,fft);
         

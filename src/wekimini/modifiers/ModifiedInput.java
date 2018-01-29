@@ -133,17 +133,15 @@ public class ModifiedInput {
         updateForInputs(inputValues);
     }
     
-    public boolean isInputRequired(ModifiedInput modifier)
+    public void updateRequiredInputs(ModifiedInput modifier)
     {
         for(int input: requiredInputs)
         {
             if(input == modifier.inputID)
             {
                 inputsCalculated++;
-                return true;
             }
         }
-        return false;
     }
     
     public void prepareForNewInputs()

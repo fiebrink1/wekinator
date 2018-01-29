@@ -367,7 +367,7 @@ public class FeatureGroup {
             {
                 if(!toComplete.hasAllInputs()) 
                 {
-                    toComplete.isInputRequired(completedModifier);
+                    toComplete.updateRequiredInputs(completedModifier);
                     if(toComplete.hasAllInputs())
                     {
                         //System.out.println("collating inputs for " + toComplete.inputID);

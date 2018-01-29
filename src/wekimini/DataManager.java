@@ -882,13 +882,14 @@ public class DataManager {
     
     public void selectFeaturesAutomatically(AutoSelect autoSelect, boolean test)
     {
-        if(featureManager.isAllFeaturesDirty(false))
+        boolean useTestSet = true;
+        if(featureManager.isAllFeaturesDirty(useTestSet))
         {
             for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
             {
-                updateFeatureInstances(outputIndex, false, true);
+                updateFeatureInstances(outputIndex, useTestSet, true);
             }
-            featureManager.didRecalculateAllFeatures(false);
+            featureManager.didRecalculateAllFeatures(useTestSet);
         }
        
         FeatureSelector sel;
@@ -909,7 +910,7 @@ public class DataManager {
         
         for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
         {
-            Instances formatted = getAllFeaturesInstances(outputIndex, false);
+            Instances formatted = getAllFeaturesInstances(outputIndex, useTestSet);
             
             if(autoSelect == AutoSelect.WRAPPER)
             {
@@ -951,6 +952,7 @@ public class DataManager {
             else
             {
                 newInstances = featureManager.getNewInstances(index, numClasses[index]);
+                featureManager.resetAllModifiers();
             }
             try{
                 Instances in = testSet ? testInstances : inputInstances;
