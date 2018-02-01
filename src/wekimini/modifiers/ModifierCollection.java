@@ -26,6 +26,8 @@ public class ModifierCollection {
     private int currentID = 0;
     public String[] valueMap;
     
+    private ModifierCollection() {}
+    
     public ModifierCollection(List<ModifiedInput> modifiers) 
     {
         this.modifiers = new LinkedList<>(modifiers);

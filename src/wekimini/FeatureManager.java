@@ -25,7 +25,6 @@ public class FeatureManager
     public FeatureManager()
     {
         featureCollections = new ArrayList<>();
-
     }
     
     public ArrayList<FeatureCollection> getFeatureGroups()

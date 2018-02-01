@@ -15,339 +15,6 @@ import wekimini.modifiers.WindowedOperation.Operation;
  * @author louismccallum
  */
 
-class FFTFeature extends FeatureSingleModifierOutput
-{
-    
-    int totalBins;
-    int[] bins;
-    int index;
-    
-    public FFTFeature(String name, int index, int totalBins, int[] selectedBins) {
-        super(name);
-        this.bins = selectedBins;
-        this.totalBins = totalBins;
-        this.index = index;
-    }
-
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
-        fft.addToOutput= true;
-        fft.addRequiredModifierID(0);
-        int fftID = addModifier(mc,fft);
-        
-        setOutputModifierID(fftID);
-    }
-}
-
-class MaxFFT extends FeatureSingleModifierOutput
-{
-    
-    int totalBins;
-    int[] bins;
-    int index;
-    
-    public MaxFFT(String name, int index, int totalBins, int[] selectedBins) {
-        super(name);
-        this.bins = selectedBins;
-        this.totalBins = totalBins;
-        this.index = index;
-    }
-
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
-        fft.addToOutput= false;
-        fft.addRequiredModifierID(0);
-        int fftID = addModifier(mc,fft);
-        
-        ModifiedInput max = new MaxInputs("max",0);
-        max.addRequiredModifierID(fftID);
-        int maxID = addModifier(mc,max);
-        
-        setOutputModifierID(maxID);
-    }
-}
-
-class MinFFT extends FeatureSingleModifierOutput
-{
-    int totalBins;
-    int[] bins;
-    int index;
-    
-    public MinFFT(String name, int index, int totalBins, int[] selectedBins) {
-        super(name);
-        this.bins = selectedBins;
-        this.totalBins = totalBins;
-        this.index = index;
-    }
-
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
-        fft.addToOutput= false;
-        fft.addRequiredModifierID(0);
-        int fftID = addModifier(mc,fft);
-        
-        ModifiedInput min = new MinInputs("max",0);
-        min.addRequiredModifierID(fftID);
-        int minID = addModifier(mc,min);
-        
-        setOutputModifierID(minID);
-        
-    }
-}
-
-class WindowedFeature extends FeatureSingleModifierOutput
-{
-    
-    ModifiedInput window;
-    
-    public WindowedFeature(String name, Operation op, int inputIndex, int windowSize) {
-        super(name);
-        this.window = new WindowedOperation("input-1",op,inputIndex,windowSize,0);
-        window.addRequiredModifierID(0);
-    }
-    
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        int id1 = addModifier(mc, window);
-        setOutputModifierID(id1);
-    }
-}
-
-class PassThrough extends FeatureMultipleModifierOutput
-{
-    int[] indexes;
-    
-    public PassThrough(String name, int[] indexes) {
-        super(name);
-        this.indexes = indexes;
-    }
-
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        for(int index:indexes)
-        {
-            PassThroughSingle modifier = new PassThroughSingle(Integer.toString(index),index,0);
-            modifier.addRequiredModifierID(0);
-            int id1 = addModifier(mc, modifier);
-        }
-        setOutputModifierIDs(ids.toArray(new Integer[ids.size()]));
-    }
-}
-
-class PassThroughAll extends FeatureSingleModifierOutput
-{    
-    public PassThroughAll(String name) {
-        super(name);
-    }
-
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        String[] names = ((PassThroughVector)mc.getModifier(0)).names;
-        PassThroughVector modifier = new PassThroughVector(names, 0);
-        modifier.addToOutput = true;
-        modifier.addRequiredModifierID(0);
-        int id1 = addModifier(mc, modifier);
-        setOutputModifierID(id1);
-    }
-}
-
-class BufferFeature extends FeatureSingleModifierOutput
-{  
-    
-    private int index;
-    private int windowSize;
-    
-    public BufferFeature(String name, int index, int windowSize) {
-        super(name);
-        this.index = index;
-        this.windowSize = windowSize;
-    }
-
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        BufferedInput modifier = new BufferedInput(name, index, windowSize, 0);
-        modifier.addToOutput = true;
-        modifier.addRequiredModifierID(0);
-        int id1 = addModifier(mc, modifier);
-        setOutputModifierID(id1);
-    }
-}
-
-class MagnitudeFODFeature extends FeatureSingleModifierOutput
-{
-    int[] inputs;
-    int windowSize;
-    
-    public MagnitudeFODFeature(String name, int[] inputs, int windowSize)
-    {
-        super(name);
-        this.inputs = inputs;
-        this.windowSize = windowSize;
-    }
-    
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        
-        FirstOrderDifference fod1 = new FirstOrderDifference("FOD-1",inputs[0],0);
-        fod1.addRequiredModifierID(0);
-        fod1.addToOutput = false;
-        int fod1ID = addModifier(mc, fod1);
-                    
-        FirstOrderDifference fod2 = new FirstOrderDifference("FOD-2",inputs[1],0);
-        fod2.addRequiredModifierID(0);
-        fod2.addToOutput = false;
-        int fod2ID = addModifier(mc, fod2);
-         
-        FirstOrderDifference fod3 = new FirstOrderDifference("FOD-3",inputs[2],0);
-        fod3.addRequiredModifierID(0);
-        fod3.addToOutput = false;
-        int fod3ID = addModifier(mc, fod3);
-        
-        ModifiedInput mag = new MultipleInputWindowedOperation("input-1",new ThreeDimensionalMagnitude(),windowSize,0);
-        mag.addRequiredModifierID(fod1ID);
-        mag.addRequiredModifierID(fod2ID);
-        mag.addRequiredModifierID(fod3ID);
-        int id1 = addModifier(mc, mag);
-        setOutputModifierID(id1);
-    }
-}
-
-class MagnitudeFeature extends FeatureSingleModifierOutput
-{
-    int[] inputs;
-    int windowSize;
-    
-    public MagnitudeFeature(String name, int[] inputs, int windowSize)
-    {
-        super(name);
-        this.inputs = inputs;
-        this.windowSize = windowSize;
-    }
-    
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        
-        ModifiedInput raw1 = new PassThroughSingle("raw-1",inputs[0],0);
-        raw1.addToOutput = false;
-        raw1.addRequiredModifierID(0);
-        int rawID1 = addModifier(mc, raw1);
-        
-        ModifiedInput raw2 = new PassThroughSingle("raw-2",inputs[1],0);
-        raw2.addToOutput = false;
-        raw2.addRequiredModifierID(0);
-        int rawID2 = addModifier(mc, raw2);
-        
-        ModifiedInput raw3 = new PassThroughSingle("raw-3",inputs[2],0);
-        raw3.addToOutput = false;
-        raw3.addRequiredModifierID(0);
-        int rawID3 = addModifier(mc, raw3);
-        
-        ModifiedInput mag = new MultipleInputWindowedOperation("input-1",new ThreeDimensionalMagnitude(),windowSize,0);
-        mag.addRequiredModifierID(rawID1);
-        mag.addRequiredModifierID(rawID2);
-        mag.addRequiredModifierID(rawID3);
-        int id1 = addModifier(mc, mag);
-        setOutputModifierID(id1);
-    }
-}
-
-class FODRaw extends FeatureSingleModifierOutput
-{
-    int index;
-    
-    public FODRaw(String name, int index)
-    {
-        super(name);
-        this.index = index;
-    }
-    
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        FirstOrderDifference fod = new FirstOrderDifference("FOD",index,0);
-        fod.addRequiredModifierID(0);
-        int id1 = addModifier(mc, fod);
-        setOutputModifierID(id1);
-    }
-}
-
-class WindowedFOD extends FeatureSingleModifierOutput
-{
-    Operation op;
-    int windowSize;
-    int index;
-    
-    public WindowedFOD(String name, Operation op, int inputIndex, int windowSize) {
-        super(name);
-        this.op = op;
-        this.index = inputIndex;
-        this.windowSize = windowSize;
-    }
-    
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        
-        FirstOrderDifference fod = new FirstOrderDifference("FOD", index, 0);
-        fod.addRequiredModifierID(0);
-        fod.addToOutput = false;
-        int fodID = addModifier(mc, fod);
-        
-        ModifiedInput window = new WindowedOperation("input-1",op, 0, windowSize, 0);
-        window.addRequiredModifierID(fodID);
-        int windowID = addModifier(mc, window);
-
-        setOutputModifierID(windowID);
-    }
-}
-
-
-class CorrelateFeature extends FeatureSingleModifierOutput
-{
-    int windowSize;
-    int[] indexes;
-    
-    public CorrelateFeature(String name, int indexes[], int windowSize) {
-        super(name);
-        this.indexes = indexes;
-        this.windowSize = windowSize;
-    }
-    
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        
-        ModifiedInput raw1 = new PassThroughSingle("raw-1",indexes[0],0);
-        raw1.addToOutput = false;
-        raw1.addRequiredModifierID(0);
-        int rawID1 = addModifier(mc, raw1);
-        
-        ModifiedInput raw2 = new PassThroughSingle("raw-2",indexes[1],0);
-        raw2.addToOutput = false;
-        raw2.addRequiredModifierID(0);
-        int rawID2 = addModifier(mc, raw2);
-       
-        ModifiedInput correlate = new MultipleInputWindowedOperation("input-1",new CorrelateWindowOperation(),windowSize,0);
-        correlate.addRequiredModifierID(rawID1);
-        correlate.addRequiredModifierID(rawID2);
-        int correlateID = addModifier(mc, correlate);
-
-        setOutputModifierID(correlateID);
-    }
-}
-
 public final class FeatureCollection 
 {
     private final HashMap<String, Feature> added = new HashMap<>();
@@ -362,7 +29,9 @@ public final class FeatureCollection
     private final int GYROX = 3;
     private final int GYROY = 4;
     private final int GYROZ = 5;
-        
+       
+    private FeatureCollection(){}
+    
     public FeatureCollection(String[] inputNames)
     {
         initLibrary(10, 10);
@@ -579,9 +248,7 @@ public final class FeatureCollection
         setDirty(true);
         setDirty(false);
     }
-    
- 
-    
+   
     public void setSelectedFeatures(boolean[] onOff)
     {
         int ptr = 0;
@@ -640,5 +307,336 @@ public final class FeatureCollection
         initLibrary(windowSize, bufferSize);
         setDirty(true);
         setDirty(false);
+    }
+}
+
+class FFTFeature extends FeatureSingleModifierOutput
+{
+    
+    int totalBins;
+    int[] bins;
+    int index;
+    
+    public FFTFeature(String name, int index, int totalBins, int[] selectedBins) {
+        super(name);
+        this.bins = selectedBins;
+        this.totalBins = totalBins;
+        this.index = index;
+    }
+
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
+        fft.addToOutput= true;
+        fft.addRequiredModifierID(0);
+        int fftID = addModifier(mc,fft);
+        
+        setOutputModifierID(fftID);
+    }
+}
+
+class MaxFFT extends FeatureSingleModifierOutput
+{
+    
+    int totalBins;
+    int[] bins;
+    int index;
+    
+    public MaxFFT(String name, int index, int totalBins, int[] selectedBins) {
+        super(name);
+        this.bins = selectedBins;
+        this.totalBins = totalBins;
+        this.index = index;
+    }
+
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
+        fft.addToOutput= false;
+        fft.addRequiredModifierID(0);
+        int fftID = addModifier(mc,fft);
+        
+        ModifiedInput max = new MaxInputs("max",0);
+        max.addRequiredModifierID(fftID);
+        int maxID = addModifier(mc,max);
+        
+        setOutputModifierID(maxID);
+    }
+}
+
+class MinFFT extends FeatureSingleModifierOutput
+{
+    int totalBins;
+    int[] bins;
+    int index;
+    
+    public MinFFT(String name, int index, int totalBins, int[] selectedBins) {
+        super(name);
+        this.bins = selectedBins;
+        this.totalBins = totalBins;
+        this.index = index;
+    }
+
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
+        fft.addToOutput= false;
+        fft.addRequiredModifierID(0);
+        int fftID = addModifier(mc,fft);
+        
+        ModifiedInput min = new MinInputs("max",0);
+        min.addRequiredModifierID(fftID);
+        int minID = addModifier(mc,min);
+        
+        setOutputModifierID(minID);  
+    }
+}
+
+class WindowedFeature extends FeatureSingleModifierOutput
+{
+    
+    ModifiedInput window;
+    
+    public WindowedFeature(String name, Operation op, int inputIndex, int windowSize) {
+        super(name);
+        this.window = new WindowedOperation("input-1",op,inputIndex,windowSize,0);
+        window.addRequiredModifierID(0);
+    }
+    
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        int id1 = addModifier(mc, window);
+        setOutputModifierID(id1);
+    }
+}
+
+class PassThrough extends FeatureMultipleModifierOutput
+{
+    int[] indexes;
+    
+    public PassThrough(String name, int[] indexes) {
+        super(name);
+        this.indexes = indexes;
+    }
+
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        for(int index:indexes)
+        {
+            PassThroughSingle modifier = new PassThroughSingle(Integer.toString(index),index,0);
+            modifier.addRequiredModifierID(0);
+            int id1 = addModifier(mc, modifier);
+        }
+        setOutputModifierIDs(ids.toArray(new Integer[ids.size()]));
+    }
+}
+
+class PassThroughAll extends FeatureSingleModifierOutput
+{    
+    public PassThroughAll(String name) {
+        super(name);
+    }
+
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        String[] names = ((PassThroughVector)mc.getModifier(0)).names;
+        PassThroughVector modifier = new PassThroughVector(names, 0);
+        modifier.addToOutput = true;
+        modifier.addRequiredModifierID(0);
+        int id1 = addModifier(mc, modifier);
+        setOutputModifierID(id1);
+    }
+}
+
+class BufferFeature extends FeatureSingleModifierOutput
+{  
+    
+    private int index;
+    private int windowSize;
+    
+    public BufferFeature(String name, int index, int windowSize) {
+        super(name);
+        this.index = index;
+        this.windowSize = windowSize;
+    }
+
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        BufferedInput modifier = new BufferedInput(name, index, windowSize, 0);
+        modifier.addToOutput = true;
+        modifier.addRequiredModifierID(0);
+        int id1 = addModifier(mc, modifier);
+        setOutputModifierID(id1);
+    }
+}
+
+class MagnitudeFODFeature extends FeatureSingleModifierOutput
+{
+    int[] inputs;
+    int windowSize;
+    
+    public MagnitudeFODFeature(String name, int[] inputs, int windowSize)
+    {
+        super(name);
+        this.inputs = inputs;
+        this.windowSize = windowSize;
+    }
+    
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        
+        FirstOrderDifference fod1 = new FirstOrderDifference("FOD-1",inputs[0],0);
+        fod1.addRequiredModifierID(0);
+        fod1.addToOutput = false;
+        int fod1ID = addModifier(mc, fod1);
+                    
+        FirstOrderDifference fod2 = new FirstOrderDifference("FOD-2",inputs[1],0);
+        fod2.addRequiredModifierID(0);
+        fod2.addToOutput = false;
+        int fod2ID = addModifier(mc, fod2);
+         
+        FirstOrderDifference fod3 = new FirstOrderDifference("FOD-3",inputs[2],0);
+        fod3.addRequiredModifierID(0);
+        fod3.addToOutput = false;
+        int fod3ID = addModifier(mc, fod3);
+        
+        ModifiedInput mag = new MultipleInputWindowedOperation("input-1",new ThreeDimensionalMagnitude(),windowSize,0);
+        mag.addRequiredModifierID(fod1ID);
+        mag.addRequiredModifierID(fod2ID);
+        mag.addRequiredModifierID(fod3ID);
+        int id1 = addModifier(mc, mag);
+        setOutputModifierID(id1);
+    }
+}
+
+class MagnitudeFeature extends FeatureSingleModifierOutput
+{
+    int[] inputs;
+    int windowSize;
+    
+    public MagnitudeFeature(String name, int[] inputs, int windowSize)
+    {
+        super(name);
+        this.inputs = inputs;
+        this.windowSize = windowSize;
+    }
+    
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        
+        ModifiedInput raw1 = new PassThroughSingle("raw-1",inputs[0],0);
+        raw1.addToOutput = false;
+        raw1.addRequiredModifierID(0);
+        int rawID1 = addModifier(mc, raw1);
+        
+        ModifiedInput raw2 = new PassThroughSingle("raw-2",inputs[1],0);
+        raw2.addToOutput = false;
+        raw2.addRequiredModifierID(0);
+        int rawID2 = addModifier(mc, raw2);
+        
+        ModifiedInput raw3 = new PassThroughSingle("raw-3",inputs[2],0);
+        raw3.addToOutput = false;
+        raw3.addRequiredModifierID(0);
+        int rawID3 = addModifier(mc, raw3);
+        
+        ModifiedInput mag = new MultipleInputWindowedOperation("input-1",new ThreeDimensionalMagnitude(),windowSize,0);
+        mag.addRequiredModifierID(rawID1);
+        mag.addRequiredModifierID(rawID2);
+        mag.addRequiredModifierID(rawID3);
+        int id1 = addModifier(mc, mag);
+        setOutputModifierID(id1);
+    }
+}
+
+class FODRaw extends FeatureSingleModifierOutput
+{
+    int index;
+    
+    public FODRaw(String name, int index)
+    {
+        super(name);
+        this.index = index;
+    }
+    
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        FirstOrderDifference fod = new FirstOrderDifference("FOD",index,0);
+        fod.addRequiredModifierID(0);
+        int id1 = addModifier(mc, fod);
+        setOutputModifierID(id1);
+    }
+}
+
+class WindowedFOD extends FeatureSingleModifierOutput
+{
+    Operation op;
+    int windowSize;
+    int index;
+    
+    public WindowedFOD(String name, Operation op, int inputIndex, int windowSize) {
+        super(name);
+        this.op = op;
+        this.index = inputIndex;
+        this.windowSize = windowSize;
+    }
+    
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        
+        FirstOrderDifference fod = new FirstOrderDifference("FOD", index, 0);
+        fod.addRequiredModifierID(0);
+        fod.addToOutput = false;
+        int fodID = addModifier(mc, fod);
+        
+        ModifiedInput window = new WindowedOperation("input-1",op, 0, windowSize, 0);
+        window.addRequiredModifierID(fodID);
+        int windowID = addModifier(mc, window);
+
+        setOutputModifierID(windowID);
+    }
+}
+
+class CorrelateFeature extends FeatureSingleModifierOutput
+{
+    int windowSize;
+    int[] indexes;
+    
+    public CorrelateFeature(String name, int indexes[], int windowSize) {
+        super(name);
+        this.indexes = indexes;
+        this.windowSize = windowSize;
+    }
+    
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        
+        ModifiedInput raw1 = new PassThroughSingle("raw-1",indexes[0],0);
+        raw1.addToOutput = false;
+        raw1.addRequiredModifierID(0);
+        int rawID1 = addModifier(mc, raw1);
+        
+        ModifiedInput raw2 = new PassThroughSingle("raw-2",indexes[1],0);
+        raw2.addToOutput = false;
+        raw2.addRequiredModifierID(0);
+        int rawID2 = addModifier(mc, raw2);
+       
+        ModifiedInput correlate = new MultipleInputWindowedOperation("input-1",new CorrelateWindowOperation(),windowSize,0);
+        correlate.addRequiredModifierID(rawID1);
+        correlate.addRequiredModifierID(rawID2);
+        int correlateID = addModifier(mc, correlate);
+
+        setOutputModifierID(correlateID);
     }
 }
