@@ -5,12 +5,10 @@
  */
 package wekimini.modifiers;
 
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 import wekimini.modifiers.WindowedOperation.Operation;
 /**
  *
@@ -32,12 +30,12 @@ class FFTFeature extends FeatureSingleModifierOutput
     }
 
     @Override
-    public void addFeature(ModifierCollection fg)
+    public void addFeature(ModifierCollection mc)
     {
         FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
         fft.addToOutput= true;
         fft.addRequiredModifierID(0);
-        int fftID = addModifier(fg,fft);
+        int fftID = addModifier(mc,fft);
         
         setOutputModifierID(fftID);
     }
@@ -58,16 +56,16 @@ class MaxFFT extends FeatureSingleModifierOutput
     }
 
     @Override
-    public void addFeature(ModifierCollection fg)
+    public void addFeature(ModifierCollection mc)
     {
         FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
         fft.addToOutput= false;
         fft.addRequiredModifierID(0);
-        int fftID = addModifier(fg,fft);
+        int fftID = addModifier(mc,fft);
         
         ModifiedInput max = new MaxInputs("max",0);
         max.addRequiredModifierID(fftID);
-        int maxID = addModifier(fg,max);
+        int maxID = addModifier(mc,max);
         
         setOutputModifierID(maxID);
     }
@@ -87,16 +85,16 @@ class MinFFT extends FeatureSingleModifierOutput
     }
 
     @Override
-    public void addFeature(ModifierCollection fg)
+    public void addFeature(ModifierCollection mc)
     {
         FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
         fft.addToOutput= false;
         fft.addRequiredModifierID(0);
-        int fftID = addModifier(fg,fft);
+        int fftID = addModifier(mc,fft);
         
         ModifiedInput min = new MinInputs("max",0);
         min.addRequiredModifierID(fftID);
-        int minID = addModifier(fg,min);
+        int minID = addModifier(mc,min);
         
         setOutputModifierID(minID);
         
@@ -115,9 +113,9 @@ class WindowedFeature extends FeatureSingleModifierOutput
     }
     
     @Override
-    public void addFeature(ModifierCollection fg)
+    public void addFeature(ModifierCollection mc)
     {
-        int id1 = addModifier(fg, window);
+        int id1 = addModifier(mc, window);
         setOutputModifierID(id1);
     }
 }
@@ -132,13 +130,13 @@ class PassThrough extends FeatureMultipleModifierOutput
     }
 
     @Override
-    public void addFeature(ModifierCollection fg)
+    public void addFeature(ModifierCollection mc)
     {
         for(int index:indexes)
         {
             PassThroughSingle modifier = new PassThroughSingle(Integer.toString(index),index,0);
             modifier.addRequiredModifierID(0);
-            int id1 = addModifier(fg, modifier);
+            int id1 = addModifier(mc, modifier);
         }
         setOutputModifierIDs(ids.toArray(new Integer[ids.size()]));
     }
@@ -151,13 +149,13 @@ class PassThroughAll extends FeatureSingleModifierOutput
     }
 
     @Override
-    public void addFeature(ModifierCollection fg)
+    public void addFeature(ModifierCollection mc)
     {
-        String[] names = ((PassThroughVector)fg.getModifier(0)).names;
+        String[] names = ((PassThroughVector)mc.getModifier(0)).names;
         PassThroughVector modifier = new PassThroughVector(names, 0);
         modifier.addToOutput = true;
         modifier.addRequiredModifierID(0);
-        int id1 = addModifier(fg, modifier);
+        int id1 = addModifier(mc, modifier);
         setOutputModifierID(id1);
     }
 }
@@ -175,12 +173,12 @@ class BufferFeature extends FeatureSingleModifierOutput
     }
 
     @Override
-    public void addFeature(ModifierCollection fg)
+    public void addFeature(ModifierCollection mc)
     {
         BufferedInput modifier = new BufferedInput(name, index, windowSize, 0);
         modifier.addToOutput = true;
         modifier.addRequiredModifierID(0);
-        int id1 = addModifier(fg, modifier);
+        int id1 = addModifier(mc, modifier);
         setOutputModifierID(id1);
     }
 }
@@ -198,29 +196,29 @@ class MagnitudeFODFeature extends FeatureSingleModifierOutput
     }
     
     @Override
-    public void addFeature(ModifierCollection fg)
+    public void addFeature(ModifierCollection mc)
     {
         
         FirstOrderDifference fod1 = new FirstOrderDifference("FOD-1",inputs[0],0);
         fod1.addRequiredModifierID(0);
         fod1.addToOutput = false;
-        int fod1ID = addModifier(fg, fod1);
+        int fod1ID = addModifier(mc, fod1);
                     
         FirstOrderDifference fod2 = new FirstOrderDifference("FOD-2",inputs[1],0);
         fod2.addRequiredModifierID(0);
         fod2.addToOutput = false;
-        int fod2ID = addModifier(fg, fod2);
+        int fod2ID = addModifier(mc, fod2);
          
         FirstOrderDifference fod3 = new FirstOrderDifference("FOD-3",inputs[2],0);
         fod3.addRequiredModifierID(0);
         fod3.addToOutput = false;
-        int fod3ID = addModifier(fg, fod3);
+        int fod3ID = addModifier(mc, fod3);
         
         ModifiedInput mag = new MultipleInputWindowedOperation("input-1",new ThreeDimensionalMagnitude(),windowSize,0);
         mag.addRequiredModifierID(fod1ID);
         mag.addRequiredModifierID(fod2ID);
         mag.addRequiredModifierID(fod3ID);
-        int id1 = addModifier(fg, mag);
+        int id1 = addModifier(mc, mag);
         setOutputModifierID(id1);
     }
 }
@@ -238,29 +236,29 @@ class MagnitudeFeature extends FeatureSingleModifierOutput
     }
     
     @Override
-    public void addFeature(ModifierCollection fg)
+    public void addFeature(ModifierCollection mc)
     {
         
         ModifiedInput raw1 = new PassThroughSingle("raw-1",inputs[0],0);
         raw1.addToOutput = false;
         raw1.addRequiredModifierID(0);
-        int rawID1 = addModifier(fg, raw1);
+        int rawID1 = addModifier(mc, raw1);
         
         ModifiedInput raw2 = new PassThroughSingle("raw-2",inputs[1],0);
         raw2.addToOutput = false;
         raw2.addRequiredModifierID(0);
-        int rawID2 = addModifier(fg, raw2);
+        int rawID2 = addModifier(mc, raw2);
         
         ModifiedInput raw3 = new PassThroughSingle("raw-3",inputs[2],0);
         raw3.addToOutput = false;
         raw3.addRequiredModifierID(0);
-        int rawID3 = addModifier(fg, raw3);
+        int rawID3 = addModifier(mc, raw3);
         
         ModifiedInput mag = new MultipleInputWindowedOperation("input-1",new ThreeDimensionalMagnitude(),windowSize,0);
         mag.addRequiredModifierID(rawID1);
         mag.addRequiredModifierID(rawID2);
         mag.addRequiredModifierID(rawID3);
-        int id1 = addModifier(fg, mag);
+        int id1 = addModifier(mc, mag);
         setOutputModifierID(id1);
     }
 }
@@ -276,11 +274,11 @@ class FODRaw extends FeatureSingleModifierOutput
     }
     
     @Override
-    public void addFeature(ModifierCollection fg)
+    public void addFeature(ModifierCollection mc)
     {
         FirstOrderDifference fod = new FirstOrderDifference("FOD",index,0);
         fod.addRequiredModifierID(0);
-        int id1 = addModifier(fg, fod);
+        int id1 = addModifier(mc, fod);
         setOutputModifierID(id1);
     }
 }
@@ -299,17 +297,17 @@ class WindowedFOD extends FeatureSingleModifierOutput
     }
     
     @Override
-    public void addFeature(ModifierCollection fg)
+    public void addFeature(ModifierCollection mc)
     {
         
         FirstOrderDifference fod = new FirstOrderDifference("FOD", index, 0);
         fod.addRequiredModifierID(0);
         fod.addToOutput = false;
-        int fodID = addModifier(fg, fod);
+        int fodID = addModifier(mc, fod);
         
         ModifiedInput window = new WindowedOperation("input-1",op, 0, windowSize, 0);
         window.addRequiredModifierID(fodID);
-        int windowID = addModifier(fg, window);
+        int windowID = addModifier(mc, window);
 
         setOutputModifierID(windowID);
     }
@@ -328,23 +326,23 @@ class CorrelateFeature extends FeatureSingleModifierOutput
     }
     
     @Override
-    public void addFeature(ModifierCollection fg)
+    public void addFeature(ModifierCollection mc)
     {
         
         ModifiedInput raw1 = new PassThroughSingle("raw-1",indexes[0],0);
         raw1.addToOutput = false;
         raw1.addRequiredModifierID(0);
-        int rawID1 = addModifier(fg, raw1);
+        int rawID1 = addModifier(mc, raw1);
         
         ModifiedInput raw2 = new PassThroughSingle("raw-2",indexes[1],0);
         raw2.addToOutput = false;
         raw2.addRequiredModifierID(0);
-        int rawID2 = addModifier(fg, raw2);
+        int rawID2 = addModifier(mc, raw2);
        
         ModifiedInput correlate = new MultipleInputWindowedOperation("input-1",new CorrelateWindowOperation(),windowSize,0);
         correlate.addRequiredModifierID(rawID1);
         correlate.addRequiredModifierID(rawID2);
-        int correlateID = addModifier(fg, correlate);
+        int correlateID = addModifier(mc, correlate);
 
         setOutputModifierID(correlateID);
     }
@@ -521,6 +519,12 @@ public final class FeatureCollection
         {
             m.reset();
         }
+    }
+    
+    public void removeAll()
+    {
+        modifiers.removeAllModifiers();
+        clearAdded();
     }
     
     public int getNumModifiers()

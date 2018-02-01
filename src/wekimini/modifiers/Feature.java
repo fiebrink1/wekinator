@@ -6,7 +6,6 @@
 package wekimini.modifiers;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -22,14 +21,14 @@ public class Feature
         this.name = name;
     }
 
-    public void addFeature(ModifierCollection fg)
+    public void addFeature(ModifierCollection mc)
     {
         
     }  
     
-    public int addModifier(ModifierCollection fg, ModifiedInput mod)
+    public int addModifier(ModifierCollection mc, ModifiedInput mod)
     {
-        int id = fg.addModifier(mod);
+        int id = mc.addModifier(mod);
         ids.add(id);
         return id;
     }  

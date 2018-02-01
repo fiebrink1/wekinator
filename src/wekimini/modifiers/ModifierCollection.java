@@ -11,13 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
-import wekimini.modifiers.ModifiedInput;
-import wekimini.modifiers.ModifiedInputSingle;
-import wekimini.modifiers.ModifiedInputVector;
-import wekimini.modifiers.FeatureCollection;
-import wekimini.modifiers.Feature;
-import wekimini.modifiers.FeatureMultipleModifierOutput;
-import wekimini.modifiers.FeatureSingleModifierOutput;
 /**
  *
  * @author louismccallum
@@ -87,6 +80,7 @@ public class ModifierCollection {
         return currentID;
     }
     
+    //Remove modifiers that do not output themselves or input to another modifier
     public void removeDeadEnds()
     {
         ArrayList<ModifiedInput> toRemove = new ArrayList();
@@ -107,7 +101,6 @@ public class ModifierCollection {
                             break INNER;
                         }
                     }
-
                 }
             }
             if(!atLeastOneChild && !doesOutput && modifier.inputID > 0)
@@ -125,6 +118,7 @@ public class ModifierCollection {
         }
     }
     
+    //Remove modifiers whose required input does not exist anymore
     public void removeOrphanedModifiers()
     {
         ArrayList<ModifiedInput> toRemove = new ArrayList();
@@ -159,7 +153,7 @@ public class ModifierCollection {
 
     }
     
-    public void removeAllModifiers()
+    protected void removeAllModifiers()
     {
         int [] ids = new int[modifiers.size()];
         int ptr = 0;
@@ -174,7 +168,6 @@ public class ModifierCollection {
         }
         removeOrphanedModifiers();
         removeDeadEnds();
-        //featureLibrary.clearAdded();
     }
     
     public void removeModifier(int id)

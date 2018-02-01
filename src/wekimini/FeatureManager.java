@@ -4,16 +4,11 @@
  * and open the template in the editor.
  */
 package wekimini;
-import java.util.List;
 import java.util.ArrayList;
-import weka.classifiers.Classifier;
 import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.Attribute;
-import wekimini.featureanalysis.WrapperSelector;
-import wekimini.learning.SupervisedLearningModel;
 import wekimini.modifiers.ModifiedInput;
-import wekimini.modifiers.PassThroughVector;
 import wekimini.modifiers.FeatureCollection;
 /**
  *
@@ -76,10 +71,12 @@ public class FeatureManager
     protected void addOutputs(int numOutputs, String[] inputNames)
     {
         allFeatures = new FeatureCollection(inputNames);
+        
         for(String feature:allFeatures.getNames())
         {
             allFeatures.addFeatureForKey(feature);
         }
+        
         if(inputNames.length == 6)
         {
             allFeatures.computeAndGetValuesForNewInputs(new double[inputNames.length]);
@@ -94,10 +91,10 @@ public class FeatureManager
     protected void setAllOutputsDirty()
     {
         int ptr = 0;
-        for(FeatureCollection fg:featureCollections)
+        for(FeatureCollection mc:featureCollections)
         {
-            fg.setDirty(false);
-            fg.setDirty(true);
+            mc.setDirty(false);
+            mc.setDirty(true);
             ptr++;
         }
     }
@@ -178,7 +175,7 @@ public class FeatureManager
     {
         setTestSetDirty(output);
         setDirty(output);
-        featureCollections.get(output).getModifiers().removeAllModifiers();
+        featureCollections.get(output).removeAll();
     }
     
     public void removeModifierFromOutput(int modifierID, int output)
@@ -211,11 +208,11 @@ public class FeatureManager
         bufferSize = bSize;
         int output = 0;
         allFeatures.setFeatureWindowSize(windowSize, bufferSize);
-        for(FeatureCollection fg:featureCollections)
+        for(FeatureCollection mc:featureCollections)
         {
             setTestSetDirty(output);
             output++;
-            fg.setFeatureWindowSize(windowSize, bufferSize);
+            mc.setFeatureWindowSize(windowSize, bufferSize);
         }
     }
     

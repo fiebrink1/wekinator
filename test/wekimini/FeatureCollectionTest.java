@@ -5,8 +5,6 @@
  */
 package wekimini;
 import java.lang.reflect.Field;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
