@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import wekimini.FeatureGroup;
+import wekimini.ModifierCollection;
 import wekimini.modifiers.WindowedOperation.Operation;
 /**
  *
@@ -33,7 +33,7 @@ class FFTFeature extends FeatureSingleModifierOutput
     }
 
     @Override
-    public void addFeature(FeatureGroup fg)
+    public void addFeature(ModifierCollection fg)
     {
         FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
         fft.addToOutput= true;
@@ -59,7 +59,7 @@ class MaxFFT extends FeatureSingleModifierOutput
     }
 
     @Override
-    public void addFeature(FeatureGroup fg)
+    public void addFeature(ModifierCollection fg)
     {
         FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
         fft.addToOutput= false;
@@ -88,7 +88,7 @@ class MinFFT extends FeatureSingleModifierOutput
     }
 
     @Override
-    public void addFeature(FeatureGroup fg)
+    public void addFeature(ModifierCollection fg)
     {
         FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
         fft.addToOutput= false;
@@ -116,7 +116,7 @@ class WindowedFeature extends FeatureSingleModifierOutput
     }
     
     @Override
-    public void addFeature(FeatureGroup fg)
+    public void addFeature(ModifierCollection fg)
     {
         int id1 = addModifier(fg, window);
         setOutputModifierID(id1);
@@ -133,7 +133,7 @@ class PassThrough extends FeatureMultipleModifierOutput
     }
 
     @Override
-    public void addFeature(FeatureGroup fg)
+    public void addFeature(ModifierCollection fg)
     {
         for(int index:indexes)
         {
@@ -152,7 +152,7 @@ class PassThroughAll extends FeatureSingleModifierOutput
     }
 
     @Override
-    public void addFeature(FeatureGroup fg)
+    public void addFeature(ModifierCollection fg)
     {
         String[] names = ((PassThroughVector)fg.getModifier(0)).names;
         PassThroughVector modifier = new PassThroughVector(names, 0);
@@ -176,7 +176,7 @@ class BufferFeature extends FeatureSingleModifierOutput
     }
 
     @Override
-    public void addFeature(FeatureGroup fg)
+    public void addFeature(ModifierCollection fg)
     {
         BufferedInput modifier = new BufferedInput(name, index, windowSize, 0);
         modifier.addToOutput = true;
@@ -199,7 +199,7 @@ class MagnitudeFODFeature extends FeatureSingleModifierOutput
     }
     
     @Override
-    public void addFeature(FeatureGroup fg)
+    public void addFeature(ModifierCollection fg)
     {
         
         FirstOrderDifference fod1 = new FirstOrderDifference("FOD-1",inputs[0],0);
@@ -239,7 +239,7 @@ class MagnitudeFeature extends FeatureSingleModifierOutput
     }
     
     @Override
-    public void addFeature(FeatureGroup fg)
+    public void addFeature(ModifierCollection fg)
     {
         
         ModifiedInput raw1 = new PassThroughSingle("raw-1",inputs[0],0);
@@ -277,7 +277,7 @@ class FODRaw extends FeatureSingleModifierOutput
     }
     
     @Override
-    public void addFeature(FeatureGroup fg)
+    public void addFeature(ModifierCollection fg)
     {
         FirstOrderDifference fod = new FirstOrderDifference("FOD",index,0);
         fod.addRequiredModifierID(0);
@@ -300,7 +300,7 @@ class WindowedFOD extends FeatureSingleModifierOutput
     }
     
     @Override
-    public void addFeature(FeatureGroup fg)
+    public void addFeature(ModifierCollection fg)
     {
         
         FirstOrderDifference fod = new FirstOrderDifference("FOD", index, 0);
@@ -329,7 +329,7 @@ class CorrelateFeature extends FeatureSingleModifierOutput
     }
     
     @Override
-    public void addFeature(FeatureGroup fg)
+    public void addFeature(ModifierCollection fg)
     {
         
         ModifiedInput raw1 = new PassThroughSingle("raw-1",indexes[0],0);
@@ -351,25 +351,31 @@ class CorrelateFeature extends FeatureSingleModifierOutput
     }
 }
 
-public final class FeatureLibrary 
+public final class FeatureCollection 
 {
     private final HashMap<String, Feature> added = new HashMap<>();
     private final List<Feature> library = new ArrayList();
     private String[] names;
-    private FeatureGroup fg;
+    private ModifierCollection modifiers;
+    private boolean dirtyFlag = true;
+    private boolean testSetDirtyFlag = true;
     private final int ACCX = 0;
     private final int ACCY = 1;
     private final int ACCZ = 2;
     private final int GYROX = 3;
     private final int GYROY = 4;
     private final int GYROZ = 5;
-    
-    private FeatureLibrary(){};
-    
-    public FeatureLibrary(FeatureGroup fg)
+        
+    public FeatureCollection(String[] inputNames)
     {
-        this.fg = fg;
         initLibrary(10, 10);
+        ArrayList<ModifiedInput> defaultModifiers = new ArrayList();
+        ModifiedInput rawInput = new PassThroughVector(inputNames, 0);
+        rawInput.inputID = 0;
+        rawInput.addToOutput = false;
+        defaultModifiers.add(rawInput);
+        modifiers = new ModifierCollection(defaultModifiers);
+        addFeatureForKey("PassThroughAll");
     }
     
     public void initLibrary(int windowSize, int bufferSize)
@@ -478,6 +484,11 @@ public final class FeatureLibrary
         
     }
     
+    public ModifierCollection getModifiers()
+    {
+        return modifiers;
+    }
+    
     public List<Feature> getLibrary()
     {
         return library;
@@ -499,7 +510,25 @@ public final class FeatureLibrary
         }
         return connections;
     }
-            
+    
+    public double[] computeAndGetValuesForNewInputs(double[] newInputs)
+    {
+        return modifiers.computeAndGetValuesForNewInputs(newInputs, added);
+    }
+    
+    public void resetAllModifiers()
+    {
+        for(ModifiedInput m:modifiers.getModifiers())
+        {
+            m.reset();
+        }
+    }
+    
+    public int getNumModifiers()
+    {
+        return modifiers.getNumModifiers();
+    }
+
     public void addFeatureForKey(String key)
     {
         if(added.containsKey(key))
@@ -511,11 +540,13 @@ public final class FeatureLibrary
         {
             if(key.equals(feature.name))
             {
-                feature.addFeature(fg);
+                feature.addFeature(modifiers);
                 added.put(key,feature);
                 break;
             }
         }
+        setDirty(true);
+        setDirty(false);
     }
     
     public void removeFeatureForKey(String key)
@@ -529,43 +560,82 @@ public final class FeatureLibrary
         
         for(Integer id:f.ids)
         {
-            fg.removeModifier(id);
+            modifiers.removeModifier(id);
         }
-        fg.removeOrphanedModifiers();
-        fg.removeDeadEnds();
+        modifiers.removeOrphanedModifiers();
+        modifiers.removeDeadEnds();
         
         added.remove(key);
+        setDirty(true);
+        setDirty(false);
     }
     
     public void clearAdded()
     {
         added.clear();
+        setDirty(true);
+        setDirty(false);
     }
     
-    public String getFeatureNameForModifierID(int id)
+ 
+    
+    public void setSelectedFeatures(boolean[] onOff)
     {
-        for(Feature feature:added.values())
+        int ptr = 0;
+        for(Feature feature:getLibrary())
         {
-            if(feature instanceof FeatureSingleModifierOutput)
+            if(onOff[ptr])
             {
-                if(id == ((FeatureSingleModifierOutput) feature).getOutputModifierID())
-                {
-                    return ((FeatureSingleModifierOutput) feature).name;
-                }
+                addFeatureForKey(feature.name);
             }
             else
             {
-                int ptr = 0;
-                for(int matchID:((FeatureMultipleModifierOutput) feature).getOutputModifierIDs())
-                {
-                    if(id == matchID)
-                    {
-                        return ((FeatureMultipleModifierOutput) feature).name + ":" + Integer.toString(ptr);
-                    }
-                    ptr++;
-                }
+                 removeFeatureForKey(feature.name);
             }
+            ptr++;
         }
-        return "not found";
+    }
+    
+    //Dirty State
+    
+    public boolean isDirty(boolean testSet)
+    {
+        return testSet ? testSetDirtyFlag : dirtyFlag;
+    }
+    
+    public void setDirty(boolean testSet)
+    {
+       if(testSet)
+       {
+           testSetDirtyFlag = true;
+       }
+       else
+       {
+           dirtyFlag = true;
+       }
+       
+       for(ModifiedInput modifier:modifiers.getModifiers())
+       {
+           modifier.reset();
+       }
+    }
+    
+    public void didRecalculateFeatures(boolean testSet)
+    {
+        if(testSet)
+       {
+           testSetDirtyFlag = false;
+       }
+       else
+       {
+           dirtyFlag = false;
+       }
+    }
+    
+    public void setFeatureWindowSize(int windowSize, int bufferSize)
+    {
+        initLibrary(windowSize, bufferSize);
+        setDirty(true);
+        setDirty(false);
     }
 }

@@ -57,7 +57,7 @@ public class WekinatorTest {
     @Test
     public void testOutputsAddedToFeatureManager()
     {
-        int numModifiers = w.getDataManager().featureManager.featureGroups.size();
+        int numModifiers = w.getDataManager().featureManager.featureCollections.size();
         int expResult = 3;
         int result = numModifiers;
         assertEquals(expResult, result);

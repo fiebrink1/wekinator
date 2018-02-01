@@ -95,13 +95,13 @@ public class FeatureConnectionsTest {
         }
         
         //Pass through vector
-        List<ModifiedInput> modifiers1 = w.getDataManager().featureManager.featureGroups.get(0).getModifiers();
+        List<ModifiedInput> modifiers1 = w.getDataManager().featureManager.featureCollections.get(0).getModifiers().getModifiers();
         assertEquals(2, modifiers1.size(), 0);
         //Jsut raw
-        List<ModifiedInput> modifiers2 = w.getDataManager().featureManager.featureGroups.get(1).getModifiers();
+        List<ModifiedInput> modifiers2 = w.getDataManager().featureManager.featureCollections.get(1).getModifiers().getModifiers();
         assertEquals(1, modifiers2.size(), 0);
         //All Gyro
-        List<ModifiedInput> modifiers3 = w.getDataManager().featureManager.featureGroups.get(2).getModifiers();
+        List<ModifiedInput> modifiers3 = w.getDataManager().featureManager.featureCollections.get(2).getModifiers().getModifiers();
         assertEquals(4, modifiers3.size(), 0);
     }
 }

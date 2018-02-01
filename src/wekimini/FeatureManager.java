@@ -14,6 +14,7 @@ import wekimini.featureanalysis.WrapperSelector;
 import wekimini.learning.SupervisedLearningModel;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.PassThroughVector;
+import wekimini.modifiers.FeatureCollection;
 /**
  *
  * @author louismccallum
@@ -21,66 +22,61 @@ import wekimini.modifiers.PassThroughVector;
 public class FeatureManager 
 {
     //There is one feature group for each path/output
-    protected ArrayList<FeatureGroup> featureGroups;
-    private FeatureGroup allFeatures;
+    protected ArrayList<FeatureCollection> featureCollections;
+    private FeatureCollection allFeatures;
     private int windowSize = 10;
     private int bufferSize = 10;
     
     public FeatureManager()
     {
-        featureGroups = new ArrayList<>();
+        featureCollections = new ArrayList<>();
 
     }
     
-    public ArrayList<FeatureGroup> getFeatureGroups()
+    public ArrayList<FeatureCollection> getFeatureGroups()
     {
-        return featureGroups;
+        return featureCollections;
     }
     
     public String[] getFeatureNames()
     {
-        return featureGroups.get(0).getFeatureNames();
+        return featureCollections.get(0).getNames();
     }
     
     protected boolean isDirty(int output)
     {
-        return featureGroups.get(output).isDirty(false);
+        return featureCollections.get(output).isDirty(false);
     }
     
     protected void setDirty(int output)
     {
-       featureGroups.get(output).setDirty(false);
+       featureCollections.get(output).setDirty(false);
     }
     
     protected void didRecalculateFeatures(int output)
     {
-        featureGroups.get(output).didRecalculateFeatures(false);
+        featureCollections.get(output).didRecalculateFeatures(false);
     }
     
     protected boolean isTestSetDirty(int output)
     {
-        return featureGroups.get(output).isDirty(true);
+        return featureCollections.get(output).isDirty(true);
     }
     
     protected void setTestSetDirty(int output)
     {
-       featureGroups.get(output).setDirty(true);
+       featureCollections.get(output).setDirty(true);
     }
     
     protected void didRecalculateTestSetFeatures(int output)
     {
-        featureGroups.get(output).didRecalculateFeatures(true);
+        featureCollections.get(output).didRecalculateFeatures(true);
     }
     
     protected void addOutputs(int numOutputs, String[] inputNames)
     {
-        ArrayList<ModifiedInput> defaultModifiers = new ArrayList();
-        ModifiedInput rawInput = new PassThroughVector(inputNames, 0);
-        rawInput.inputID = 0;
-        rawInput.addToOutput = false;
-        defaultModifiers.add(rawInput);
-        allFeatures = new FeatureGroup(defaultModifiers);
-        for(String feature:allFeatures.getFeatureNames())
+        allFeatures = new FeatureCollection(inputNames);
+        for(String feature:allFeatures.getNames())
         {
             allFeatures.addFeatureForKey(feature);
         }
@@ -90,22 +86,15 @@ public class FeatureManager
         }
         
         for(int i = 0; i < numOutputs; i++)
-        {
-            defaultModifiers = new ArrayList();
-            rawInput = new PassThroughVector(inputNames, 0);
-            rawInput.inputID = 0;
-            rawInput.addToOutput = false;
-            defaultModifiers.add(rawInput);
-            FeatureGroup fg = new FeatureGroup(defaultModifiers);
-            fg.addFeatureForKey("PassThroughAll");
-            featureGroups.add(fg);
+        {   
+            featureCollections.add(new FeatureCollection(inputNames));
         }
     }
     
     protected void setAllOutputsDirty()
     {
         int ptr = 0;
-        for(FeatureGroup fg:featureGroups)
+        for(FeatureCollection fg:featureCollections)
         {
             fg.setDirty(false);
             fg.setDirty(true);
@@ -148,55 +137,56 @@ public class FeatureManager
     
     protected double[] modifyInputsForOutput(double[] newInputs, int output)
     {        
-        return featureGroups.get(output).computeAndGetValuesForNewInputs(newInputs);
+        return featureCollections.get(output).computeAndGetValuesForNewInputs(newInputs);
     }
     
     protected void resetAllModifiers()
     {
-        for(FeatureGroup f:featureGroups)
+        for(FeatureCollection f:featureCollections)
         {
-            for(ModifiedInput m:f.getModifiers())
-            {
-                m.reset();
-            }
+            f.resetAllModifiers();;
         }
     }
     
     protected int numModifiedInputs(int output)
     {
-        return featureGroups.get(output).getOutputDimensionality();
+        return featureCollections.get(output).getModifiers().getOutputDimensionality();
     }
     
     public int addModifierToOutput(ModifiedInput modifier, int output)
     {
         setTestSetDirty(output);
-        return featureGroups.get(output).addModifier(modifier);
+        setDirty(output);
+        return featureCollections.get(output).getModifiers().addModifier(modifier);
     }
     
     protected void passThroughInputToOutput(boolean passThrough, int output)
     {
         setTestSetDirty(output);
+        setDirty(output);
         if(passThrough)
         {
-            featureGroups.get(output).addFeatureForKey("PassThroughAll"); 
+            featureCollections.get(output).addFeatureForKey("PassThroughAll"); 
         }
         else
         {
-            featureGroups.get(output).removeFeatureForKey("PassThroughAll");
+            featureCollections.get(output).removeFeatureForKey("PassThroughAll");
         }
     }
     
     protected void removeAllModifiersFromOutput(int output)
     {
         setTestSetDirty(output);
-        featureGroups.get(output).removeAllModifiers();
+        setDirty(output);
+        featureCollections.get(output).getModifiers().removeAllModifiers();
     }
     
     public void removeModifierFromOutput(int modifierID, int output)
     {
         setTestSetDirty(output);
+        setDirty(output);
         try {
-            featureGroups.get(output).removeModifier(modifierID);      
+            featureCollections.get(output).getModifiers().removeModifier(modifierID);      
         } 
         catch (ArrayIndexOutOfBoundsException e)
         {
@@ -221,7 +211,7 @@ public class FeatureManager
         bufferSize = bSize;
         int output = 0;
         allFeatures.setFeatureWindowSize(windowSize, bufferSize);
-        for(FeatureGroup fg:featureGroups)
+        for(FeatureCollection fg:featureCollections)
         {
             setTestSetDirty(output);
             output++;
@@ -237,21 +227,18 @@ public class FeatureManager
     
     protected void resetAllFeaturesModifiers()
     {
-        for(ModifiedInput m:allFeatures.getModifiers())
-        {
-            m.reset();
-        }
+        allFeatures.resetAllModifiers();
     }
     
     protected Instances getAllFeaturesNewInstances()
     {
-        int length = allFeatures.getOutputDimensionality();
+        int length = allFeatures.getModifiers().getOutputDimensionality();
         return getNewInstancesOfLength(length, 0);
     }
     
     protected Instances getAllFeaturesNewInstances(int numClasses)
     {
-        int length = allFeatures.getOutputDimensionality();
+        int length = allFeatures.getModifiers().getOutputDimensionality();
         return getNewInstancesOfLength(length, numClasses);
     }
     
@@ -270,7 +257,7 @@ public class FeatureManager
         allFeatures.setDirty(testSet);
     }
     
-    public FeatureGroup getAllFeaturesGroup()
+    public FeatureCollection getAllFeaturesGroup()
     {
         return allFeatures;
     }

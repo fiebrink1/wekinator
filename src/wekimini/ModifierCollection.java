@@ -10,37 +10,36 @@ import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.ModifiedInputSingle;
 import wekimini.modifiers.ModifiedInputVector;
-import wekimini.modifiers.FeatureLibrary;
+import wekimini.modifiers.FeatureCollection;
 import wekimini.modifiers.Feature;
+import wekimini.modifiers.FeatureMultipleModifierOutput;
+import wekimini.modifiers.FeatureSingleModifierOutput;
 /**
  *
  * @author louismccallum
  * 
  * This has all the modifiers for a single path/output
  */
-public class FeatureGroup {
+public class ModifierCollection {
     
     private List<ModifiedInput> modifiers;
     private int dimensionality;
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private transient double[] currentValues;
-    private boolean dirtyFlag = true;
-    private boolean testSetDirtyFlag = true;
     private int currentID = 0;
-    private FeatureLibrary featureLibrary;
     public String[] valueMap;
     
-    public FeatureGroup(List<ModifiedInput> modifiers) 
+    public ModifierCollection(List<ModifiedInput> modifiers) 
     {
         this.modifiers = new LinkedList<>(modifiers);
-        featureLibrary = new FeatureLibrary(this);
         refreshState();
     }
     
-    public FeatureGroup(FeatureGroup groupFromFile) {
+    public ModifierCollection(ModifierCollection groupFromFile) {
         this.modifiers = new LinkedList<>(groupFromFile.getModifiers());
         this.dimensionality = groupFromFile.dimensionality;
     }
@@ -79,8 +78,6 @@ public class FeatureGroup {
             modifiers.add(modifier);
         }
         refreshState();
-        setDirty(true);
-        setDirty(false);
         return modifier.inputID;
     }
     
@@ -125,8 +122,6 @@ public class FeatureGroup {
         if(toRemove.size() > 0)
         {
             refreshState();
-            setDirty(true);
-            setDirty(false);
         }
     }
     
@@ -160,8 +155,6 @@ public class FeatureGroup {
         if(toRemove.size() > 0)
         {
             refreshState();
-            setDirty(true);
-            setDirty(false);
         }
 
     }
@@ -181,7 +174,7 @@ public class FeatureGroup {
         }
         removeOrphanedModifiers();
         removeDeadEnds();
-        featureLibrary.clearAdded();
+        //featureLibrary.clearAdded();
     }
     
     public void removeModifier(int id)
@@ -208,8 +201,6 @@ public class FeatureGroup {
                 {
                     modifiers.remove(index);
                     refreshState();
-                    setDirty(true);
-                    setDirty(false);
                 }
             }
         }
@@ -239,87 +230,6 @@ public class FeatureGroup {
         return modifiers.get(which);
     }
     
-    protected void passThroughInputToOutput(boolean passThrough)
-    {
-        modifiers.get(0).addToOutput = passThrough;
-        setDirty(true);
-        setDirty(false);
-        refreshState();
-    }
-    
-    public void setSelectedFeatures(boolean[] onOff)
-    {
-        int ptr = 0;
-        for(Feature feature:featureLibrary.getLibrary())
-        {
-            if(onOff[ptr])
-            {
-                featureLibrary.addFeatureForKey(feature.name);
-            }
-            else
-            {
-                featureLibrary.removeFeatureForKey(feature.name);
-            }
-            ptr++;
-        }
-    }
-    
-    public void addFeatureForKey(String key)
-    {
-        featureLibrary.addFeatureForKey(key);
-    }
-    
-    public void removeFeatureForKey(String key)
-    {
-        featureLibrary.removeFeatureForKey(key);
-    }
-    
-    public boolean[] getConnections()
-    {
-        return featureLibrary.getConnections();
-    }
-    
-    public String[] getFeatureNames()
-    {
-        return featureLibrary.getNames();
-    }
-    
-    //Dirty State
-    
-    protected boolean isDirty(boolean testSet)
-    {
-        return testSet ? testSetDirtyFlag : dirtyFlag;
-    }
-    
-    protected void setDirty(boolean testSet)
-    {
-       if(testSet)
-       {
-           testSetDirtyFlag = true;
-       }
-       else
-       {
-           dirtyFlag = true;
-       }
-       
-       for(ModifiedInput modifier:modifiers)
-       {
-           modifier.reset();
-       }
-    }
-    
-    protected void didRecalculateFeatures(boolean testSet)
-    {
-        if(testSet)
-       {
-           testSetDirtyFlag = false;
-       }
-       else
-       {
-           dirtyFlag = false;
-       }
-    }
-    
     //Outputs
     
     public int getOutputDimensionality() {
@@ -328,7 +238,7 @@ public class FeatureGroup {
     
     //Calculate outputs
     
-    private void computeValuesForNewInputs(double[] newInputs) {
+    private void computeValuesForNewInputs(double[] newInputs, HashMap<String, Feature> features) {
         
         int outputIndex = 0;
         int completedIndex = 0;
@@ -366,7 +276,7 @@ public class FeatureGroup {
                         if(toComplete.addToOutput)
                         {
                             //SAVE THE INDEX OF THE VALUE ADDED AND A REFERNCE TO ITS SOURCE (THE MODIFIER)
-                            String featureName = featureLibrary.getFeatureNameForModifierID(toComplete.inputID);
+                            String featureName = getFeatureNameForModifierID(toComplete.inputID, features);
                             if (toComplete instanceof ModifiedInputSingle) 
                             {
                                 currentValues[outputIndex] = ((ModifiedInputSingle)toComplete).getValue();
@@ -389,16 +299,36 @@ public class FeatureGroup {
         }
     }
 
-    public double[] computeAndGetValuesForNewInputs(double[] newInputs) {
-        computeValuesForNewInputs(newInputs);
+    public double[] computeAndGetValuesForNewInputs(double[] newInputs, HashMap<String, Feature> features) {
+        computeValuesForNewInputs(newInputs, features);
         return currentValues;
     }
     
-    public void setFeatureWindowSize(int windowSize, int bufferSize)
+    public String getFeatureNameForModifierID(int id, HashMap<String, Feature> features)
     {
-        featureLibrary.initLibrary(windowSize, bufferSize);
-        setDirty(true);
-        setDirty(false);
+        for(Feature feature:features.values())
+        {
+            if(feature instanceof FeatureSingleModifierOutput)
+            {
+                if(id == ((FeatureSingleModifierOutput) feature).getOutputModifierID())
+                {
+                    return ((FeatureSingleModifierOutput) feature).name;
+                }
+            }
+            else
+            {
+                int ptr = 0;
+                for(int matchID:((FeatureMultipleModifierOutput) feature).getOutputModifierIDs())
+                {
+                    if(id == matchID)
+                    {
+                        return ((FeatureMultipleModifierOutput) feature).name + ":" + Integer.toString(ptr);
+                    }
+                    ptr++;
+                }
+            }
+        }
+        return "not found";
     }
     
     

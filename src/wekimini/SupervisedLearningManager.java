@@ -28,6 +28,7 @@ import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.Model;
 import wekimini.learning.ModelBuilder;
 import wekimini.learning.SupervisedLearningModel;
+import wekimini.modifiers.FeatureCollection;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCReceiver;
@@ -588,17 +589,17 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public void updateInputOutputConnections(boolean[][] newConnections, boolean features) {
         if(features)
         {
-            List<FeatureGroup> groups = w.getDataManager().featureManager.getFeatureGroups();
+            List<FeatureCollection> groups = w.getDataManager().featureManager.getFeatureGroups();
             setAbleToRun(false);
             for(int i = 0; i < groups.size(); i++)
             {
-                FeatureGroup fg  =  groups.get(i);
+                FeatureCollection fc  =  groups.get(i);
                 boolean[] onOff = new boolean[newConnections.length];
                 for(int j = 0; j < onOff.length; j++)
                 {
                     onOff[j] = newConnections[j][i];
                 }
-                fg.setSelectedFeatures(onOff);
+                fc.setSelectedFeatures(onOff);
             }
             notifyNewFeatureConnections(newConnections);
         }
@@ -637,13 +638,13 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public boolean[][] getConnectionMatrix(boolean features) {
         if(features)
         {
-            List<FeatureGroup> groups = w.getDataManager().featureManager.getFeatureGroups();
+            List<FeatureCollection> groups = w.getDataManager().featureManager.getFeatureGroups();
             boolean[][] connections = new boolean[groups.size()][w.getDataManager().featureManager.getFeatureNames().length];
             
             for(int i = 0; i < groups.size(); i++)
             {
-                FeatureGroup fg  =  groups.get(i);
-                connections[i] = fg.getConnections();
+                FeatureCollection fc  =  groups.get(i);
+                connections[i] = fc.getConnections();
             }
             
             boolean[][] output = new boolean[w.getDataManager().featureManager.getFeatureNames().length][groups.size()];
