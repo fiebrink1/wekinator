@@ -84,13 +84,13 @@ public class PlotPanel extends JPanel {
         {
             case 1: return Color.BLUE;
             case 2: return Color.RED;
-            case 3: return Color.YELLOW;
-            case 4: return Color.GREEN;
+            case 3: return Color.ORANGE;
+            case 4: return Color.PINK;
             case 5: return Color.BLACK;
-            case 6: return Color.CYAN;
-            case 7: return Color.MAGENTA;
-            case 8: return Color.PINK;
-            case 9: return Color.ORANGE;
+            case 6: return Color.MAGENTA;
+            case 7: return Color.GREEN;
+            case 8: return Color.CYAN;
+            case 9: return Color.YELLOW;
         }
         return Color.BLUE;
     }

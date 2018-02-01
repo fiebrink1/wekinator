@@ -27,7 +27,6 @@ public class FeatureGroup {
     private int dimensionality;
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private transient double[] currentValues;
-    private transient double[] lastInputs;
     private boolean dirtyFlag = true;
     private boolean testSetDirtyFlag = true;
     private int currentID = 0;
@@ -327,15 +326,6 @@ public class FeatureGroup {
         return dimensionality;
     }
     
-    public int getOutputNumber(FeatureGroup o) {
-        for (int i= 0; i < modifiers.size(); i++) {
-            if (modifiers.get(i).equals(o)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-    
     //Calculate outputs
     
     private void computeValuesForNewInputs(double[] newInputs) {
@@ -401,12 +391,7 @@ public class FeatureGroup {
 
     public double[] computeAndGetValuesForNewInputs(double[] newInputs) {
         computeValuesForNewInputs(newInputs);
-        lastInputs = newInputs;
         return currentValues;
-    }
-    
-    public double[] getLastInputs() {
-        return lastInputs; //is returning null when nothing is computed yet...
     }
     
     public void setFeatureWindowSize(int windowSize, int bufferSize)
