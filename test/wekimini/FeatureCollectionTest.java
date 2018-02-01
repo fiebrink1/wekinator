@@ -8,6 +8,8 @@ import java.lang.reflect.Field;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
+import wekimini.modifiers.Feature;
+import wekimini.modifiers.Feature.INPUTDIAGRAM;
 import wekimini.modifiers.FeatureCollection;
 import wekimini.modifiers.ModifierCollection;
 /**
@@ -161,5 +163,22 @@ public class FeatureCollectionTest {
         {
             
         }
+    }
+    
+    @Test
+    public void testDiagram()
+    {
+        Feature ft = fc.getFeatureForKey("MeanAccX");
+        assertEquals(INPUTDIAGRAM.ACCX, ft.diagram);
+        ft = fc.getFeatureForKey("MeanAccY");
+        assertEquals(INPUTDIAGRAM.ACCY, ft.diagram);
+        ft = fc.getFeatureForKey("MeanAccZ");
+        assertEquals(INPUTDIAGRAM.ACCZ, ft.diagram);
+        ft = fc.getFeatureForKey("MeanGyroX");
+        assertEquals(INPUTDIAGRAM.GYROX, ft.diagram);
+        ft = fc.getFeatureForKey("MeanGyroY");
+        assertEquals(INPUTDIAGRAM.GYROY, ft.diagram);
+        ft = fc.getFeatureForKey("MeanGyroZ");
+        assertEquals(INPUTDIAGRAM.GYROZ, ft.diagram);
     }
 }

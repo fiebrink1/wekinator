@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
+import wekimini.modifiers.Feature.INPUTDIAGRAM;
 import wekimini.modifiers.WindowedOperation.Operation;
 /**
  *
@@ -35,12 +37,7 @@ public final class FeatureCollection
     public FeatureCollection(String[] inputNames)
     {
         initLibrary(10, 10);
-        ArrayList<ModifiedInput> defaultModifiers = new ArrayList();
-        ModifiedInput rawInput = new PassThroughVector(inputNames, 0);
-        rawInput.inputID = 0;
-        rawInput.addToOutput = false;
-        defaultModifiers.add(rawInput);
-        modifiers = new ModifierCollection(defaultModifiers);
+        modifiers = new ModifierCollection(inputNames);
         addFeatureForKey("PassThroughAll");
     }
     
@@ -163,6 +160,18 @@ public final class FeatureCollection
     public String[] getNames()
     {
         return names;
+    }
+    
+    public Feature getFeatureForKey(String key) throws NoSuchElementException
+    {
+        for(Feature f:library)
+        {
+            if(f.name.equals(key))
+            {
+                return f;
+            }
+        }
+        throw new NoSuchElementException();
     }
     
     public boolean[] getConnections()
@@ -310,6 +319,23 @@ public final class FeatureCollection
     }
 }
 
+class FeatureUtil
+{
+    static INPUTDIAGRAM diagramFromInput(int index)
+    {
+        switch(index)
+        {
+            case 0: return INPUTDIAGRAM.ACCX;
+            case 1: return INPUTDIAGRAM.ACCY;
+            case 2: return INPUTDIAGRAM.ACCZ;
+            case 3: return INPUTDIAGRAM.GYROX;
+            case 4: return INPUTDIAGRAM.GYROY;
+            case 5: return INPUTDIAGRAM.GYROZ;
+        }
+        return INPUTDIAGRAM.UNKNOWN;
+    }
+}
+
 class FFTFeature extends FeatureSingleModifierOutput
 {
     
@@ -322,6 +348,7 @@ class FFTFeature extends FeatureSingleModifierOutput
         this.bins = selectedBins;
         this.totalBins = totalBins;
         this.index = index;
+        this.diagram = FeatureUtil.diagramFromInput(index);
     }
 
     @Override
@@ -348,6 +375,7 @@ class MaxFFT extends FeatureSingleModifierOutput
         this.bins = selectedBins;
         this.totalBins = totalBins;
         this.index = index;
+        this.diagram = FeatureUtil.diagramFromInput(index);
     }
 
     @Override
@@ -377,6 +405,7 @@ class MinFFT extends FeatureSingleModifierOutput
         this.bins = selectedBins;
         this.totalBins = totalBins;
         this.index = index;
+        this.diagram = FeatureUtil.diagramFromInput(index);
     }
 
     @Override
@@ -400,10 +429,11 @@ class WindowedFeature extends FeatureSingleModifierOutput
     
     ModifiedInput window;
     
-    public WindowedFeature(String name, Operation op, int inputIndex, int windowSize) {
+    public WindowedFeature(String name, Operation op, int index, int windowSize) {
         super(name);
-        this.window = new WindowedOperation("input-1",op,inputIndex,windowSize,0);
+        this.window = new WindowedOperation("input-1",op,index,windowSize,0);
         window.addRequiredModifierID(0);
+        this.diagram = FeatureUtil.diagramFromInput(index);
     }
     
     @Override
@@ -421,6 +451,7 @@ class PassThrough extends FeatureMultipleModifierOutput
     public PassThrough(String name, int[] indexes) {
         super(name);
         this.indexes = indexes;
+        this.diagram = INPUTDIAGRAM.MULTIPLE;
     }
 
     @Override
@@ -440,6 +471,7 @@ class PassThroughAll extends FeatureSingleModifierOutput
 {    
     public PassThroughAll(String name) {
         super(name);
+        this.diagram = INPUTDIAGRAM.MULTIPLE;
     }
 
     @Override
@@ -464,6 +496,7 @@ class BufferFeature extends FeatureSingleModifierOutput
         super(name);
         this.index = index;
         this.windowSize = windowSize;
+        this.diagram = FeatureUtil.diagramFromInput(index);
     }
 
     @Override
@@ -487,6 +520,7 @@ class MagnitudeFODFeature extends FeatureSingleModifierOutput
         super(name);
         this.inputs = inputs;
         this.windowSize = windowSize;
+        this.diagram = INPUTDIAGRAM.MULTIPLE;
     }
     
     @Override
@@ -527,6 +561,7 @@ class MagnitudeFeature extends FeatureSingleModifierOutput
         super(name);
         this.inputs = inputs;
         this.windowSize = windowSize;
+        this.diagram = INPUTDIAGRAM.MULTIPLE;
     }
     
     @Override
@@ -565,6 +600,7 @@ class FODRaw extends FeatureSingleModifierOutput
     {
         super(name);
         this.index = index;
+        this.diagram = FeatureUtil.diagramFromInput(index);
     }
     
     @Override
@@ -583,11 +619,12 @@ class WindowedFOD extends FeatureSingleModifierOutput
     int windowSize;
     int index;
     
-    public WindowedFOD(String name, Operation op, int inputIndex, int windowSize) {
+    public WindowedFOD(String name, Operation op, int index, int windowSize) {
         super(name);
         this.op = op;
-        this.index = inputIndex;
+        this.index = index;
         this.windowSize = windowSize;
+        this.diagram = FeatureUtil.diagramFromInput(index);
     }
     
     @Override
@@ -616,6 +653,7 @@ class CorrelateFeature extends FeatureSingleModifierOutput
         super(name);
         this.indexes = indexes;
         this.windowSize = windowSize;
+        this.diagram = INPUTDIAGRAM.MULTIPLE;
     }
     
     @Override

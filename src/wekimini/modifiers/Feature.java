@@ -13,8 +13,20 @@ import java.util.ArrayList;
  */
 public class Feature 
 {
+    public enum INPUTDIAGRAM {
+        ACCX, 
+        ACCY, 
+        ACCZ, 
+        GYROX, 
+        GYROY, 
+        GYROZ, 
+        MULTIPLE, 
+        UNKNOWN
+    }
+    
     public final String name;
     public final ArrayList<Integer> ids = new ArrayList();
+    public INPUTDIAGRAM diagram = INPUTDIAGRAM.UNKNOWN;
     
     public Feature(String name)
     {

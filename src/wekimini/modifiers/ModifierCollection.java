@@ -28,9 +28,14 @@ public class ModifierCollection {
     
     private ModifierCollection() {}
     
-    public ModifierCollection(List<ModifiedInput> modifiers) 
+    public ModifierCollection(String[] inputNames) 
     {
-        this.modifiers = new LinkedList<>(modifiers);
+        ArrayList<ModifiedInput> defaultModifiers = new ArrayList();
+        ModifiedInput rawInput = new PassThroughVector(inputNames, 0);
+        rawInput.inputID = 0;
+        rawInput.addToOutput = false;
+        defaultModifiers.add(rawInput);
+        this.modifiers = new LinkedList<>(defaultModifiers);
         refreshState();
     }
     
@@ -57,21 +62,15 @@ public class ModifierCollection {
     
     public int addModifier(ModifiedInput modifier)
     {
-        Boolean matched = false;
         for(ModifiedInput existingModifier:modifiers)
         {
             if(existingModifier.equals(modifier))
             {
-                matched = true;
-                modifier = existingModifier;
-                break;
+                return existingModifier.inputID;
             }
         }
-        if(!matched)
-        {
-            modifier.inputID = nextID();
-            modifiers.add(modifier);
-        }
+        modifier.inputID = nextID();
+        modifiers.add(modifier);
         refreshState();
         return modifier.inputID;
     }
