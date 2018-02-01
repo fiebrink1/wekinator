@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import wekimini.modifiers.FeatureCollection;
+import wekimini.modifiers.ModifierCollection;
 /**
  *
  * @author louismccallum

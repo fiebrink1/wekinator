@@ -7,7 +7,6 @@ package wekimini.modifiers;
 
 import java.util.ArrayList;
 import java.util.List;
-import wekimini.ModifierCollection;
 
 /**
  *
