@@ -27,6 +27,8 @@ public class Feature
     public final String name;
     public final ArrayList<Integer> ids = new ArrayList();
     public INPUTDIAGRAM diagram = INPUTDIAGRAM.UNKNOWN;
+    public ArrayList<String> tags = new ArrayList();
+    public String description;
     
     public Feature(String name)
     {

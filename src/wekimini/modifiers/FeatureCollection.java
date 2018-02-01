@@ -334,6 +334,12 @@ class FeatureUtil
         }
         return INPUTDIAGRAM.UNKNOWN;
     }
+    
+    static String tagForOperation(Operation op)
+    {
+        
+        return "";
+    }
 }
 
 class FFTFeature extends FeatureSingleModifierOutput
