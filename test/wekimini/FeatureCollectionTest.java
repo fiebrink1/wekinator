@@ -187,10 +187,8 @@ public class FeatureCollectionTest {
 //        assertEquals(wekimini.modifiers.InputDiagram.GYROZ, ft.diagram);
     }
     
-    @Test
-    public void testSearch()
+    public void testResultsForAccX(ArrayList<Feature> results)
     {
-        ArrayList<Feature> results = new ArrayList<>(Arrays.asList(fc.getFeaturesForKeyword("AccelerometerX")));
         assertTrue(results.contains(fc.getFeatureForKey("PassThroughAll")));
         assertTrue(results.contains(fc.getFeatureForKey("MeanAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("MaxAccX")));
@@ -207,19 +205,46 @@ public class FeatureCollectionTest {
         assertTrue(results.contains(fc.getFeatureForKey("FFTAccX7Bins")));
         assertTrue(results.contains(fc.getFeatureForKey("MaxFFTAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("MinFFTAccX")));
-        assertFalse(results.contains(fc.getFeatureForKey("MeanAccY")));
-        assertFalse(results.contains(fc.getFeatureForKey("MaxAccY")));
-        assertFalse(results.contains(fc.getFeatureForKey("StdDevAccY")));
-        assertFalse(results.contains(fc.getFeatureForKey("EnergyAccY")));
-        assertFalse(results.contains(fc.getFeatureForKey("BufferAccY")));
+        assertFalse(results.contains(fc.getFeatureForKey("MeanGyroY")));
+        assertFalse(results.contains(fc.getFeatureForKey("MaxGyroY")));
+        assertFalse(results.contains(fc.getFeatureForKey("StdDevGyroY")));
+        assertFalse(results.contains(fc.getFeatureForKey("EnergyGyroY")));
+        assertFalse(results.contains(fc.getFeatureForKey("BufferGyroY")));
         assertFalse(results.contains(fc.getFeatureForKey("MagGyro")));
         assertFalse(results.contains(fc.getFeatureForKey("MagFODGyro")));
-        assertFalse(results.contains(fc.getFeatureForKey("AccYFOD")));
-        assertFalse(results.contains(fc.getFeatureForKey("MeanFODAccY")));
-        assertFalse(results.contains(fc.getFeatureForKey("StdDevFODAccY")));
-        assertFalse(results.contains(fc.getFeatureForKey("CorrelateAccYZ")));
-        assertFalse(results.contains(fc.getFeatureForKey("FFTAccY7Bins")));
-        assertFalse(results.contains(fc.getFeatureForKey("MaxFFTAccY")));
-        assertFalse(results.contains(fc.getFeatureForKey("MinFFTAccY")));
+        assertFalse(results.contains(fc.getFeatureForKey("GyroYFOD")));
+        assertFalse(results.contains(fc.getFeatureForKey("MeanFODGyroY")));
+        assertFalse(results.contains(fc.getFeatureForKey("StdDevFODGyroY")));
+        assertFalse(results.contains(fc.getFeatureForKey("CorrelateGyroYZ")));
+        assertFalse(results.contains(fc.getFeatureForKey("FFTGyroY7Bins")));
+        assertFalse(results.contains(fc.getFeatureForKey("MaxFFTGyroY")));
+        assertFalse(results.contains(fc.getFeatureForKey("MinFFTGyroY")));
     }
+    
+    @Test
+    public void testSearch()
+    {
+        ArrayList<Feature> results = new ArrayList<>(Arrays.asList(fc.getFeaturesForKeyword("AccelerometerX")));
+        testResultsForAccX(results);
+        
+        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForKeyword("MeanAccX")));
+        assertEquals(1, results.size());
+        assertTrue(results.contains(fc.getFeatureForKey("MeanAccX")));
+        
+        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForKeyword("acc")));
+        testResultsForAccX(results);
+        
+    }
+    
+    @Test
+    public void testTagSearch()
+    {
+        ArrayList<Feature> results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"AccelerometerX"})));
+        testResultsForAccX(results);
+        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"AccelerometerX","Gibberish"})));
+        testResultsForAccX(results);
+        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"acc","ometer"})));
+        testResultsForAccX(results);
+    }
+    
 }

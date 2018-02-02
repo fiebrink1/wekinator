@@ -170,7 +170,7 @@ public final class FeatureCollection
     {
         for(Feature f:library)
         {
-            if(f.name.equals(key))
+            if(f.name.toLowerCase().equals(key.toLowerCase()))
             {
                 return f;
             }
@@ -185,17 +185,19 @@ public final class FeatureCollection
         {
             if(!features.contains(f))
             {
-                if(f.name.equals(search))
+                if(f.name.toLowerCase().contains(search.toLowerCase()))
                 {
                     features.add(f);
-                    break;
                 }
-                for(String matchTag:f.tags)
+                else
                 {
-                    if(search.equals(matchTag))
+                    for(String matchTag:f.tags)
                     {
-                        features.add(f);
-                        break;
+                        if(matchTag.toLowerCase().contains(search.toLowerCase()))
+                        {
+                            features.add(f);
+                            break;
+                        }
                     }
                 }
             }
@@ -216,7 +218,7 @@ public final class FeatureCollection
                 {
                     for(String matchTag:f.tags)
                     {
-                        if(searchTag.equals(matchTag))
+                        if(matchTag.toLowerCase().contains(searchTag.toLowerCase()))
                         {
                             features.add(f);
                             break;

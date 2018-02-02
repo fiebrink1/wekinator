@@ -5,7 +5,15 @@
  */
 package wekimini.gui;
 
+import java.awt.Color;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import org.jdesktop.swingworker.SwingWorker;
+import wekimini.DataManager;
 import wekimini.Wekinator;
+import wekimini.modifiers.Feature;
 
 /**
  *
@@ -25,6 +33,61 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         this.w = w;
     }
 
+    public void updateResultsTable(Feature[] results)
+    {
+        resultsTable.setDefaultRenderer(Feature.class, new ResultsTableRenderer());
+        resultsTable.setModel(new ResultsTableModel(results));
+    }
+    
+    class ResultsTableModel extends AbstractTableModel
+    {
+        private Feature[] f;
+        
+        public ResultsTableModel(Feature[] f)
+        {
+            this.f = f;
+        }
+
+        @Override
+        public int getRowCount() {
+            return f.length;
+        }
+
+        @Override
+        public int getColumnCount() {
+            return 1;
+        }
+
+        @Override
+        public Feature getValueAt(int rowIndex, int columnIndex) {
+            return f[rowIndex];
+        }
+        
+        @Override
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+    }
+    
+    public class ResultsTableRenderer extends JLabel implements TableCellRenderer 
+    {
+        ResultsTableRenderer()
+        {
+            setOpaque(true);
+        }
+
+        @Override
+        public JLabel getTableCellRendererComponent(
+                        JTable table, Object value,
+                        boolean isSelected, boolean hasFocus,
+                        int row, int column) {
+            Feature f = (Feature)value;
+            ResultsTableModel model = (ResultsTableModel)table.getModel();
+            setText(f.name);
+            return this;
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -62,6 +125,11 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         searchBar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchBarActionPerformed(evt);
+            }
+        });
+        searchBar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                searchBarKeyTyped(evt);
             }
         });
 
@@ -135,6 +203,30 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private void searchBarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBarActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_searchBarActionPerformed
+
+    private void searchBarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchBarKeyTyped
+         SwingWorker worker = new SwingWorker<Feature[] ,Void>()
+        {   
+            Feature[] f;
+            
+            @Override
+            public Feature[]  doInBackground()
+            {
+                f = w.getDataManager().featureManager.getFeatureGroups().get(0).getFeaturesForKeyword(searchBar.getText());
+                return f;
+
+            }
+            
+            @Override
+            public void done()
+            {
+                updateResultsTable(f);
+            }
+        };
+        worker.execute();
+        
+        
+    }//GEN-LAST:event_searchBarKeyTyped
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
