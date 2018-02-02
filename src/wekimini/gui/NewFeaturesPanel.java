@@ -31,12 +31,66 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     public void update(Wekinator w)
     {
         this.w = w;
+        availableFiltersTable.setModel(new FiltersTableModel(w.getDataManager().featureManager.getFeatureGroups().get(0).getTags()));
+        availableFiltersTable.setDefaultRenderer(String.class, new FiltersTableRenderer());
     }
 
     public void updateResultsTable(Feature[] results)
     {
         resultsTable.setDefaultRenderer(Feature.class, new ResultsTableRenderer());
         resultsTable.setModel(new ResultsTableModel(results));
+    }
+    
+    class FiltersTableModel extends AbstractTableModel
+    {
+        private String[] tags;
+        
+        public FiltersTableModel(String[] tags)
+        {
+            this.tags = tags;
+        }
+
+        @Override
+        public int getRowCount() {
+            return (int)Math.ceil(tags.length/3);
+        }
+
+        @Override
+        public int getColumnCount() {
+            return 3;
+        }
+
+        @Override
+        public String getValueAt(int rowIndex, int columnIndex) {
+            int r = rowIndex * getColumnCount();
+            int c = columnIndex % getColumnCount();
+            System.out.println("rowIndex:"+rowIndex+" columnIndex:" + columnIndex + " r:" + r + " c:" + c + " index:" + (r+c));
+            return tags[c + r];
+        }
+        
+        @Override
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+    }
+    
+    public class FiltersTableRenderer extends JLabel implements TableCellRenderer 
+    {
+        FiltersTableRenderer()
+        {
+            setOpaque(true);
+        }
+
+        @Override
+        public JLabel getTableCellRendererComponent(
+                        JTable table, Object value,
+                        boolean isSelected, boolean hasFocus,
+                        int row, int column) {
+            String tag = (String)value;
+            FiltersTableModel model = (FiltersTableModel)table.getModel();
+            setText(tag);
+            return this;
+        }
     }
     
     class ResultsTableModel extends AbstractTableModel

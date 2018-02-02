@@ -779,7 +779,7 @@ class FODRaw extends FeatureSingleModifierOutput
         super(name);
         this.index = index;
         this.diagram = FeatureMetadata.diagramForInput(index);
-        tags.add("1st Order Difference");
+        tags.add("1st Order Diff");
         tags.add("Raw");
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
     }
@@ -806,7 +806,7 @@ class WindowedFOD extends FeatureSingleModifierOutput
         this.index = index;
         this.windowSize = windowSize;
         this.diagram = FeatureMetadata.diagramForInput(index);
-        tags.add("1st Order Difference");
+        tags.add("1st Order Diff");
         tags.add(FeatureMetadata.tagForOperation(op));
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
     }
