@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import wekimini.modifiers.Feature;
-import wekimini.modifiers.Feature.INPUTDIAGRAM;
+import wekimini.modifiers.Feature.InputDiagram;
 import wekimini.modifiers.FeatureCollection;
 import wekimini.modifiers.ModifierCollection;
 /**
@@ -169,16 +169,16 @@ public class FeatureCollectionTest {
     public void testDiagram()
     {
         Feature ft = fc.getFeatureForKey("MeanAccX");
-        assertEquals(INPUTDIAGRAM.ACCX, ft.diagram);
+        assertEquals(InputDiagram.ACCX, ft.diagram);
         ft = fc.getFeatureForKey("MeanAccY");
-        assertEquals(INPUTDIAGRAM.ACCY, ft.diagram);
+        assertEquals(InputDiagram.ACCY, ft.diagram);
         ft = fc.getFeatureForKey("MeanAccZ");
-        assertEquals(INPUTDIAGRAM.ACCZ, ft.diagram);
+        assertEquals(InputDiagram.ACCZ, ft.diagram);
         ft = fc.getFeatureForKey("MeanGyroX");
-        assertEquals(INPUTDIAGRAM.GYROX, ft.diagram);
+        assertEquals(InputDiagram.GYROX, ft.diagram);
         ft = fc.getFeatureForKey("MeanGyroY");
-        assertEquals(INPUTDIAGRAM.GYROY, ft.diagram);
+        assertEquals(InputDiagram.GYROY, ft.diagram);
         ft = fc.getFeatureForKey("MeanGyroZ");
-        assertEquals(INPUTDIAGRAM.GYROZ, ft.diagram);
+        assertEquals(InputDiagram.GYROZ, ft.diagram);
     }
 }

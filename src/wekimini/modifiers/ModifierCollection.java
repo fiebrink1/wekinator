@@ -24,7 +24,7 @@ public class ModifierCollection {
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private transient double[] currentValues;
     private int currentID = 0;
-    public String[] valueMap;
+    private String[] valueMap;
     
     private ModifierCollection() {}
     
@@ -200,7 +200,7 @@ public class ModifierCollection {
         }
     }
     
-    private int indexForID(int id)
+    public int indexForID(int id)
     {
         for(int i = 0; i < modifiers.size(); i++)
         {
@@ -210,6 +210,16 @@ public class ModifierCollection {
             }
         }
         return -1;
+    }
+    
+    public String[] getOutputNames()
+    {
+        return valueMap;
+    }
+    
+    public String nameForIndex(int index)
+    {
+        return valueMap[index];
     }
     
     public List<ModifiedInput> getModifiers() {
@@ -324,25 +334,7 @@ public class ModifierCollection {
         }
         return "not found";
     }
-    
-    
-    public String[] getOutputNames() {
-        int currentIndex = 0;
-        String[] s = new String[getOutputDimensionality()];
-        for (ModifiedInput o : modifiers) {
-            if (o instanceof ModifiedInputSingle) {
-                s[currentIndex] = ((ModifiedInputSingle)o).getName();
-                currentIndex++;
-            } else {
-                for (int i = 0 ; i < o.getSize(); i++) {
-                    s[currentIndex] = ((ModifiedInputVector)o).getNames()[i];
-                    currentIndex++;
-                }
-            }
-        }
-        return s;
-    }  
-    
+   
     //Property Change Listeners
     
     public void addPropertyChangeListener(PropertyChangeListener listener) {

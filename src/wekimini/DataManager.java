@@ -927,7 +927,7 @@ public class DataManager {
             int ptr = 0;
             for(int attributeIndex:indices)
             {
-                selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeaturesGroup().getModifiers().valueMap[attributeIndex];
+                selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeaturesGroup().getModifiers().nameForIndex(attributeIndex);
                 ptr++;
             }
         }

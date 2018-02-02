@@ -8,9 +8,10 @@ package wekimini.modifiers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
-import wekimini.modifiers.Feature.INPUTDIAGRAM;
+import wekimini.modifiers.Feature.InputDiagram;
 import wekimini.modifiers.WindowedOperation.Operation;
 /**
  *
@@ -25,12 +26,12 @@ public final class FeatureCollection
     private ModifierCollection modifiers;
     private boolean dirtyFlag = true;
     private boolean testSetDirtyFlag = true;
-    private final int ACCX = 0;
-    private final int ACCY = 1;
-    private final int ACCZ = 2;
-    private final int GYROX = 3;
-    private final int GYROY = 4;
-    private final int GYROZ = 5;
+    static final int ACCX = 0;
+    static final int ACCY = 1;
+    static final int ACCZ = 2;
+    static final int GYROX = 3;
+    static final int GYROY = 4;
+    static final int GYROZ = 5;
        
     private FeatureCollection(){}
     
@@ -319,25 +320,58 @@ public final class FeatureCollection
     }
 }
 
-class FeatureUtil
+class FeatureMetadata
 {
-    static INPUTDIAGRAM diagramFromInput(int index)
+    static InputDiagram diagramForInput(int index)
     {
         switch(index)
         {
-            case 0: return INPUTDIAGRAM.ACCX;
-            case 1: return INPUTDIAGRAM.ACCY;
-            case 2: return INPUTDIAGRAM.ACCZ;
-            case 3: return INPUTDIAGRAM.GYROX;
-            case 4: return INPUTDIAGRAM.GYROY;
-            case 5: return INPUTDIAGRAM.GYROZ;
+            case FeatureCollection.ACCX: return InputDiagram.ACCX;
+            case FeatureCollection.ACCY: return InputDiagram.ACCY;
+            case FeatureCollection.ACCZ: return InputDiagram.ACCZ;
+            case FeatureCollection.GYROX: return InputDiagram.GYROX;
+            case FeatureCollection.GYROY: return InputDiagram.GYROY;
+            case FeatureCollection.GYROZ: return InputDiagram.GYROZ;
         }
-        return INPUTDIAGRAM.UNKNOWN;
+        return InputDiagram.UNKNOWN;
+    }
+    
+    static String[] tagsForInput(int index)
+    {
+        switch(index)
+        {
+            case FeatureCollection.ACCX: return new String[]{"AccelerometerX", "Accelerometer"};
+            case FeatureCollection.ACCY: return new String[]{"AccelerometerY", "Accelerometer"};
+            case FeatureCollection.ACCZ: return new String[]{"AccelerometerZ", "Accelerometer"};
+            case FeatureCollection.GYROX: return new String[]{"GyroscopeX", "Gyroscope"};
+            case FeatureCollection.GYROY: return new String[]{"GyroscopeY", "Gyroscope"};
+            case FeatureCollection.GYROZ: return new String[]{"GyroscopeZ", "Gyroscope"};
+        }
+        return new String[0];
     }
     
     static String tagForOperation(Operation op)
     {
-        
+        if(op.getClass().equals(AverageWindowOperation.class))
+        {
+            return "Mean";
+        }
+        else if(op.getClass().equals(StdDevWindowOperation.class))
+        {
+            return "Standard Deviation";
+        }
+        else if(op.getClass().equals(EnergyWindowOperation.class))
+        {
+            return "Energy";
+        }
+        else if(op.getClass().equals(MaxWindowOperation.class))
+        {
+            return "Max";
+        }
+        else if(op.getClass().equals(MinWindowOperation.class))
+        {
+            return "Min";
+        }
         return "";
     }
 }
@@ -354,7 +388,10 @@ class FFTFeature extends FeatureSingleModifierOutput
         this.bins = selectedBins;
         this.totalBins = totalBins;
         this.index = index;
-        this.diagram = FeatureUtil.diagramFromInput(index);
+        this.diagram = FeatureMetadata.diagramForInput(index);
+        tags.add("FFT");
+        tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
+        
     }
 
     @Override
@@ -381,7 +418,10 @@ class MaxFFT extends FeatureSingleModifierOutput
         this.bins = selectedBins;
         this.totalBins = totalBins;
         this.index = index;
-        this.diagram = FeatureUtil.diagramFromInput(index);
+        this.diagram = FeatureMetadata.diagramForInput(index);
+        tags.add("FFT");
+        tags.add("Max");
+        tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
     }
 
     @Override
@@ -411,7 +451,10 @@ class MinFFT extends FeatureSingleModifierOutput
         this.bins = selectedBins;
         this.totalBins = totalBins;
         this.index = index;
-        this.diagram = FeatureUtil.diagramFromInput(index);
+        this.diagram = FeatureMetadata.diagramForInput(index);
+        tags.add("FFT");
+        tags.add("Min");
+        tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
     }
 
     @Override
@@ -422,7 +465,7 @@ class MinFFT extends FeatureSingleModifierOutput
         fft.addRequiredModifierID(0);
         int fftID = addModifier(mc,fft);
         
-        ModifiedInput min = new MinInputs("max",0);
+        ModifiedInput min = new MinInputs("min",0);
         min.addRequiredModifierID(fftID);
         int minID = addModifier(mc,min);
         
@@ -439,7 +482,9 @@ class WindowedFeature extends FeatureSingleModifierOutput
         super(name);
         this.window = new WindowedOperation("input-1",op,index,windowSize,0);
         window.addRequiredModifierID(0);
-        this.diagram = FeatureUtil.diagramFromInput(index);
+        this.diagram = FeatureMetadata.diagramForInput(index);
+        tags.add(FeatureMetadata.tagForOperation(op));
+        tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
     }
     
     @Override
@@ -454,10 +499,22 @@ class PassThrough extends FeatureMultipleModifierOutput
 {
     int[] indexes;
     
-    public PassThrough(String name, int[] indexes) {
+    public PassThrough(String name, int[] inputs) {
         super(name);
-        this.indexes = indexes;
-        this.diagram = INPUTDIAGRAM.MULTIPLE;
+        this.indexes = inputs;
+        this.diagram = InputDiagram.MULTIPLE;
+        tags.add("Raw");
+        for(int input:inputs)
+        {
+            String[] inputTags = FeatureMetadata.tagsForInput(input);
+            for(String tag:inputTags)
+            {
+                if(!tags.contains(tag))
+                {
+                    tags.add(tag);
+                }
+            }
+        }
     }
 
     @Override
@@ -477,7 +534,16 @@ class PassThroughAll extends FeatureSingleModifierOutput
 {    
     public PassThroughAll(String name) {
         super(name);
-        this.diagram = INPUTDIAGRAM.MULTIPLE;
+        this.diagram = InputDiagram.MULTIPLE;
+        tags.add("Gyroscope");
+        tags.add("GyroscopeX");
+        tags.add("GyroscopeY");
+        tags.add("GyroscopeZ");
+        tags.add("Accelerometer");
+        tags.add("AccelerometerX");
+        tags.add("AccelerometerY");
+        tags.add("AccelerometerZ");
+        tags.add("Raw");
     }
 
     @Override
@@ -502,7 +568,9 @@ class BufferFeature extends FeatureSingleModifierOutput
         super(name);
         this.index = index;
         this.windowSize = windowSize;
-        this.diagram = FeatureUtil.diagramFromInput(index);
+        this.diagram = FeatureMetadata.diagramForInput(index);
+        tags.add("Buffer");
+        tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
     }
 
     @Override
@@ -526,7 +594,20 @@ class MagnitudeFODFeature extends FeatureSingleModifierOutput
         super(name);
         this.inputs = inputs;
         this.windowSize = windowSize;
-        this.diagram = INPUTDIAGRAM.MULTIPLE;
+        this.diagram = InputDiagram.MULTIPLE;
+        tags.add("Magnitude");
+        tags.add("1st Order Diff");
+        for(int input:inputs)
+        {
+            String[] inputTags = FeatureMetadata.tagsForInput(input);
+            for(String tag:inputTags)
+            {
+                if(!tags.contains(tag))
+                {
+                    tags.add(tag);
+                }
+            }
+        }
     }
     
     @Override
@@ -567,7 +648,19 @@ class MagnitudeFeature extends FeatureSingleModifierOutput
         super(name);
         this.inputs = inputs;
         this.windowSize = windowSize;
-        this.diagram = INPUTDIAGRAM.MULTIPLE;
+        this.diagram = InputDiagram.MULTIPLE;
+        tags.add("Magnitude");
+        for(int input:inputs)
+        {
+            String[] inputTags = FeatureMetadata.tagsForInput(input);
+            for(String tag:inputTags)
+            {
+                if(!tags.contains(tag))
+                {
+                    tags.add(tag);
+                }
+            }
+        }
     }
     
     @Override
@@ -606,7 +699,10 @@ class FODRaw extends FeatureSingleModifierOutput
     {
         super(name);
         this.index = index;
-        this.diagram = FeatureUtil.diagramFromInput(index);
+        this.diagram = FeatureMetadata.diagramForInput(index);
+        tags.add("1st Order Difference");
+        tags.add("Raw");
+        tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
     }
     
     @Override
@@ -630,7 +726,10 @@ class WindowedFOD extends FeatureSingleModifierOutput
         this.op = op;
         this.index = index;
         this.windowSize = windowSize;
-        this.diagram = FeatureUtil.diagramFromInput(index);
+        this.diagram = FeatureMetadata.diagramForInput(index);
+        tags.add("1st Order Difference");
+        tags.add(FeatureMetadata.tagForOperation(op));
+        tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
     }
     
     @Override
@@ -655,11 +754,23 @@ class CorrelateFeature extends FeatureSingleModifierOutput
     int windowSize;
     int[] indexes;
     
-    public CorrelateFeature(String name, int indexes[], int windowSize) {
+    public CorrelateFeature(String name, int inputs[], int windowSize) {
         super(name);
-        this.indexes = indexes;
+        this.indexes = inputs;
         this.windowSize = windowSize;
-        this.diagram = INPUTDIAGRAM.MULTIPLE;
+        this.diagram = InputDiagram.MULTIPLE;
+        tags.add("Correlation");
+        for(int input:inputs)
+        {
+            String[] inputTags = FeatureMetadata.tagsForInput(input);
+            for(String tag:inputTags)
+            {
+                if(!tags.contains(tag))
+                {
+                    tags.add(tag);
+                }
+            }
+        }
     }
     
     @Override

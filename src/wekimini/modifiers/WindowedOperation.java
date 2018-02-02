@@ -69,32 +69,6 @@ public class WindowedOperation extends ModifiedInputSingle {
         return value;
     }
     
-    public static void main(String[] args) {
-        
-        Operation avg = new Operation() {
-
-            @Override
-            public double doOperation(double[] vals, int startPtr) {
-                double sum = 0;
-                for (int i = 0; i < vals.length; i++) {
-                    sum += vals[i];
-                }
-                return sum / vals.length;
-            }
-
-            @Override
-            public String shortName() {
-                return "Avg";
-            }
-        };
-        WindowedOperation bi = new WindowedOperation("feat1", avg, 0, 3, 1);
-   
-        for (int i = 0; i < 10; i++) {
-            bi.updateForInputs(new double[] {i});
-            double d = bi.getValue();
-        }
-    }
-    
     public interface Operation {
         public double doOperation(double[] vals, int startPointer);
         public String shortName();

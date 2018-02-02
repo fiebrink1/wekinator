@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 public class Feature 
 {
-    public enum INPUTDIAGRAM {
+    public enum InputDiagram {
         ACCX, 
         ACCY, 
         ACCZ, 
@@ -26,7 +26,7 @@ public class Feature
     
     public final String name;
     public final ArrayList<Integer> ids = new ArrayList();
-    public INPUTDIAGRAM diagram = INPUTDIAGRAM.UNKNOWN;
+    public InputDiagram diagram = InputDiagram.UNKNOWN;
     public ArrayList<String> tags = new ArrayList();
     public String description;
     
