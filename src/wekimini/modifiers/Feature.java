@@ -11,10 +11,17 @@ import java.util.ArrayList;
  *
  * @author louismccallum
  */
+
 public class Feature 
 {
+    public final String name;
+    public final ArrayList<Integer> ids = new ArrayList();
+    public InputDiagram diagram = InputDiagram.UNKNOWN;
+    public ArrayList<String> tags = new ArrayList();
+    public String description;
+    
     public enum InputDiagram {
-        ACCX, 
+        ACCX,
         ACCY, 
         ACCZ, 
         GYROX, 
@@ -24,17 +31,11 @@ public class Feature
         UNKNOWN
     }
     
-    public final String name;
-    public final ArrayList<Integer> ids = new ArrayList();
-    public InputDiagram diagram = InputDiagram.UNKNOWN;
-    public ArrayList<String> tags = new ArrayList();
-    public String description;
-    
     public Feature(String name)
     {
         this.name = name;
     }
-
+    
     public void addFeature(ModifierCollection mc)
     {
         

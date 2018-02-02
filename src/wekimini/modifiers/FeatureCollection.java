@@ -26,6 +26,7 @@ public final class FeatureCollection
     private ModifierCollection modifiers;
     private boolean dirtyFlag = true;
     private boolean testSetDirtyFlag = true;
+    private String[] tags;
     static final int ACCX = 0;
     static final int ACCY = 1;
     static final int ACCZ = 2;
@@ -146,6 +147,8 @@ public final class FeatureCollection
             addFeatureForKey(key);
         }
         
+        updateTags();
+        
     }
     
     public ModifierCollection getModifiers()
@@ -173,6 +176,80 @@ public final class FeatureCollection
             }
         }
         throw new NoSuchElementException();
+    }
+    
+    public Feature[] getFeaturesForKeyword(String search)
+    {
+        ArrayList<Feature> features = new ArrayList();
+        for(Feature f:library)
+        {
+            if(!features.contains(f))
+            {
+                if(f.name.equals(search))
+                {
+                    features.add(f);
+                    break;
+                }
+                for(String matchTag:f.tags)
+                {
+                    if(search.equals(matchTag))
+                    {
+                        features.add(f);
+                        break;
+                    }
+                }
+            }
+        }
+        Feature[] f = new Feature[features.size()];
+        f = features.toArray(f);
+        return f;
+    }
+    
+    public Feature[] getFeaturesForTags(String[] searchTags)
+    {
+        ArrayList<Feature> features = new ArrayList();
+        for(String searchTag:searchTags)
+        {
+            for(Feature f:library)
+            {
+                if(!features.contains(f))
+                {
+                    for(String matchTag:f.tags)
+                    {
+                        if(searchTag.equals(matchTag))
+                        {
+                            features.add(f);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        Feature[] f = new Feature[features.size()];
+        f = features.toArray(f);
+        return f;
+    }
+    
+    public String[] getTags()
+    {
+        return tags;
+    }
+    
+    public void updateTags()
+    {
+        ArrayList<String> newTags = new ArrayList();
+        for(Feature f:library)
+        {
+            for(String tag:f.tags)
+            {
+                if(!newTags.contains(tag))
+                {
+                    newTags.add(tag);
+                }
+            }
+        }
+        tags = new String[newTags.size()];
+        tags = newTags.toArray(tags);
     }
     
     public boolean[] getConnections()
