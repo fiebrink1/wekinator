@@ -210,20 +210,26 @@ public final class FeatureCollection
     public Feature[] getFeaturesForTags(String[] searchTags)
     {
         ArrayList<Feature> features = new ArrayList();
-        for(String searchTag:searchTags)
+        for(Feature f:library)
         {
-            for(Feature f:library)
+            if(!features.contains(f))
             {
-                if(!features.contains(f))
+                int matches = 0;
+                for(String searchTag:searchTags)
                 {
+                    boolean matched = false;
                     for(String matchTag:f.tags)
                     {
                         if(matchTag.toLowerCase().contains(searchTag.toLowerCase()))
                         {
-                            features.add(f);
-                            break;
+                            matches++;
                         }
                     }
+
+                }
+                if(matches == searchTags.length)
+                {
+                    features.add(f);
                 }
             }
         }

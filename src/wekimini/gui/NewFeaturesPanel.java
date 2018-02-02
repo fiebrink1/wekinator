@@ -6,8 +6,15 @@
 package wekimini.gui;
 
 import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import org.jdesktop.swingworker.SwingWorker;
@@ -21,9 +28,11 @@ import wekimini.modifiers.Feature;
  */
 public class NewFeaturesPanel extends javax.swing.JPanel {
     private Wekinator w;
+    ArrayList<String> selectedFilters = new ArrayList();
     /**
      * Creates new form NewFeaturesPanel
      */
+    
     public NewFeaturesPanel() {
         initComponents();
     }
@@ -33,7 +42,49 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         this.w = w;
         availableFiltersTable.setModel(new FiltersTableModel(w.getDataManager().featureManager.getFeatureGroups().get(0).getTags()));
         availableFiltersTable.setDefaultRenderer(String.class, new FiltersTableRenderer());
+        MouseListener tableMouseListener = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JTable tbl = (JTable)e.getSource();
+                int row = tbl.rowAtPoint(e.getPoint());
+                int col = tbl.columnAtPoint(e.getPoint());
+                String tag = (String)tbl.getModel().getValueAt(row, col);
+                if(selectedFilters.contains(tag))
+                {
+                    System.out.println("Deselected " + tag);
+                    selectedFilters.remove(tag);
+                }
+                else
+                {
+                    System.out.println("Selected " + tag);
+                    selectedFilters.add(tag);
+                }
+                SwingWorker worker = new SwingWorker<Feature[] ,Void>()
+                {   
+                    Feature[] f;
+
+                    @Override
+                    public Feature[]  doInBackground()
+                    {
+                        String[] sf = new String[selectedFilters.size()];
+                        sf = selectedFilters.toArray(sf);
+                        f = w.getDataManager().featureManager.getFeatureGroups().get(0).getFeaturesForTags(sf);
+                        return f;
+                    }
+
+                    @Override
+                    public void done()
+                    {
+                        updateResultsTable(f);
+                    }
+                };
+                worker.execute();
+            }
+        };
+        availableFiltersTable.addMouseListener(tableMouseListener);
+
     }
+    
 
     public void updateResultsTable(Feature[] results)
     {
@@ -64,7 +115,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         public String getValueAt(int rowIndex, int columnIndex) {
             int r = rowIndex * getColumnCount();
             int c = columnIndex % getColumnCount();
-            System.out.println("rowIndex:"+rowIndex+" columnIndex:" + columnIndex + " r:" + r + " c:" + c + " index:" + (r+c));
+            //System.out.println("rowIndex:"+rowIndex+" columnIndex:" + columnIndex + " r:" + r + " c:" + c + " index:" + (r+c));
             return tags[c + r];
         }
         
@@ -175,7 +226,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         ));
         jScrollPane3.setViewportView(jTable2);
 
-        searchBar.setText("jTextField1");
+        searchBar.setText("Search");
         searchBar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchBarActionPerformed(evt);
