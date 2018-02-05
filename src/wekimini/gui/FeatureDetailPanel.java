@@ -5,7 +5,13 @@
  */
 package wekimini.gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS;
+import javax.swing.Timer;
+import weka.core.Instance;
+import wekimini.Wekinator;
+import wekimini.gui.PlotFrame.PlotRowModel;
 import wekimini.modifiers.Feature;
 
 /**
@@ -14,11 +20,10 @@ import wekimini.modifiers.Feature;
  */
 public class FeatureDetailPanel extends javax.swing.JPanel {
 
-    /**
-     * Creates new form FeatureDetailPanel
-     */
-    
     private PlotPanel plotPanel;
+    private final int REFRESH_RATE = 20;
+    private PlotRowModel model;
+    private Wekinator w;
     
     public FeatureDetailPanel() {
         initComponents();
@@ -27,9 +32,38 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         plotScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
     }
     
-    public void setFeature(Feature ft)
+    public void update(Wekinator w)
     {
+        this.w = w;
+        Timer timer = new Timer(REFRESH_RATE, new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+            Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
+            if(in != null)
+            {
+                if(model.isStreaming)
+                {
+                    float val = (float) in.value(model.featureIndex);
+                    //System.out.print("adding " + val + " to model " + model.featureIndex);
+                    model.addPoint(val);
+                }
+            }
+        }    
+        });  
+        timer.start();
+    }
+    
+    public void setModel(PlotRowModel model)
+    {
+        this.model = model;
+        plotPanel.updateModel(model);
         
+        plotPanel.updateWidth(model.isStreaming);
+        repaint();
+        plotScrollPane.revalidate();
+        validate();
+        plotScrollPane.setViewportView(plotPanel);
+        plotScrollPane.revalidate();
+        validate();
     }
 
     /**

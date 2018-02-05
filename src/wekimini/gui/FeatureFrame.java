@@ -18,6 +18,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import wekimini.Wekinator;
+import wekimini.gui.PlotFrame.PlotRowModel;
 import wekimini.modifiers.Feature;
 
 /**
@@ -38,11 +39,11 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         initComponents();
         this.w = w;
         newFeaturesPanel.update(w);
+        featureDetailPanel.update(w);
         newFeaturesPanel.delegate = this;
         currentFeaturesTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         currentFeaturesTable.setDefaultRenderer(Feature.class, new CurrentFeaturesTableRenderer());
         currentFeaturesTable.setTableHeader(null);
-        //currentFeaturesTable.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
         updateCurrentFeaturesTable();
         MouseListener featuresMouseListener = new MouseAdapter() {
             @Override
@@ -307,7 +308,8 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
     
     public void newFeatureSelected(Feature ft)
     {
-        featureDetailPanel.setFeature(ft);
+//        PlotRowModel model = new PlotRowModel();
+//        featureDetailPanel
     }
     
     public void featureListUpdated()

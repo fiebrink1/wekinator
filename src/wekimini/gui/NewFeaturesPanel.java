@@ -31,6 +31,7 @@ import wekimini.modifiers.Feature;
  * @author louismccallum
  */
 public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFieldDelegate {
+    
     private Wekinator w;
     ArrayList<String> selectedFilters = new ArrayList();
     private Feature[] currentResults;
