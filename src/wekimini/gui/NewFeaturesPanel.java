@@ -6,6 +6,8 @@
 package wekimini.gui;
 
 import java.awt.Color;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -17,6 +19,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import org.jdesktop.swingworker.SwingWorker;
 import wekimini.DataManager;
 import wekimini.Wekinator;
@@ -36,6 +40,23 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     public NewFeaturesPanel() {
         initComponents();
         selectedFiltersTokenField.setDelegate(this);
+        resultsTable.setRowSelectionAllowed(false);
+        resultsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        resultsTable.setTableHeader(null);
+        availableFiltersTable.setTableHeader(null);
+    }
+
+    private void resizeColumns() {
+        int tW = resultsTable.getWidth();
+        TableColumn column;
+        float[] columnWidthPercentage = {0.75f, 0.15f};
+        TableColumnModel jTableColumnModel = resultsTable.getColumnModel();
+        int cantCols = jTableColumnModel.getColumnCount();
+        for (int i = 0; i < cantCols; i++) {
+            column = jTableColumnModel.getColumn(i);
+            int pWidth = Math.round(columnWidthPercentage[i] * tW);
+            column.setPreferredWidth(pWidth);
+        }
     }
     
     @Override
@@ -70,11 +91,31 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
             }
         };
         availableFiltersTable.addMouseListener(tableMouseListener);
+        
+        MouseListener resultsMouseListener = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = resultsTable.rowAtPoint(e.getPoint());
+                int column = resultsTable.columnAtPoint(e.getPoint());
+                System.out.println("row:" + row + " column:" + column);
+                switch(column)
+                {
+                    case 0: break;
+                    case 1: addFeature((Feature)resultsTable.getModel().getValueAt(row, 0)); break;
+                }
+            }
+        };
+        resultsTable.addMouseListener(resultsMouseListener);
+    }
+    
+    public void addFeature(Feature ft)
+    {
+        w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey(ft.name);
     }
     
     public void updateFilters()
     {
-         selectedFiltersTokenField.setTokens(selectedFilters);
+        selectedFiltersTokenField.setTokens(selectedFilters);
         availableFiltersTable.repaint();
         SwingWorker worker = new SwingWorker<Feature[] ,Void>()
         {   
@@ -100,8 +141,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     
     public void updateResultsTable(Feature[] results)
     {
+        resultsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         resultsTable.setDefaultRenderer(Feature.class, new ResultsTableRenderer());
         resultsTable.setModel(new ResultsTableModel(results));
+        resizeColumns();
     }
     
     class FiltersTableModel extends AbstractTableModel
@@ -175,18 +218,28 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
 
         @Override
         public int getColumnCount() {
-            return 1;
+            return 2;
         }
 
         @Override
-        public Feature getValueAt(int rowIndex, int columnIndex) {
-            return f[rowIndex];
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            if(columnIndex == 0)
+            {
+                return f[rowIndex];
+            }
+            return "Add";
         }
         
-        @Override
-        public Class getColumnClass(int c) {
-            return getValueAt(0, c).getClass();
+        @Override 
+        public boolean isCellEditable(int rowIndex, int columnIndex)
+        {
+            return false;
         }
+        
+//        @Override
+//        public Class getColumnClass(int c) {
+//            return getValueAt(0, c).getClass();
+//        }
     }
     
     public class ResultsTableRenderer extends JLabel implements TableCellRenderer 
@@ -201,9 +254,17 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                         JTable table, Object value,
                         boolean isSelected, boolean hasFocus,
                         int row, int column) {
-            Feature f = (Feature)value;
-            ResultsTableModel model = (ResultsTableModel)table.getModel();
-            setText(f.name);
+            setBackground(Color.WHITE);
+            if(column == 0)
+            {
+                Feature f = (Feature)value;
+                ResultsTableModel model = (ResultsTableModel)table.getModel();
+                setText(f.name);
+            }
+            else
+            {
+               setText("Add"); 
+            }
             return this;
         }
     }

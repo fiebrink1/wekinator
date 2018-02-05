@@ -44,4 +44,10 @@ public class Feature
         ids.add(id);
         return id;
     }  
+    
+    @Override
+    public String toString()
+    {
+        return name;
+    }
 }
