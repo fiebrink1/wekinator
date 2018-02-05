@@ -33,10 +33,9 @@ import wekimini.modifiers.Feature;
 public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFieldDelegate {
     private Wekinator w;
     ArrayList<String> selectedFilters = new ArrayList();
-    /**
-     * Creates new form NewFeaturesPanel
-     */
-    
+    public FeatureEditorDelegate delegate;
+    private boolean hasResizedColumns = false;
+
     public NewFeaturesPanel() {
         initComponents();
         selectedFiltersTokenField.setDelegate(this);
@@ -44,9 +43,11 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         resultsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         resultsTable.setTableHeader(null);
         availableFiltersTable.setTableHeader(null);
+        resultsTable.setDefaultRenderer(Feature.class, new ResultsTableRenderer());
     }
 
     private void resizeColumns() {
+        hasResizedColumns = true;
         int tW = resultsTable.getWidth();
         TableColumn column;
         float[] columnWidthPercentage = {0.75f, 0.15f};
@@ -98,19 +99,31 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                 int row = resultsTable.rowAtPoint(e.getPoint());
                 int column = resultsTable.columnAtPoint(e.getPoint());
                 System.out.println("row:" + row + " column:" + column);
+                Feature ft = (Feature)resultsTable.getModel().getValueAt(row, 0);
                 switch(column)
                 {
-                    case 0: break;
-                    case 1: addFeature((Feature)resultsTable.getModel().getValueAt(row, 0)); break;
+                    case 0: newFeatureSelected(ft); break;
+                    case 1: addFeature(ft); break;
                 }
             }
         };
         resultsTable.addMouseListener(resultsMouseListener);
     }
     
+    public void newFeatureSelected(Feature ft)
+    {
+        delegate.newFeatureSelected(ft);
+    }
+    
     public void addFeature(Feature ft)
     {
         w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey(ft.name);
+        delegate.featureListUpdated();
+    }
+    
+    public void featureListUpdated()
+    {
+        
     }
     
     public void updateFilters()
@@ -141,10 +154,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     
     public void updateResultsTable(Feature[] results)
     {
-        resultsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        resultsTable.setDefaultRenderer(Feature.class, new ResultsTableRenderer());
         resultsTable.setModel(new ResultsTableModel(results));
         resizeColumns();
+            
     }
     
     class FiltersTableModel extends AbstractTableModel
@@ -235,11 +247,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         {
             return false;
         }
-        
-//        @Override
-//        public Class getColumnClass(int c) {
-//            return getValueAt(0, c).getClass();
-//        }
     }
     
     public class ResultsTableRenderer extends JLabel implements TableCellRenderer 

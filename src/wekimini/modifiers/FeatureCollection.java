@@ -337,6 +337,13 @@ public final class FeatureCollection
         setDirty(false);
     }
     
+    public Feature[] getCurrentFeatures()
+    {
+        Feature[] ft = new Feature[added.values().size()];
+        ft = added.values().toArray(ft);
+        return ft;
+    }
+    
     public void clearAdded()
     {
         added.clear();

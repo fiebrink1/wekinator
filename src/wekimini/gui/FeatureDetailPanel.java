@@ -5,6 +5,8 @@
  */
 package wekimini.gui;
 
+import wekimini.modifiers.Feature;
+
 /**
  *
  * @author louismccallum
@@ -16,6 +18,11 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
      */
     public FeatureDetailPanel() {
         initComponents();
+    }
+    
+    public void setFeature(Feature ft)
+    {
+        
     }
 
     /**
