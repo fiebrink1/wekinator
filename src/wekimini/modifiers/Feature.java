@@ -6,6 +6,7 @@
 package wekimini.modifiers;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  *
@@ -49,5 +50,22 @@ public class Feature
     public String toString()
     {
         return name;
+    }
+    
+    @Override
+    public boolean equals(Object ft)
+    {
+        if(!(ft instanceof Feature))
+        {
+            return false;
+        }
+        return name.equals(((Feature)ft).name);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.name);
+        return hash;
     }
 }

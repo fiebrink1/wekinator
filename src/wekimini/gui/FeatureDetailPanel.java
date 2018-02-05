@@ -5,6 +5,7 @@
  */
 package wekimini.gui;
 
+import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS;
 import wekimini.modifiers.Feature;
 
 /**
@@ -16,8 +17,14 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     /**
      * Creates new form FeatureDetailPanel
      */
+    
+    private PlotPanel plotPanel;
+    
     public FeatureDetailPanel() {
         initComponents();
+        plotPanel = new PlotPanel();        
+        plotScrollPane.setViewportView(plotPanel);
+        plotScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
     }
     
     public void setFeature(Feature ft)
@@ -34,19 +41,32 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        plotScrollPane = new javax.swing.JScrollPane();
+        titleLabel = new javax.swing.JLabel();
+
+        titleLabel.setText("title");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(plotScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 416, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 179, Short.MAX_VALUE))
+            .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(plotScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane plotScrollPane;
+    private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
 }

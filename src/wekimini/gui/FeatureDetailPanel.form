@@ -16,13 +16,32 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="400" max="32767" attributes="0"/>
+          <Group type="102" attributes="0">
+              <Component id="plotScrollPane" min="-2" pref="416" max="-2" attributes="0"/>
+              <EmptySpace min="0" pref="179" max="32767" attributes="0"/>
+          </Group>
+          <Component id="titleLabel" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="300" max="32767" attributes="0"/>
+          <Group type="102" alignment="1" attributes="0">
+              <Component id="titleLabel" pref="20" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="plotScrollPane" min="-2" pref="88" max="-2" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
   </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JScrollPane" name="plotScrollPane">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+    </Container>
+    <Component class="javax.swing.JLabel" name="titleLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="title"/>
+      </Properties>
+    </Component>
+  </SubComponents>
 </Form>

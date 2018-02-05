@@ -12,6 +12,7 @@ import java.awt.event.MouseListener;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -41,7 +42,9 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         currentFeaturesTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         currentFeaturesTable.setDefaultRenderer(Feature.class, new CurrentFeaturesTableRenderer());
         currentFeaturesTable.setTableHeader(null);
-        MouseListener resultsMouseListener = new MouseAdapter() {
+        //currentFeaturesTable.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+        updateCurrentFeaturesTable();
+        MouseListener featuresMouseListener = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int row = currentFeaturesTable.rowAtPoint(e.getPoint());
@@ -55,7 +58,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
                 }
             }
         };
-        currentFeaturesTable.addMouseListener(resultsMouseListener);
+        currentFeaturesTable.addMouseListener(featuresMouseListener);
     }
     
     private void removeFeature(Feature ft)
@@ -199,7 +202,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        currentFeaturesTable.setPreferredSize(new java.awt.Dimension(125, 64));
+        currentFeaturesTable.setPreferredSize(new java.awt.Dimension(140, 430));
         currentFeaturesTable.setRowSelectionAllowed(false);
         currentFeaturesTable.setShowHorizontalLines(false);
         currentFeaturesTable.setShowVerticalLines(false);
@@ -220,7 +223,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         evaluateFeaturesPanel1.setLayout(evaluateFeaturesPanel1Layout);
         evaluateFeaturesPanel1Layout.setHorizontalGroup(
             evaluateFeaturesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 167, Short.MAX_VALUE)
+            .addGap(0, 140, Short.MAX_VALUE)
         );
         evaluateFeaturesPanel1Layout.setVerticalGroup(
             evaluateFeaturesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -238,8 +241,8 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(evaluateFeaturesPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
@@ -258,7 +261,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(jScrollPane1)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(featureDetailPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 2, Short.MAX_VALUE))

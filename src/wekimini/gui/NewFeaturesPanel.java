@@ -33,8 +33,8 @@ import wekimini.modifiers.Feature;
 public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFieldDelegate {
     private Wekinator w;
     ArrayList<String> selectedFilters = new ArrayList();
+    private Feature[] currentResults;
     public FeatureEditorDelegate delegate;
-    private boolean hasResizedColumns = false;
 
     public NewFeaturesPanel() {
         initComponents();
@@ -47,7 +47,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     }
 
     private void resizeColumns() {
-        hasResizedColumns = true;
         int tW = resultsTable.getWidth();
         TableColumn column;
         float[] columnWidthPercentage = {0.75f, 0.15f};
@@ -119,11 +118,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     {
         w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey(ft.name);
         delegate.featureListUpdated();
+        updateResultsTable(currentResults);
     }
     
     public void featureListUpdated()
     {
-        
+        updateResultsTable(currentResults);
     }
     
     public void updateFilters()
@@ -152,8 +152,34 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         worker.execute();
     }
     
-    public void updateResultsTable(Feature[] results)
+    private Feature[] removeAddedFeatures(Feature[] results)
     {
+        Feature[] added = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatures();
+        ArrayList<Feature> filteredList = new ArrayList<>();
+        for(Feature toShow:results)
+        {
+            boolean remove = false;
+            for(Feature match:added)
+            {
+                if(match.equals(toShow))
+                {
+                    remove = true;
+                    break;
+                }
+            }
+            if(!remove)
+            {
+                filteredList.add(toShow);
+            }
+        }
+        Feature[] newResults = new Feature[filteredList.size()];
+        return filteredList.toArray(newResults);
+    }
+    
+    private void updateResultsTable(Feature[] results)
+    {
+        currentResults = results.clone();
+        results = removeAddedFeatures(results);
         resultsTable.setModel(new ResultsTableModel(results));
         resizeColumns();
             
