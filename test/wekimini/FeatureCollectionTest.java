@@ -241,7 +241,7 @@ public class FeatureCollectionTest {
     {
         ArrayList<Feature> results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"AccelerometerX"})));
         testResultsForAccX(results);
-        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"AccelerometerX","Gibberish"})));
+        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"AccelerometerX","NotATag"})));
         assertEquals(results.size(),0);
         results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"AccelerometerX","Mean"})));
         assertEquals(2, results.size());

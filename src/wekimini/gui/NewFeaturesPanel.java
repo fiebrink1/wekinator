@@ -59,6 +59,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     System.out.println("Selected " + tag);
                     selectedFilters.add(tag);
                 }
+                tbl.repaint();
                 SwingWorker worker = new SwingWorker<Feature[] ,Void>()
                 {   
                     Feature[] f;
@@ -139,6 +140,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                         int row, int column) {
             String tag = (String)value;
             FiltersTableModel model = (FiltersTableModel)table.getModel();
+            setBackground(selectedFilters.contains(tag) ? Color.DARK_GRAY  :Color.WHITE);
+            setForeground(selectedFilters.contains(tag) ? Color.WHITE : Color.DARK_GRAY);
+            
             setText(tag);
             return this;
         }

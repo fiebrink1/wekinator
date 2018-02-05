@@ -646,8 +646,8 @@ class PassThroughAll extends FeatureSingleModifierOutput
 class BufferFeature extends FeatureSingleModifierOutput
 {  
     
-    private int index;
-    private int windowSize;
+    private final int index;
+    private final int windowSize;
     
     public BufferFeature(String name, int index, int windowSize) {
         super(name);
