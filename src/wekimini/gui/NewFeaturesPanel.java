@@ -26,7 +26,7 @@ import wekimini.modifiers.Feature;
  *
  * @author louismccallum
  */
-public class NewFeaturesPanel extends javax.swing.JPanel {
+public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFieldDelegate {
     private Wekinator w;
     ArrayList<String> selectedFilters = new ArrayList();
     /**
@@ -35,6 +35,14 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     
     public NewFeaturesPanel() {
         initComponents();
+        selectedFiltersTokenField.setDelegate(this);
+    }
+    
+    @Override
+    public void onTokenPressed(String token)
+    {
+        selectedFilters.remove(token);
+        updateFilters();
     }
     
     public void update(Wekinator w)
@@ -45,10 +53,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         MouseListener tableMouseListener = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                JTable tbl = (JTable)e.getSource();
-                int row = tbl.rowAtPoint(e.getPoint());
-                int col = tbl.columnAtPoint(e.getPoint());
-                String tag = (String)tbl.getModel().getValueAt(row, col);
+                int row = availableFiltersTable.rowAtPoint(e.getPoint());
+                int col = availableFiltersTable.columnAtPoint(e.getPoint());
+                String tag = (String)availableFiltersTable.getModel().getValueAt(row, col);
                 if(selectedFilters.contains(tag))
                 {
                     System.out.println("Deselected " + tag);
@@ -59,34 +66,38 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     System.out.println("Selected " + tag);
                     selectedFilters.add(tag);
                 }
-                tbl.repaint();
-                SwingWorker worker = new SwingWorker<Feature[] ,Void>()
-                {   
-                    Feature[] f;
-
-                    @Override
-                    public Feature[]  doInBackground()
-                    {
-                        String[] sf = new String[selectedFilters.size()];
-                        sf = selectedFilters.toArray(sf);
-                        f = w.getDataManager().featureManager.getFeatureGroups().get(0).getFeaturesForTags(sf);
-                        return f;
-                    }
-
-                    @Override
-                    public void done()
-                    {
-                        updateResultsTable(f);
-                    }
-                };
-                worker.execute();
+                updateFilters();
             }
         };
         availableFiltersTable.addMouseListener(tableMouseListener);
-
     }
     
+    public void updateFilters()
+    {
+         selectedFiltersTokenField.setTokens(selectedFilters);
+        availableFiltersTable.repaint();
+        SwingWorker worker = new SwingWorker<Feature[] ,Void>()
+        {   
+            Feature[] f;
 
+            @Override
+            public Feature[]  doInBackground()
+            {
+                String[] sf = new String[selectedFilters.size()];
+                sf = selectedFilters.toArray(sf);
+                f = w.getDataManager().featureManager.getFeatureGroups().get(0).getFeaturesForTags(sf);
+                return f;
+            }
+
+            @Override
+            public void done()
+            {
+                updateResultsTable(f);
+            }
+        };
+        worker.execute();
+    }
+    
     public void updateResultsTable(Feature[] results)
     {
         resultsTable.setDefaultRenderer(Feature.class, new ResultsTableRenderer());
@@ -209,13 +220,13 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         searchBar = new javax.swing.JTextField();
-        selectedFiltersScrollPane = new javax.swing.JScrollPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         availableFiltersTable = new javax.swing.JTable();
         jScrollPane4 = new javax.swing.JScrollPane();
         resultsTable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        selectedFiltersTokenField = new wekimini.gui.WekiTokenField();
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -279,16 +290,18 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(selectedFiltersScrollPane)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
-                    .addComponent(searchBar)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(selectedFiltersTokenField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel2))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(searchBar, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -298,7 +311,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 .addGap(16, 16, 16)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(selectedFiltersScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(selectedFiltersTokenField, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(22, 22, 22)
@@ -348,6 +361,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private javax.swing.JTable jTable2;
     private javax.swing.JTable resultsTable;
     private javax.swing.JTextField searchBar;
-    private javax.swing.JScrollPane selectedFiltersScrollPane;
+    private wekimini.gui.WekiTokenField selectedFiltersTokenField;
     // End of variables declaration//GEN-END:variables
 }
