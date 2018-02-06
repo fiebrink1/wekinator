@@ -28,6 +28,7 @@ import wekimini.modifiers.Feature;
 public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDelegate {
     
     private Wekinator w;
+    public int selectedRow = -1;
     /**
      * Creates new form FeatureFrame
      */
@@ -51,6 +52,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         currentFeaturesTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         currentFeaturesTable.setDefaultRenderer(Feature.class, new CurrentFeaturesTableRenderer());
         currentFeaturesTable.setTableHeader(null);
+        
         updateCurrentFeaturesTable();
         MouseListener featuresMouseListener = new MouseAdapter() {
             @Override
@@ -61,8 +63,8 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
                 Feature ft = (Feature)currentFeaturesTable.getModel().getValueAt(row, 0);
                 switch(column)
                 {
-                    case 0: newFeatureSelected(ft); break;
-                    case 1: removeFeature(ft); break;
+                    case 0: updateSelectedFeature(ft); selectRow(row); break;
+                    case 1: removeFeature(ft); deselectRows(); break;
                 }
             }
         };
@@ -79,13 +81,17 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
     private void resizeColumns() {
         int tW = currentFeaturesTable.getWidth();
         TableColumn column;
-        float[] columnWidthPercentage = {0.75f, 0.15f};
         TableColumnModel jTableColumnModel = currentFeaturesTable.getColumnModel();
         int cantCols = jTableColumnModel.getColumnCount();
         for (int i = 0; i < cantCols; i++) {
             column = jTableColumnModel.getColumn(i);
-            int pWidth = Math.round(columnWidthPercentage[i] * tW);
+            int pWidth = Math.round(tW - 40);
             column.setPreferredWidth(pWidth);
+            if(i==1)
+            {
+                column.setPreferredWidth(40);
+                column.setCellRenderer(new ImageTableCellRenderer("delete.png"));
+            }
         }
     }
     
@@ -132,6 +138,11 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
             return false;
         }
         
+        @Override
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+        
     }
     
     public class CurrentFeaturesTableRenderer extends JLabel implements TableCellRenderer 
@@ -146,16 +157,13 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
                         JTable table, Object value,
                         boolean isSelected, boolean hasFocus,
                         int row, int column) {
-            setBackground(Color.WHITE);
+            setBackground(row == selectedRow ? Color.DARK_GRAY:Color.WHITE);
+            setForeground(row != selectedRow ? Color.DARK_GRAY:Color.WHITE);
             if(column == 0)
             {
                 Feature f = (Feature)value;
                 CurrentFeaturesTableModel model = (CurrentFeaturesTableModel)table.getModel();
                 setText(f.name);
-            }
-            else
-            {
-               setText("Remove"); 
             }
             return this;
         }
@@ -212,7 +220,10 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
             }
         ));
         currentFeaturesTable.setPreferredSize(new java.awt.Dimension(140, 430));
+        currentFeaturesTable.setRowHeight(30);
         currentFeaturesTable.setRowSelectionAllowed(false);
+        currentFeaturesTable.setSelectionBackground(new java.awt.Color(255, 255, 255));
+        currentFeaturesTable.setSelectionForeground(new java.awt.Color(0, 0, 0));
         currentFeaturesTable.setShowHorizontalLines(false);
         currentFeaturesTable.setShowVerticalLines(false);
         jScrollPane1.setViewportView(currentFeaturesTable);
@@ -305,7 +316,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         });
     }
     
-    public void newFeatureSelected(Feature ft)
+    private void updateSelectedFeature(Feature ft)
     {
         PlotRowModel model = new PlotRowModel();
         w.getSupervisedLearningManager().isPlotting = true;
@@ -314,6 +325,29 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         featureDetailPanel.setModel(model);
     }
     
+    @Override
+    public void newFeatureSelected(Feature ft)
+    {
+        updateSelectedFeature(ft);
+        deselectRows();
+    }
+    
+    public void selectRow(int row)
+    {
+        selectedRow = row;
+        currentFeaturesTable.repaint();
+        newFeaturesPanel.deselectRows();
+    }
+    
+    public void deselectRows()
+    {
+        selectedRow = -1;
+        currentFeaturesTable.repaint();
+        newFeaturesPanel.deselectRows();
+    }
+    
+    
+    @Override
     public void featureListUpdated()
     {
         updateCurrentFeaturesTable();

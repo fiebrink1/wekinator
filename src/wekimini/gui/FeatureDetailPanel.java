@@ -67,6 +67,8 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
             case GYROX : return getClass().getResource("/wekimini/icons/GyroX.png");
             case GYROY : return getClass().getResource("/wekimini/icons/GyroY.png");
             case GYROZ : return getClass().getResource("/wekimini/icons/GyroZ.png");
+            case MULTIPLE : return getClass().getResource("/wekimini/icons/Multi.png");
+            case UNKNOWN : return getClass().getResource("/wekimini/icons/Unknown.png");
         }
         throw new NoSuchElementException();
     }

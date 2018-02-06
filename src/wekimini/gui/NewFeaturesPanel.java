@@ -6,23 +6,25 @@
 package wekimini.gui;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import org.jdesktop.swingworker.SwingWorker;
-import wekimini.DataManager;
 import wekimini.Wekinator;
 import wekimini.modifiers.Feature;
 
@@ -36,6 +38,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     ArrayList<String> selectedFilters = new ArrayList();
     private Feature[] currentResults;
     public FeatureEditorDelegate delegate;
+    private int selectedRow = -1;
 
     public NewFeaturesPanel() {
         initComponents();
@@ -47,7 +50,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         resultsTable.setDefaultRenderer(Feature.class, new ResultsTableRenderer());
     }
 
-    private void resizeColumns() {
+    private void setUpResultsTable() {
+        resultsTable.setSelectionBackground(Color.BLUE);
         int tW = resultsTable.getWidth();
         TableColumn column;
         float[] columnWidthPercentage = {0.75f, 0.15f};
@@ -57,6 +61,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
             column = jTableColumnModel.getColumn(i);
             int pWidth = Math.round(columnWidthPercentage[i] * tW);
             column.setPreferredWidth(pWidth);
+            if(i==1)
+            {
+                column.setCellRenderer(new ImageTableCellRenderer("add.png"));
+            }
         }
     }
     
@@ -100,14 +108,28 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                 int column = resultsTable.columnAtPoint(e.getPoint());
                 System.out.println("row:" + row + " column:" + column);
                 Feature ft = (Feature)resultsTable.getModel().getValueAt(row, 0);
+                
                 switch(column)
                 {
-                    case 0: newFeatureSelected(ft); break;
-                    case 1: addFeature(ft); break;
+                    case 0: newFeatureSelected(ft); selectRow(row);break;
+                    case 1: addFeature(ft); deselectRows(); break;
                 }
+                
             }
         };
         resultsTable.addMouseListener(resultsMouseListener);
+    }
+    
+    private void selectRow(int row)
+    {
+        selectedRow = row;
+        resultsTable.repaint();
+    }
+    
+    public void deselectRows()
+    {
+        selectedRow = -1;
+        resultsTable.repaint();
     }
     
     public void newFeatureSelected(Feature ft)
@@ -182,8 +204,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         currentResults = results.clone();
         results = removeAddedFeatures(results);
         resultsTable.setModel(new ResultsTableModel(results));
-        resizeColumns();
-            
+        setUpResultsTable();
     }
     
     class FiltersTableModel extends AbstractTableModel
@@ -274,10 +295,16 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         {
             return false;
         }
+        
+        @Override
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
     }
     
     public class ResultsTableRenderer extends JLabel implements TableCellRenderer 
     {
+        
         ResultsTableRenderer()
         {
             setOpaque(true);
@@ -288,16 +315,13 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                         JTable table, Object value,
                         boolean isSelected, boolean hasFocus,
                         int row, int column) {
-            setBackground(Color.WHITE);
+            setBackground(row == selectedRow ? Color.DARK_GRAY:Color.WHITE);
+            setForeground(row != selectedRow ? Color.DARK_GRAY:Color.WHITE);
             if(column == 0)
             {
                 Feature f = (Feature)value;
                 ResultsTableModel model = (ResultsTableModel)table.getModel();
                 setText(f.name);
-            }
-            else
-            {
-               setText("Add"); 
             }
             return this;
         }
@@ -359,6 +383,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        availableFiltersTable.setRowHeight(25);
         jScrollPane2.setViewportView(availableFiltersTable);
 
         resultsTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -372,6 +397,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        resultsTable.setRowHeight(30);
         jScrollPane4.setViewportView(resultsTable);
 
         jLabel1.setText("Filters");
