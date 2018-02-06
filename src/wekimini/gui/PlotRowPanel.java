@@ -30,6 +30,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
     private PlotRowDelegate delegate;
     private PlotPanel plotPanel;
     private boolean ignoreDelegate = false;
+    private static final int PLOT_W = 600;
     
     public PlotRowPanel(String[] outputs, String[] features, PlotRowDelegate delegate) {
         initComponents();
@@ -45,7 +46,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
         {
             featureComboBox.addItem(feature);
         }
-        plotPanel = new PlotPanel(600);        
+        plotPanel = new PlotPanel(PLOT_W);        
         plotScrollPanel.setViewportView(plotPanel);
         plotScrollPanel.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
         AdjustmentListener listener = new MyAdjustmentListener();

@@ -7,11 +7,14 @@ package wekimini.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
+import java.util.NoSuchElementException;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS;
 import javax.swing.Timer;
 import weka.core.Instance;
 import wekimini.Wekinator;
 import wekimini.modifiers.Feature;
+import wekimini.modifiers.Feature.InputDiagram;
 
 /**
  *
@@ -23,10 +26,12 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     private final int REFRESH_RATE = 20;
     private PlotRowModel model;
     private Wekinator w;
+    private static final int PLOT_W = 416;
     
-    public FeatureDetailPanel() {
+    public FeatureDetailPanel() 
+    {
         initComponents();
-        plotPanel = new PlotPanel(416);        
+        plotPanel = new PlotPanel(PLOT_W);        
         plotScrollPane.setViewportView(plotPanel);
         plotScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
     }
@@ -52,6 +57,17 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         timer.start();
     }
     
+    public URL urlToDiagram(InputDiagram diagram) throws NoSuchElementException
+    {
+        switch(diagram)
+        {
+            case ACCX : return getClass().getResource("/wekimini/icons/AccX.png");
+            case ACCY : return getClass().getResource("/wekimini/icons/AccY.png");
+            case ACCZ : return getClass().getResource("/wekimini/icons/AccZ.png");
+        }
+        throw new NoSuchElementException();
+    }
+    
     public void setModel(PlotRowModel model)
     {
         this.model = model;
@@ -64,6 +80,13 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         plotScrollPane.setViewportView(plotPanel);
         plotScrollPane.revalidate();
         validate();
+        
+        try{
+            diagramView.loadImage(urlToDiagram(model.feature.diagram));
+        } catch (NoSuchElementException e){}
+        
+        descriptionLabel.setText(model.feature.description);
+        
     }
 
     /**
@@ -77,25 +100,23 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
 
         plotScrollPane = new javax.swing.JScrollPane();
         titleLabel = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
+        descriptionLabel = new javax.swing.JLabel();
+        diagramView = new wekimini.gui.ImagePanel();
 
         titleLabel.setBackground(new java.awt.Color(238, 0, 0));
         titleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        titleLabel.setText("HERE!!!!");
+        titleLabel.setText("Feature");
 
-        jLabel1.setText("jLabel1");
+        descriptionLabel.setText("Description");
 
-        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+        javax.swing.GroupLayout diagramViewLayout = new javax.swing.GroupLayout(diagramView);
+        diagramView.setLayout(diagramViewLayout);
+        diagramViewLayout.setHorizontalGroup(
+            diagramViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 94, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        diagramViewLayout.setVerticalGroup(
+            diagramViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 100, Short.MAX_VALUE)
         );
 
@@ -105,10 +126,10 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(plotScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 416, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(diagramView, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(descriptionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -118,15 +139,15 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(plotScrollPane)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(descriptionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(diagramView, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel descriptionLabel;
+    private wekimini.gui.ImagePanel diagramView;
     private javax.swing.JScrollPane plotScrollPane;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables

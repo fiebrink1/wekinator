@@ -24,7 +24,7 @@ import javax.swing.JPanel;
  */
 public class PlotPanel extends JPanel {
     
-    private int w = 416;
+    private int w = 1;
     private final static int PLOT_H = 75;
     private BufferedImage image = new BufferedImage(w, PLOT_H, BufferedImage.TYPE_INT_ARGB);
     protected int x = 0;
@@ -39,6 +39,8 @@ public class PlotPanel extends JPanel {
     private LinkedList<Double> points = new LinkedList();
     private LinkedList<Double> classes = new LinkedList();
     private final static int POINTS_PER_ROW = 100;
+    
+    private PlotPanel(){}
     
     public PlotPanel(int w)
     {

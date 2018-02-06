@@ -245,7 +245,7 @@ public final class FeatureCollection
     
     public void updateFeatureIndexes()
     {
-        for(Feature f:library)
+        for(Feature f:added.values())
         {
             f.featureIndex = modifiers.indexForName(f.name+":0");
         }

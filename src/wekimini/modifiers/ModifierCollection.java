@@ -233,6 +233,7 @@ public class ModifierCollection {
             }
             i++;
         }
+        System.out.println("index not found: " + name);
         return 0;
     }
     
