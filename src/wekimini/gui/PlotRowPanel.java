@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS;
-import wekimini.gui.PlotFrame.PlotRowModel;
 
 /**
  *
@@ -46,7 +45,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
         {
             featureComboBox.addItem(feature);
         }
-        plotPanel = new PlotPanel();        
+        plotPanel = new PlotPanel(600);        
         plotScrollPanel.setViewportView(plotPanel);
         plotScrollPanel.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
         AdjustmentListener listener = new MyAdjustmentListener();
@@ -68,7 +67,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
         
         ignoreDelegate = true;
         outputComboBox.setSelectedIndex(model.outputIndex);
-        featureComboBox.setSelectedIndex(model.featureIndex);
+        featureComboBox.setSelectedIndex(model.feature.featureIndex);
         liveToggle.setSelected(model.isStreaming);
         ignoreDelegate = false;
 
@@ -205,7 +204,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
         int i = featureComboBox.getSelectedIndex();
         if(model != null && !ignoreDelegate)
         {
-            model.featureIndex = i;
+            model.feature.featureIndex = i;
             delegate.modelChanged(model);
         }
     }//GEN-LAST:event_featureComboBoxActionPerformed

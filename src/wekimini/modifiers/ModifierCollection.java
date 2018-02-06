@@ -24,7 +24,7 @@ public class ModifierCollection {
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private transient double[] currentValues;
     private int currentID = 0;
-    private String[] valueMap;
+    private String[] outputNames;
     
     private ModifierCollection() {}
     
@@ -214,12 +214,26 @@ public class ModifierCollection {
     
     public String[] getOutputNames()
     {
-        return valueMap;
+        return outputNames;
     }
     
     public String nameForIndex(int index)
     {
-        return valueMap[index];
+        return outputNames[index];
+    }
+    
+    public int indexForName(String name)
+    {
+        int i = 0;
+        for(String match:outputNames)
+        {
+            if(match.equals(name))
+            {
+                return i;
+            }
+            i++;
+        }
+        return 0;
     }
     
     public List<ModifiedInput> getModifiers() {
@@ -246,7 +260,7 @@ public class ModifierCollection {
         
         int outputIndex = 0;
         int completedIndex = 0;
-        valueMap = new String[currentValues.length];
+        outputNames = new String[currentValues.length];
         ArrayList<ModifiedInput> completedModifiers = new ArrayList();
 
         for (ModifiedInput modifier : modifiers) 
@@ -284,14 +298,14 @@ public class ModifierCollection {
                             if (toComplete instanceof ModifiedInputSingle) 
                             {
                                 currentValues[outputIndex] = ((ModifiedInputSingle)toComplete).getValue();
-                                valueMap[outputIndex] = featureName;
+                                outputNames[outputIndex] = featureName + ":0";
                             } 
                             else 
                             {
                                 System.arraycopy(((ModifiedInputVector)toComplete).getValues(), 0, currentValues, outputIndex, toComplete.getSize());
                                 for(int i = 0; i < toComplete.getSize(); i++)
                                 {
-                                    valueMap[outputIndex + i] = featureName + ":" + i;
+                                    outputNames[outputIndex + i] = featureName + ":" + i;
                                 }
                             }
                             outputIndex += toComplete.getSize();

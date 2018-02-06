@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import javafx.scene.shape.Line;
 import javax.swing.JPanel;
-import wekimini.gui.PlotFrame.PlotRowModel;
 
 /**
  *
@@ -25,9 +24,9 @@ import wekimini.gui.PlotFrame.PlotRowModel;
  */
 public class PlotPanel extends JPanel {
     
-    private final static int PLOT_W = 600;
+    private int w = 416;
     private final static int PLOT_H = 75;
-    private BufferedImage image = new BufferedImage(PLOT_W, PLOT_H, BufferedImage.TYPE_INT_ARGB);
+    private BufferedImage image = new BufferedImage(w, PLOT_H, BufferedImage.TYPE_INT_ARGB);
     protected int x = 0;
     protected int y = 0;
     protected double min = 0.0001;
@@ -37,12 +36,13 @@ public class PlotPanel extends JPanel {
     String sMax = "0.0";
     public boolean firstData = true;
     private int pointsPerRow = 0;
-    private LinkedList<Double> points;
-    private LinkedList<Double> classes;
+    private LinkedList<Double> points = new LinkedList();
+    private LinkedList<Double> classes = new LinkedList();
     private final static int POINTS_PER_ROW = 100;
     
-    public PlotPanel()
+    public PlotPanel(int w)
     {
+        this.w = w;
         setUp(POINTS_PER_ROW);
     }
     
@@ -71,8 +71,7 @@ public class PlotPanel extends JPanel {
     
     public void updateWidth(boolean isStreaming)
     {
-        
-        int width = isStreaming ? PLOT_W : (int)((horizontalScale * points.size()));
+        int width = isStreaming ? w : (int)((horizontalScale * points.size()));
         width = width < 1 ? 1 : width;
         setPreferredSize(new Dimension(width,getHeight()));
         createEmptyImage(width);
@@ -137,7 +136,7 @@ public class PlotPanel extends JPanel {
    
    protected void rescale() 
    {
-        horizontalScale = (double)PLOT_W/(double)pointsPerRow;
+        horizontalScale = (double)w/(double)pointsPerRow;
         sMin = Double.toString(min);
         sMax = Double.toString(max);
    }

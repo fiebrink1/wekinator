@@ -15,19 +15,20 @@ import java.util.Objects;
 
 public class Feature 
 {
-//    public enum InputDiagram {
-//        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
-//    }
+    public enum InputDiagram {
+        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
+    }
     
     public final String name;
     public final ArrayList<Integer> ids = new ArrayList();
     public InputDiagram diagram = InputDiagram.UNKNOWN;
+    public int featureIndex = 0;
     public ArrayList<String> tags = new ArrayList();
     public String description;
 
-    public enum InputDiagram {
-        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
-    }
+//    public enum InputDiagram {
+//        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
+//    }
     
     public Feature(String name)
     {

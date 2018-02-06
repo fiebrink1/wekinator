@@ -243,6 +243,14 @@ public final class FeatureCollection
         return tags;
     }
     
+    public void updateFeatureIndexes()
+    {
+        for(Feature f:library)
+        {
+            f.featureIndex = modifiers.indexForName(f.name+":0");
+        }
+    }
+    
     public void updateTags()
     {
         ArrayList<String> newTags = new ArrayList();
@@ -274,7 +282,9 @@ public final class FeatureCollection
     
     public double[] computeAndGetValuesForNewInputs(double[] newInputs)
     {
-        return modifiers.computeAndGetValuesForNewInputs(newInputs, added);
+        double[] vals = modifiers.computeAndGetValuesForNewInputs(newInputs, added);
+        updateFeatureIndexes();
+        return vals;
     }
     
     public void resetAllModifiers()

@@ -30,7 +30,6 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
     private Random r = new Random();
     private final int REFRESH_RATE = 20;
     private PlotTableModel tableModel = new PlotTableModel();
-    private final static int POINTS_PER_ROW = 100;
     private ArrayList<PlotRowPanel> rows = new ArrayList();
 
     public PlotFrame() {
@@ -53,10 +52,11 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
                     PlotRowModel model = tableModel.getValueAt(i, 0);
                     if(model.isStreaming)
                     {
-                        float val = (float) in.value(model.featureIndex);
+                        float val = (float) in.value(model.feature.featureIndex);
                         //System.out.print("adding " + val + " to model " + model.featureIndex);
                         model.addPoint(val);
                     }
+                    rows.get(i).updateModel(model);
                 }
             }
         }    
@@ -220,7 +220,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         }
         else
         {
-            double[][] vals = w.getDataManager().getTrainingDataForFeature(model.outputIndex, model.featureIndex);
+            double[][] vals = w.getDataManager().getTrainingDataForFeature(model.outputIndex, model.feature.featureIndex);
             for(int i = 0; i < vals.length; i ++)
             {
                 model.points.add(vals[i][0]);
@@ -294,30 +294,6 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
             row.updateModel(model);
             ptr++;
         }
-    }
-    
-    public class PlotRowModel
-    {
-        int featureIndex = 0;
-        int outputIndex = 0;
-        boolean isStreaming = false;
-        int rowIndex = 0;
-        protected LinkedList<Double> points = new LinkedList();
-        protected LinkedList<Double> classes = new LinkedList();
-        
-        public void addPoint(double pt)
-        {
-            synchronized(this) {
-                points.add(pt);
-                if(isStreaming)
-                {
-                    while (points.size() > POINTS_PER_ROW) {
-                        points.removeFirst();
-                    }
-                }
-                rows.get(rowIndex).updateModel(this);
-            }
-        } 
     }
     
     public class PlotTableModel

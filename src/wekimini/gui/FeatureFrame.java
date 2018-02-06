@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -18,7 +19,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import wekimini.Wekinator;
-import wekimini.gui.PlotFrame.PlotRowModel;
 import wekimini.modifiers.Feature;
 
 /**
@@ -33,6 +33,13 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
      */
     public FeatureFrame() {
         initComponents();
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                w.getSupervisedLearningManager().isPlotting = false;
+            }
+        });
     }
     
     public FeatureFrame(Wekinator w) {
@@ -163,13 +170,14 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        featureDetailPanel1 = new wekimini.gui.FeatureDetailPanel();
         newFeaturesPanel = new wekimini.gui.NewFeaturesPanel();
         jPanel1 = new javax.swing.JPanel();
         currentFeaturesLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         currentFeaturesTable = new javax.swing.JTable();
-        featureDetailPanel = new wekimini.gui.FeatureDetailPanel();
         evaluateFeaturesPanel1 = new wekimini.gui.EvaluateFeaturesPanel();
+        featureDetailPanel = new wekimini.gui.FeatureDetailPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -209,22 +217,11 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         currentFeaturesTable.setShowVerticalLines(false);
         jScrollPane1.setViewportView(currentFeaturesTable);
 
-        javax.swing.GroupLayout featureDetailPanelLayout = new javax.swing.GroupLayout(featureDetailPanel);
-        featureDetailPanel.setLayout(featureDetailPanelLayout);
-        featureDetailPanelLayout.setHorizontalGroup(
-            featureDetailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        featureDetailPanelLayout.setVerticalGroup(
-            featureDetailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-
         javax.swing.GroupLayout evaluateFeaturesPanel1Layout = new javax.swing.GroupLayout(evaluateFeaturesPanel1);
         evaluateFeaturesPanel1.setLayout(evaluateFeaturesPanel1Layout);
         evaluateFeaturesPanel1Layout.setHorizontalGroup(
             evaluateFeaturesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 140, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         evaluateFeaturesPanel1Layout.setVerticalGroup(
             evaluateFeaturesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -236,7 +233,12 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(14, 14, 14)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(featureDetailPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(newFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -244,11 +246,8 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
                             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(evaluateFeaturesPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(featureDetailPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(evaluateFeaturesPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -265,7 +264,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
                                 .addComponent(jScrollPane1)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(featureDetailPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 2, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -308,8 +307,11 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
     
     public void newFeatureSelected(Feature ft)
     {
-//        PlotRowModel model = new PlotRowModel();
-//        featureDetailPanel
+        PlotRowModel model = new PlotRowModel();
+        w.getSupervisedLearningManager().isPlotting = true;
+        model.isStreaming = true;
+        model.feature = ft;
+        featureDetailPanel.setModel(model);
     }
     
     public void featureListUpdated()
@@ -322,6 +324,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
     private javax.swing.JTable currentFeaturesTable;
     private wekimini.gui.EvaluateFeaturesPanel evaluateFeaturesPanel1;
     private wekimini.gui.FeatureDetailPanel featureDetailPanel;
+    private wekimini.gui.FeatureDetailPanel featureDetailPanel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private wekimini.gui.NewFeaturesPanel newFeaturesPanel;

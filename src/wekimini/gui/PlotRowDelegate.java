@@ -4,9 +4,6 @@
  * and open the template in the editor.
  */
 package wekimini.gui;
-
-import wekimini.gui.PlotFrame.PlotRowModel;
-
 /**
  *
  * @author louismccallum
