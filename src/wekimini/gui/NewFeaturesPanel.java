@@ -327,6 +327,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
             }
         ));
         availableFiltersTable.setRowHeight(25);
+        availableFiltersTable.setRowMargin(3);
         jScrollPane2.setViewportView(availableFiltersTable);
 
         resultsTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -341,6 +342,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
             }
         ));
         resultsTable.setRowHeight(30);
+        resultsTable.setRowMargin(3);
         jScrollPane4.setViewportView(resultsTable);
 
         jLabel1.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N

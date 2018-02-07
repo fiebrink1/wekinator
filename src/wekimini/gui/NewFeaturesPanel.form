@@ -119,6 +119,7 @@
               </Table>
             </Property>
             <Property name="rowHeight" type="int" value="25"/>
+            <Property name="rowMargin" type="int" value="3"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -141,6 +142,7 @@
               </Table>
             </Property>
             <Property name="rowHeight" type="int" value="30"/>
+            <Property name="rowMargin" type="int" value="3"/>
           </Properties>
         </Component>
       </SubComponents>
