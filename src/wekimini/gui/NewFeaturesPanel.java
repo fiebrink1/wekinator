@@ -60,10 +60,11 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         int cantCols = jTableColumnModel.getColumnCount();
         for (int i = 0; i < cantCols; i++) {
             column = jTableColumnModel.getColumn(i);
-            int pWidth = Math.round(columnWidthPercentage[i] * tW);
+            int pWidth = Math.round(tW - 40);
             column.setPreferredWidth(pWidth);
             if(i==1)
             {
+                column.setPreferredWidth(40);
                 column.setCellRenderer(new ImageTableCellRenderer("add.png"));
             }
         }

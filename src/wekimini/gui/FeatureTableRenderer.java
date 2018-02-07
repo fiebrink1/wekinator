@@ -6,6 +6,7 @@
 package wekimini.gui;
 
 import java.awt.Color;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
@@ -24,9 +25,14 @@ public class FeatureTableRenderer extends JLabel implements TableCellRenderer {
 
     @Override
     public JLabel getTableCellRendererComponent(
-                    JTable table, Object value,
-                    boolean isSelected, boolean hasFocus,
-                    int row, int column) {
+        JTable table, 
+        Object value,
+        boolean isSelected, 
+        boolean hasFocus,
+        int row, 
+        int column) 
+    {
+        setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
         setBackground(row == ((FeatureTableModel)table.getModel()).selectedRow ? Color.DARK_GRAY:Color.WHITE);
         setForeground(row != ((FeatureTableModel)table.getModel()).selectedRow ? Color.DARK_GRAY:Color.WHITE);
         if(column == 0)
