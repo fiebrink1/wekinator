@@ -5,6 +5,7 @@
  */
 package wekimini.gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -30,6 +31,7 @@ public class WekiTokenField extends JScrollPane
     {
         panel.setLayout(layout);
         panel.removeAll();
+        panel.setBackground(Color.WHITE);
         getViewport().setBorder(null);
         setViewportBorder(null);
         setBorder(null);
@@ -63,10 +65,11 @@ public class WekiTokenField extends JScrollPane
         panel.removeAll();
         revalidate();
         layout.setHgap(2);
+        layout.setVgap(0);
         btns = new JButton[tokens.size()];
         int i = 0;
         getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
-        getHorizontalScrollBar().setPreferredSize(new Dimension(0, 8));
+        getHorizontalScrollBar().setPreferredSize(new Dimension(0, 6));
         for(String token:tokens)
         {
             btns[i] = new JButton(token);

@@ -5,10 +5,14 @@
  */
 package wekimini.gui;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.LinkedList;
+import javax.swing.BorderFactory;
+import javax.swing.border.Border;
 import wekimini.OutputManager;
 import wekimini.Path;
 import wekimini.TrainingRunner;
@@ -29,6 +33,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private boolean isRunning = false;
     private WekinatorSupervisedLearningController controller;
     private ModelEvaluator e = null;
+    private int outputIndex = 0;
     
     public EvaluateFeaturesPanel() {
         initComponents();
@@ -38,9 +43,10 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         confusionWrapper.add(confusionPanel);
     }
     
-    public void update(Wekinator w)
+    public void update(Wekinator w, int output)
     {
         this.w = w;
+        this.outputIndex = output;
         controller = new WekinatorSupervisedLearningController(w.getSupervisedLearningManager(),w);
         w.getTrainingRunner().addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -87,28 +93,29 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         trainBtn = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
         outputLabel = new javax.swing.JLabel();
         reevaluateBtn = new javax.swing.JButton();
         accuracyLabel = new javax.swing.JLabel();
         confusionWrapper = new javax.swing.JPanel();
 
+        setBackground(new java.awt.Color(255, 255, 255));
+        setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(204, 204, 204), null, new java.awt.Color(204, 204, 204)));
+
+        trainBtn.setBackground(new java.awt.Color(255, 51, 0));
         trainBtn.setText("Train and Run");
+        trainBtn.setContentAreaFilled(false);
         trainBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 trainBtnActionPerformed(evt);
             }
         });
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Evaluate Model");
-        jLabel1.setToolTipText("");
-        jLabel1.setAlignmentX(0.5F);
-
         outputLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         outputLabel.setText("Output:0");
 
+        reevaluateBtn.setBackground(new java.awt.Color(255, 0, 204));
         reevaluateBtn.setText("Re-evaluate");
+        reevaluateBtn.setContentAreaFilled(false);
         reevaluateBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 reevaluateBtnActionPerformed(evt);
@@ -118,6 +125,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         accuracyLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         accuracyLabel.setText("Accuracy:");
 
+        confusionWrapper.setBackground(new java.awt.Color(255, 255, 255));
         confusionWrapper.setPreferredSize(new java.awt.Dimension(211, 211));
         confusionWrapper.setRequestFocusEnabled(false);
 
@@ -129,39 +137,36 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         );
         confusionWrapperLayout.setVerticalGroup(
             confusionWrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 180, Short.MAX_VALUE)
+            .addGap(0, 176, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(trainBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE)
-            .addComponent(reevaluateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(accuracyLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(outputLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(confusionWrapper, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(reevaluateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(trainBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
+                    .addComponent(accuracyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(outputLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(confusionWrapper, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addGap(2, 2, 2)
                 .addComponent(trainBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(outputLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(reevaluateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(reevaluateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(accuracyLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(confusionWrapper, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                .addComponent(confusionWrapper, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -209,7 +214,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             }
         });
         EvaluationMode eval = ModelEvaluationFrame.EvaluationMode.CROSS_VALIDATION;
-        Path p = w.getSupervisedLearningManager().getPaths().get(0);
+        Path p = w.getSupervisedLearningManager().getPaths().get(outputIndex);
         LinkedList<Path> paths = new LinkedList<>();
         paths.add(p);
         e.evaluateAll(paths, eval, 10, new PropertyChangeListener() {
@@ -244,7 +249,6 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel accuracyLabel;
     private javax.swing.JPanel confusionWrapper;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel outputLabel;
     private javax.swing.JButton reevaluateBtn;
     private javax.swing.JButton trainBtn;
