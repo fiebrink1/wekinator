@@ -48,10 +48,10 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         this.w = w;
         newFeaturesPanel.update(w);
         featureDetailPanel.update(w);
+        evaluateFeaturesPanel.update(w);
         newFeaturesPanel.delegate = this;
-        currentFeaturesTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        currentFeaturesTable.setDefaultRenderer(Feature.class, new CurrentFeaturesTableRenderer());
         currentFeaturesTable.setTableHeader(null);
+        currentFeaturesTable.setDefaultRenderer(Feature.class, new CurrentFeaturesTableRenderer());
         
         updateCurrentFeaturesTable();
         MouseListener featuresMouseListener = new MouseAdapter() {
@@ -184,8 +184,8 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         currentFeaturesLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         currentFeaturesTable = new javax.swing.JTable();
-        evaluateFeaturesPanel1 = new wekimini.gui.EvaluateFeaturesPanel();
         featureDetailPanel = new wekimini.gui.FeatureDetailPanel();
+        evaluateFeaturesPanel = new wekimini.gui.EvaluateFeaturesPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -228,17 +228,6 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         currentFeaturesTable.setShowVerticalLines(false);
         jScrollPane1.setViewportView(currentFeaturesTable);
 
-        javax.swing.GroupLayout evaluateFeaturesPanel1Layout = new javax.swing.GroupLayout(evaluateFeaturesPanel1);
-        evaluateFeaturesPanel1.setLayout(evaluateFeaturesPanel1Layout);
-        evaluateFeaturesPanel1Layout.setHorizontalGroup(
-            evaluateFeaturesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        evaluateFeaturesPanel1Layout.setVerticalGroup(
-            evaluateFeaturesPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 460, Short.MAX_VALUE)
-        );
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -248,8 +237,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
-                        .addComponent(featureDetailPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(featureDetailPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(newFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -257,8 +245,8 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
                             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(evaluateFeaturesPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())))
+                        .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -268,7 +256,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(evaluateFeaturesPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -356,7 +344,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel currentFeaturesLabel;
     private javax.swing.JTable currentFeaturesTable;
-    private wekimini.gui.EvaluateFeaturesPanel evaluateFeaturesPanel1;
+    private wekimini.gui.EvaluateFeaturesPanel evaluateFeaturesPanel;
     private wekimini.gui.FeatureDetailPanel featureDetailPanel;
     private wekimini.gui.FeatureDetailPanel featureDetailPanel1;
     private javax.swing.JPanel jPanel1;
