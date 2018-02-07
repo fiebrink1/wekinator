@@ -5,12 +5,18 @@
  */
 package wekimini.gui;
 
+import java.awt.FlowLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.LinkedList;
 import wekimini.OutputManager;
+import wekimini.Path;
 import wekimini.TrainingRunner;
 import wekimini.Wekinator;
 import wekimini.WekinatorSupervisedLearningController;
+import wekimini.gui.ModelEvaluationFrame.EvaluationMode;
+import wekimini.learning.ModelEvaluator;
+import wekimini.util.ConfusionParser;
 
 /**
  *
@@ -22,10 +28,13 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private Wekinator w;
     private boolean isRunning = false;
     private WekinatorSupervisedLearningController controller;
+    private ModelEvaluator e = null;
     
     public EvaluateFeaturesPanel() {
         initComponents();
+        confusionWrapper.setLayout(new FlowLayout());
         confusionPanel = new ConfusionComponent();
+        confusionPanel.setPreferredSize(confusionWrapper.getPreferredSize());
         confusionWrapper.add(confusionPanel);
     }
     
@@ -109,6 +118,9 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         accuracyLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         accuracyLabel.setText("Accuracy:");
 
+        confusionWrapper.setPreferredSize(new java.awt.Dimension(211, 211));
+        confusionWrapper.setRequestFocusEnabled(false);
+
         javax.swing.GroupLayout confusionWrapperLayout = new javax.swing.GroupLayout(confusionWrapper);
         confusionWrapper.setLayout(confusionWrapperLayout);
         confusionWrapperLayout.setHorizontalGroup(
@@ -129,10 +141,10 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(confusionWrapper, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(accuracyLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(outputLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(outputLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(confusionWrapper, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -149,13 +161,65 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(accuracyLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(confusionWrapper, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(confusionWrapper, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void cvPropertyChanged(PropertyChangeEvent evt) 
+    {
+        System.out.println("CV property changed");
+    }
+
+    private void cvModelFinished(int modelNum, String results, String confusion) 
+    {
+        System.out.println("Model " + modelNum + ": " + results);
+        int[][] arr = ConfusionParser.parseMatrix(confusion);
+        confusionPanel.setModel(arr);
+        accuracyLabel.setText(results);
+    }
+
+    private void cvCancelled() 
+    {
+        System.out.println("CV Cancelled!!!");
+    }
+
+    private void cvFinished(String[] results) 
+    {
+        System.out.println("CV Finished");
+    }
+    
     private void reevaluateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reevaluateBtnActionPerformed
         // TODO add your handling code here:
+        e = new ModelEvaluator(w, new ModelEvaluator.EvaluationResultsReceiver() {
+
+            @Override
+            public void finishedModel(int modelNum, String results, String confusion) {
+                cvModelFinished(modelNum, results, confusion);
+            }
+
+            @Override
+            public void finished(String[] results) {
+                cvFinished(results);
+            }
+
+            @Override
+            public void cancelled() {
+                cvCancelled();
+            }
+        });
+        EvaluationMode eval = ModelEvaluationFrame.EvaluationMode.CROSS_VALIDATION;
+        Path p = w.getSupervisedLearningManager().getPaths().get(0);
+        LinkedList<Path> paths = new LinkedList<>();
+        paths.add(p);
+        e.evaluateAll(paths, eval, 10, new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                cvPropertyChanged(evt);
+            }
+
+        });
     }//GEN-LAST:event_reevaluateBtnActionPerformed
 
     private void trainBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainBtnActionPerformed
