@@ -7,6 +7,7 @@ package wekimini.gui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import wekimini.OutputManager;
 import wekimini.TrainingRunner;
 import wekimini.Wekinator;
 import wekimini.WekinatorSupervisedLearningController;
@@ -40,6 +41,13 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                     trainerUpdated((TrainingRunner.TrainingStatus) evt.getNewValue());
                 }
 
+            }
+        });
+        w.getOutputManager().addOutputGroupComputedListener(new OutputManager.OutputValueListener() {
+
+            @Override
+            public void update(double[] vals) {
+                outputLabel.setText("Output:" + vals[0]);
             }
         });
     }
