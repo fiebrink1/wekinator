@@ -15,6 +15,7 @@ import weka.core.Instance;
 import wekimini.Wekinator;
 import wekimini.modifiers.Feature;
 import wekimini.modifiers.Feature.InputDiagram;
+import wekimini.modifiers.FeatureMultipleModifierOutput;
 import wekimini.modifiers.FeatureSingleModifierOutput;
 import wekimini.modifiers.ModifiedInput;
 
@@ -97,16 +98,29 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         updateComboBox();
     }
     
+    private void addItemsForModifier(int iD, String name)
+    {
+        ModifiedInput outputModifier = w.getDataManager().featureManager.getAllFeaturesGroup().getModifiers().getModifier(iD);
+        for(int i = 0; i < outputModifier.getSize(); i++)
+        {
+            outputComboBox.addItem(name + ":" + i);
+        }
+    }
+    
     private void updateComboBox()
     {
         outputComboBox.removeAllItems();
         if(model.feature instanceof FeatureSingleModifierOutput)
         {
             FeatureSingleModifierOutput ft = (FeatureSingleModifierOutput)model.feature;
-            ModifiedInput outputModifier = w.getDataManager().featureManager.getAllFeaturesGroup().getModifiers().getModifier(ft.getOutputModifierID());
-            for(int i = 0; i < outputModifier.getSize(); i++)
+            addItemsForModifier(ft.getOutputModifierID(), ft.name);
+        }
+        else
+        {
+            FeatureMultipleModifierOutput ft = (FeatureMultipleModifierOutput)model.feature;
+            for(int i = 0; i < ft.getOutputModifierIDs().length; i++)
             {
-                outputComboBox.addItem(ft.name + ":" + i);
+                addItemsForModifier(ft.getOutputModifierIDs()[i], ft.name + ":" + i);
             }
         }
     }
@@ -225,8 +239,8 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void outputComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputComboBoxActionPerformed
-        // TODO add your handling code here:
-        outputIndex = model.feature.outputIndex + outputComboBox.getSelectedIndex(); 
+        //WARNING!! THIS DOESNT NECESSARILY WORK FOR FEATuRES WITH MULTIPLE MODIFERS OUTPUTTING
+        outputIndex = model.feature.outputIndex + outputComboBox.getSelectedIndex();
         
     }//GEN-LAST:event_outputComboBoxActionPerformed
 
