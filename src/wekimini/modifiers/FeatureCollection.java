@@ -1,4 +1,4 @@
-/*
+    /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -209,6 +209,10 @@ public final class FeatureCollection
     
     public Feature[] getFeaturesForTags(String[] searchTags)
     {
+        if(searchTags.length < 1)
+        {
+            return new Feature[0];
+        }
         ArrayList<Feature> features = new ArrayList();
         for(Feature f:library)
         {
@@ -227,7 +231,7 @@ public final class FeatureCollection
                     }
 
                 }
-                if(matches == searchTags.length)
+                if(matches >= searchTags.length)
                 {
                     features.add(f);
                 }

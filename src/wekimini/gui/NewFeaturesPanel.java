@@ -51,7 +51,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         resultsTable.setDefaultRenderer(Feature.class, new FeatureTableRenderer());
     }
 
-    private void setUpResultsTable() {
+    private void setUpResultsTable() 
+    {
         resultsTable.setSelectionBackground(Color.BLUE);
         int tW = resultsTable.getWidth();
         TableColumn column;
