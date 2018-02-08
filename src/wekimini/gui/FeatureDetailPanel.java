@@ -27,7 +27,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
 
     private PlotPanel plotPanel;
     private final int REFRESH_RATE = 20;
-    private PlotRowModel model;
+    private PlotRowModel model = new PlotRowModel();
     private Wekinator w;
     private static final int PLOT_W = 416;
     private int outputIndex = 0;
@@ -80,6 +80,8 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     public void setModel(PlotRowModel model)
     {
         this.model = model;
+        outputIndex = model.feature.outputIndex;
+        
         plotPanel.updateModel(model);
         titleLabel.setText(model.feature.name);
         plotPanel.updateWidth(model.isStreaming);
@@ -95,6 +97,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         } catch (NoSuchElementException e){}
         
         descriptionLabel.setText(model.feature.description);
+              
         updateComboBox();
     }
     
@@ -239,7 +242,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void outputComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputComboBoxActionPerformed
-        //WARNING!! THIS DOESNT NECESSARILY WORK FOR FEATuRES WITH MULTIPLE MODIFERS OUTPUTTING
+        //WARNING!! THIS DOESNT NECESSARILY WORK FOR FEATURES WITH MULTIPLE MODIFERS OUTPUTTING
         outputIndex = model.feature.outputIndex + outputComboBox.getSelectedIndex();
         
     }//GEN-LAST:event_outputComboBoxActionPerformed

@@ -34,6 +34,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private WekinatorSupervisedLearningController controller;
     private ModelEvaluator e = null;
     private int outputIndex = 0;
+    private PropertyChangeListener trainingListener;
     
     public EvaluateFeaturesPanel() {
         initComponents();
@@ -48,7 +49,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         this.w = w;
         this.outputIndex = output;
         controller = new WekinatorSupervisedLearningController(w.getSupervisedLearningManager(),w);
-        w.getTrainingRunner().addPropertyChangeListener(new PropertyChangeListener() {
+        trainingListener = new PropertyChangeListener() {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -57,7 +58,8 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 }
 
             }
-        });
+        };
+        w.getTrainingRunner().addPropertyChangeListener(trainingListener);
         w.getOutputManager().addOutputGroupComputedListener(new OutputManager.OutputValueListener() {
 
             @Override
@@ -65,6 +67,11 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 outputLabel.setText("Output:" + vals[0]);
             }
         });
+    }
+    
+    public void onClose()
+    {
+        w.getTrainingRunner().removePropertyChangeListener(trainingListener);
     }
     
     private void trainerUpdated(TrainingRunner.TrainingStatus newStatus) {

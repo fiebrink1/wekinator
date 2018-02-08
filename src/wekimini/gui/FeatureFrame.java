@@ -9,6 +9,8 @@ import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.ListSelectionModel;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
@@ -71,6 +73,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                 w.getSupervisedLearningManager().isPlotting = false;
+                evaluateFeaturesPanel.onClose();
             }
         });
     }

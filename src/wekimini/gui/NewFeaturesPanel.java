@@ -49,6 +49,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         resultsTable.setTableHeader(null);
         availableFiltersTable.setTableHeader(null);
         resultsTable.setDefaultRenderer(Feature.class, new FeatureTableRenderer());
+        resultsTable.setModel(new FeatureTableModel(currentResults));
     }
 
     private void setUpResultsTable() 
