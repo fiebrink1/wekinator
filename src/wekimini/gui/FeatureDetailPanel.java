@@ -29,6 +29,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     private PlotRowModel model;
     private Wekinator w;
     private static final int PLOT_W = 416;
+    private int outputIndex = 0;
     
     public FeatureDetailPanel() 
     {
@@ -48,8 +49,8 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
             {
                 if(model.isStreaming)
                 {
-                    float val = (float) in.value(model.feature.outputIndex);
-                    //System.out.println("adding " + val + " to model " + model.feature.outputIndex);
+                    float val = (float) in.value(outputIndex);
+                    //System.out.println("adding " + val + " to model " + model.feature.pathIndex);
                     model.addPoint(val);
                 }
                 plotPanel.updateModel(model);
@@ -225,6 +226,8 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
 
     private void outputComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputComboBoxActionPerformed
         // TODO add your handling code here:
+        outputIndex = model.feature.outputIndex + outputComboBox.getSelectedIndex(); 
+        
     }//GEN-LAST:event_outputComboBoxActionPerformed
 
 

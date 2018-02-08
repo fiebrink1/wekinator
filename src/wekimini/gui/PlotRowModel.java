@@ -16,7 +16,7 @@ public class PlotRowModel
 {
     private final static int POINTS_PER_ROW = 100;
     public Feature feature = new Feature("feature1");
-    int outputIndex = 0;
+    int pathIndex = 0;
     int rowIndex = 0;
     boolean isStreaming = false;
     protected LinkedList<Double> points = new LinkedList();

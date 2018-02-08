@@ -224,14 +224,14 @@ public final class FeatureCollection
                     boolean matched = false;
                     for(String matchTag:f.tags)
                     {
-                        if(matchTag.toLowerCase().contains(searchTag.toLowerCase()))
+                        if(matchTag.toLowerCase().equals(searchTag.toLowerCase()))
                         {
                             matches++;
                         }
                     }
 
                 }
-                if(matches >= searchTags.length)
+                if(matches == searchTags.length)
                 {
                     features.add(f);
                 }
