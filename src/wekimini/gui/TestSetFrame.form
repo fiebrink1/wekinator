@@ -29,17 +29,22 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="exampleIndexLabel" alignment="1" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="0" pref="96" max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="deleteButton" max="32767" attributes="0"/>
-                          <Component id="recordButton" pref="197" max="32767" attributes="0"/>
-                          <Component id="nextButton" alignment="1" max="32767" attributes="0"/>
-                          <Component id="examplesLeftLabel" alignment="1" max="32767" attributes="0"/>
-                          <Component id="doneButton" alignment="1" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="94" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <Component id="examplesLeftLabel" min="-2" pref="294" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                   </Group>
               </Group>
+          </Group>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="doneButton" min="-2" pref="294" max="-2" attributes="0"/>
+                  <Component id="redoButton" alignment="1" min="-2" pref="294" max="-2" attributes="0"/>
+                  <Component id="nextButton" min="-2" pref="294" max="-2" attributes="0"/>
+                  <Component id="deleteButton" min="-2" pref="294" max="-2" attributes="0"/>
+                  <Component id="recordButton" min="-2" pref="294" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -56,11 +61,13 @@
               <Component id="recordButton" min="-2" pref="54" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="deleteButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="nextButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
+              <Component id="redoButton" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="doneButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="10" max="32767" attributes="0"/>
+              <EmptySpace pref="22" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -119,6 +126,15 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="doneButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="redoButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&lt;- Redo Gesture"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="redoButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

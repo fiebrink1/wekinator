@@ -493,6 +493,20 @@ public class DataManager {
             featureManager.setTestSetDirty(i);
         }
     }
+    
+    public void deleteTestDataWithClass(double output)
+    {
+        int origSize = testInstances.numInstances();
+        for (int i = testInstances.numInstances() - 1; i >= 0; i--) {
+            Instance inst = testInstances.instance(i);
+            if (inst.classValue() == output) {
+                testInstances.delete(i);
+            }
+        }
+        int newSize = testInstances.numInstances();
+        int deleted = origSize - newSize;
+        System.out.println("Set size: " + newSize + " (deleted: " + deleted + ")");
+    }
 
     private void setTestDataFromDataset(Instances data) {
         if(data.numInstances() == 0)
@@ -1043,7 +1057,7 @@ public class DataManager {
     public int getNumExamplesOfClassInTestSet(double output)
     {
         int sum = 0;
-        Instances testSet = getTestingDataForOutput(0);
+        Instances testSet = testInstances;
         for(int i = 0; i < testSet.numInstances(); i++)
         {
             Instance in = testSet.instance(i);

@@ -187,9 +187,9 @@ public class OutputManager {
         return currentTestValues;
     }
     
-    public void setTestValue(double val)
+    public void setTestValues(double[] vals)
     {
-        currentTestValues = new double[]{val};
+        currentTestValues = vals;
     }
     
     public void setCurrentValue(int which, double value) {

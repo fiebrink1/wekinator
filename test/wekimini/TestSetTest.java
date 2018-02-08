@@ -42,12 +42,7 @@ public class TestSetTest {
         w.getDataManager().deleteTestSet();
         w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
         double[] inputs = {1,2,3};
-        Path p1 = w.getSupervisedLearningManager().getPaths().get(0);
-        w.getSupervisedLearningManager().setOutputValueForPath(1, p1);
-        Path p2 = w.getSupervisedLearningManager().getPaths().get(1);
-        w.getSupervisedLearningManager().setOutputValueForPath(2, p2);
-        Path p3 = w.getSupervisedLearningManager().getPaths().get(2);
-        w.getSupervisedLearningManager().setOutputValueForPath(3, p3);
+        w.getOutputManager().setTestValues(inputs);
         w.getSupervisedLearningManager().updateInputs(inputs);
         Instances testSet = w.getDataManager().getTestInstances();
         assertEquals(1, testSet.numInstances(), 0);
@@ -60,6 +55,41 @@ public class TestSetTest {
         assertEquals(1, in.value(6), 0);
         assertEquals(2, in.value(7), 0);
         assertEquals(3, in.value(8), 0);
+    }
+    
+    @Test
+    public void testDeleteForClass()
+    {
+        setUp();
+        w.getDataManager().deleteTestSet();
+        w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
+        double[] inputs = {1,1,1};
+        w.getOutputManager().setTestValues(new double[]{1,1,1});
+        for(int i = 0; i < 20; i++)
+        {
+            w.getSupervisedLearningManager().updateInputs(inputs);
+        }
+        w.getOutputManager().setTestValues(new double[]{2,2,2});
+        for(int i = 0; i < 20; i++)
+        {
+            w.getSupervisedLearningManager().updateInputs(inputs);
+        }
+        w.getOutputManager().setTestValues(new double[]{3,3,3});
+        for(int i = 0; i < 20; i++)
+        {
+            w.getSupervisedLearningManager().updateInputs(inputs);
+        }
+        Instances testSet = w.getDataManager().getTestInstances();
+        assertEquals(60, testSet.numInstances(), 0);
+        w.getDataManager().deleteTestDataWithClass(2);
+        testSet = w.getDataManager().getTestInstances();
+        assertEquals(40, testSet.numInstances(), 0);
+        w.getDataManager().deleteTestDataWithClass(1);
+        testSet = w.getDataManager().getTestInstances();
+        assertEquals(20, testSet.numInstances(), 0);
+        w.getDataManager().deleteTestDataWithClass(3);
+        testSet = w.getDataManager().getTestInstances();
+        assertEquals(0, testSet.numInstances(), 0);
     }
     
     @Test
