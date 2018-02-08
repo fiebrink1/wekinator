@@ -251,7 +251,7 @@ public final class FeatureCollection
     {
         for(Feature f:added.values())
         {
-            f.featureIndex = modifiers.indexForName(f.name+":0");
+            f.outputIndex = modifiers.indexForName(f.name+":0");
         }
     }
     
@@ -339,7 +339,7 @@ public final class FeatureCollection
         
         Feature f = added.get(key);
         
-        for(Integer id:f.ids)
+        for(Integer id:f.modifierIds)
         {
             modifiers.removeModifier(id);
         }
@@ -662,7 +662,7 @@ class PassThrough extends FeatureMultipleModifierOutput
             modifier.addRequiredModifierID(0);
             int id1 = addModifier(mc, modifier);
         }
-        setOutputModifierIDs(ids.toArray(new Integer[ids.size()]));
+        setOutputModifierIDs(modifierIds.toArray(new Integer[modifierIds.size()]));
     }
 }
 

@@ -68,7 +68,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
         
         ignoreDelegate = true;
         outputComboBox.setSelectedIndex(model.outputIndex);
-        featureComboBox.setSelectedIndex(model.feature.featureIndex);
+        featureComboBox.setSelectedIndex(model.feature.outputIndex);
         liveToggle.setSelected(model.isStreaming);
         ignoreDelegate = false;
 
@@ -205,7 +205,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
         int i = featureComboBox.getSelectedIndex();
         if(model != null && !ignoreDelegate)
         {
-            model.feature.featureIndex = i;
+            model.feature.outputIndex = i;
             delegate.modelChanged(model);
         }
     }//GEN-LAST:event_featureComboBoxActionPerformed

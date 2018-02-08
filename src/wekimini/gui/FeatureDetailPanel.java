@@ -15,6 +15,8 @@ import weka.core.Instance;
 import wekimini.Wekinator;
 import wekimini.modifiers.Feature;
 import wekimini.modifiers.Feature.InputDiagram;
+import wekimini.modifiers.FeatureSingleModifierOutput;
+import wekimini.modifiers.ModifiedInput;
 
 /**
  *
@@ -46,8 +48,8 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
             {
                 if(model.isStreaming)
                 {
-                    float val = (float) in.value(model.feature.featureIndex);
-                    //System.out.println("adding " + val + " to model " + model.feature.featureIndex);
+                    float val = (float) in.value(model.feature.outputIndex);
+                    //System.out.println("adding " + val + " to model " + model.feature.outputIndex);
                     model.addPoint(val);
                 }
                 plotPanel.updateModel(model);
@@ -57,7 +59,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         timer.start();
     }
     
-    public URL urlToDiagram(InputDiagram diagram) throws NoSuchElementException
+    public URL urlForDiagram(InputDiagram diagram) throws NoSuchElementException
     {
         switch(diagram)
         {
@@ -87,11 +89,25 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         validate();
         
         try{
-            diagramView.loadImage(urlToDiagram(model.feature.diagram));
+            diagramView.loadImage(urlForDiagram(model.feature.diagram));
         } catch (NoSuchElementException e){}
         
         descriptionLabel.setText(model.feature.description);
-        
+        updateComboBox();
+    }
+    
+    private void updateComboBox()
+    {
+        outputComboBox.removeAllItems();
+        if(model.feature instanceof FeatureSingleModifierOutput)
+        {
+            FeatureSingleModifierOutput ft = (FeatureSingleModifierOutput)model.feature;
+            ModifiedInput outputModifier = w.getDataManager().featureManager.getAllFeaturesGroup().getModifiers().getModifier(ft.getOutputModifierID());
+            for(int i = 0; i < outputModifier.getSize(); i++)
+            {
+                outputComboBox.addItem(ft.name + ":" + i);
+            }
+        }
     }
 
     /**
@@ -114,6 +130,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         diagramView = new wekimini.gui.ImagePanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         descriptionLabel = new javax.swing.JTextArea();
+        outputComboBox = new javax.swing.JComboBox<>();
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -165,24 +182,38 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         descriptionLabel.setBorder(null);
         jScrollPane4.setViewportView(descriptionLabel);
 
+        outputComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        outputComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                outputComboBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(plotScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 410, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(titleLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(plotScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 410, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(diagramView, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(diagramView, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(outputComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
+                    .addComponent(outputComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(diagramView, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -191,6 +222,10 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void outputComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_outputComboBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -203,6 +238,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextArea jTextArea3;
+    private javax.swing.JComboBox<String> outputComboBox;
     private javax.swing.JScrollPane plotScrollPane;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables

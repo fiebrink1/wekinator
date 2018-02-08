@@ -20,9 +20,9 @@ public class Feature
 //    }
     
     public final String name;
-    public final ArrayList<Integer> ids = new ArrayList();
+    public final ArrayList<Integer> modifierIds = new ArrayList();
     public InputDiagram diagram = InputDiagram.UNKNOWN;
-    public int featureIndex = 0;
+    public int outputIndex = 0;
     public ArrayList<String> tags = new ArrayList();
     public String description;
 
@@ -43,7 +43,7 @@ public class Feature
     public int addModifier(ModifierCollection mc, ModifiedInput mod)
     {
         int id = mc.addModifier(mod);
-        ids.add(id);
+        modifierIds.add(id);
         return id;
     }  
     
