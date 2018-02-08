@@ -9,12 +9,8 @@ import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.ListSelectionModel;
-import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
-import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import wekimini.Wekinator;
@@ -24,14 +20,12 @@ import wekimini.modifiers.Feature;
  *
  * @author louismccallum
  */
-public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDelegate {
+public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     
     private Wekinator w;
     public int selectedRow = -1;
     public int outputIndex = 0;
-    /**
-     * Creates new form FeatureFrame
-     */
+    
     public FeatureFrame() {
         initComponents();
     }
@@ -50,8 +44,8 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         currentFeaturesTable.setRowHeight(30);
         currentFeaturesTable.setRowMargin(3);
         currentFeaturesTable.setTableHeader(null);
-        
         updateCurrentFeaturesTable();
+        
         MouseListener featuresMouseListener = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -68,7 +62,8 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         };
         currentFeaturesTable.addMouseListener(featuresMouseListener);
         getContentPane().setBackground(Color.WHITE);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setAlwaysOnTop(true);
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -85,7 +80,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
         updateCurrentFeaturesTable();
     }
     
-    private void resizeColumns() {
+    private void setupCurrentFeaturesTable() {
         int tW = currentFeaturesTable.getWidth();
         TableColumn column;
         TableColumnModel jTableColumnModel = currentFeaturesTable.getColumnModel();
@@ -106,8 +101,7 @@ public class FeatureFrame extends javax.swing.JFrame implements FeatureEditorDel
     {
         Feature[] ft = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
         currentFeaturesTable.setModel(new FeatureTableModel(ft));
-
-        resizeColumns();
+        setupCurrentFeaturesTable();
     }
    
     /**

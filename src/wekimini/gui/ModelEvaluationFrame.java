@@ -739,6 +739,4 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             confusionTab.add(outputNames[i], panel);
         }
     }
-    
-    
 }

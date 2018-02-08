@@ -61,6 +61,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private ModelEvaluationFrame modelEvaluationFrame = null;
     private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
     private FeatureFrame featuresWindow = null;
+    private TestSetFrame testFrame = null;
     private final Wekinator w;
     private boolean closeable = true; //flaseif this is the last window open
     private static final Logger logger = Logger.getLogger(MainGUI.class.getName());
@@ -624,6 +625,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuPerformanceCheck = new javax.swing.JCheckBoxMenuItem();
         menuConsole = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
+        testSetMenuItem = new javax.swing.JMenuItem();
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
         menuKadenze = new javax.swing.JMenu();
@@ -773,6 +775,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         jMenu2.add(jMenuItem8);
 
+        testSetMenuItem.setText("Test Set");
+        testSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                testSetMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu2.add(testSetMenuItem);
+
         jMenuBar1.add(jMenu2);
 
         menuActions.setText("Actions");
@@ -907,6 +917,11 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         showFeaturesWindow();
     }//GEN-LAST:event_jMenuItem8ActionPerformed
 
+    private void testSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testSetMenuItemActionPerformed
+        // TODO add your handling code here:
+        showTestWindow();
+    }//GEN-LAST:event_testSetMenuItemActionPerformed
+
     private void flushLogs() {
         KadenzeLogging.getLogger().flush();
     }
@@ -1026,6 +1041,27 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             featuresWindow.toFront();
         }
     }
+   
+      private void showTestWindow()
+    {
+        if (testFrame == null) {
+            testFrame = new TestSetFrame();
+            testFrame.update(w);
+            testFrame.setVisible(true);
+
+            //Problem: Won't call on button-triggered dispose...
+            Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                @Override
+                public void callMe() {
+                    testFrame = null;
+                }
+            };
+
+            Util.callOnClosed(testFrame, callMe);
+        } else {
+            testFrame.toFront();
+        }
+    }
 
     private void showInputOutputConnectionWindow() {
         if (inputOutputConnectionsWindow == null) {
@@ -1114,6 +1150,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JCheckBoxMenuItem menuPerformanceCheck;
     private javax.swing.JPanel panelParent;
     private wekimini.gui.SupervisedLearningPanel supervisedLearningPanel1;
+    private javax.swing.JMenuItem testSetMenuItem;
     // End of variables declaration//GEN-END:variables
 
     void displayEditOutput(String name) {

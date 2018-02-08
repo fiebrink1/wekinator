@@ -431,6 +431,7 @@ public class DataManager {
             }
         }
         in.setDataset(instancesToUpdate);
+        instancesToUpdate.setClassIndex(myVals.length - 1);
         instancesToUpdate.add(in);
         if(!testSet)
         {
@@ -1037,6 +1038,21 @@ public class DataManager {
     public Instances getTestInstances()
     {
         return testInstances;
+    }
+    
+    public int getNumExamplesOfClassInTestSet(double output)
+    {
+        int sum = 0;
+        Instances testSet = getTestingDataForOutput(0);
+        for(int i = 0; i < testSet.numInstances(); i++)
+        {
+            Instance in = testSet.instance(i);
+            if(in.classValue() == output)
+            {
+                sum++;
+            }
+        }
+        return sum;
     }
     
     public Instances getTestingDataForOutput(int index)

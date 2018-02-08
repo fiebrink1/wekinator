@@ -88,6 +88,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     private Instance currentInputInstance;
     public boolean isPlotting = false;
     
+    
     /**
      * Get the value of computeDistribution
      *
@@ -1028,7 +1029,9 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public void updateInputs(double[] inputs) {
         if (recordingState != RecordingState.NOT_RECORDING) 
         {
-            addToDataSet(inputs, w.getOutputManager().getCurrentValues(), pathRecordingMask, recordingState == RecordingState.RECORDING_TEST);
+            boolean test = recordingState == RecordingState.RECORDING_TEST;
+            double[] output = test ? w.getOutputManager().getCurrentTestValues() : w.getOutputManager().getCurrentValues();
+            addToDataSet(inputs, output, pathRecordingMask, test);
         } 
         else if (runningState != RunningState.NOT_RUNNING || isPlotting) 
         {

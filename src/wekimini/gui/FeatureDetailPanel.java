@@ -43,20 +43,17 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     public void update(Wekinator w)
     {
         this.w = w;
+        
         Timer timer = new Timer(REFRESH_RATE, new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-            Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
-            if(in != null)
-            {
-                if(model.isStreaming)
+            public void actionPerformed(ActionEvent evt) {
+                Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
+                if(in != null)
                 {
                     float val = (float) in.value(outputIndex);
-                    //System.out.println("adding " + val + " to model " + model.feature.pathIndex);
                     model.addPoint(val);
+                    plotPanel.updateModel(model);
                 }
-                plotPanel.updateModel(model);
-            }
-        }    
+            }    
         });  
         timer.start();
     }
@@ -92,9 +89,14 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         plotScrollPane.revalidate();
         validate();
         
-        try{
+        try
+        {
             diagramView.loadImage(urlForDiagram(model.feature.diagram));
-        } catch (NoSuchElementException e){}
+        } 
+        catch (NoSuchElementException e)
+        {
+            System.out.println(e.getLocalizedMessage());
+        }
         
         descriptionLabel.setText(model.feature.description);
               
@@ -126,6 +128,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
                 addItemsForModifier(ft.getOutputModifierIDs()[i], ft.name + ":" + i);
             }
         }
+        outputComboBox.setEnabled(outputComboBox.getItemCount() > 1);
     }
 
     /**

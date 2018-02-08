@@ -56,6 +56,7 @@ public class OutputManager {
     private final EventListenerList listeners;
 
     private double[] currentValues = new double[0];
+    private double[] currentTestValues = new double[0];
 
     /*public void setComputedOutputs(double[] values) {
         if (values != null && values.length == currentValues.length) {
@@ -179,6 +180,16 @@ public class OutputManager {
     
     public double[] getCurrentValues() {
         return currentValues;
+    }
+    
+    public double[] getCurrentTestValues()
+    {
+        return currentTestValues;
+    }
+    
+    public void setTestValue(double val)
+    {
+        currentTestValues = new double[]{val};
     }
     
     public void setCurrentValue(int which, double value) {
