@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -218,12 +219,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
 
         @Override
         public int getRowCount() {
-            return (int)Math.ceil(tags.length/3);
+            return (int)Math.ceil(tags.length/getColumnCount());
         }
 
         @Override
         public int getColumnCount() {
-            return 3;
+            return 2;
         }
 
         @Override
@@ -256,7 +257,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
             FiltersTableModel model = (FiltersTableModel)table.getModel();
             setBackground(selectedFilters.contains(tag) ? Color.DARK_GRAY  :Color.WHITE);
             setForeground(selectedFilters.contains(tag) ? Color.WHITE : Color.DARK_GRAY);
-            
+            setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
             setText(tag);
             return this;
         }

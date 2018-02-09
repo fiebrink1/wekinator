@@ -90,7 +90,7 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
         doneButton = new javax.swing.JButton();
         redoButton = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         deleteButton.setText("Delete Last Round");
         deleteButton.addActionListener(new java.awt.event.ActionListener() {

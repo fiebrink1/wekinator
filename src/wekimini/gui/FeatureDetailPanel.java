@@ -38,6 +38,8 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         plotPanel = new PlotPanel(PLOT_W);        
         plotScrollPane.setViewportView(plotPanel);
         plotScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+        outputComboBox.setVisible(false);
+        outputLabel.setVisible(false);
     }
     
     public void update(Wekinator w)
@@ -128,7 +130,9 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
                 addItemsForModifier(ft.getOutputModifierIDs()[i], ft.name + ":" + i);
             }
         }
-        outputComboBox.setEnabled(outputComboBox.getItemCount() > 1);
+        boolean multiOutput = outputComboBox.getItemCount() > 1;
+        outputComboBox.setVisible(multiOutput);
+        outputLabel.setVisible(multiOutput);
     }
 
     /**
@@ -152,6 +156,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         jScrollPane4 = new javax.swing.JScrollPane();
         descriptionLabel = new javax.swing.JTextArea();
         outputComboBox = new javax.swing.JComboBox<>();
+        outputLabel = new javax.swing.JLabel();
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -210,6 +215,8 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
             }
         });
 
+        outputLabel.setText("Select Output:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -224,9 +231,13 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(diagramView, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
                         .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(outputComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(outputLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(outputComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -234,7 +245,8 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
-                    .addComponent(outputComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(outputComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(outputLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(diagramView, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -262,6 +274,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextArea jTextArea3;
     private javax.swing.JComboBox<String> outputComboBox;
+    private javax.swing.JLabel outputLabel;
     private javax.swing.JScrollPane plotScrollPane;
     private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables

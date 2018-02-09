@@ -88,10 +88,15 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <Component id="diagramView" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="26" max="32767" attributes="0"/>
                       <Component id="jScrollPane4" min="-2" pref="150" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="outputComboBox" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <Component id="outputLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="outputComboBox" min="-2" pref="167" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -103,6 +108,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="titleLabel" alignment="3" pref="24" max="32767" attributes="0"/>
                   <Component id="outputComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="outputLabel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -207,6 +213,11 @@
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
       </AuxValues>
+    </Component>
+    <Component class="javax.swing.JLabel" name="outputLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Select Output:"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
