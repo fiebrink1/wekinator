@@ -27,6 +27,7 @@ import wekimini.gui.About;
 import wekimini.gui.InitInputOutputFrame;
 import wekimini.gui.Preferences;
 import wekimini.gui.Study1Prompt;
+import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.kadenze.KadenzePromptFrame;
 import wekimini.util.Util;
@@ -49,6 +50,34 @@ public final class WekiMiniRunner {
     private static boolean isKadenze = false;
     private static int nextID = 1;
 
+    public void runStudy1() throws Exception
+    {
+        String dir = ((FeaturnatorLogger)KadenzeLogging.getLogger()).getUserDir();
+        File f = new File(dir + "Study1/Study1.wekproj");
+        int newestID = nextID;
+        Wekinator w = WekiMiniRunner.getInstance().runFromFile(f.getAbsolutePath(), false);
+                //Start OSC listening for newest one
+        w.getOSCReceiver().startListening();
+        
+        //Start running newest one
+        if (w.getLearningManager().getLearningType() == LearningManager.LearningType.SUPERVISED_LEARNING) {
+            WekinatorSupervisedLearningController supervisedController = w.getLearningManager().getSupervisedLearningManager().getSupervisedLearningController();
+            if (supervisedController.canRun()) {
+                supervisedController.startRun();
+            } else {
+                w.getStatusUpdateCenter().warn(this, "Tried to run automatically but cannot in this state.");
+            }
+        } else {
+            WekinatorDtwLearningController dtwController = w.getLearningManager().getDtwLearningManager().getDtwLearningController();
+            if (dtwController.canRun()) {
+                dtwController.startRun();
+            } else {
+                w.getStatusUpdateCenter().warn(this, "Tried to run automatically but cannot in this state.");
+            }
+        } 
+        w.getMainGUI().setPerformanceMode(true);
+    }
+    
     //Load it and start running, handle old project
     public void runNewProjectAutomatically(Wekinator oldWekinator, String filename, NewProjectOptions options) throws Exception {
         File f = new File(filename);

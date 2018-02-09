@@ -7,8 +7,13 @@ package wekimini.gui;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import wekimini.GlobalSettings;
 import wekimini.WekiMiniRunner;
+import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeAssignment;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.util.Util;
@@ -125,10 +130,29 @@ public class Study1Prompt extends javax.swing.JFrame {
         } catch (IOException e) {
             
         }
-        WekiMiniRunner.getInstance().runNewProject();
+        try{
+            setupProject();
+            WekiMiniRunner.getInstance().runStudy1();
+        } catch (Exception e){}
         this.dispose();
     }//GEN-LAST:event_startButtonActionPerformed
 
+    public void setupProject()
+    {
+        String dir = ((FeaturnatorLogger)KadenzeLogging.getLogger()).getUserDir();
+        File project = new File(dir + "Study1");
+        File template = new File("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/Wekinator_Projects/Study1/");
+        if(!project.exists())
+        {
+            try{
+                FileUtils.copyDirectory(template, project);
+            } catch (IOException e)
+            {
+                System.out.println(e.getLocalizedMessage());
+            }
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */

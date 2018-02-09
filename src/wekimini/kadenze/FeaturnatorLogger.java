@@ -45,7 +45,7 @@ import wekimini.osc.OSCOutputGroup;
  */
 public class FeaturnatorLogger implements KadenzeLogger  {
 
-private static final int version = 2;
+    private static final int version = 2;
     private static final String dateString = "2016/04/02";
     private FileOutputStream fos = null;
     private OutputStreamWriter osw = null;
@@ -55,7 +55,7 @@ private static final int version = 2;
     private String currentAssignmentDir = ""; //Directory for this assignment
     private int modelSetID = 1; //For choosing model xml file names
     private KadenzeAssignment.KadenzeAssignmentType currentAssignmentType;
-    private static final Logger logger = Logger.getLogger(AssignmentFinalLogger.class.getName());
+    private static final Logger logger = Logger.getLogger(FeaturnatorLogger.class.getName());
     private boolean hasLoggedModelsInThisAssignment = false;
 
     @Override
@@ -77,13 +77,18 @@ private static final int version = 2;
         assignmentStarted(a);
         hasLoggedModelsInThisAssignment = false;
     }
+    
+    public String getUserDir()
+    {
+        return currentAssignmentDir;
+    }
 
     private void doAssignmentSetup(KadenzeAssignment.KadenzeAssignmentType a) {
         GlobalSettings gs = GlobalSettings.getInstance();
         int lastModelSetID = gs.getIntValue("modelSetID", 0);
         modelSetID = lastModelSetID + 1;
     }
-
+    
     private File getAssignmentFilename(File dir, KadenzeAssignment.KadenzeAssignmentType a) {
         String myFile = dir + File.separator + KadenzeAssignment.getAssignmentLogfilename(a);
         return new File(myFile);
@@ -101,7 +106,7 @@ private static final int version = 2;
             osw.flush();
             fos.flush();
         } catch (IOException ex) {
-            Logger.getLogger(AssignmentFinalLogger.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FeaturnatorLogger.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
