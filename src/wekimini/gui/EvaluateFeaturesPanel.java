@@ -15,6 +15,7 @@ import javax.swing.BorderFactory;
 import javax.swing.border.Border;
 import wekimini.OutputManager;
 import wekimini.Path;
+import wekimini.SupervisedLearningManager;
 import wekimini.TrainingRunner;
 import wekimini.Wekinator;
 import wekimini.WekinatorSupervisedLearningController;
@@ -35,6 +36,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private ModelEvaluator e = null;
     private int outputIndex = 0;
     private PropertyChangeListener trainingListener;
+    private PropertyChangeListener learningStateListener;
     
     public EvaluateFeaturesPanel() {
         initComponents();
@@ -59,6 +61,14 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
 
             }
         };
+        learningStateListener = new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                learningManagerPropertyChanged(evt);
+            }
+        };
+        w.getSupervisedLearningManager().addPropertyChangeListener(learningStateListener);
+        
         w.getTrainingRunner().addPropertyChangeListener(trainingListener);
         w.getOutputManager().addOutputGroupComputedListener(new OutputManager.OutputValueListener() {
 
@@ -69,9 +79,40 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         });
     }
     
+    private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case SupervisedLearningManager.PROP_RECORDINGROUND:
+                break;
+            case SupervisedLearningManager.PROP_RECORDINGSTATE:
+                break;
+            case SupervisedLearningManager.PROP_LEARNINGSTATE:
+                break;
+            case SupervisedLearningManager.PROP_RUNNINGSTATE:
+                isRunning = w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.RUNNING;
+                System.out.println("Callback isRunning:" + isRunning);
+                if (isRunning) {
+                    trainBtn.setText("Stop running");
+                }
+                else
+                {
+                    trainBtn.setText("Train and Run");
+                }
+                break;
+            case SupervisedLearningManager.PROP_NUMEXAMPLESTHISROUND:
+                break;
+            case SupervisedLearningManager.PROP_ABLE_TO_RECORD:
+                break;
+            case SupervisedLearningManager.PROP_ABLE_TO_RUN:
+                break;
+            default:
+                break;
+        }
+    }
+    
     public void onClose()
     {
         w.getTrainingRunner().removePropertyChangeListener(trainingListener);
+        w.getSupervisedLearningManager().removePropertyChangeListener(learningStateListener);
     }
     
     private void trainerUpdated(TrainingRunner.TrainingStatus newStatus) {
@@ -235,7 +276,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_reevaluateBtnActionPerformed
 
     private void trainBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainBtnActionPerformed
-        
+        isRunning = w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.RUNNING;
         if(!isRunning)
         {
             if (controller.canTrain()) {
@@ -249,7 +290,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             trainBtn.setText("Train and run");
         }
         
-        isRunning = !isRunning;
+        System.out.println("Button isRunning:" + isRunning);
     }//GEN-LAST:event_trainBtnActionPerformed
 
 
