@@ -142,7 +142,7 @@
           <Font name="Lucida Grande" size="15" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="Feature"/>
+        <Property name="text" type="java.lang.String" value="Select a Feature To Explore"/>
       </Properties>
     </Component>
     <Container class="wekimini.gui.ImagePanel" name="diagramView">

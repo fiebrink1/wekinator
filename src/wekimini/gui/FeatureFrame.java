@@ -14,6 +14,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import wekimini.Wekinator;
+import wekimini.kadenze.FeaturnatorLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.modifiers.Feature;
 
 /**
@@ -62,8 +64,8 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         };
         currentFeaturesTable.addMouseListener(featuresMouseListener);
         getContentPane().setBackground(Color.WHITE);
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setAlwaysOnTop(true);
+//        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+//        setAlwaysOnTop(true);
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -75,6 +77,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     
     private void removeFeature(Feature ft)
     {
+        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureRemoved(w);
         w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).removeFeatureForKey(ft.name);
         newFeaturesPanel.featureListUpdated();
         updateCurrentFeaturesTable();
@@ -264,6 +267,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     
     private void updateSelectedFeature(Feature ft)
     {
+        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeaturePreviewed(w, ft);
         PlotRowModel model = new PlotRowModel();
         w.getSupervisedLearningManager().isPlotting = true;
         model.isStreaming = true;

@@ -20,6 +20,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import org.jdesktop.swingworker.SwingWorker;
 import wekimini.Wekinator;
+import wekimini.kadenze.FeaturnatorLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.modifiers.Feature;
 
 /**
@@ -140,6 +142,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     
     public void addFeature(Feature ft)
     {
+        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureAdded(w);
         w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(ft.name);
         delegate.featureListUpdated();
         updateResultsTable(currentResults);
@@ -157,11 +160,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         SwingWorker worker = new SwingWorker<Feature[] ,Void>()
         {   
             Feature[] f;
+            String[] sf;
 
             @Override
             public Feature[]  doInBackground()
             {
-                String[] sf = new String[selectedFilters.size()];
+                sf = new String[selectedFilters.size()];
                 sf = selectedFilters.toArray(sf);
                 f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForTags(sf);
                 return f;
@@ -170,6 +174,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
             @Override
             public void done()
             {
+                if(sf.length > 0)
+                {
+                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureTagSearch(w, sf, f);
+                }
                 updateResultsTable(f);
             }
         };
@@ -389,27 +397,30 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     }//GEN-LAST:event_searchBarActionPerformed
 
     private void searchBarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchBarKeyTyped
-         SwingWorker worker = new SwingWorker<Feature[] ,Void>()
-        {   
-            Feature[] f;
-            
-            @Override
-            public Feature[]  doInBackground()
-            {
-                f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForKeyword(searchBar.getText());
-                return f;
+        
+        String searchTerm = searchBar.getText();
+        if(!searchTerm.isEmpty())
+        {
+            SwingWorker worker = new SwingWorker<Feature[] ,Void>()
+            {   
+                Feature[] f;
 
-            }
-            
-            @Override
-            public void done()
-            {
-                updateResultsTable(f);
-            }
-        };
-        worker.execute();
-        
-        
+                @Override
+                public Feature[]  doInBackground()
+                {
+                    f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForKeyword(searchTerm);
+                    return f;
+                }
+
+                @Override
+                public void done()
+                {
+                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureSearch(w, searchTerm, f);
+                    updateResultsTable(f);
+                }
+            };
+            worker.execute();
+        }
     }//GEN-LAST:event_searchBarKeyTyped
 
 

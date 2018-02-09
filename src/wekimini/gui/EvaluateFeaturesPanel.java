@@ -282,12 +282,10 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             if (controller.canTrain()) {
                 controller.train();
             }
-            trainBtn.setText("Stop running");
         }
         else
         {
             controller.stopRun();
-            trainBtn.setText("Train and run");
         }
         
         System.out.println("Button isRunning:" + isRunning);

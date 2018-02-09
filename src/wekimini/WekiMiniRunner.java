@@ -26,6 +26,7 @@ import javax.swing.event.ChangeListener;
 import wekimini.gui.About;
 import wekimini.gui.InitInputOutputFrame;
 import wekimini.gui.Preferences;
+import wekimini.gui.Study1Prompt;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.kadenze.KadenzePromptFrame;
 import wekimini.util.Util;
@@ -179,12 +180,13 @@ public final class WekiMiniRunner {
         //args.length == 0
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                if (WekiMiniRunner.isKadenze) {
-                     new KadenzePromptFrame().setVisible(true);
-                } else {
-                    KadenzeLogging.noLogging();
-                    WekiMiniRunner.getInstance().runNewProject();
-                }
+                new Study1Prompt().setVisible(true);
+//                if (WekiMiniRunner.isKadenze) {
+//                     new KadenzePromptFrame().setVisible(true);
+//                } else {
+//                    KadenzeLogging.noLogging();
+//                    WekiMiniRunner.getInstance().runNewProject();
+//                }
             }
         });
         

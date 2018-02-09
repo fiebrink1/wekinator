@@ -180,7 +180,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         titleLabel.setBackground(new java.awt.Color(238, 0, 0));
         titleLabel.setFont(new java.awt.Font("Lucida Grande", 1, 15)); // NOI18N
         titleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        titleLabel.setText("Feature");
+        titleLabel.setText("Select a Feature To Explore");
 
         diagramView.setBackground(new java.awt.Color(255, 255, 255));
 
