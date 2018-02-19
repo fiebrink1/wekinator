@@ -981,6 +981,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         if(!testing)
         {
             setNumExamplesThisRound(numExamplesThisRound + 1);
+            setAbleToRun(false);
         }
         w.getDataManager().addToDataSet(inputs, outputs, new boolean[0],recordingMask, recordingRound, testing);
     }

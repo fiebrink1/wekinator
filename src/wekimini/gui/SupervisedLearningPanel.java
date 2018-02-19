@@ -205,6 +205,7 @@ public class SupervisedLearningPanel extends javax.swing.JPanel {
             //TODO: Update somewhere else
            // TODO THis is really sloww.getStatusUpdateCenter().update(this, "New examples recorded");
             //setStatus();
+            //setButtonsForLearningState();
         } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_ABLE_TO_RECORD) {
             setButtonsForLearningState();
         } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_ABLE_TO_RUN) {

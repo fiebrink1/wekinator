@@ -236,16 +236,20 @@ public class Path {
        // this.numExamples = numExamples;
         // hasData = (numExamples > 0);
 
-        if (modelState == ModelState.NOT_READY) {
-            if (numExamples > 0) {
-                setModelState(ModelState.READY_FOR_BUILDING);
-            }
-        } else if (modelState == ModelState.READY_FOR_BUILDING) {
-            if (numExamples == 0) {
-                setModelState(ModelState.NOT_READY);
-            }
-        } else if (modelState == ModelState.BUILT) {
-            setModelState(ModelState.NEEDS_REBUILDING);
+        if (null != modelState) switch (modelState) {
+            case NOT_READY:
+                if (numExamples > 0) {
+                    setModelState(ModelState.READY_FOR_BUILDING);
+                }   break;
+            case READY_FOR_BUILDING:
+                if (numExamples == 0) {
+                    setModelState(ModelState.NOT_READY);
+                }   break;
+            case BUILT:
+                setModelState(ModelState.NEEDS_REBUILDING);
+                break;
+            default:
+                break;
         }
     }
 
