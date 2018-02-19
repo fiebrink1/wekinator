@@ -13,7 +13,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +35,11 @@ import wekimini.gui.Study1Prompt;
 import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.kadenze.KadenzePromptFrame;
+import wekimini.learning.LearningAlgorithmRegistry;
+import wekimini.osc.OSCClassificationOutput;
+import wekimini.osc.OSCInputGroup;
+import wekimini.osc.OSCOutput;
+import wekimini.osc.OSCOutputGroup;
 import wekimini.util.Util;
 
 /**
@@ -49,34 +59,6 @@ public final class WekiMiniRunner {
     private final ImageIcon myIcon = new ImageIcon(getClass().getResource("/wekimini/icons/wekimini_small.png"));
     private static boolean isKadenze = false;
     private static int nextID = 1;
-
-    public void runStudy1() throws Exception
-    {
-        String dir = ((FeaturnatorLogger)KadenzeLogging.getLogger()).getUserDir();
-        File f = new File(dir + "Study1/Study1.wekproj");
-        int newestID = nextID;
-        Wekinator w = WekiMiniRunner.getInstance().runFromFile(f.getAbsolutePath(), false);
-                //Start OSC listening for newest one
-        w.getOSCReceiver().startListening();
-        
-        //Start running newest one
-        if (w.getLearningManager().getLearningType() == LearningManager.LearningType.SUPERVISED_LEARNING) {
-            WekinatorSupervisedLearningController supervisedController = w.getLearningManager().getSupervisedLearningManager().getSupervisedLearningController();
-            if (supervisedController.canRun()) {
-                supervisedController.startRun();
-            } else {
-                w.getStatusUpdateCenter().warn(this, "Tried to run automatically but cannot in this state.");
-            }
-        } else {
-            WekinatorDtwLearningController dtwController = w.getLearningManager().getDtwLearningManager().getDtwLearningController();
-            if (dtwController.canRun()) {
-                dtwController.startRun();
-            } else {
-                w.getStatusUpdateCenter().warn(this, "Tried to run automatically but cannot in this state.");
-            }
-        } 
-        w.getMainGUI().setPerformanceMode(true);
-    }
     
     //Load it and start running, handle old project
     public void runNewProjectAutomatically(Wekinator oldWekinator, String filename, NewProjectOptions options) throws Exception {
@@ -224,6 +206,49 @@ public final class WekiMiniRunner {
 
     public int numRunningProjects() {
         return wekinatorCurrentMainFrames.size();
+    }
+    
+    public Wekinator runStudy1(String userID, String hostName, int port)
+    {
+        Wekinator w = null;
+        try {
+            String dir = ((FeaturnatorLogger)KadenzeLogging.getLogger()).getUserDir();
+            File f = new File(dir + "Study1");
+            w = new Wekinator(WekiMiniRunner.generateNextID());
+            
+            w.getOSCSender().setHostnameAndPort(InetAddress.getByName(hostName), port);
+            String[] inputs = new String[]{"accX","accY","accZ","gyroX","gyroY","gyroZ"};
+            int numClasses = inputs.length;
+            int numOutputs = 1;
+            String name = "Inputs";
+            String oscMessage = "/wek/inputs";
+            OSCInputGroup inputGroup = new OSCInputGroup(name, oscMessage, 6, inputs);
+            List<OSCOutput> outputs = new LinkedList<>();
+            for (int i = 0; i < 1; i++) {
+                OSCClassificationOutput o = new OSCClassificationOutput("output"+i, numClasses, false);
+                outputs.add(o);
+            }
+            OSCOutputGroup outputGroup = new OSCOutputGroup(outputs, oscMessage, hostName, port);
+            
+            w.getInputManager().setOSCInputGroup(inputGroup);
+            w.getOutputManager().setOSCOutputGroup(outputGroup);
+            w.getLearningManager().setSupervisedLearning();
+            
+            LearningModelBuilder mb = LearningAlgorithmRegistry.getClassificationModelBuilders()[0];
+            for (int i = 0; i < outputGroup.getNumOutputs(); i++) 
+            {
+                LearningModelBuilder mbnew = mb.fromTemplate(mb);
+                logger.log(Level.INFO, "Setting model builder to" + mbnew.getPrettyName());
+                w.getSupervisedLearningManager().setModelBuilderForPath(mbnew, i);
+            }
+                        
+            WekinatorSaver.createNewProject(userID, f, w);
+            
+        } catch(IOException e)
+        {
+            
+        }
+        return w;
     }
 
     public void runNewProject() {

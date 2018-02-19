@@ -5,6 +5,7 @@
  */
 package wekimini.gui;
 
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,18 +14,23 @@ import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import wekimini.GlobalSettings;
 import wekimini.WekiMiniRunner;
+import wekimini.WekiMiniRunner.Closeable;
+import wekimini.Wekinator;
 import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeAssignment;
 import wekimini.kadenze.KadenzeLogging;
+import wekimini.osc.OSCReceiver;
 import wekimini.util.Util;
 
 /**
  *
  * @author louismccallum
  */
-public class Study1Prompt extends javax.swing.JFrame {
+public class Study1Prompt extends javax.swing.JFrame implements Closeable {
 
     private String currentSaveLocation;
+    private Wekinator w;
+    private boolean closeable;
     
     /**
      * Creates new form Study1Prompt
@@ -32,6 +38,33 @@ public class Study1Prompt extends javax.swing.JFrame {
     public Study1Prompt() {
         initComponents();
         currentSaveLocation = System.getProperty("user.home") + File.separator + "study1";
+    }
+    
+    @Override
+    public void setCloseable(boolean b)
+    {
+        closeable = b;
+    }
+
+    @Override
+    public Wekinator getWekinator()
+    {
+        return w;
+    }
+    
+    private void tryToStartListening(int port) {
+        if (w.getOSCReceiver().getConnectionState()
+                == OSCReceiver.ConnectionState.CONNECTED) {
+            w.getOSCReceiver().stopListening();
+        } else {
+            if (port <= 0) {
+                Util.showPrettyErrorPane(this, "Port must be a valid integer greater than 0");
+                return;
+            }
+
+            w.getOSCReceiver().setReceivePort(port);
+            w.getOSCReceiver().startListening();
+        }
     }
 
     /**
@@ -47,13 +80,17 @@ public class Study1Prompt extends javax.swing.JFrame {
         idTextField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         startButton = new javax.swing.JButton();
+        hostTextField = new javax.swing.JTextField();
+        portTextField = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("STUDY 1");
 
-        idTextField.setText("Participant Id");
+        idTextField.setText("1");
         idTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 idTextFieldActionPerformed(evt);
@@ -69,21 +106,45 @@ public class Study1Prompt extends javax.swing.JFrame {
             }
         });
 
+        hostTextField.setText("172.16.42.5");
+        hostTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hostTextFieldActionPerformed(evt);
+            }
+        });
+
+        portTextField.setText("6448");
+        portTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                portTextFieldActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setText("Host:");
+
+        jLabel4.setText("Port:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
+                        .addContainerGap()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(hostTextField)
                             .addComponent(startButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(idTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE))
-                        .addGap(0, 11, Short.MAX_VALUE)))
+                            .addComponent(idTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
+                            .addComponent(portTextField))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -96,8 +157,16 @@ public class Study1Prompt extends javax.swing.JFrame {
                     .addComponent(idTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(hostTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(portTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -109,8 +178,11 @@ public class Study1Prompt extends javax.swing.JFrame {
 
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
         // TODO add your handling code here:
-        File f = new File(currentSaveLocation + File.separator + idTextField.getText());
-        //File f = new File(currentSaveLocation);
+        String userID = idTextField.getText();
+        String p_str = portTextField.getText();
+        int port = Integer.parseInt(p_str);
+        String host = hostTextField.getText();
+        File f = new File(currentSaveLocation + File.separator + userID);
         if (!f.exists()) {
             try {
                 f.mkdirs();
@@ -131,27 +203,25 @@ public class Study1Prompt extends javax.swing.JFrame {
             
         }
         try{
-            setupProject();
-            WekiMiniRunner.getInstance().runStudy1();
-        } catch (Exception e){}
+            WekiMiniRunner runner = WekiMiniRunner.getInstance();
+            w = runner.runStudy1(userID, host, port);
+            tryToStartListening(port);
+            w.getMainGUI().setVisible(true);
+            runner.transferControl(w, this, w.getMainGUI());
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         this.dispose();
     }//GEN-LAST:event_startButtonActionPerformed
 
-    public void setupProject()
-    {
-        String dir = ((FeaturnatorLogger)KadenzeLogging.getLogger()).getUserDir();
-        File project = new File(dir + "Study1");
-        File template = new File("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/Wekinator_Projects/Study1/");
-        if(!project.exists())
-        {
-            try{
-                FileUtils.copyDirectory(template, project);
-            } catch (IOException e)
-            {
-                System.out.println(e.getLocalizedMessage());
-            }
-        }
-    }
+    private void hostTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hostTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_hostTextFieldActionPerformed
+
+    private void portTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_portTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_portTextFieldActionPerformed
+
     
     /**
      * @param args the command line arguments
@@ -189,9 +259,13 @@ public class Study1Prompt extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField hostTextField;
     private javax.swing.JTextField idTextField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JTextField portTextField;
     private javax.swing.JButton startButton;
     // End of variables declaration//GEN-END:variables
 }

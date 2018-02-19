@@ -265,7 +265,15 @@ public class WekinatorSaver {
         
     }
     
-    private static Wekinator instantiateSupervisedWekinator(WekinatorFileData wfd, OSCInputGroup ig, OSCOutputGroup og, Instances data, Instances testData, List<Path> tempPaths, String projectDir) throws IOException {
+    private static Wekinator instantiateSupervisedWekinator(
+            WekinatorFileData wfd, 
+            OSCInputGroup ig, 
+            OSCOutputGroup og, 
+            Instances data, 
+            Instances testData, 
+            List<Path> tempPaths, 
+            String projectDir) 
+            throws IOException {
         Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
         KadenzeLogging.getLogger().loadedFromFile(w, wfd.getProjectName());
         w.setProjectLocation(projectDir);
