@@ -144,7 +144,7 @@ public class InputManager {
     }
 
     //Listener for input group name
-    //(all inputs in a group will update simultaneously)
+    //(all oscArg in a group will update simultaneously)
     public void addInputValueListener(InputListener l) {
         inputValueListeners.add(l);
     }
@@ -175,28 +175,27 @@ public class InputManager {
 
     private void messageArrived(String messageName, OSCMessage m) {
         //TODO: CHeck if enabled before doing anything
-        //System.out.println("Received " + name);
+        //System.out.println("Received " + messageName + " :" + m.getAddress() + ":" + m.getArguments());
         if (inputGroup != null && messageName.equals(inputGroup.getOscMessage())) {
-            List<Object> o = m.getArguments();
-            double d[] = new double[o.size()];
-            for (int i = 0; i < o.size(); i++) {
-                if (o.get(i) instanceof Float) {
-                    d[i] = ((Float) o.get(i));
+            List<Object> oscArg = m.getArguments();
+            double inputVals[] = new double[oscArg.size()];
+            for (int i = 0; i < oscArg.size(); i++) {
+                if (oscArg.get(i) instanceof Float) {
+                    inputVals[i] = ((Float) oscArg.get(i));
                 } else {
                     Logger.getLogger(InputManager.class.getName()).log(Level.WARNING, "Received feature is not a float");
                 }
             }
-            if (d.length == currentValues.length) {
-                notifyListeners(d);
-                System.arraycopy(d, 0, currentValues, 0, d.length);
+            if (inputVals.length == currentValues.length) {
+                notifyListeners(inputVals);
+                System.arraycopy(inputVals, 0, currentValues, 0, inputVals.length);
             } else {
                 String msg = "Mismatch in input length: "
-                        + "Expected " + currentValues.length + ", received " + o.size();
+                        + "Expected " + currentValues.length + ", received " + oscArg.size();
                 w.getStatusUpdateCenter().warn(this, msg);
                 notifyListenersOfError();
             }
         }
-        //Not sure if we need to store this array within this class, too
     }
 
     private void bundleArrived(String messageName, OSCMessage m) {
@@ -234,15 +233,15 @@ public class InputManager {
             
             
             /* int numDatapoints = 0;
-            if (o.get(0) instanceof Integer) {
-            numDatapoints = (Integer) o.get(0);
+            if (oscArg.get(0) instanceof Integer) {
+            numDatapoints = (Integer) oscArg.get(0);
             } else {
             String msg = "Unexpected bundle message; require at least 1 datapoint";
             w.getStatusUpdateCenter().warn(this, msg);
             notifyListenersOfError();
             return;
             }
-            if (o.size() != (numDatapoints * currentValues.length + 1)) {
+            if (oscArg.size() != (numDatapoints * currentValues.length + 1)) {
             String msg = "Unexpected bundle length: Expected " + numDatapoints + " points";
             w.getStatusUpdateCenter().warn(this, msg);
             notifyListenersOfError();
@@ -250,18 +249,18 @@ public class InputManager {
             }
             if (numDatapoints > 0) {
             //o.remove(0);
-            notifyBundleListeners(o);
+            notifyBundleListeners(oscArg);
             //update currentValues
             for (int i = 0; i < currentValues.length; i++) {
-            currentValues[i] = (Float)o.get(o.size()-currentValues.length + i);
+            currentValues[i] = (Float)oscArg.get(oscArg.size()-currentValues.length + i);
             }
             }  */
             /* int dataIndex = 1;
             for (int i = 0; i < numDatapoints; i++) {
             double[] d = new double[currentValues.length];
             for (int j = 0; j < currentValues.length; j++) {
-            if (o.get(dataIndex) instanceof Float) {
-            d[j] = ((Float) o.get(dataIndex++));
+            if (oscArg.get(dataIndex) instanceof Float) {
+            d[j] = ((Float) oscArg.get(dataIndex++));
             } else {
             String msg = "Received feature is not a float";
             w.getStatusUpdateCenter().warn(this, msg);

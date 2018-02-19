@@ -62,6 +62,7 @@ public final class WekiMiniRunner {
     private final ImageIcon myIcon = new ImageIcon(getClass().getResource("/wekimini/icons/wekimini_small.png"));
     private static boolean isKadenze = false;
     private static int nextID = 1;
+    private static final boolean IS_STUDY_1 = true;
     
     //Load it and start running, handle old project
     public void runNewProjectAutomatically(Wekinator oldWekinator, String filename, NewProjectOptions options) throws Exception {
@@ -178,33 +179,34 @@ public final class WekiMiniRunner {
     }
 
     public static void main(String[] args) {
-        /* Create and display the form */
-        //WekiMiniRunner.isKadenze = (args.length != 0);
         WekiMiniRunner.isKadenze = false; //KADENZE SET
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
              UIManager.put("Slider.paintValue", false);
-             //UIManager.put("Slider.thumbHeight", 5);
 
         } catch (Exception ex) {
             Logger.getLogger(WekiMiniRunner.class.getName()).log(Level.WARNING, null, ex);
         }
         
         aboutBox.setKadenze(isKadenze);
-        //args.length == 0
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Study1Prompt().setVisible(true);
-//                if (WekiMiniRunner.isKadenze) {
-//                     new KadenzePromptFrame().setVisible(true);
-//                } else {
-//                    KadenzeLogging.noLogging();
-//                    WekiMiniRunner.getInstance().runNewProject();
-//                }
+                if(IS_STUDY_1)
+                {
+                    new Study1Prompt().setVisible(true);
+                }
+                else
+                {
+                    if (WekiMiniRunner.isKadenze) {
+                        new KadenzePromptFrame().setVisible(true);
+                    } else {
+                        KadenzeLogging.noLogging();
+                        WekiMiniRunner.getInstance().runNewProject();
+                    }
+                }
+
             }
         });
-        
-        //PApplet.main(new String[]{wekimini.processing.ProcessingApplet.class.getName()}); 
     }
 
     public int numRunningProjects() {
@@ -226,14 +228,15 @@ public final class WekiMiniRunner {
             int numClasses = inputs.length;
             int numOutputs = 1;
             String name = "Inputs";
-            String oscMessage = "/wek/inputs";
-            OSCInputGroup inputGroup = new OSCInputGroup(name, oscMessage, 6, inputs);
+            String inputMessage = "/wek/inputs";
+            OSCInputGroup inputGroup = new OSCInputGroup(name, inputMessage, 6, inputs);
             List<OSCOutput> outputs = new LinkedList<>();
             for (int i = 0; i < 1; i++) {
                 OSCClassificationOutput o = new OSCClassificationOutput("output"+i, numClasses, false);
                 outputs.add(o);
             }
-            OSCOutputGroup outputGroup = new OSCOutputGroup(outputs, oscMessage, hostName, port);
+            String outputMessage = "/wek/outputs";
+            OSCOutputGroup outputGroup = new OSCOutputGroup(outputs, outputMessage, hostName, port);
             
             w.getInputManager().setOSCInputGroup(inputGroup);
             w.getOutputManager().setOSCOutputGroup(outputGroup);
