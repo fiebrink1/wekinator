@@ -38,5 +38,6 @@ public class FeatureManagerData
             }
             this.bufferSize = fm.getFeatureBufferSize();
             this.windowSize = fm.getFeatureWindowSize();
+            System.out.println("here");
         }
     }

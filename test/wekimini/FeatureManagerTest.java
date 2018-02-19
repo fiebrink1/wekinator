@@ -190,9 +190,11 @@ public class FeatureManagerTest {
     public void testReloadFeatures()
     {
         Wekinator w = null;
-        String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj");
-        try{
+        String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSetFeatures/WekinatorTestSet/WekinatorTestSet.wekproj");
+        try {
+            
             w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
+            
             w.getDataManager().featureManager.featureCollections.get(0).removeAll();
             w.getDataManager().featureManager.featureCollections.get(0).addFeatureForKey("MeanAccX");
             w.getDataManager().featureManager.featureCollections.get(0).addFeatureForKey("MeanAccY");
@@ -202,15 +204,19 @@ public class FeatureManagerTest {
             w.getDataManager().featureManager.featureCollections.get(1).addFeatureForKey("MeanGyroY");
             
             w.getDataManager().featureManager.setFeatureWindowSize(30, 50);
+            
             w.save();
             
             w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
+            
             Feature[] f = w.getDataManager().featureManager.featureCollections.get(0).getCurrentFeatures();
-            assertEquals("MeanAccX",f[0].name);
-            assertEquals("MeanAccY",f[1].name);
+            checkFeature(f,"MeanAccX");
+            checkFeature(f,"MeanAccY");
+            
             f = w.getDataManager().featureManager.featureCollections.get(1).getCurrentFeatures();
-            assertEquals("MeanGyroX",f[0].name);
-            assertEquals("MeanGyroY",f[1].name);
+            checkFeature(f,"MeanGyroX");
+            checkFeature(f,"MeanGyroY");
+            
             assertEquals(30, w.getDataManager().featureManager.getFeatureWindowSize());
             assertEquals(50, w.getDataManager().featureManager.getFeatureBufferSize());
         } 
@@ -218,8 +224,19 @@ public class FeatureManagerTest {
         {
             
         }
-        
-
+    }
+    
+    public void checkFeature(Feature[] f, String name)
+    {
+        boolean found = false;
+        for(Feature feature:f)
+        {
+            if(feature.name.equals(name))
+            {
+                found = true;
+            }
+        }
+        assertTrue(found);
     }
     
 }

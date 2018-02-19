@@ -53,7 +53,15 @@ public class WekinatorSaver {
         WekinatorFileData wfd = WekinatorFileData.readFromFile(wekFilename);
         OSCInputGroup ig = loadInputs(projectDir);
         OSCOutputGroup og = loadOutputs(projectDir);
-        FeatureManager fm = loadFeatures(projectDir);
+        FeatureManager fm = null;
+        boolean loadedFeatures = false;
+        try {
+            fm = loadFeatures(projectDir);
+            loadedFeatures = true;
+        } catch(IOException e)
+        {
+            
+        }
         Wekinator w;
         List<Path> paths = null;
         boolean isSupervised = true;
@@ -66,7 +74,10 @@ public class WekinatorSaver {
            Instances data = loadDataFromArff(projectDir);
            Instances testData = loadTestDataFromArff(projectDir);
            w = instantiateSupervisedWekinator(wfd, ig, og, data, testData, paths, projectDir);
-           w.getDataManager().featureManager = fm;
+           if(loadedFeatures)
+           {
+                w.getDataManager().featureManager = fm;
+           }
            GlobalSettings.getInstance().setStringValue("wekinatorProjectLoadLocation", projectDir);
 
         } else {
@@ -228,9 +239,11 @@ public class WekinatorSaver {
         return new OSCOutputGroup(loaded);
     }
     
-    private static FeatureManager loadFeatures(String projectDir) throws IOException {
+    private static FeatureManager loadFeatures(String projectDir) throws IOException
+    {
         FeatureManagerData loaded = FeatureManager.readFromFile(projectDir + featureFilename);
         return new FeatureManager(loaded);
+
     }
 
     private static Instances loadDataFromArff(String projectDir) throws IOException {

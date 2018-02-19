@@ -42,6 +42,7 @@ public class FeatureManager
         for(int i = 0; i < dataFromFile.added.size(); i++)
         {
             FeatureCollection fc = featureCollections.get(i);
+            fc.removeAll();
             ArrayList<String> keys = dataFromFile.added.get(i);
             for(int j = 0; j < keys.size(); j++)
             {
@@ -234,7 +235,7 @@ public class FeatureManager
     
     public int getFeatureBufferSize()
     {
-        return windowSize;
+        return bufferSize;
     }
 
     
