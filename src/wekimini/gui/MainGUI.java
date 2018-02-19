@@ -640,7 +640,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         jMenu1.add(jMenuItem3);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("New project");
         setMaximumSize(new java.awt.Dimension(851, 2147483647));
         addWindowListener(new java.awt.event.WindowAdapter() {

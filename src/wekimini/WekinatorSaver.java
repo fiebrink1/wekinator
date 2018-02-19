@@ -165,6 +165,7 @@ public class WekinatorSaver {
         String filename = projectDir + File.separator + name + "." + WekinatorFileData.FILENAME_EXTENSION;
         wfd.writeToFile(filename);
         KadenzeLogging.getLogger().projectSaved(w, wfd.getProjectName());
+        
     }
 
     private static void createProjectFiles(File f) throws SecurityException {

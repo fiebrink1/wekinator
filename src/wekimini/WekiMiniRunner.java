@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -212,8 +215,10 @@ public final class WekiMiniRunner {
     {
         Wekinator w = null;
         try {
-            String dir = ((FeaturnatorLogger)KadenzeLogging.getLogger()).getUserDir();
-            File f = new File(dir + "Study1");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+            Date date = new Date();
+            String dir = ((FeaturnatorLogger)KadenzeLogging.getLogger()).getUserDir() + "/user_" + userID + "_Study1_" + dateFormat.format(date);
+            File f = new File(dir);
             w = new Wekinator(WekiMiniRunner.generateNextID());
             
             w.getOSCSender().setHostnameAndPort(InetAddress.getByName(hostName), port);
@@ -242,7 +247,10 @@ public final class WekiMiniRunner {
                 w.getSupervisedLearningManager().setModelBuilderForPath(mbnew, i);
             }
                         
-            WekinatorSaver.createNewProject(userID, f, w);
+            WekinatorSaver.createNewProject("Study1", f, w);
+            w.setHasSaveLocation(true);
+            w.setProjectLocation(dir);
+            w.setProjectName("Study1");
             
         } catch(IOException e)
         {
