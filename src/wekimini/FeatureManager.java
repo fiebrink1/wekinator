@@ -4,12 +4,17 @@
  * and open the template in the editor.
  */
 package wekimini;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.Attribute;
+import wekimini.modifiers.Feature;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.FeatureCollection;
+import wekimini.osc.OSCInputGroup;
+import wekimini.util.Util;
 /**
  *
  * @author louismccallum
@@ -21,10 +26,28 @@ public class FeatureManager
     private FeatureCollection allFeatures;
     private int windowSize = 10;
     private int bufferSize = 10;
+    protected String[] inputNames;
     
     public FeatureManager()
     {
         featureCollections = new ArrayList<>();
+    }
+    
+    public FeatureManager(FeatureManagerData dataFromFile)
+    {
+        featureCollections = new ArrayList<>();
+        addOutputs(dataFromFile.numOutputs,dataFromFile.inputNames);
+        windowSize = dataFromFile.windowSize;
+        bufferSize = dataFromFile.bufferSize;
+        for(int i = 0; i < dataFromFile.added.size(); i++)
+        {
+            FeatureCollection fc = featureCollections.get(i);
+            ArrayList<String> keys = dataFromFile.added.get(i);
+            for(int j = 0; j < keys.size(); j++)
+            {
+                fc.addFeatureForKey(keys.get(j));
+            }
+        }
     }
     
     public ArrayList<FeatureCollection> getFeatureGroups()
@@ -37,6 +60,19 @@ public class FeatureManager
         return featureCollections.get(0).getNames();
     }
     
+    public void writeToFile(String fileName) throws IOException
+    {
+        FeatureManagerData data = new FeatureManagerData(this);
+        Util.writeToXMLFile(data, "FeatureManagerData", FeatureManagerData.class, fileName);
+    }
+    
+    public static FeatureManagerData readFromFile(String filename) throws IOException {
+      FeatureManagerData fmd = (FeatureManagerData) Util.readFromXMLFile("FeatureManagerData", FeatureManagerData.class, filename);
+      return fmd;
+    }
+    
+    
+        
     protected boolean isDirty(int output)
     {
         return featureCollections.get(output).isDirty(false);
@@ -67,8 +103,9 @@ public class FeatureManager
         featureCollections.get(output).didRecalculateFeatures(true);
     }
     
-    protected void addOutputs(int numOutputs, String[] inputNames)
+    protected void addOutputs(int numOutputs, String[] in)
     {
+        this.inputNames = in;
         allFeatures = new FeatureCollection(inputNames);
         
         for(String feature:allFeatures.getNames())

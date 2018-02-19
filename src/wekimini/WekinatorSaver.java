@@ -17,6 +17,7 @@ import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
+import wekimini.FeatureManagerData;
 import wekimini.PathAndDataLoader;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
@@ -37,6 +38,7 @@ public class WekinatorSaver {
     private final static String cppAppend = File.separator + currentAppend + File.separator + "cpp-source";
     private final static String stashAppend = File.separator + "saved";
     private final static String inputFilename = File.separator + "inputConfig.xml";
+    private final static String featureFilename = File.separator + "featureConfig.xml";
     private final static String outputFilename = File.separator + "outputConfig.xml";
     private final static String dataFilename = File.separator + currentAppend + File.separator + "currentData";
     private final static String testDataFilename = File.separator + currentAppend + File.separator + "testData";//No extension: Will not be arff for DTW
@@ -51,7 +53,7 @@ public class WekinatorSaver {
         WekinatorFileData wfd = WekinatorFileData.readFromFile(wekFilename);
         OSCInputGroup ig = loadInputs(projectDir);
         OSCOutputGroup og = loadOutputs(projectDir);
-        
+        FeatureManager fm = loadFeatures(projectDir);
         Wekinator w;
         List<Path> paths = null;
         boolean isSupervised = true;
@@ -64,6 +66,7 @@ public class WekinatorSaver {
            Instances data = loadDataFromArff(projectDir);
            Instances testData = loadTestDataFromArff(projectDir);
            w = instantiateSupervisedWekinator(wfd, ig, og, data, testData, paths, projectDir);
+           w.getDataManager().featureManager = fm;
            GlobalSettings.getInstance().setStringValue("wekinatorProjectLoadLocation", projectDir);
 
         } else {
@@ -83,12 +86,27 @@ public class WekinatorSaver {
             saveModels(projectDir, w);
             saveCppSource(projectDir, w);
             saveJSONDescription(projectDir, w);
+            saveFeatures(projectDir, w);
         }
     }
 
     private static void saveData(File projectDir, Wekinator w) throws IOException {
         w.getLearningManager().writeDataToFile(projectDir, dataFilename);
         w.getLearningManager().writeTestDataToFile(projectDir, testDataFilename);
+    }
+    
+    private static void saveFeatures(File projectDir, Wekinator w) throws IOException 
+    {   
+        FeatureManager fm = w.getDataManager().featureManager;
+        if (fm != null) {
+            fm.writeToFile(projectDir + featureFilename);
+        } else {
+            try {
+                Util.writeBlankFile(projectDir + featureFilename);
+            } catch (IOException ex) {
+                logger.log(Level.WARNING, "Could not write blank file to file{0}{1}", new Object[]{projectDir, inputFilename});
+            }
+        }
     }
 
     private static void saveInputs(File projectDir, Wekinator w) throws IOException {
@@ -191,13 +209,12 @@ public class WekinatorSaver {
     static void saveExistingProject(Wekinator w) throws IOException {
         String name = w.getProjectName();
         File projectDir = new File(w.getProjectLocation());
-        saveWekinatorFile(name, projectDir, w);
-
+        saveWekinatorFile(name, projectDir, w); 
         saveInputs(projectDir, w);
         saveOutputs(projectDir, w);
         saveData(projectDir, w);
         saveModels(projectDir, w);
-
+        saveFeatures(projectDir, w);
     }
 
     //TODO: take care of this within object static load functions, not here
@@ -209,6 +226,11 @@ public class WekinatorSaver {
     private static OSCOutputGroup loadOutputs(String projectDir) throws IOException {
         OSCOutputGroup loaded = OSCOutputGroup.readFromFile(projectDir + outputFilename);
         return new OSCOutputGroup(loaded);
+    }
+    
+    private static FeatureManager loadFeatures(String projectDir) throws IOException {
+        FeatureManagerData loaded = FeatureManager.readFromFile(projectDir + featureFilename);
+        return new FeatureManager(loaded);
     }
 
     private static Instances loadDataFromArff(String projectDir) throws IOException {
