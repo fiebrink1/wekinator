@@ -30,13 +30,22 @@ public final class FeatureCollection
     private boolean dirtyFlag = true;
     private boolean testSetDirtyFlag = true;
     private String[] tags;
-    static final int ACCX = 0;
-    static final int ACCY = 1;
-    static final int ACCZ = 2;
-    static final int GYROX = 3;
-    static final int GYROY = 4;
-    static final int GYROZ = 5;
-       
+    protected static final int ACCX = 0;
+    protected static final int ACCY = 1;
+    protected static final int ACCZ = 2;
+    protected static final int GYROX = 3;
+    protected static final int GYROY = 4;
+    protected static final int GYROZ = 5;
+    protected static final String FFT_DESCRIPTION = "FFT \nUse this feature if you are interested in the periodicity of your motion";
+    protected static final String RAW_DESCRIPTION = "Raw \nJust the raw signal";
+    protected static final String MEAN_DESCRIPTION = "Mean \nUse this feature to mmooth out measurements over the given window e.g. if you are only interested in bigger changes over time";
+    protected static final String FOD_DESCRIPTION = "1st Order Diff\n Use this feature if you want to distinguish gestures or rotate at different speeds";
+    protected static final String ENERGY_DESCRIPTION = "Energy \n Use this is you are interested in the strength of your signal";
+    protected static final String MAX_DESCRIPTION = "Max \nUse this feature if you are interested in the extremes of your motion";
+    protected static final String MIN_DESCRIPTION = "Min \nUse this feature if you are interested in the extremes of your motion";
+    protected static final String STDDEV_DESCRIPTION = "Standard Deviation \nUse this feature if you want to model how much variation there is in the signal";
+    protected static final String CORRELATION_DESCRIPTION = "Correlation \nThis is a measure of how similar two signals are";
+    
     private FeatureCollection(){}
     
     public FeatureCollection(String[] inputNames)
@@ -488,23 +497,23 @@ class FeatureMetadata
     {
         if(op.getClass().equals(AverageWindowOperation.class))
         {
-            return "Mean \nSmooth out measurements over the given window e.g. if you are only interested in bigger changes over time";
+            return FeatureCollection.MEAN_DESCRIPTION;
         }
         else if(op.getClass().equals(StdDevWindowOperation.class))
         {
-            return "Standard Deviation \nUse this feature if you want to model how much variation there is in the signal";
+            return FeatureCollection.STDDEV_DESCRIPTION;
         }
         else if(op.getClass().equals(EnergyWindowOperation.class))
         {
-            return "Energy";
+            return FeatureCollection.ENERGY_DESCRIPTION;
         }
         else if(op.getClass().equals(MaxWindowOperation.class))
         {
-            return "Max \nUse this feature if you are interested in the extremes of your motion";
+            return FeatureCollection.MAX_DESCRIPTION;
         }
         else if(op.getClass().equals(MinWindowOperation.class))
         {
-            return "Min \nUse this feature if you are interested in the extremes of your motion";
+            return FeatureCollection.MIN_DESCRIPTION;
         }
         return "";
     }
@@ -525,7 +534,7 @@ class FFTFeature extends FeatureSingleModifierOutput
         this.diagram = FeatureMetadata.diagramForInput(index);
         tags.add("FFT");
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
-        this.description = "FFT \nUse this feature if you are interested in the periodicity of your motion";
+        this.description = FeatureCollection.FFT_DESCRIPTION;
         
     }
 
@@ -557,7 +566,7 @@ class MaxFFT extends FeatureSingleModifierOutput
         tags.add("FFT");
         tags.add("Max");
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
-        this.description = "FFT \nUse this feature if you are interested in the periodicity of your motion";
+        this.description = FeatureCollection.FFT_DESCRIPTION;
     }
 
     @Override
@@ -591,7 +600,7 @@ class MinFFT extends FeatureSingleModifierOutput
         tags.add("FFT");
         tags.add("Min");
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
-        this.description = "FFT \nUse this feature if you are interested in the periodicity of your motion";
+        this.description = FeatureCollection.FFT_DESCRIPTION;
     }
 
     @Override
@@ -642,7 +651,7 @@ class PassThrough extends FeatureMultipleModifierOutput
         this.indexes = inputs;
         this.diagram = InputDiagram.MULTIPLE;
         tags.add("Raw");
-        this.description = "Raw \nJust the original signal";
+        this.description = FeatureCollection.RAW_DESCRIPTION;
         for(int input:inputs)
         {
             String[] inputTags = FeatureMetadata.tagsForInput(input);
@@ -736,7 +745,7 @@ class MagnitudeFODFeature extends FeatureSingleModifierOutput
         this.diagram = InputDiagram.MULTIPLE;
         tags.add("Magnitude");
         tags.add("1st Order Diff");
-        this.description = "1st Order Diff\n Use this feature if your gestures you want to distinguish gestures or rotate at different speeds";
+        this.description = FeatureCollection.FOD_DESCRIPTION;
         for(int input:inputs)
         {
             String[] inputTags = FeatureMetadata.tagsForInput(input);
@@ -843,8 +852,7 @@ class FODRaw extends FeatureSingleModifierOutput
         tags.add("1st Order Diff");
         tags.add("Raw");
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
-        this.description = "1st Order Diff\nUse this feature if your gestures you want to distinguish gestures or rotate at different speeds";
-
+        this.description = FeatureCollection.FOD_DESCRIPTION;
     }
     
     @Override
@@ -872,7 +880,7 @@ class WindowedFOD extends FeatureSingleModifierOutput
         tags.add("1st Order Diff");
         tags.add(FeatureMetadata.tagForOperation(op));
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
-        this.description = "1st Order Diff\nUse this feature if your gestures you want to distinguish gestures or rotate at different speeds";
+        this.description = FeatureCollection.FOD_DESCRIPTION;
     }
     
     @Override
@@ -903,7 +911,7 @@ class CorrelateFeature extends FeatureSingleModifierOutput
         this.windowSize = windowSize;
         this.diagram = InputDiagram.MULTIPLE;
         tags.add("Correlation");
-        this.description = "Correlation\nThis is a measure of how similar two signals are";
+        this.description = FeatureCollection.CORRELATION_DESCRIPTION;
         for(int input:inputs)
         {
             String[] inputTags = FeatureMetadata.tagsForInput(input);
