@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import wekimini.modifiers.BufferedInput;
+import wekimini.modifiers.Feature;
 import wekimini.modifiers.FeatureCollection;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.MultipleInputWindowedOperation;
@@ -183,6 +184,42 @@ public class FeatureManagerTest {
                 assertEquals(bs,((BufferedInput)modifier).bufferSize);
             }
         }
+    }
+    
+    @Test
+    public void testReloadFeatures()
+    {
+        Wekinator w = null;
+        String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj");
+        try{
+            w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
+            w.getDataManager().featureManager.featureCollections.get(0).removeAll();
+            w.getDataManager().featureManager.featureCollections.get(0).addFeatureForKey("MeanAccX");
+            w.getDataManager().featureManager.featureCollections.get(0).addFeatureForKey("MeanAccY");
+            
+            w.getDataManager().featureManager.featureCollections.get(1).removeAll();
+            w.getDataManager().featureManager.featureCollections.get(1).addFeatureForKey("MeanGyroX");
+            w.getDataManager().featureManager.featureCollections.get(1).addFeatureForKey("MeanGyroY");
+            
+            w.getDataManager().featureManager.setFeatureWindowSize(30, 50);
+            w.save();
+            
+            w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
+            Feature[] f = w.getDataManager().featureManager.featureCollections.get(0).getCurrentFeatures();
+            assertEquals("MeanAccX",f[0].name);
+            assertEquals("MeanAccY",f[1].name);
+            f = w.getDataManager().featureManager.featureCollections.get(1).getCurrentFeatures();
+            assertEquals("MeanGyroX",f[0].name);
+            assertEquals("MeanGyroY",f[1].name);
+            assertEquals(30, w.getDataManager().featureManager.getFeatureWindowSize());
+            assertEquals(50, w.getDataManager().featureManager.getFeatureBufferSize());
+        } 
+        catch (Exception e)
+        {
+            
+        }
+        
+
     }
     
 }
