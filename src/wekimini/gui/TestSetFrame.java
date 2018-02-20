@@ -18,6 +18,7 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
 
     private Wekinator w;
     private double currentClass = 1;
+    private boolean canUndo = false;
     private static final int NUM_CLASSES = 6;
     private static final int EXAMPLES_PER_CLASS = 20;
     private int numExamplesLeftForClass = EXAMPLES_PER_CLASS;
@@ -38,12 +39,20 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
         w.getOutputManager().setTestValues(new double[]{currentClass});
         w.getDataManager().addChangeListener(this);
         updateUI();
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                w.save();
+                dispose();
+            }
+        });
     }
     
     private void updateUI()
     {
         boolean canNext = numExamplesLeftForClass < 1 && currentClass <= NUM_CLASSES;
         boolean isDone = currentClass > NUM_CLASSES;
+        boolean hasStartedGesture = numExamplesLeftForClass < EXAMPLES_PER_CLASS;
         if(!isDone)
         {
             exampleIndexLabel.setText(PLEASE_RECORD_STRING + currentClass);
@@ -55,9 +64,10 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
             examplesLeftLabel.setText("Thanks!");
         }
         recordButton.setEnabled(!canNext && !isDone);
-        deleteButton.setEnabled(!canNext && !isDone);
+        deleteButton.setEnabled(!canNext && !isDone && hasStartedGesture && canUndo);
         nextButton.setEnabled(canNext && !isDone);
-        redoButton.setEnabled(canNext && !isDone);
+        redoButton.setEnabled(!isDone && hasStartedGesture);
+        prevButton.setEnabled(!isDone && currentClass > 1);
         doneButton.setVisible(isDone);
     }
 
@@ -89,6 +99,7 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
         examplesLeftLabel = new javax.swing.JLabel();
         doneButton = new javax.swing.JButton();
         redoButton = new javax.swing.JButton();
+        prevButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -132,11 +143,19 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
             }
         });
 
-        redoButton.setText("<- Redo Gesture");
+        redoButton.setText("Redo Gesture");
         redoButton.setEnabled(false);
         redoButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 redoButtonActionPerformed(evt);
+            }
+        });
+
+        prevButton.setText("<- Prev Gesture");
+        prevButton.setEnabled(false);
+        prevButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                prevButtonActionPerformed(evt);
             }
         });
 
@@ -150,18 +169,20 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(exampleIndexLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(examplesLeftLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(32, 32, 32))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(doneButton, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(redoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(nextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(recordButton, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(17, 17, 17))
+                        .addGap(0, 0, 0)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(examplesLeftLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(32, 32, 32))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(redoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
+                                    .addComponent(doneButton, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
+                                    .addComponent(nextButton, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
+                                    .addComponent(deleteButton, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
+                                    .addComponent(recordButton, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
+                                    .addComponent(prevButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(17, 17, 17))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -181,8 +202,10 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(redoButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(prevButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(doneButton)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -192,6 +215,7 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
         // TODO add your handling code here:
         if(w.getSupervisedLearningManager().getRecordingState() != SupervisedLearningManager.RecordingState.RECORDING_TEST)
        {
+           canUndo = true;
            recordButton.setText("Stop Recording Test Set");
            w.getDataManager().setDeleteTestSetUntilIndex();
            w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
@@ -215,12 +239,15 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         // TODO add your handling code here:
         w.getDataManager().deleteLastTestSetRound();
+        canUndo = false;
         updateFromModel();
         updateUI();
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void doneButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doneButtonActionPerformed
         // TODO add your handling code here:
+        w.save();
+        dispose();
     }//GEN-LAST:event_doneButtonActionPerformed
 
     private void redoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_redoButtonActionPerformed
@@ -229,6 +256,15 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
         updateFromModel();
         updateUI();
     }//GEN-LAST:event_redoButtonActionPerformed
+
+    private void prevButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prevButtonActionPerformed
+        // TODO add your handling code here:
+        currentClass--;
+        w.getOutputManager().setTestValues(new double[]{currentClass});
+        updateFromModel();
+        updateUI();
+        
+    }//GEN-LAST:event_prevButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -272,6 +308,7 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
     private javax.swing.JLabel examplesLeftLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JButton nextButton;
+    private javax.swing.JButton prevButton;
     private javax.swing.JButton recordButton;
     private javax.swing.JButton redoButton;
     // End of variables declaration//GEN-END:variables

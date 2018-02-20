@@ -29,22 +29,26 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="exampleIndexLabel" alignment="1" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                      <Component id="examplesLeftLabel" min="-2" pref="294" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="examplesLeftLabel" min="-2" pref="294" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                  <Component id="redoButton" pref="294" max="32767" attributes="0"/>
+                                  <Component id="doneButton" pref="294" max="32767" attributes="0"/>
+                                  <Component id="nextButton" pref="294" max="32767" attributes="0"/>
+                                  <Component id="deleteButton" pref="294" max="32767" attributes="0"/>
+                                  <Component id="recordButton" pref="294" max="32767" attributes="0"/>
+                                  <Component id="prevButton" alignment="1" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
                   </Group>
               </Group>
-          </Group>
-          <Group type="102" alignment="1" attributes="0">
-              <EmptySpace max="32767" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="doneButton" min="-2" pref="294" max="-2" attributes="0"/>
-                  <Component id="redoButton" alignment="1" min="-2" pref="294" max="-2" attributes="0"/>
-                  <Component id="nextButton" min="-2" pref="294" max="-2" attributes="0"/>
-                  <Component id="deleteButton" min="-2" pref="294" max="-2" attributes="0"/>
-                  <Component id="recordButton" min="-2" pref="294" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -66,8 +70,10 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="redoButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
+              <Component id="prevButton" min="-2" pref="29" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="doneButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="22" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -130,11 +136,20 @@
     </Component>
     <Component class="javax.swing.JButton" name="redoButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&lt;- Redo Gesture"/>
+        <Property name="text" type="java.lang.String" value="Redo Gesture"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="redoButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="prevButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&lt;- Prev Gesture"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="prevButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
