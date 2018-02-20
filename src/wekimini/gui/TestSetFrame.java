@@ -138,7 +138,6 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
         examplesLeftLabel.setText("200 Examples left to record");
 
         doneButton.setText("Done");
-        doneButton.setEnabled(false);
         doneButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 doneButtonActionPerformed(evt);
