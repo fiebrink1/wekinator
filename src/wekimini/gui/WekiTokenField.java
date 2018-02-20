@@ -31,10 +31,11 @@ public class WekiTokenField extends JScrollPane
     {
         panel.setLayout(layout);
         panel.removeAll();
-        panel.setBackground(Color.WHITE);
+        panel.setBackground(new Color(237, 237, 237));
         getViewport().setBorder(null);
         setViewportBorder(null);
         setBorder(null);
+        redraw();
     }
     
     public void setDelegate(WekiTokenFieldDelegate delegate)
@@ -72,7 +73,7 @@ public class WekiTokenField extends JScrollPane
         getHorizontalScrollBar().setPreferredSize(new Dimension(0, 6));
         for(String token:tokens)
         {
-            btns[i] = new JButton(token);
+            btns[i] = new JButton("(x) " + token);
             btns[i].addActionListener(new ActionListener() { 
                 public void actionPerformed(ActionEvent e) { 
                   delegate.onTokenPressed(token);

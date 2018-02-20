@@ -29,24 +29,19 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="exampleIndexLabel" alignment="1" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="examplesLeftLabel" min="-2" pref="294" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                  <Component id="redoButton" pref="294" max="32767" attributes="0"/>
-                                  <Component id="doneButton" pref="294" max="32767" attributes="0"/>
-                                  <Component id="nextButton" pref="294" max="32767" attributes="0"/>
-                                  <Component id="deleteButton" pref="294" max="32767" attributes="0"/>
-                                  <Component id="recordButton" pref="294" max="32767" attributes="0"/>
-                                  <Component id="prevButton" alignment="1" max="32767" attributes="0"/>
-                              </Group>
-                              <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
-                          </Group>
+                      <Component id="examplesLeftLabel" min="-2" pref="294" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Component id="redoButton" pref="294" max="32767" attributes="0"/>
+                          <Component id="doneButton" pref="294" max="32767" attributes="0"/>
+                          <Component id="nextButton" pref="294" max="32767" attributes="0"/>
+                          <Component id="deleteButton" pref="294" max="32767" attributes="0"/>
+                          <Component id="recordButton" pref="294" max="32767" attributes="0"/>
+                          <Component id="prevButton" alignment="1" max="32767" attributes="0"/>
                       </Group>
+                      <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -66,13 +61,13 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="deleteButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="nextButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
               <Component id="redoButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="prevButton" min="-2" pref="29" max="-2" attributes="0"/>
+              <Component id="nextButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="doneButton" min="-2" max="-2" attributes="0"/>
+              <Component id="prevButton" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="doneButton" min="-2" pref="39" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -81,7 +76,8 @@
   <SubComponents>
     <Component class="javax.swing.JButton" name="deleteButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Delete Last Round"/>
+        <Property name="text" type="java.lang.String" value="Undo Last Recording"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteButtonActionPerformed"/>
@@ -129,6 +125,7 @@
     <Component class="javax.swing.JButton" name="doneButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Done"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="doneButtonActionPerformed"/>

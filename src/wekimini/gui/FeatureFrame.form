@@ -154,7 +154,7 @@
           <Font name="Lucida Grande" size="15" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="Available Features"/>
+        <Property name="text" type="java.lang.String" value="Select Features"/>
       </Properties>
     </Component>
     <Component class="wekimini.gui.EvaluateFeaturesPanel" name="evaluateFeaturesPanel">
