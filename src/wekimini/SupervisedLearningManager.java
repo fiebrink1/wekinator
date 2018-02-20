@@ -87,7 +87,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     private boolean computeDistribution = false;
     private Instance currentInputInstance;
     public boolean isPlotting = false;
-    
+    public boolean canUpdate = true;
     
     /**
      * Get the value of computeDistribution

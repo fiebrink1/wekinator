@@ -259,7 +259,7 @@ public class ModifierCollection {
     
     private void computeValuesForNewInputs(double[] newInputs, HashMap<String, Feature> features) {
         
-        int outputIndex = 0;
+        int modifierOutputIndex = 0;
         int completedIndex = 0;
         outputNames = new String[currentValues.length];
         ArrayList<ModifiedInput> completedModifiers = new ArrayList();
@@ -275,8 +275,8 @@ public class ModifierCollection {
         completedModifiers.add(modifiers.get(0));
         if(completedModifier.addToOutput)
         {
-            System.arraycopy(((ModifiedInputVector)completedModifier).getValues(), 0, currentValues, outputIndex, completedModifier.getSize());
-            outputIndex += completedModifier.getSize();
+            System.arraycopy(((ModifiedInputVector)completedModifier).getValues(), 0, currentValues, modifierOutputIndex, completedModifier.getSize());
+            modifierOutputIndex += completedModifier.getSize();
         }
 
         while(completedIndex < completedModifiers.size())
@@ -298,18 +298,18 @@ public class ModifierCollection {
                             String featureName = getFeatureNameForModifierID(toComplete.inputID, features);
                             if (toComplete instanceof ModifiedInputSingle) 
                             {
-                                currentValues[outputIndex] = ((ModifiedInputSingle)toComplete).getValue();
-                                outputNames[outputIndex] = featureName + ":0";
+                                currentValues[modifierOutputIndex] = ((ModifiedInputSingle)toComplete).getValue();
+                                outputNames[modifierOutputIndex] = featureName + ":0";
                             } 
                             else 
                             {
-                                System.arraycopy(((ModifiedInputVector)toComplete).getValues(), 0, currentValues, outputIndex, toComplete.getSize());
+                                System.arraycopy(((ModifiedInputVector)toComplete).getValues(), 0, currentValues, modifierOutputIndex, toComplete.getSize());
                                 for(int i = 0; i < toComplete.getSize(); i++)
                                 {
-                                    outputNames[outputIndex + i] = featureName + ":" + i;
+                                    outputNames[modifierOutputIndex + i] = featureName + ":" + i;
                                 }
                             }
-                            outputIndex += toComplete.getSize();
+                            modifierOutputIndex += toComplete.getSize();
                         }
                     }
                 }

@@ -52,10 +52,10 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane2" alignment="1" pref="383" max="32767" attributes="0"/>
+                  <Component id="jScrollPane2" alignment="1" pref="0" max="32767" attributes="0"/>
                   <Component id="selectedFiltersTokenField" alignment="0" max="32767" attributes="0"/>
                   <Component id="searchBar" alignment="0" max="32767" attributes="0"/>
                   <Component id="jScrollPane4" alignment="0" pref="0" max="32767" attributes="0"/>
@@ -66,6 +66,23 @@
                           <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="windowSlider" alignment="0" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                              <Component id="windowLabel" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="bufferLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                          </Group>
+                          <Component id="bufferSlider" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -87,9 +104,19 @@
               <Component id="jScrollPane2" min="-2" pref="115" max="-2" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Component id="jScrollPane4" min="-2" pref="142" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane4" pref="180" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="windowLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="bufferLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="bufferSlider" max="-2" attributes="0"/>
+                  <Component id="windowSlider" alignment="0" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -181,6 +208,36 @@
           <Font name="Lucida Grande" size="10" style="2"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Filters"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSlider" name="bufferSlider">
+      <Properties>
+        <Property name="majorTickSpacing" type="int" value="5"/>
+        <Property name="minimum" type="int" value="5"/>
+        <Property name="minorTickSpacing" type="int" value="1"/>
+      </Properties>
+      <Events>
+        <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="bufferSliderStateChanged"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JSlider" name="windowSlider">
+      <Properties>
+        <Property name="majorTickSpacing" type="int" value="5"/>
+        <Property name="minimum" type="int" value="5"/>
+        <Property name="minorTickSpacing" type="int" value="1"/>
+      </Properties>
+      <Events>
+        <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="windowSliderStateChanged"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="windowLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Window:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="bufferLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Buffer:"/>
       </Properties>
     </Component>
   </SubComponents>

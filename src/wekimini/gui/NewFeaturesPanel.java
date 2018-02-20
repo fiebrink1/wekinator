@@ -20,6 +20,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import org.jdesktop.swingworker.SwingWorker;
+import wekimini.SupervisedLearningManager;
 import wekimini.Wekinator;
 import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeLogging;
@@ -49,6 +50,11 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         resultsTable.setDefaultRenderer(Feature.class, new FeatureTableRenderer());
         resultsTable.setModel(new FeatureTableModel(currentResults));
         
+        boolean showSliders = false;
+        windowLabel.setVisible(showSliders);
+        bufferLabel.setVisible(showSliders);
+        windowSlider.setVisible(showSliders);
+        bufferSlider.setVisible(showSliders);
     }
 
     private void setUpResultsTable() 
@@ -326,6 +332,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         jLabel2 = new javax.swing.JLabel();
         selectedFiltersTokenField = new wekimini.gui.WekiTokenField();
         jLabel3 = new javax.swing.JLabel();
+        bufferSlider = new javax.swing.JSlider();
+        windowSlider = new javax.swing.JSlider();
+        windowLabel = new javax.swing.JLabel();
+        bufferLabel = new javax.swing.JLabel();
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -396,6 +406,28 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         jLabel3.setFont(new java.awt.Font("Lucida Grande", 2, 10)); // NOI18N
         jLabel3.setText("Filters");
 
+        bufferSlider.setMajorTickSpacing(5);
+        bufferSlider.setMinimum(5);
+        bufferSlider.setMinorTickSpacing(1);
+        bufferSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                bufferSliderStateChanged(evt);
+            }
+        });
+
+        windowSlider.setMajorTickSpacing(5);
+        windowSlider.setMinimum(5);
+        windowSlider.setMinorTickSpacing(1);
+        windowSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                windowSliderStateChanged(evt);
+            }
+        });
+
+        windowLabel.setText("Window:");
+
+        bufferLabel.setText("Buffer:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -403,7 +435,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(selectedFiltersTokenField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(searchBar)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -412,7 +444,19 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                             .addComponent(jLabel1)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(windowSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(windowLabel)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(bufferLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(bufferSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -431,8 +475,16 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(windowLabel)
+                    .addComponent(bufferLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(bufferSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(windowSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -446,9 +498,61 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         
     }//GEN-LAST:event_searchBarKeyTyped
 
+    private void bufferSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_bufferSliderStateChanged
+        // TODO add your handling code here:
+        bufferLabel.setText("Buffer:" + bufferSlider.getValue());
+        boolean isRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
+        boolean isPlotting = w.getSupervisedLearningManager().isPlotting;
+        if(isRunning)
+        {
+            w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        }
+        if(isPlotting)
+        {
+            w.getSupervisedLearningManager().isPlotting = false;
+        }
+        w.getDataManager().featureManager.setFeatureWindowSize(windowSlider.getValue(), bufferSlider.getValue());
+        if(isRunning)
+        {
+            w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+        }
+        if(isPlotting)
+        {
+            w.getSupervisedLearningManager().isPlotting = isPlotting;
+        }
+        delegate.featureListUpdated();
+    }//GEN-LAST:event_bufferSliderStateChanged
+
+    private void windowSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_windowSliderStateChanged
+        // TODO add your handling code here:
+        windowLabel.setText("Window:" + windowSlider.getValue());
+                boolean isRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
+        boolean isPlotting = w.getSupervisedLearningManager().isPlotting;
+        if(isRunning)
+        {
+            w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        }
+        if(isPlotting)
+        {
+            w.getSupervisedLearningManager().isPlotting = false;
+        }
+        w.getDataManager().featureManager.setFeatureWindowSize(windowSlider.getValue(), bufferSlider.getValue());
+        if(isRunning)
+        {
+            w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+        }
+        if(isPlotting)
+        {
+            w.getSupervisedLearningManager().isPlotting = isPlotting;
+        }
+        delegate.featureListUpdated();
+    }//GEN-LAST:event_windowSliderStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable availableFiltersTable;
+    private javax.swing.JLabel bufferLabel;
+    private javax.swing.JSlider bufferSlider;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -459,5 +563,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     private javax.swing.JTable resultsTable;
     private javax.swing.JTextField searchBar;
     private wekimini.gui.WekiTokenField selectedFiltersTokenField;
+    private javax.swing.JLabel windowLabel;
+    private javax.swing.JSlider windowSlider;
     // End of variables declaration//GEN-END:variables
 }
