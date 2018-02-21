@@ -244,9 +244,9 @@ public class ModifierCollection {
     public int getNumModifiers() {
         return modifiers.size();
     }
-    
-    public ModifiedInput getModifier(int which) {
-        return modifiers.get(which);
+
+    public ModifiedInput getModifierForID(int ID) {
+        return modifiers.get(indexForID(ID));
     }
     
     //Outputs

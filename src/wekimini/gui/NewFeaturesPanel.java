@@ -50,7 +50,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         resultsTable.setDefaultRenderer(Feature.class, new FeatureTableRenderer());
         resultsTable.setModel(new FeatureTableModel(currentResults));
         
-        boolean showSliders = false;
+        boolean showSliders = true;
         windowLabel.setVisible(showSliders);
         bufferLabel.setVisible(showSliders);
         windowSlider.setVisible(showSliders);
@@ -322,6 +322,32 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         }
     }
     
+    private void prepareForLibraryUpdate(boolean isRunning, boolean isPlotting)
+    {
+        if(isRunning)
+        {
+            w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        }
+        if(isPlotting)
+        {
+            w.getSupervisedLearningManager().isPlotting = false;
+        }
+    }
+    
+    private void resetFollowingLibraryUpdate(boolean isRunning, boolean isPlotting)
+    {
+        if(isRunning)
+        {
+            w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+        }
+        if(isPlotting)
+        {
+            w.getSupervisedLearningManager().isPlotting = isPlotting;
+        }
+        updateResultsTable(w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForFeatures(currentResults));
+        delegate.featureLibraryUpdated();
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -513,49 +539,19 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         bufferLabel.setText("Buffer:" + bufferSlider.getValue());
         boolean isRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
         boolean isPlotting = w.getSupervisedLearningManager().isPlotting;
-        if(isRunning)
-        {
-            w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
-        }
-        if(isPlotting)
-        {
-            w.getSupervisedLearningManager().isPlotting = false;
-        }
+        prepareForLibraryUpdate(isRunning, isPlotting);
         w.getDataManager().featureManager.setFeatureWindowSize(windowSlider.getValue(), bufferSlider.getValue());
-        if(isRunning)
-        {
-            w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
-        }
-        if(isPlotting)
-        {
-            w.getSupervisedLearningManager().isPlotting = isPlotting;
-        }
-        delegate.featureListUpdated();
+        resetFollowingLibraryUpdate(isRunning, isPlotting);
     }//GEN-LAST:event_bufferSliderStateChanged
 
     private void windowSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_windowSliderStateChanged
         // TODO add your handling code here:
         windowLabel.setText("Window:" + windowSlider.getValue());
-                boolean isRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
+        boolean isRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
         boolean isPlotting = w.getSupervisedLearningManager().isPlotting;
-        if(isRunning)
-        {
-            w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
-        }
-        if(isPlotting)
-        {
-            w.getSupervisedLearningManager().isPlotting = false;
-        }
+        prepareForLibraryUpdate(isRunning, isPlotting);
         w.getDataManager().featureManager.setFeatureWindowSize(windowSlider.getValue(), bufferSlider.getValue());
-        if(isRunning)
-        {
-            w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
-        }
-        if(isPlotting)
-        {
-            w.getSupervisedLearningManager().isPlotting = isPlotting;
-        }
-        delegate.featureListUpdated();
+        resetFollowingLibraryUpdate(isRunning, isPlotting);
     }//GEN-LAST:event_windowSliderStateChanged
 
 

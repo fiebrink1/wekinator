@@ -14,5 +14,6 @@ public interface FeatureEditorDelegate {
     
     public void newFeatureSelected(Feature ft);
     public void featureListUpdated();
+    public void featureLibraryUpdated();
     
 }

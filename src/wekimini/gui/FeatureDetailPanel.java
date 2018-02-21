@@ -30,7 +30,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     private PlotRowModel model = new PlotRowModel();
     private Wekinator w;
     private static final int PLOT_W = 416;
-    private int outputIndex = 0;
+    private int featureOutputIndex = 0;
     
     public FeatureDetailPanel() 
     {
@@ -51,7 +51,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
                 Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
                 if(in != null)
                 {
-                    float val = (float) in.value(outputIndex);
+                    float val = (float) in.value(featureOutputIndex);
                     model.addPoint(val);
                     plotPanel.updateModel(model);
                 }
@@ -79,7 +79,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     public void setModel(PlotRowModel model)
     {
         this.model = model;
-        outputIndex = model.feature.outputIndex;
+        featureOutputIndex = model.feature.outputIndex;
         
         plotPanel.updateModel(model);
         titleLabel.setText(model.feature.name);
@@ -107,7 +107,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     
     private void addItemsForModifier(int iD, String name)
     {
-        ModifiedInput outputModifier = w.getDataManager().featureManager.getAllFeaturesGroup().getModifiers().getModifier(iD);
+        ModifiedInput outputModifier = w.getDataManager().featureManager.getAllFeaturesGroup().getModifiers().getModifierForID(iD);
         for(int i = 0; i < outputModifier.getSize(); i++)
         {
             outputComboBox.addItem(name + ":" + i);
@@ -258,7 +258,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
 
     private void outputComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputComboBoxActionPerformed
         //WARNING!! THIS DOESNT NECESSARILY WORK FOR FEATURES WITH MULTIPLE MODIFERS OUTPUTTING
-        outputIndex = model.feature.outputIndex + outputComboBox.getSelectedIndex();
+        featureOutputIndex = model.feature.outputIndex + outputComboBox.getSelectedIndex();
         
     }//GEN-LAST:event_outputComboBoxActionPerformed
 

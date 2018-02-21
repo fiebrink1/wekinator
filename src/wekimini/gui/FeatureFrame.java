@@ -27,6 +27,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     private Wekinator w;
     public int selectedRow = -1;
     public int outputIndex = 0;
+    private Feature selectedFeature;
     
     public FeatureFrame() {
         initComponents();
@@ -117,7 +118,6 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        featureDetailPanel1 = new wekimini.gui.FeatureDetailPanel();
         newFeaturesPanel = new wekimini.gui.NewFeaturesPanel();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -127,8 +127,6 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         jScrollPane1 = new javax.swing.JScrollPane();
         currentFeaturesTable = new javax.swing.JTable();
         currentFeaturesLabel = new javax.swing.JLabel();
-
-        featureDetailPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -267,13 +265,16 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     
     private void updateSelectedFeature(Feature ft)
     {
-        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeaturePreviewed(w, ft);
+        selectedFeature = ft;
+        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeaturePreviewed(w, selectedFeature);
         PlotRowModel model = new PlotRowModel();
         w.getSupervisedLearningManager().isPlotting = true;
         model.isStreaming = true;
-        model.feature = ft;
+        model.feature = selectedFeature;
         featureDetailPanel.setModel(model);
     }
+    
+    //FeatureEditorDelegate methods
     
     @Override
     public void newFeatureSelected(Feature ft)
@@ -281,6 +282,21 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         updateSelectedFeature(ft);
         deselectRows();
     }
+   
+    @Override
+    public void featureListUpdated()
+    {
+        updateCurrentFeaturesTable();
+        updateSelectedFeature(w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey(selectedFeature.name));
+    }
+    
+    @Override
+    public void featureLibraryUpdated()
+    {
+        updateCurrentFeaturesTable();
+        
+    }
+    
     
     public void selectRow(int row)
     {
@@ -297,20 +313,12 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         currentFeaturesTable.repaint();
         newFeaturesPanel.deselectRows();
     }
-    
-    
-    @Override
-    public void featureListUpdated()
-    {
-        updateCurrentFeaturesTable();
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel currentFeaturesLabel;
     private javax.swing.JTable currentFeaturesTable;
     private wekimini.gui.EvaluateFeaturesPanel evaluateFeaturesPanel;
     private wekimini.gui.FeatureDetailPanel featureDetailPanel;
-    private wekimini.gui.FeatureDetailPanel featureDetailPanel1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

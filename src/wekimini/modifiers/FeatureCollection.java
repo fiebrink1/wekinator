@@ -190,6 +190,18 @@ public final class FeatureCollection
         throw new NoSuchElementException();
     }
     
+    public Feature[] getFeaturesForFeatures(Feature[] features)
+    {
+        ArrayList<Feature> toReturn = new ArrayList();
+        for(Feature feature:features)
+        {
+            toReturn.add(getFeatureForKey(feature.name));
+        }
+        Feature[] f = new Feature[toReturn.size()];
+        f = toReturn.toArray(f);
+        return f;
+    }
+    
     public Feature[] getFeaturesForKeyword(String search)
     {
         ArrayList<Feature> features = new ArrayList();
@@ -697,7 +709,7 @@ class PassThroughAll extends FeatureSingleModifierOutput
     @Override
     public void addFeature(ModifierCollection mc)
     {
-        String[] names = ((PassThroughVector)mc.getModifier(0)).names;
+        String[] names = ((PassThroughVector)mc.getModifierForID(0)).names;
         PassThroughVector modifier = new PassThroughVector(names, 0);
         modifier.addToOutput = true;
         modifier.addRequiredModifierID(0);
