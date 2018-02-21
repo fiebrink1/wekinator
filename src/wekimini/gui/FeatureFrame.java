@@ -309,13 +309,13 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         newFeaturesPanel.deselectRows();
     }
     
-    public void deselectRows(boolean showNoFeatures)
+    public void deselectRows(boolean deselectPlot)
     {
         selectedRow = -1;
         ((FeatureTableModel)currentFeaturesTable.getModel()).selectedRow = selectedRow;
         currentFeaturesTable.repaint();
         newFeaturesPanel.deselectRows();
-        if(showNoFeatures)
+        if(deselectPlot)
         {
             featureDetailPanel.showNoFeature();
         }

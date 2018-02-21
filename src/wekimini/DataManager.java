@@ -433,7 +433,6 @@ public class DataManager {
         in.setDataset(instancesToUpdate);
         instancesToUpdate.setClassIndex(myVals.length - 1);
         instancesToUpdate.add(in);
-        System.out.println("updated set size:" + instancesToUpdate.numInstances());
         if(!testSet)
         {
             setHasInstances(true);
@@ -1025,7 +1024,6 @@ public class DataManager {
                         featureManager.didRecalculateFeatures(index);
                     }
                 }
-
             } 
             catch (Exception e)
             {

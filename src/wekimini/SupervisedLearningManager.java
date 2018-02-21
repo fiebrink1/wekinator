@@ -940,7 +940,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public double[] computeValues(double[] inputs, boolean[] computeMask) {
         if(isPlotting)
         {
-            currentInputInstance = w.getDataManager().getClassifiableInstanceForPlot(inputs);
+            updatePlots(inputs);
         }
         for (int i = 0; i < computeMask.length; i++) {
             Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, i);
@@ -1014,25 +1014,21 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         return i;
     }
 
-    //TODO: Need to do this in background and change training state
-   /* public void buildModels(boolean trainMask[]) {
-     for (int i = 0; i < trainMask.length; i++) {
-     if (trainMask[i]) {
-     paths.get(i).buildModel(
-     paths.get(i).getOSCOutput().getName() + "-" + trainingRound,
-     w.getDataManager().getTrainingDataForOutput(i));
-     }
-     }
-     trainingRound++;
-     } */
-    //
-    //TODO: Want ability to compute distribution to be done model by model! (in model editor)
+    public void updatePlots(double[] inputs)
+    {
+        currentInputInstance = w.getDataManager().getClassifiableInstanceForPlot(inputs);
+    }
+    
     public void updateInputs(double[] inputs) {
         if (recordingState != RecordingState.NOT_RECORDING) 
         {
             boolean test = recordingState == RecordingState.RECORDING_TEST;
             double[] output = test ? w.getOutputManager().getCurrentTestValues() : w.getOutputManager().getCurrentValues();
             addToDataSet(inputs, output, pathRecordingMask, test);
+            if(isPlotting)
+            {
+                updatePlots(inputs);
+            }
         } 
         else if (runningState != RunningState.NOT_RUNNING || isPlotting) 
         {
