@@ -59,7 +59,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
                 switch(column)
                 {
                     case 0: updateSelectedFeature(ft); selectRow(row); break;
-                    case 1: removeFeature(ft); deselectRows(); break;
+                    case 1: removeFeature(ft); deselectRows(true); break;
                 }
             }
         };
@@ -106,7 +106,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         Feature[] ft = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
         currentFeaturesTable.setModel(new FeatureTableModel(ft));
         setupCurrentFeaturesTable();
-        deselectRows();
+        deselectRows(false);
     }
    
     /**
@@ -280,7 +280,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     public void newFeatureSelected(Feature ft)
     {
         updateSelectedFeature(ft);
-        deselectRows();
+        deselectRows(false);
     }
    
     @Override
@@ -291,10 +291,13 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     }
     
     @Override
-    public void featureLibraryUpdated()
+    public void featureLibraryUpdated(boolean sizeDidChange)
     {
         updateCurrentFeaturesTable();
-        
+        if(sizeDidChange)
+        {
+            deselectRows(true);
+        }
     }
     
     
@@ -306,12 +309,16 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         newFeaturesPanel.deselectRows();
     }
     
-    public void deselectRows()
+    public void deselectRows(boolean showNoFeatures)
     {
         selectedRow = -1;
         ((FeatureTableModel)currentFeaturesTable.getModel()).selectedRow = selectedRow;
         currentFeaturesTable.repaint();
         newFeaturesPanel.deselectRows();
+        if(showNoFeatures)
+        {
+            featureDetailPanel.showNoFeature();
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

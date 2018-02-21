@@ -38,6 +38,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     public FeatureEditorDelegate delegate;
     private int selectedRow = -1;
     private int outputIndex = 0;
+    private boolean ignoreSliderUpdate = true;
 
     public NewFeaturesPanel() {
         initComponents();
@@ -134,6 +135,15 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         Feature[] f = new Feature[features.size()];
         f = features.toArray(f);
         updateResultsTable(f);
+        
+        ignoreSliderUpdate = true;
+        
+        windowSlider.setValue(w.getDataManager().featureManager.getFeatureWindowSize());
+        windowLabel.setText("Window:" + windowSlider.getValue());
+        bufferSlider.setValue(w.getDataManager().featureManager.getFeatureBufferSize());
+        bufferLabel.setText("Buffer:" + bufferSlider.getValue());
+        
+        ignoreSliderUpdate = false;
     }
     
     private void selectRow(int row)
@@ -334,7 +344,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         }
     }
     
-    private void resetFollowingLibraryUpdate(boolean isRunning, boolean isPlotting)
+    private void resetFollowingLibraryUpdate(boolean isRunning, boolean isPlotting, boolean buffers)
     {
         if(isRunning)
         {
@@ -345,7 +355,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
             w.getSupervisedLearningManager().isPlotting = isPlotting;
         }
         updateResultsTable(w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForFeatures(currentResults));
-        delegate.featureLibraryUpdated();
+        delegate.featureLibraryUpdated(buffers);
     }
     
     /**
@@ -536,22 +546,30 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
 
     private void bufferSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_bufferSliderStateChanged
         // TODO add your handling code here:
+        if(ignoreSliderUpdate)
+        {
+            return;
+        }
         bufferLabel.setText("Buffer:" + bufferSlider.getValue());
         boolean isRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
         boolean isPlotting = w.getSupervisedLearningManager().isPlotting;
         prepareForLibraryUpdate(isRunning, isPlotting);
         w.getDataManager().featureManager.setFeatureWindowSize(windowSlider.getValue(), bufferSlider.getValue());
-        resetFollowingLibraryUpdate(isRunning, isPlotting);
+        resetFollowingLibraryUpdate(isRunning, isPlotting, true);
     }//GEN-LAST:event_bufferSliderStateChanged
 
     private void windowSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_windowSliderStateChanged
         // TODO add your handling code here:
+        if(ignoreSliderUpdate)
+        {
+            return;
+        }
         windowLabel.setText("Window:" + windowSlider.getValue());
         boolean isRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
         boolean isPlotting = w.getSupervisedLearningManager().isPlotting;
         prepareForLibraryUpdate(isRunning, isPlotting);
         w.getDataManager().featureManager.setFeatureWindowSize(windowSlider.getValue(), bufferSlider.getValue());
-        resetFollowingLibraryUpdate(isRunning, isPlotting);
+        resetFollowingLibraryUpdate(isRunning, isPlotting, false);
     }//GEN-LAST:event_windowSliderStateChanged
 
 

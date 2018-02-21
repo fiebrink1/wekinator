@@ -31,6 +31,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     private Wekinator w;
     private static final int PLOT_W = 416;
     private int featureOutputIndex = 0;
+    private Timer timer;
     
     public FeatureDetailPanel() 
     {
@@ -42,11 +43,22 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         outputLabel.setVisible(false);
     }
     
+    protected void showNoFeature()
+    {
+        timer.stop();
+        titleLabel.setText("Select a Feature to Explore");
+        outputComboBox.setVisible(false);
+        outputLabel.setVisible(false);
+        model.points.clear();
+        plotPanel.updateModel(model);
+        diagramView.setVisible(false);
+    }
+    
     public void update(Wekinator w)
     {
         this.w = w;
         
-        Timer timer = new Timer(REFRESH_RATE, new ActionListener() {
+        timer = new Timer(REFRESH_RATE, new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
                 if(in != null)
@@ -93,6 +105,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         
         try
         {
+            diagramView.setVisible(true);
             diagramView.loadImage(urlForDiagram(model.feature.diagram));
         } 
         catch (NoSuchElementException e)
@@ -103,6 +116,11 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         descriptionLabel.setText(model.feature.description);
               
         updateComboBox();
+        
+        if(!timer.isRunning())
+        {
+            timer.start();
+        }
     }
     
     private void addItemsForModifier(int iD, String name)
