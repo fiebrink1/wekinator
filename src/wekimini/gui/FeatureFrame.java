@@ -50,7 +50,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         
         MouseListener featuresMouseListener = new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 int row = currentFeaturesTable.rowAtPoint(e.getPoint());
                 int column = currentFeaturesTable.columnAtPoint(e.getPoint());
                 System.out.println("row:" + row + " column:" + column);
@@ -105,6 +105,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         Feature[] ft = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
         currentFeaturesTable.setModel(new FeatureTableModel(ft));
         setupCurrentFeaturesTable();
+        deselectRows();
     }
    
     /**

@@ -92,7 +92,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         availableFiltersTable.setDefaultRenderer(String.class, new FiltersTableRenderer());
         MouseListener tableMouseListener = new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 int row = availableFiltersTable.rowAtPoint(e.getPoint());
                 int col = availableFiltersTable.columnAtPoint(e.getPoint());
                 String tag = (String)availableFiltersTable.getModel().getValueAt(row, col);
@@ -113,7 +113,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         
         MouseListener resultsMouseListener = new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 int row = resultsTable.rowAtPoint(e.getPoint());
                 int column = resultsTable.columnAtPoint(e.getPoint());
                 System.out.println("row:" + row + " column:" + column);
@@ -208,7 +208,16 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
             {
                 sf = new String[selectedFilters.size()];
                 sf = selectedFilters.toArray(sf);
-                f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForTags(sf);
+                if(sf.length > 0)
+                {
+                    f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForTags(sf);
+                }
+                else
+                {
+                    List<Feature> allFeatures = w.getDataManager().featureManager.getAllFeaturesGroup().getLibrary();
+                    f = new Feature[allFeatures.size()];
+                    f = allFeatures.toArray(f);
+                }
                 return f;
             }
 
@@ -255,6 +264,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         results = removeAddedFeatures(results);
         resultsTable.setModel(new FeatureTableModel(results));
         setUpResultsTable();
+        deselectRows();
     }
     
     class FiltersTableModel extends AbstractTableModel
