@@ -295,4 +295,15 @@ public class FeatureManager
     {
         return allFeatures;
     }
+    
+    public void setNormalise(boolean doNormalise)
+    {
+        for(FeatureCollection fc : featureCollections)
+        {
+            fc.doNormalise = doNormalise;
+            fc.initLibrary(windowSize, bufferSize);
+        }
+        allFeatures.doNormalise = doNormalise;
+        allFeatures.initLibrary(windowSize, bufferSize);
+    }
 }

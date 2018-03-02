@@ -222,6 +222,7 @@ public class ModifierCollection {
         return outputNames[index];
     }
     
+    //Given a name (e.g. AccX:0, give the index in the ouput of the modifiers that it refers to
     public int indexForName(String name)
     {
         int i = 0;

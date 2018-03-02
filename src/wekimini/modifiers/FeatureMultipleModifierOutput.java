@@ -13,8 +13,8 @@ public class FeatureMultipleModifierOutput extends Feature
 {
     Integer[] outputModifierIDs;
 
-    public FeatureMultipleModifierOutput(String name) {
-        super(name);
+    public FeatureMultipleModifierOutput(String name, boolean doNormalise) {
+        super(name, doNormalise);
     }
     
     public Integer[] getOutputModifierIDs()

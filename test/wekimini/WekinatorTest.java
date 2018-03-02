@@ -39,6 +39,7 @@ public class WekinatorTest {
         String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj");
         try{
             w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
+            w.getDataManager().featureManager.setNormalise(false);
         } catch (Exception e)
         {
             

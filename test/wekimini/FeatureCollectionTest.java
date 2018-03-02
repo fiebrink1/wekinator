@@ -31,6 +31,7 @@ public class FeatureCollectionTest {
         fm = new FeatureManager();
         String[] names = {"1","2","3"};
         fm.addOutputs(1, names);
+        fm.setNormalise(false);
         assertEquals(1, fm.getFeatureGroups().size());
         fm.passThroughInputToOutput(false, 0);
         fc = fm.getFeatureGroups().get(0);
@@ -48,9 +49,9 @@ public class FeatureCollectionTest {
     @Test
     public void testMultipleModifiers()
     {
-        fc.addFeatureForKey("AllAcc");
-        assertEquals(4, fc.getNumModifiers());
-        fc.removeFeatureForKey("AllAcc");
+        fc.addFeatureForKey("MeanAccX");
+        assertEquals(2, fc.getNumModifiers());
+        fc.removeFeatureForKey("MeanAccX");
         assertEquals(1, fc.getNumModifiers());
     }
     
@@ -81,11 +82,11 @@ public class FeatureCollectionTest {
     {
         fc.addFeatureForKey("MaxFFTAccX");
         assertEquals(3, fc.getNumModifiers());
-        fc.addFeatureForKey("AllAcc");
-        assertEquals(6, fc.getNumModifiers());
-        fc.removeFeatureForKey("MaxFFTAccX");
+        fc.addFeatureForKey("MeanAccX");
         assertEquals(4, fc.getNumModifiers());
-        fc.removeFeatureForKey("AllAcc");
+        fc.removeFeatureForKey("MaxFFTAccX");
+        assertEquals(2, fc.getNumModifiers());
+        fc.removeFeatureForKey("MeanAccX");
         assertEquals(1, fc.getNumModifiers());
     }
     
@@ -94,7 +95,7 @@ public class FeatureCollectionTest {
     {
        fc.addFeatureForKey("MaxFFTAccX");
        assertEquals(3, fc.getNumModifiers()); 
-       fc.removeFeatureForKey("AllAcc");
+       fc.removeFeatureForKey("MeanAccX");
        assertEquals(3, fc.getNumModifiers()); 
     }
     
@@ -107,7 +108,7 @@ public class FeatureCollectionTest {
        int ptr = 0;
        for(boolean isEnabled:connections)
        {
-           assertEquals(ptr == 67, isEnabled);
+           assertEquals(ptr == 65, isEnabled);
            ptr++;
        }
     }
@@ -130,7 +131,7 @@ public class FeatureCollectionTest {
            assertEquals(ptr < 2, isEnabled);
            ptr++;
         }
-        assertEquals(5, fc.getNumModifiers());
+        assertEquals(3, fc.getNumModifiers());
         
     }
     

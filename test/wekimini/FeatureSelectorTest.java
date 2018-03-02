@@ -46,6 +46,7 @@ public class FeatureSelectorTest {
         String fileLocation = getTestSetPath();
         try{
             w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
+            w.getDataManager().featureManager.setNormalise(false);
         } catch (Exception e)
         {
             

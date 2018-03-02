@@ -23,6 +23,7 @@ public class FeatureConnectionsTest {
         String fileLocation = getTestSetPath();
         try{
             w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
+            w.getDataManager().featureManager.setNormalise(false);
         } catch (Exception e)
         {
             
@@ -56,7 +57,7 @@ public class FeatureConnectionsTest {
         {
             for(int j = 0; j < connections[i].length; j++)
             {
-                assertEquals((i == 67 && j == 0) || ( i == 0), connections[i][j]);
+                assertEquals((i == 65 && j == 0) || ( i == 0), connections[i][j]);
             }
         }
     }
@@ -102,6 +103,6 @@ public class FeatureConnectionsTest {
         assertEquals(1, modifiers2.size(), 0);
         //All Gyro
         List<ModifiedInput> modifiers3 = w.getDataManager().featureManager.featureCollections.get(2).getModifiers().getModifiers();
-        assertEquals(4, modifiers3.size(), 0);
+        assertEquals(2, modifiers3.size(), 0);
     }
 }

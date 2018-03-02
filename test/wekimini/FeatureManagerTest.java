@@ -30,6 +30,7 @@ public class FeatureManagerTest {
         fm = new FeatureManager();
         String[] names = {"1","2","3"};
         fm.addOutputs(1, names);
+        fm.setNormalise(false);
         assertEquals(1, fm.getFeatureGroups().size());
         fm.passThroughInputToOutput(false, 0);
     }

@@ -15,7 +15,7 @@ import wekimini.modifiers.Feature;
 public class PlotRowModel
 {
     private final static int POINTS_PER_ROW = 100;
-    public Feature feature = new Feature("feature1");
+    public Feature feature = new Feature("feature1", false);
     int pathIndex = 0;
     int rowIndex = 0;
     boolean isStreaming = false;
