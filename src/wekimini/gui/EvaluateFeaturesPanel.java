@@ -77,9 +77,14 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 outputLabel.setText("Output:" + vals[0]);
             }
         });
+        
+        trainBtn.setEnabled(w.getDataManager().getNumExamples() > 0);
     }
     
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
+        
+        trainBtn.setEnabled(w.getDataManager().getNumExamples() > 0);
+        
         switch (evt.getPropertyName()) {
             case SupervisedLearningManager.PROP_RECORDINGROUND:
                 break;
