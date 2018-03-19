@@ -44,6 +44,10 @@ public class BatchNormaliseFilter extends SimpleBatchFilter {
                 double minVal = min.get(a.name());
                 double maxVal = max.get(a.name());
                 double delta =  maxVal - minVal;
+                if(delta == 0)
+                {
+                    delta = 1.0;
+                }
                 if(j != result.classIndex())
                 {
                     newVals[j] = (val - minVal) / delta;

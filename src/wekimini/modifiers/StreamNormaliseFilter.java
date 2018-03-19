@@ -37,6 +37,10 @@ public class StreamNormaliseFilter extends SimpleStreamFilter {
             double minVal = batchFilter.minForAttribute(a);
             double maxVal = batchFilter.maxForAttribute(a);
             double delta =  maxVal - minVal;
+            if(delta == 0)
+            {
+                delta = 1.0;
+            }
             if(j != instance.classIndex())
             {
                 newVals[j] = (val - minVal) / delta;
