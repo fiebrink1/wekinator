@@ -97,4 +97,32 @@ public class NormaliseFilterTest {
             Logger.getLogger(NormaliseFilterTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    @Test
+    public void testStreamFilterOutsideValues()
+    {
+        BatchNormaliseFilter batchFilter = new BatchNormaliseFilter();
+        StreamNormaliseFilter streamFilter = new StreamNormaliseFilter();
+        try {
+            batchFilter.setInputFormat(testSet);
+            streamFilter.setInputFormat(testSet);
+            testSet = Filter.useFilter(testSet, batchFilter);
+            streamFilter.batchFilter = batchFilter;
+            Instances localSet = getTestSet(200);
+            localSet = Filter.useFilter(localSet, streamFilter);
+            for(double i = 0; i < localSet.numInstances(); i++)
+            {
+                Instance inst = localSet.instance((int)i);
+                double target1 = i / 100;
+                double target2 = (i - 50) / 100;
+                double target3 = (i - 100) / 100;
+                assertEquals(target1, inst.value(0), 0.0);
+                assertEquals(target2, inst.value(1), 0.0);
+                assertEquals(target3, inst.value(2), 0.0);
+                assertEquals(i, inst.value(3), 0.0);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(NormaliseFilterTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
