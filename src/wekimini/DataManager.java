@@ -43,6 +43,8 @@ import wekimini.gui.DatasetViewer;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.SupervisedLearningModel;
+import wekimini.modifiers.BatchNormaliseFilter;
+import wekimini.modifiers.StreamNormaliseFilter;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
@@ -80,6 +82,11 @@ public class DataManager {
     private List<Instances> allFeaturesInstances = null;
     //Array of instances (one for each output) with the all the possible features calculated from the test set (for use in automatic selection) 
     private List<Instances> allFeaturesTestInstances = null;
+    
+    BatchNormaliseFilter batchFilter = new BatchNormaliseFilter();
+    StreamNormaliseFilter streamFilter = new StreamNormaliseFilter();
+    public Boolean doNormalise = true;
+    
     public FeatureManager featureManager;
     public String[][] selectedFeatureNames = new String[0][0];
     public int[][] selectedFeatureIndices = new int[0][0];
@@ -990,6 +997,11 @@ public class DataManager {
                         newInstances.setClassIndex(withOutput.length - 1);
                     }
                 }
+                if(doNormalise)
+                {
+                    batchFilter.setInputFormat(newInstances);
+                    newInstances = Filter.useFilter(newInstances, batchFilter);
+                }
                 List<Instances> featureInstances = testSet ? testingFeatureInstances : trainingFeatureInstances;
                 if(index < featureInstances.size())
                 {
@@ -1197,6 +1209,18 @@ public class DataManager {
         Instance featureInstance = new Instance(1.0, data);
         instances.add(featureInstance);
         instances.setClassIndex(data.length - 1);
+        try{
+            streamFilter.setInputFormat(instances);
+            streamFilter.batchFilter = batchFilter;
+            if(doNormalise)
+            {
+                instances = Filter.useFilter(instances, streamFilter);
+            }
+        } 
+        catch (Exception e)
+        {
+            
+        }
         featureInstance = instances.firstInstance();
         return featureInstance;
 

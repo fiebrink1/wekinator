@@ -26,6 +26,7 @@ import weka.core.Instances;
         String fileLocation = getTestSetPath();
         try{
             w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
+            w.getDataManager().doNormalise = false;
         } catch (Exception e)
         {
             
