@@ -30,7 +30,9 @@ public final class FeatureCollection
     private boolean dirtyFlag = true;
     private boolean testSetDirtyFlag = true;
     private String[] tags;
-    public boolean doNormalise;
+    private boolean doNormalise;
+    private int windowSize = 0;
+    private int bufferSize = 0;
     protected static final int ACCX = 0;
     protected static final int ACCY = 1;
     protected static final int ACCZ = 2;
@@ -60,6 +62,9 @@ public final class FeatureCollection
     {
         
         library.clear();
+        
+        this.windowSize = windowSize;
+        this.bufferSize = bufferSize;
         
         library.add(new PassThroughAll("PassThroughAll", doNormalise));
         library.add(new WindowedFeature("MeanAccX",new AverageWindowOperation(),ACCX,windowSize, doNormalise));
@@ -160,6 +165,12 @@ public final class FeatureCollection
         
         updateTags();
         
+    }
+    
+    public void setNormalise(boolean doNormalise)
+    {
+        this.doNormalise = doNormalise;
+        initLibrary(windowSize, bufferSize);
     }
     
     public ModifierCollection getModifiers()

@@ -300,10 +300,8 @@ public class FeatureManager
     {
         for(FeatureCollection fc : featureCollections)
         {
-            fc.doNormalise = doNormalise;
-            fc.initLibrary(windowSize, bufferSize);
+            fc.setNormalise(doNormalise);
         }
-        allFeatures.doNormalise = doNormalise;
-        allFeatures.initLibrary(windowSize, bufferSize);
+        allFeatures.setNormalise(doNormalise);
     }
 }

@@ -136,6 +136,19 @@ public class FeatureCollectionTest {
     }
     
     @Test
+    public void testNormalisationOn()
+    {
+       fc.setNormalise(false);
+       fc.addFeatureForKey("MaxFFTAccX");
+       assertEquals(3, fc.getNumModifiers());
+       
+       //Adds the extra normalise modifier
+       fc.setNormalise(true);
+       fc.addFeatureForKey("MaxFFTAccX");
+       assertEquals(4, fc.getNumModifiers()); 
+    }
+    
+    @Test
     public void testChangeWindowSize()
     {
         Field field;

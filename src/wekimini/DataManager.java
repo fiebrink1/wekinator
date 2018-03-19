@@ -972,6 +972,8 @@ public class DataManager {
             try{
                 Instances in = testSet ? testInstances : inputInstances;
                 Instances filteredInputs = Filter.useFilter(in, trainingFilters[index]);
+                double min = Double.POSITIVE_INFINITY;
+                double max = Double.NEGATIVE_INFINITY;
                 for (int i = 0; i < filteredInputs.numInstances(); i++)
                 {
                     Instance inputInstance = filteredInputs.instance(i);
