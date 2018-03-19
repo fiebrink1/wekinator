@@ -28,7 +28,7 @@ public class StreamNormaliseFilter extends SimpleStreamFilter {
     }
 
     @Override
-    protected Instance process(Instance instance) {
+    protected Instance process(Instance instance) throws NullPointerException {
         double[] newVals = new double[instance.numAttributes()];
         for(int j = 0; j < instance.numAttributes(); j++)
         {
