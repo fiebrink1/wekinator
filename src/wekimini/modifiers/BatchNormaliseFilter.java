@@ -18,6 +18,7 @@ public class BatchNormaliseFilter extends SimpleBatchFilter {
     private HashMap<String, Double> min = new HashMap();
     private HashMap<String, Double> max = new HashMap();
 
+    
     @Override
     public String globalInfo() {
         return "A filter to normalise Instances, attribute by attribute";
@@ -108,4 +109,8 @@ public class BatchNormaliseFilter extends SimpleBatchFilter {
         return min.get(a.name());
     }
     
+    public boolean isValid()
+    {
+        return min.size() > 0 && max.size() > 0;
+    }
 }
