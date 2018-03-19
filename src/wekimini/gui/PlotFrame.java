@@ -137,7 +137,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
 
     private void addPlotButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPlotButtonActionPerformed
         // TODO add your handling code here:
-        tableModel.data.add(new PlotRowModel());
+        tableModel.data.add(new PlotRowModel(100));
         redrawTable();
     }//GEN-LAST:event_addPlotButtonActionPerformed
 

@@ -27,16 +27,17 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
 
     private PlotPanel plotPanel;
     private final int REFRESH_RATE = 20;
-    private PlotRowModel model = new PlotRowModel();
+    private PlotRowModel model = new PlotRowModel(100);
     private Wekinator w;
     private static final int PLOT_W = 416;
+    private final static int PLOT_H = 75;
     private int featureOutputIndex = 0;
     private Timer timer;
     
     public FeatureDetailPanel() 
     {
         initComponents();
-        plotPanel = new PlotPanel(PLOT_W);        
+        plotPanel = new PlotPanel(PLOT_W, PLOT_H, 100);        
         plotScrollPane.setViewportView(plotPanel);
         plotScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
         outputComboBox.setVisible(false);

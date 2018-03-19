@@ -6,13 +6,17 @@
 package wekimini.gui;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JFrame;
 import javax.swing.ListSelectionModel;
+import javax.swing.Timer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import weka.core.Instance;
 import wekimini.Wekinator;
 import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeLogging;
@@ -28,6 +32,11 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     public int selectedRow = -1;
     public int outputIndex = 0;
     private Feature selectedFeature;
+    private PlotTableCellRenderer plotCellRenderer;
+    private PlottedFeatureTableModel currentFeaturesTableModel;
+    private Timer timer;
+    private final int REFRESH_RATE = 50;
+    private Feature[] currentFeatures;
     
     public FeatureFrame() {
         initComponents();
@@ -36,6 +45,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     public FeatureFrame(Wekinator w) {
         initComponents();
         this.w = w;
+        timer = new Timer(1,new ActionListener() {public void actionPerformed(ActionEvent evt) {}});
         newFeaturesPanel.update(w, 0);
         featureDetailPanel.update(w);
         evaluateFeaturesPanel.update(w, 0);
@@ -48,7 +58,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         currentFeaturesTable.setRowMargin(3);
         currentFeaturesTable.setTableHeader(null);
         updateCurrentFeaturesTable();
-        
+                
         MouseListener featuresMouseListener = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -59,7 +69,8 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
                 switch(column)
                 {
                     case 0: updateSelectedFeature(ft); selectRow(row); break;
-                    case 1: removeFeature(ft); deselectRows(true); break;
+                    case 1: updateSelectedFeature(ft); selectRow(row); break;
+                    case 2: removeFeature(ft); deselectRows(true); break;
                 }
             }
         };
@@ -73,7 +84,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
                 w.getSupervisedLearningManager().isPlotting = false;
                 evaluateFeaturesPanel.onClose();
             }
-        });
+        });        
     }
     
     private void removeFeature(Feature ft)
@@ -84,7 +95,37 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         updateCurrentFeaturesTable();
     }
     
-    private void setupCurrentFeaturesTable() {
+    public void startTimer()
+    {
+        if(timer.isRunning())
+        {
+            timer.stop();
+        }
+        timer = new Timer(REFRESH_RATE, new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
+                if(in != null)
+                {
+                    int ptr = 0;
+                    for(Feature ft : currentFeatures)
+                    {
+                        float val = (float) in.value(ft.outputIndex);
+                        currentFeaturesTableModel.getModel(ptr).addPoint(val);
+                        ptr++;
+                    }
+                }
+                currentFeaturesTable.repaint();
+            }    
+        });  
+        timer.start();
+    }
+    
+    public void updateCurrentFeaturesTable()
+    {
+        currentFeatures = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
+        currentFeaturesTableModel = new PlottedFeatureTableModel(currentFeatures);
+        currentFeaturesTable.setModel(currentFeaturesTableModel);
+                
         int tW = currentFeaturesTable.getWidth();
         TableColumn column;
         TableColumnModel jTableColumnModel = currentFeaturesTable.getColumnModel();
@@ -93,20 +134,22 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             column = jTableColumnModel.getColumn(i);
             int pWidth = Math.round(tW - 40);
             column.setPreferredWidth(pWidth);
-            if(i==1)
+            if(i == 1)
+            {
+                column.setPreferredWidth(40);
+                column.setCellRenderer(new PlotTableCellRenderer(40,30));
+            }
+            if(i == 2)
             {
                 column.setPreferredWidth(40);
                 column.setCellRenderer(new ImageTableCellRenderer("delete.png"));
             }
         }
-    }
-    
-    public void updateCurrentFeaturesTable()
-    {
-        Feature[] ft = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
-        currentFeaturesTable.setModel(new FeatureTableModel(ft));
-        setupCurrentFeaturesTable();
+        
         deselectRows(false);
+        
+        startTimer();
+
     }
    
     /**
@@ -197,7 +240,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
@@ -267,7 +310,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     {
         selectedFeature = ft;
         ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeaturePreviewed(w, selectedFeature);
-        PlotRowModel model = new PlotRowModel();
+        PlotRowModel model = new PlotRowModel(100);
         w.getSupervisedLearningManager().isPlotting = true;
         model.isStreaming = true;
         model.feature = selectedFeature;

@@ -21,8 +21,8 @@ import javax.swing.JPanel;
 public class PlotPanel extends JPanel {
     
     private int w = 1;
-    private final static int PLOT_H = 75;
-    private BufferedImage image = new BufferedImage(w, PLOT_H, BufferedImage.TYPE_INT_ARGB);
+    private int h = 1;
+    private BufferedImage image;
     protected int x = 0;
     protected int y = 0;
     protected double min = 0.0001;
@@ -31,31 +31,32 @@ public class PlotPanel extends JPanel {
     String sMin = "0.0001";
     String sMax = "0.0";
     public boolean firstData = true;
-    private int pointsPerRow = 0;
     private LinkedList<Double> points = new LinkedList();
     private LinkedList<Double> classes = new LinkedList();
-    private final static int POINTS_PER_ROW = 100;
+    private int pointsPerRow = 20;
     
     private PlotPanel(){}
     
-    public PlotPanel(int w)
+    public PlotPanel(int w, int h, int pointsPerRow)
     {
         this.w = w;
-        setUp(POINTS_PER_ROW);
+        this.h = h;
+        this.pointsPerRow = pointsPerRow;
+        image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        setUp();
     }
     
-    public void setUp(int pointsPerRow)
+    private void setUp()
     {
         setBackground(Color.white);
         x = 0;
         y = 0;
-        this.pointsPerRow = pointsPerRow;
     }
     
     public void updateModel(PlotRowModel model)
     {
-        this.points = model.points;
-        this.classes = model.classes;
+        points = model.points;
+        classes = model.classes;
         if(points.size() > 0)
         {
             for(double pt : points)
@@ -105,14 +106,14 @@ public class PlotPanel extends JPanel {
         g2d.setColor(Color.BLUE);
         double lastPointX = 0;
         double lastPointY = 0;
-        int numPts = points.size() < POINTS_PER_ROW ? points.size() : POINTS_PER_ROW;
+        int numPts = points.size() < pointsPerRow ? points.size() : pointsPerRow;
         for(int n = 0; n < points.size(); n++)
         {
             double f  = points.get(n);
             double thisX = (double)(n * horizontalScale);
             double proportion = ((f - min)/(max - min));
             //System.out.println("f:" + f + " max:" + max + " min:" + min + " proportion:" + proportion);
-            double thisY = y + PLOT_H - (proportion * PLOT_H);
+            double thisY = y + h - (proportion * h);
             //System.out.println("n:" + n + " x:" + thisX + " y:" + thisY);
             if (n == 0) 
             {
@@ -172,6 +173,6 @@ public class PlotPanel extends JPanel {
 
     private void createEmptyImage(int width)
     {
-        image = new BufferedImage(width, PLOT_H, BufferedImage.TYPE_INT_ARGB);
+        image = new BufferedImage(width, h, BufferedImage.TYPE_INT_ARGB);
     }       
 }
