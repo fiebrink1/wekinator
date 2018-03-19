@@ -1212,7 +1212,7 @@ public class DataManager {
         try{
             streamFilter.setInputFormat(instances);
             streamFilter.batchFilter = batchFilter;
-            if(doNormalise && batchFilter.isValid())
+            if(doNormalise)
             {
                 instances = Filter.useFilter(instances, streamFilter);
             }
