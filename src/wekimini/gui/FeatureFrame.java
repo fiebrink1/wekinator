@@ -57,7 +57,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         featureDetailPanel.update(w);
         evaluateFeaturesPanel.update(w, 0);
         newFeaturesPanel.delegate = this;
-        selectedFeature = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey("PassThroughAll");
+        selectedFeature = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey("AccX");
         currentFeaturesTable.setDefaultRenderer(Feature.class, new FeatureTableRenderer());
         currentFeaturesTable.setRowSelectionAllowed(false);
         currentFeaturesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -95,9 +95,9 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     
     private void removeFeature(Feature ft)
     {
-        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureRemoved(w);
         if(w.getSupervisedLearningManager().getRunningState() == RunningState.NOT_RUNNING)
         {
+            ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureRemoved(w);
             w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).removeFeatureForKey(ft.name);
             newFeaturesPanel.featureListUpdated();
             updateCurrentFeaturesTable();
@@ -122,7 +122,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
                 for(int i = 0; i < currentFeatures.length; i++)
                 {
                     Feature ft  = currentFeatures[i];
-                    double val = w.getSupervisedLearningManager().getCurrentValueforFeature(ft);
+                    double val = w.getSupervisedLearningManager().getCurrentValueforFeature(ft, 0);
                     currentFeaturesTableModel.getModel(i).addPoint(val);
                 }
             }

@@ -35,7 +35,7 @@ public final class FeatureCollection
     protected static final int GYROZ = 5;
     protected static final String FFT_DESCRIPTION = "FFT \nUse this feature if you are interested in the periodicity of your motion";
     protected static final String RAW_DESCRIPTION = "Raw \nJust the raw signal";
-    protected static final String MEAN_DESCRIPTION = "Mean \nUse this feature to mmooth out measurements over the given window e.g. if you are only interested in bigger changes over time";
+    protected static final String MEAN_DESCRIPTION = "Mean \nUse this feature to smooth out measurements over the given window e.g. if you are only interested in bigger changes over time";
     protected static final String FOD_DESCRIPTION = "1st Order Diff\n Use this feature if you want to distinguish gestures or rotate at different speeds";
     protected static final String ENERGY_DESCRIPTION = "Energy \n Use this is you are interested in the strength of your signal";
     protected static final String MAX_DESCRIPTION = "Max \nUse this feature if you are interested in the extremes of your motion";
@@ -49,7 +49,7 @@ public final class FeatureCollection
     {
         initLibrary(10, 10);
         modifiers = new ModifierCollection(inputNames);
-        addFeatureForKey("PassThroughAll");
+        //addFeatureForKey("PassThroughAll");
     }
     
     public void initLibrary(int windowSize, int bufferSize)
@@ -57,9 +57,16 @@ public final class FeatureCollection
         
         library.clear();
         
-        library.add(new PassThroughAll("PassThroughAll"));
-        library.add(new PassThrough("AllAcc",new int[]{ACCX,ACCY,ACCZ}));
-        library.add(new PassThrough("AllGyro",new int[]{GYROX,GYROY,GYROZ}));
+        //library.add(new PassThroughAll("PassThroughAll"));
+        library.add(new PassThrough("AccX",new int[]{ACCX}));
+        library.add(new PassThrough("AccY",new int[]{ACCY}));
+        library.add(new PassThrough("AccZ",new int[]{ACCZ}));
+        library.add(new PassThrough("GyroX",new int[]{GYROX}));
+        library.add(new PassThrough("GyroY",new int[]{GYROY}));
+        library.add(new PassThrough("GyroZ",new int[]{GYROZ}));
+        library.add(new WindowedFeature("MeanAccX",new AverageWindowOperation(),ACCX,windowSize));
+        library.add(new WindowedFeature("MeanAccY",new AverageWindowOperation(),ACCY,windowSize));
+        library.add(new WindowedFeature("MeanAccZ",new AverageWindowOperation(),ACCZ,windowSize));
         library.add(new WindowedFeature("MeanGyroX",new AverageWindowOperation(),GYROX,windowSize));
         library.add(new WindowedFeature("MeanGyroY",new AverageWindowOperation(),GYROY,windowSize));
         library.add(new WindowedFeature("MeanGyroZ",new AverageWindowOperation(),GYROZ,windowSize));
@@ -81,12 +88,12 @@ public final class FeatureCollection
         library.add(new WindowedFeature("EnergyGyroX",new EnergyWindowOperation(),GYROX,windowSize));
         library.add(new WindowedFeature("EnergyGyroY",new EnergyWindowOperation(),GYROY,windowSize));
         library.add(new WindowedFeature("EnergyGyroZ",new EnergyWindowOperation(),GYROZ,windowSize));
-        library.add(new BufferFeature("BufferAccX", ACCX, bufferSize));
-        library.add(new BufferFeature("BufferAccY", ACCY, bufferSize));
-        library.add(new BufferFeature("BufferAccZ", ACCZ, bufferSize));
-        library.add(new BufferFeature("BufferGyroX", GYROX, bufferSize));
-        library.add(new BufferFeature("BufferGyroY", GYROY, bufferSize));
-        library.add(new BufferFeature("BufferGyroZ", GYROZ, bufferSize));
+//        library.add(new BufferFeature("BufferAccX", ACCX, bufferSize));
+//        library.add(new BufferFeature("BufferAccY", ACCY, bufferSize));
+//        library.add(new BufferFeature("BufferAccZ", ACCZ, bufferSize));
+//        library.add(new BufferFeature("BufferGyroX", GYROX, bufferSize));
+//        library.add(new BufferFeature("BufferGyroY", GYROY, bufferSize));
+//        library.add(new BufferFeature("BufferGyroZ", GYROZ, bufferSize));
         library.add(new MagnitudeFeature("MagAcc", new int[]{ACCX,ACCY,ACCZ}, 2));
         library.add(new MagnitudeFeature("MagGyro", new int[]{GYROX,GYROY,GYROZ}, 2));
         library.add(new MagnitudeFODFeature("MagFODAcc", new int[]{ACCX,ACCY,ACCZ}, 2));
@@ -115,27 +122,43 @@ public final class FeatureCollection
         library.add(new CorrelateFeature("CorrelateGyroXY",new int[]{GYROX,GYROY},windowSize));
         library.add(new CorrelateFeature("CorrelateGyroXZ",new int[]{GYROX,GYROZ},windowSize));
         library.add(new CorrelateFeature("CorrelateGyroYZ",new int[]{GYROY,GYROZ},windowSize));
-        library.add(new FFTFeature("FFTAccX7Bins", ACCX, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new FFTFeature("FFTAccY7Bins", ACCY, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new FFTFeature("FFTAccZ7Bins", ACCZ, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new FFTFeature("FFTGyroX7Bins", GYROX, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new FFTFeature("FFTGyroY7Bins", GYROY, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new FFTFeature("FFTGyroZ7Bins", GYROZ, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new MaxFFT("MaxFFTAccX", ACCX, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new MaxFFT("MaxFFTAccY", ACCY, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new MaxFFT("MaxFFTAccZ", ACCZ, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new MaxFFT("MaxFFTGyroX", GYROX, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new MaxFFT("MaxFFTGyroY", GYROY, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new MaxFFT("MaxFFTGyroZ", GYROZ, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new MinFFT("MinFFTAccX", ACCX, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new MinFFT("MinFFTAccY", ACCY, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new MinFFT("MinFFTAccZ", ACCZ, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new MinFFT("MinFFTGyroX", GYROX, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new MinFFT("MinFFTGyroY", GYROY, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new MinFFT("MinFFTGyroZ", GYROZ, 128, new int[]{0,8,16,24,36,48,60}));
-        library.add(new WindowedFeature("MeanAccX",new AverageWindowOperation(),ACCX,windowSize));
-        library.add(new WindowedFeature("MeanAccY",new AverageWindowOperation(),ACCY,windowSize));
-        library.add(new WindowedFeature("MeanAccZ",new AverageWindowOperation(),ACCZ,windowSize));
+        int [] bins = new int[]{0,8,16,24,36,48,60};
+        for(int i = 0; i < 7; i++)
+        {
+            library.add(new FFTSingleBinFeature("FFTAccX"+bins[i], ACCX, 128, bins[i]));
+        }
+        for(int i = 0; i < 7; i++)
+        {
+            library.add(new FFTSingleBinFeature("FFTAccY"+bins[i], ACCY, 128, bins[i]));
+        }
+        for(int i = 0; i < 7; i++)
+        {
+            library.add(new FFTSingleBinFeature("FFTAccZ"+bins[i], ACCZ, 128, bins[i]));
+        }
+        for(int i = 0; i < 7; i++)
+        {
+            library.add(new FFTSingleBinFeature("FFTGyroX"+bins[i], GYROX, 128, bins[i]));
+        }
+        for(int i = 0; i < 7; i++)
+        {
+            library.add(new FFTSingleBinFeature("FFTGyroY"+bins[i], GYROY, 128, bins[i]));
+        }
+        for(int i = 0; i < 7; i++)
+        {
+            library.add(new FFTSingleBinFeature("FFTGyroZ"+bins[i], GYROZ, 128, bins[i]));
+        }
+        library.add(new MaxFFT("MaxFFTAccX", ACCX, 128));
+        library.add(new MaxFFT("MaxFFTAccY", ACCY, 128));
+        library.add(new MaxFFT("MaxFFTAccZ", ACCZ, 128));
+        library.add(new MaxFFT("MaxFFTGyroX", GYROX, 128));
+        library.add(new MaxFFT("MaxFFTGyroY", GYROY, 128));
+        library.add(new MaxFFT("MaxFFTGyroZ", GYROZ, 128));
+        library.add(new MinFFT("MinFFTAccX", ACCX, 128));
+        library.add(new MinFFT("MinFFTAccY", ACCY, 128));
+        library.add(new MinFFT("MinFFTAccZ", ACCZ, 128));
+        library.add(new MinFFT("MinFFTGyroX", GYROX, 128));
+        library.add(new MinFFT("MinFFTGyroY", GYROY, 128));
+        library.add(new MinFFT("MinFFTGyroZ", GYROZ, 128));
         
         names = new String[library.size()];
         int ptr = 0;
@@ -273,7 +296,18 @@ public final class FeatureCollection
     {
         for(Feature f:added.values())
         {
-            f.outputIndex = modifiers.indexForName(f.name+":0");
+            if(f instanceof FeatureSingleModifierOutput)
+            {
+                ((FeatureSingleModifierOutput)f).outputIndex = modifiers.indexForName(f.name+":0");             
+            }
+            else if(f instanceof FeatureMultipleModifierOutput)
+            {
+                FeatureMultipleModifierOutput multiF = (FeatureMultipleModifierOutput)f;
+                for(int i = 0; i < multiF.outputIndexes.length; i++)
+                {
+                    multiF.outputIndexes[i] = modifiers.indexForName(f.name+":0:"+i); 
+                }
+            }
         }
     }
     
@@ -529,6 +563,47 @@ class FeatureMetadata
     }
 }
 
+class FFTSingleBinFeature extends FeatureSingleModifierOutput
+{
+    
+    int totalBins;
+    int bin;
+    int index;
+    
+    public FFTSingleBinFeature(String name, int index, int totalBins, int selectedBin) {
+        super(name);
+        this.bin = selectedBin;
+        this.totalBins = totalBins;
+        this.index = index;
+        this.diagram = FeatureMetadata.diagramForInput(index);
+        tags.add("FFT");
+        tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
+        this.description = FeatureCollection.FFT_DESCRIPTION;
+        
+    }
+
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        int [] allBins = new int[totalBins];
+        for(int i = 0; i < totalBins; i++)
+        {
+            allBins[i] = i;
+        }
+        FFTModifier fft = new FFTModifier("fft", index, totalBins, allBins);
+        fft.addToOutput = false;
+        fft.addRequiredModifierID(0);
+        int fftID = addModifier(mc,fft);
+        
+        PassThroughSingle single = new PassThroughSingle(Integer.toString(bin),bin,0);
+        single.addToOutput = true;
+        single.addRequiredModifierID(fftID);
+        int singleID = addModifier(mc,single);
+        
+        setOutputModifierID(singleID);
+    }
+}
+
 class FFTFeature extends FeatureSingleModifierOutput
 {
     
@@ -564,12 +639,10 @@ class MaxFFT extends FeatureSingleModifierOutput
 {
     
     int totalBins;
-    int[] bins;
     int index;
     
-    public MaxFFT(String name, int index, int totalBins, int[] selectedBins) {
+    public MaxFFT(String name, int index, int totalBins) {
         super(name);
-        this.bins = selectedBins;
         this.totalBins = totalBins;
         this.index = index;
         this.diagram = FeatureMetadata.diagramForInput(index);
@@ -582,7 +655,12 @@ class MaxFFT extends FeatureSingleModifierOutput
     @Override
     public void addFeature(ModifierCollection mc)
     {
-        FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
+        int [] allBins = new int[totalBins];
+        for(int i = 0; i < totalBins; i++)
+        {
+            allBins[i] = i;
+        }
+        FFTModifier fft = new FFTModifier("fft", index, totalBins, allBins);
         fft.addToOutput= false;
         fft.addRequiredModifierID(0);
         int fftID = addModifier(mc,fft);
@@ -598,12 +676,10 @@ class MaxFFT extends FeatureSingleModifierOutput
 class MinFFT extends FeatureSingleModifierOutput
 {
     int totalBins;
-    int[] bins;
     int index;
     
-    public MinFFT(String name, int index, int totalBins, int[] selectedBins) {
+    public MinFFT(String name, int index, int totalBins) {
         super(name);
-        this.bins = selectedBins;
         this.totalBins = totalBins;
         this.index = index;
         this.diagram = FeatureMetadata.diagramForInput(index);
@@ -616,7 +692,12 @@ class MinFFT extends FeatureSingleModifierOutput
     @Override
     public void addFeature(ModifierCollection mc)
     {
-        FFTModifier fft = new FFTModifier("fft", index, totalBins, bins);
+        int [] allBins = new int[totalBins];
+        for(int i = 0; i < totalBins; i++)
+        {
+            allBins[i] = i;
+        }
+        FFTModifier fft = new FFTModifier("fft", index, totalBins, allBins);
         fft.addToOutput= false;
         fft.addRequiredModifierID(0);
         int fftID = addModifier(mc,fft);
@@ -660,6 +741,10 @@ class PassThrough extends FeatureMultipleModifierOutput
         super(name);
         this.indexes = inputs;
         this.diagram = InputDiagram.MULTIPLE;
+        if(inputs.length == 1)
+        {
+            this.diagram = FeatureMetadata.diagramForInput(inputs[0]);
+        }
         tags.add("Raw");
         this.description = FeatureCollection.RAW_DESCRIPTION;
         for(int input:inputs)

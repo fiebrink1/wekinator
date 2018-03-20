@@ -150,18 +150,18 @@ public class FeatureManagerTest {
         
     }
     
-    @Test
-    public void testChangingWindowSizeWihAddedFeatures()
-    {
-        FeatureCollection fc = fm.getFeatureGroups().get(0);
-        fc.clearAdded();
-        fc.addFeatureForKey("MeanAccX");
-        FeatureSingleModifierOutput added = (FeatureSingleModifierOutput) fc.getCurrentFeatures()[0];
-        ModifiedInput outputModifier = fm.getAllFeaturesGroup().getModifiers().getModifierForID(added.getOutputModifierID());
-        fm.setFeatureWindowSize(20,30);
-        ModifiedInput newOutputModifier = fm.getAllFeaturesGroup().getModifiers().getModifierForID(added.getOutputModifierID());
-    }
-    
+//    @Test
+//    public void testChangingWindowSizeWihAddedFeatures()
+//    {
+//        FeatureCollection fc = fm.getFeatureGroups().get(0);
+//        fc.clearAdded();
+//        fc.addFeatureForKey("MeanAccX");
+//        FeatureSingleModifierOutput added = (FeatureSingleModifierOutput) fc.getCurrentFeatures()[0];
+//        ModifiedInput outputModifier = fm.getAllFeaturesGroup().getModifiers().getModifierForID(added.getOutputModifierID());
+//        fm.setFeatureWindowSize(20,30);
+//        ModifiedInput newOutputModifier = fm.getAllFeaturesGroup().getModifiers().getModifierForID(added.getOutputModifierID());
+//    }
+//    
     @Test
     public void testChangingWindowSize()
     {

@@ -14,7 +14,7 @@ import wekimini.modifiers.Feature;
  */
 public class PlotRowModel
 {
-    public Feature feature = new Feature("PassThroughAll");
+    public Feature feature = new Feature("AccX");
     public int pathIndex = 0;
     public int rowIndex = 0;
     private double min;

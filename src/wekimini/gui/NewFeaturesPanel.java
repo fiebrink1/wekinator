@@ -167,9 +167,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     
     public void addFeature(Feature ft)
     {
-        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureAdded(w);
         if(w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING)
         {
+            ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureAdded(w);
             w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(ft.name);
             delegate.featureListUpdated();
             updateResultsTable(currentResults);

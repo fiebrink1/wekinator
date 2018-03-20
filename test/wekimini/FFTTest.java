@@ -28,6 +28,7 @@ public class FFTTest {
         String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj");
         try{
             w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
+            w.getDataManager().doNormalise = false;
         } catch (Exception e)
         {
             
@@ -110,7 +111,7 @@ public class FFTTest {
             testInputs((int)instanceIndex,windowSize,inputs);
         }  
     }
-    /*
+    
     @Test
     public void testTraining()
     {
@@ -127,7 +128,7 @@ public class FFTTest {
         setUpFilters(5);
         testForTraining(5);
     }
-    */
+    
     
     @Test
     public void testRunning() throws InterruptedException
@@ -135,7 +136,7 @@ public class FFTTest {
         setUpFilters(10);
         testForRunning(10);
     }
-    /*
+    
     @Test
     public void testRunningThenTraining() throws InterruptedException
     {
@@ -144,6 +145,6 @@ public class FFTTest {
         setUpFilters(5);
         testForTraining(5);
     }
-    */
+    
     
 }

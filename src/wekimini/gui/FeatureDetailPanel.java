@@ -61,7 +61,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
             Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
             if(in != null && model != null)
             {
-                double val = w.getSupervisedLearningManager().getCurrentValueforFeature(model.feature);
+                double val = w.getSupervisedLearningManager().getCurrentValueforFeature(model.feature, featureOutputIndex);
                 model.addPoint(val);
                 plotPanel.updateModel(model);
             }    
@@ -88,7 +88,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     public void setModel(PlotRowModel model)
     {
         this.model = model;
-        featureOutputIndex = model.feature.outputIndex;
+        featureOutputIndex = 0;
         
         plotPanel.updateModel(model);
         plotPanel.reset();
@@ -274,7 +274,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
 
     private void outputComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputComboBoxActionPerformed
         //WARNING!! THIS DOESNT NECESSARILY WORK FOR FEATURES WITH MULTIPLE MODIFERS OUTPUTTING
-        featureOutputIndex = model.feature.outputIndex + outputComboBox.getSelectedIndex();
+        featureOutputIndex = outputComboBox.getSelectedIndex();
         
     }//GEN-LAST:event_outputComboBoxActionPerformed
 

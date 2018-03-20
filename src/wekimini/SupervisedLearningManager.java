@@ -30,6 +30,8 @@ import wekimini.learning.ModelBuilder;
 import wekimini.learning.SupervisedLearningModel;
 import wekimini.modifiers.Feature;
 import wekimini.modifiers.FeatureCollection;
+import wekimini.modifiers.FeatureMultipleModifierOutput;
+import wekimini.modifiers.FeatureSingleModifierOutput;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCReceiver;
@@ -937,9 +939,20 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         return currentInputInstance;
     }
     
-    public double getCurrentValueforFeature(Feature ft)
+    public double getCurrentValueforFeature(Feature ft, int output)
     {
-        int index = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey(ft.name).outputIndex;
+        int index = 0;
+        Feature allFt = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey(ft.name);
+        if(allFt instanceof FeatureSingleModifierOutput)
+        {
+            index = ((FeatureSingleModifierOutput) allFt).outputIndex;
+        }
+        else if(allFt instanceof FeatureMultipleModifierOutput)
+        {
+            index = ((FeatureMultipleModifierOutput) allFt).outputIndexes[output];
+        }
+                
+        //System.out.println("plotting:"+index);
         return currentInputInstance.value(index);
     }
     

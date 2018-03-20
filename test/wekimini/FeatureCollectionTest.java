@@ -39,9 +39,9 @@ public class FeatureCollectionTest {
     @Test
     public void testSingle()
     {
-        fc.addFeatureForKey("PassThroughAll");
+        fc.addFeatureForKey("AccX");
         assertEquals(2, fc.getNumModifiers());
-        fc.removeFeatureForKey("PassThroughAll");
+        fc.removeFeatureForKey("AccX");
         assertEquals(1, fc.getNumModifiers());
     }
     
@@ -189,7 +189,7 @@ public class FeatureCollectionTest {
     
     public void testResultsForAccX(ArrayList<Feature> results)
     {
-        assertTrue(results.contains(fc.getFeatureForKey("PassThroughAll")));
+        assertTrue(results.contains(fc.getFeatureForKey("AccX")));
         assertTrue(results.contains(fc.getFeatureForKey("MeanAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("MaxAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("StdDevAccX")));
