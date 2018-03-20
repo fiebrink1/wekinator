@@ -6,14 +6,12 @@
 package wekimini.gui;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.NoSuchElementException;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import javax.swing.Timer;
 import weka.core.Instance;
 import wekimini.Wekinator;
-import wekimini.modifiers.Feature;
 import wekimini.modifiers.Feature.InputDiagram;
 import wekimini.modifiers.FeatureMultipleModifierOutput;
 import wekimini.modifiers.FeatureSingleModifierOutput;
@@ -59,15 +57,13 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     {
         this.w = w;
         
-        timer = new Timer(REFRESH_RATE, new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
-                if(in != null && model != null)
-                {
-                    double val = w.getSupervisedLearningManager().getCurrentValueforFeature(model.feature);
-                    model.addPoint(val);
-                    plotPanel.updateModel(model);
-                }
+        timer = new Timer(REFRESH_RATE, (ActionEvent evt) -> {
+            Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
+            if(in != null && model != null)
+            {
+                double val = w.getSupervisedLearningManager().getCurrentValueforFeature(model.feature);
+                model.addPoint(val);
+                plotPanel.updateModel(model);
             }    
         });  
         timer.start();

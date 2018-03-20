@@ -41,8 +41,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         initComponents();
         this.w = w;
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE)  ;   
-        Timer timer = new Timer(REFRESH_RATE, new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
+        Timer timer = new Timer(REFRESH_RATE, (ActionEvent evt) -> {
             Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
             if(in != null)
             {
@@ -59,7 +58,6 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
                     rows.get(i).updateModel(model);
                 }
             }
-        }    
         });  
         timer.start();
     }
@@ -174,10 +172,8 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new PlotFrame().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new PlotFrame().setVisible(true);
         });
     }
 
@@ -221,10 +217,9 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         else
         {
             double[][] vals = w.getDataManager().getTrainingDataForFeature(model.pathIndex, model.feature.outputIndex);
-            for(int i = 0; i < vals.length; i ++)
-            {
-                model.points.add(vals[i][0]);
-                model.classes.add(vals[i][1]);
+            for (double[] val : vals) {
+                model.points.add(val[0]);
+                model.classes.add(val[1]);
             }
             redrawTable();
         }

@@ -105,20 +105,18 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             timer.stop();
         }
         
-        timer = new Timer(REFRESH_RATE, new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
-                if(in != null)
+        timer = new Timer(REFRESH_RATE, (ActionEvent evt) -> {
+            Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
+            if(in != null)
+            {
+                for(int i = 0; i < currentFeatures.length; i++)
                 {
-                    for(int i = 0; i < currentFeatures.length; i++)
-                    {
-                        Feature ft  = currentFeatures[i];
-                        double val = w.getSupervisedLearningManager().getCurrentValueforFeature(ft);
-                        currentFeaturesTableModel.getModel(i).addPoint(val);
-                    }
+                    Feature ft  = currentFeatures[i];
+                    double val = w.getSupervisedLearningManager().getCurrentValueforFeature(ft);
+                    currentFeaturesTableModel.getModel(i).addPoint(val);
                 }
-                currentFeaturesTable.repaint();
-            }    
+            }
+            currentFeaturesTable.repaint();    
         });  
         
         timer.start();
@@ -309,10 +307,8 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FeatureFrame().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new FeatureFrame().setVisible(true);
         });
     }
     

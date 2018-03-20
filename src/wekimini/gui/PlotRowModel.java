@@ -47,43 +47,18 @@ public class PlotRowModel
     {
         synchronized(this) {
             points.add(pt);
-
+            if(pt < min)
+            {
+                min = pt;
+            }
+            if(pt > max)
+            {
+                max = pt;
+            }
             if(isStreaming)
             {
-                if(pt < min)
-                {
-                    min = pt;
-                }
-                if(pt > max)
-                {
-                    max = pt;
-                }
                 while (points.size() > pointsPerRow) {
                     points.removeFirst();
-                }
-//                min = Double.POSITIVE_INFINITY;
-//                max = Double.NEGATIVE_INFINITY;
-//                for(double p:points)
-//                {
-//                    if(p < min)
-//                    {
-//                        min = p;
-//                    }
-//                    if(p > max)
-//                    {
-//                        max = p;
-//                    }
-//                }
-            }
-            else
-            {
-                if(pt < min)
-                {
-                    min = pt;
-                }
-                if(pt > max)
-                {
-                    max = pt;
                 }
             }
         }

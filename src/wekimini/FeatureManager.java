@@ -6,14 +6,11 @@
 package wekimini;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Set;
 import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.Attribute;
-import wekimini.modifiers.Feature;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.FeatureCollection;
-import wekimini.osc.OSCInputGroup;
 import wekimini.util.Util;
 /**
  *
@@ -178,7 +175,7 @@ public class FeatureManager
     {
         for(FeatureCollection f:featureCollections)
         {
-            f.resetAllModifiers();;
+            f.resetAllModifiers();
         }
     }
     

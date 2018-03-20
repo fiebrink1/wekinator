@@ -5,18 +5,8 @@
  */
 package wekimini.gui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.Timer;
 import javax.swing.table.TableCellRenderer;
-import weka.core.Instance;
-import wekimini.Wekinator;
 import wekimini.modifiers.Feature;
 
 /**

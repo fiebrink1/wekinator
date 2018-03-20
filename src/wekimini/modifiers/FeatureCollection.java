@@ -5,16 +5,12 @@
  */
 package wekimini.modifiers;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.NoSuchElementException;
-import wekimini.kadenze.FeaturnatorLogger;
-import wekimini.kadenze.KadenzeLogger;
-import wekimini.kadenze.KadenzeLogging;
 import wekimini.modifiers.Feature.InputDiagram;
 import wekimini.modifiers.WindowedOperation.Operation;
 /**
