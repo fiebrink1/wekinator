@@ -26,10 +26,23 @@ public class PlottedFeatureTableModel extends FeatureTableModel {
             models.add(model);
         }
     }
+   
     
     public PlotRowModel getModel(int index)
     {
         return models.get(index);
+    }
+    
+    public PlotRowModel getModel(Feature ft)
+    {
+        for(int i = 0; i < models.size(); i++)
+        {
+            if(ft.name.equals(models.get(i).feature.name))
+            {
+                return models.get(i);
+            }
+        }
+        return models.get(0);
     }
     
     @Override

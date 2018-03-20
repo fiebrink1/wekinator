@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.NoSuchElementException;
 import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeLogger;
@@ -23,7 +24,7 @@ import wekimini.modifiers.WindowedOperation.Operation;
 
 public final class FeatureCollection 
 {
-    private final HashMap<String, Feature> added = new HashMap<>();
+    private final LinkedHashMap<String, Feature> added = new LinkedHashMap<>();
     private final List<Feature> library = new ArrayList();
     private String[] names;
     private ModifierCollection modifiers;
@@ -63,9 +64,6 @@ public final class FeatureCollection
         library.add(new PassThroughAll("PassThroughAll"));
         library.add(new PassThrough("AllAcc",new int[]{ACCX,ACCY,ACCZ}));
         library.add(new PassThrough("AllGyro",new int[]{GYROX,GYROY,GYROZ}));
-        library.add(new WindowedFeature("MeanAccX",new AverageWindowOperation(),ACCX,windowSize));
-        library.add(new WindowedFeature("MeanAccY",new AverageWindowOperation(),ACCY,windowSize));
-        library.add(new WindowedFeature("MeanAccZ",new AverageWindowOperation(),ACCZ,windowSize));
         library.add(new WindowedFeature("MeanGyroX",new AverageWindowOperation(),GYROX,windowSize));
         library.add(new WindowedFeature("MeanGyroY",new AverageWindowOperation(),GYROY,windowSize));
         library.add(new WindowedFeature("MeanGyroZ",new AverageWindowOperation(),GYROZ,windowSize));
@@ -139,6 +137,9 @@ public final class FeatureCollection
         library.add(new MinFFT("MinFFTGyroX", GYROX, 128, new int[]{0,8,16,24,36,48,60}));
         library.add(new MinFFT("MinFFTGyroY", GYROY, 128, new int[]{0,8,16,24,36,48,60}));
         library.add(new MinFFT("MinFFTGyroZ", GYROZ, 128, new int[]{0,8,16,24,36,48,60}));
+        library.add(new WindowedFeature("MeanAccX",new AverageWindowOperation(),ACCX,windowSize));
+        library.add(new WindowedFeature("MeanAccY",new AverageWindowOperation(),ACCY,windowSize));
+        library.add(new WindowedFeature("MeanAccZ",new AverageWindowOperation(),ACCZ,windowSize));
         
         names = new String[library.size()];
         int ptr = 0;
@@ -187,6 +188,7 @@ public final class FeatureCollection
                 return f;
             }
         }
+        System.out.println("cant find feature for key:" + key);
         throw new NoSuchElementException();
     }
     

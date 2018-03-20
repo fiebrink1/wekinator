@@ -117,7 +117,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
             public void mousePressed(MouseEvent e) {
                 int row = resultsTable.rowAtPoint(e.getPoint());
                 int column = resultsTable.columnAtPoint(e.getPoint());
-                System.out.println("row:" + row + " column:" + column);
                 Feature ft = (Feature)resultsTable.getModel().getValueAt(row, 0);
                 
                 switch(column)

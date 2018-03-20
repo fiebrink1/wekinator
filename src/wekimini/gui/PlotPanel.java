@@ -20,30 +20,25 @@ import javax.swing.JPanel;
  */
 public class PlotPanel extends JPanel {
     
-    private int w = 1;
-    private int h = 1;
+    private double w = 1;
+    private double h = 1;
     private BufferedImage image;
-    protected int x = 0;
-    protected int y = 0;
-    protected double min = 0.0001;
-    protected double max = 0.; 
+    private double x = 0;
+    private double y = 0;
     protected double horizontalScale = 1;
-    String sMin = "0.0001";
-    String sMax = "0.0";
-    public boolean firstData = true;
-    private LinkedList<Double> points = new LinkedList();
-    private LinkedList<Double> classes = new LinkedList();
-    private int pointsPerRow = 20;
+    private PlotRowModel model;
+    private double pointsPerRow = 20;
     
     private PlotPanel(){}
     
     public PlotPanel(int w, int h, int pointsPerRow)
     {
         this.w = w;
-        this.h = h;
+        this.h = h * 0.875;
         this.pointsPerRow = pointsPerRow;
         image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         setUp();
+        model = new PlotRowModel(pointsPerRow);
     }
     
     private void setUp()
@@ -51,18 +46,14 @@ public class PlotPanel extends JPanel {
         setBackground(Color.white);
         x = 0;
         y = 0;
+        reset();
     }
     
     public void updateModel(PlotRowModel model)
     {
-        points = model.points;
-        classes = model.classes;
-        if(points.size() > 0)
+        this.model = model;
+        if(model.points.size() > 0)
         {
-            for(double pt : points)
-            {
-                rescaleWithPoint(pt);
-            }
             repaint();
         }
 
@@ -70,10 +61,10 @@ public class PlotPanel extends JPanel {
     
     public void updateWidth(boolean isStreaming)
     {
-        int width = isStreaming ? w : (int)((horizontalScale * points.size()));
+        double width = isStreaming ? w : (double)((horizontalScale * model.points.size()));
         width = width < 1 ? 1 : width;
-        setPreferredSize(new Dimension(width,getHeight()));
-        createEmptyImage(width);
+        setPreferredSize(new Dimension((int)width,getHeight()));
+        createEmptyImage((int)width);
     }
     
     public Color colorForClass(double classVal)
@@ -106,25 +97,29 @@ public class PlotPanel extends JPanel {
         g2d.setColor(Color.BLUE);
         double lastPointX = 0;
         double lastPointY = 0;
-        int numPts = points.size() < pointsPerRow ? points.size() : pointsPerRow;
-        for(int n = 0; n < points.size(); n++)
+        double numPts = model.points.size() < pointsPerRow ? model.points.size() : pointsPerRow;
+        for(int n = 0; n < model.points.size(); n++)
         {
-            double f  = points.get(n);
+            double f  = model.points.get(n);
             double thisX = (double)(n * horizontalScale);
-            double proportion = ((f - min)/(max - min));
-            //System.out.println("f:" + f + " max:" + max + " min:" + min + " proportion:" + proportion);
+            double proportion = ((f - model.getMin())/(model.getMax() - model.getMin()));
             double thisY = y + h - (proportion * h);
-            //System.out.println("n:" + n + " x:" + thisX + " y:" + thisY);
             if (n == 0) 
             {
                 lastPointX = thisX;
                 lastPointY = thisY;
+//                if(model.feature.name.equals("MeanAccX"))
+//                {
+//                    System.out.println("----");
+//                    System.out.println(model.feature.outputIndex);
+//                    System.out.println("f:" + f + " max:" + model.getMax() + " min:" + model.getMin() + " proportion:" + proportion);
+//                }
             } 
             else 
             {
-                if(classes.size() > n)
+                if(model.classes.size() > n)
                 {
-                    g2d.setColor(colorForClass(classes.get(n)));
+                    g2d.setColor(colorForClass(model.classes.get(n)));
                 }
                 g2d.draw(new Line2D.Double(lastPointX, lastPointY, thisX, thisY));
                 lastPointX = thisX;
@@ -136,33 +131,11 @@ public class PlotPanel extends JPanel {
    protected void rescale() 
    {
         horizontalScale = (double)w/(double)pointsPerRow;
-        sMin = Double.toString(min);
-        sMax = Double.toString(max);
    }
    
-   public void rescaleWithPoint(double p) 
+   public void reset()
    {
-        //System.out.println("new point:" + p);
-        if (firstData) 
-        {
-            min = (double) (p - 0.0001);
-            max = (double) (p + 0.0001);
-            rescale();
-            firstData = false;
-        }
-     
-        if (p < min) 
-        {
-            min = p;
-            rescale();
-        }
-        
-        if (p > max) 
-        {
-            max = p;
-            rescale();
-        }
-        //System.out.println("max:" + max + " min:" + min);
+       rescale();
    }
     
     public void clear()
@@ -173,6 +146,6 @@ public class PlotPanel extends JPanel {
 
     private void createEmptyImage(int width)
     {
-        image = new BufferedImage(width, h, BufferedImage.TYPE_INT_ARGB);
+        image = new BufferedImage(width, (int)h, BufferedImage.TYPE_INT_ARGB);
     }       
 }

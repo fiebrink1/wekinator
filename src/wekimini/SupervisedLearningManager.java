@@ -28,6 +28,7 @@ import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.Model;
 import wekimini.learning.ModelBuilder;
 import wekimini.learning.SupervisedLearningModel;
+import wekimini.modifiers.Feature;
 import wekimini.modifiers.FeatureCollection;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
@@ -934,6 +935,12 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public Instance getCurrentInputInstance()
     {
         return currentInputInstance;
+    }
+    
+    public double getCurrentValueforFeature(Feature ft)
+    {
+        int index = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey(ft.name).outputIndex;
+        return currentInputInstance.value(index);
     }
     
     //Right now, this simply won't change indices where mask is false

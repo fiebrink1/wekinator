@@ -34,11 +34,7 @@ public class FeatureTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if(columnIndex == 0)
-        {
-            return f[rowIndex];
-        }
-        return "Remove";
+        return f[rowIndex];
     }
 
     @Override 

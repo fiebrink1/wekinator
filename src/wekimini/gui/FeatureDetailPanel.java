@@ -62,9 +62,9 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         timer = new Timer(REFRESH_RATE, new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
-                if(in != null)
+                if(in != null && model != null)
                 {
-                    float val = (float) in.value(featureOutputIndex);
+                    double val = w.getSupervisedLearningManager().getCurrentValueforFeature(model.feature);
                     model.addPoint(val);
                     plotPanel.updateModel(model);
                 }
@@ -95,6 +95,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         featureOutputIndex = model.feature.outputIndex;
         
         plotPanel.updateModel(model);
+        plotPanel.reset();
         titleLabel.setText(model.feature.name);
         plotPanel.updateWidth(model.isStreaming);
         repaint();

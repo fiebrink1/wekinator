@@ -17,6 +17,7 @@ import javax.swing.Timer;
 import javax.swing.table.TableCellRenderer;
 import weka.core.Instance;
 import wekimini.Wekinator;
+import wekimini.modifiers.Feature;
 
 /**
  *
@@ -34,9 +35,9 @@ public class PlotTableCellRenderer extends PlotPanel implements TableCellRendere
                     boolean isSelected, boolean hasFocus,
                     int row, int column) 
     {
+        Feature ft = (Feature)value;
         PlottedFeatureTableModel tableModel = (PlottedFeatureTableModel) table.getModel();
-        this.updateModel(tableModel.getModel(row));
-        this.updateWidth(tableModel.getModel(row).isStreaming);
+        this.updateModel(tableModel.getModel(ft));
         return this;
     }
     

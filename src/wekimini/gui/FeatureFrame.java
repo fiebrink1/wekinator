@@ -35,8 +35,12 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     private PlotTableCellRenderer plotCellRenderer;
     private PlottedFeatureTableModel currentFeaturesTableModel;
     private Timer timer;
-    private final int REFRESH_RATE = 50;
     private Feature[] currentFeatures;
+    private static final int BUTTON_CELL_WIDTH = 40;
+    private static final int PLOT_CELL_WIDTH = 50;
+    private static final int ROW_HEIGHT = 30;
+    private static final int REFRESH_RATE = 50;
+
     
     public FeatureFrame() {
         initComponents();
@@ -50,11 +54,11 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         featureDetailPanel.update(w);
         evaluateFeaturesPanel.update(w, 0);
         newFeaturesPanel.delegate = this;
-        
+        selectedFeature = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey("PassThroughAll");
         currentFeaturesTable.setDefaultRenderer(Feature.class, new FeatureTableRenderer());
         currentFeaturesTable.setRowSelectionAllowed(false);
         currentFeaturesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        currentFeaturesTable.setRowHeight(30);
+        currentFeaturesTable.setRowHeight(ROW_HEIGHT);
         currentFeaturesTable.setRowMargin(3);
         currentFeaturesTable.setTableHeader(null);
         updateCurrentFeaturesTable();
@@ -64,7 +68,6 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             public void mousePressed(MouseEvent e) {
                 int row = currentFeaturesTable.rowAtPoint(e.getPoint());
                 int column = currentFeaturesTable.columnAtPoint(e.getPoint());
-                System.out.println("row:" + row + " column:" + column);
                 Feature ft = (Feature)currentFeaturesTable.getModel().getValueAt(row, outputIndex);
                 switch(column)
                 {
@@ -101,22 +104,23 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         {
             timer.stop();
         }
+        
         timer = new Timer(REFRESH_RATE, new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
                 if(in != null)
                 {
-                    int ptr = 0;
-                    for(Feature ft : currentFeatures)
+                    for(int i = 0; i < currentFeatures.length; i++)
                     {
-                        float val = (float) in.value(ft.outputIndex);
-                        currentFeaturesTableModel.getModel(ptr).addPoint(val);
-                        ptr++;
+                        Feature ft  = currentFeatures[i];
+                        double val = w.getSupervisedLearningManager().getCurrentValueforFeature(ft);
+                        currentFeaturesTableModel.getModel(i).addPoint(val);
                     }
                 }
                 currentFeaturesTable.repaint();
             }    
         });  
+        
         timer.start();
     }
     
@@ -125,24 +129,30 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         currentFeatures = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
         currentFeaturesTableModel = new PlottedFeatureTableModel(currentFeatures);
         currentFeaturesTable.setModel(currentFeaturesTableModel);
-                
+        
+        plotCellRenderer = new PlotTableCellRenderer(PLOT_CELL_WIDTH,ROW_HEIGHT);
+        plotCellRenderer.reset();
+        
         int tW = currentFeaturesTable.getWidth();
         TableColumn column;
         TableColumnModel jTableColumnModel = currentFeaturesTable.getColumnModel();
         int cantCols = jTableColumnModel.getColumnCount();
         for (int i = 0; i < cantCols; i++) {
             column = jTableColumnModel.getColumn(i);
-            int pWidth = Math.round(tW - 40);
-            column.setPreferredWidth(pWidth);
-            if(i == 1)
+            switch(i)
             {
-                column.setPreferredWidth(40);
-                column.setCellRenderer(new PlotTableCellRenderer(40,30));
-            }
-            if(i == 2)
-            {
-                column.setPreferredWidth(40);
+                case 0:
+                    int pWidth = Math.round(tW - PLOT_CELL_WIDTH - BUTTON_CELL_WIDTH);
+                    column.setPreferredWidth(pWidth);
+                    break;
+                case 1:
+                    column.setPreferredWidth(PLOT_CELL_WIDTH);
+                    column.setCellRenderer(plotCellRenderer);
+                    break;
+                case 2:
+                    column.setPreferredWidth(BUTTON_CELL_WIDTH);
                 column.setCellRenderer(new ImageTableCellRenderer("delete.png"));
+                    break;
             }
         }
         

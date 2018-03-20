@@ -14,10 +14,12 @@ import wekimini.modifiers.Feature;
  */
 public class PlotRowModel
 {
-    public Feature feature = new Feature("feature1");
-    int pathIndex = 0;
-    int rowIndex = 0;
-    boolean isStreaming = false;
+    public Feature feature = new Feature("PassThroughAll");
+    public int pathIndex = 0;
+    public int rowIndex = 0;
+    private double min;
+    private double max;
+    public boolean isStreaming = false;
     protected LinkedList<Double> points = new LinkedList();
     protected LinkedList<Double> classes = new LinkedList();
     private int pointsPerRow = 20;
@@ -27,16 +29,61 @@ public class PlotRowModel
     public PlotRowModel(int pointsPerRow)
     {
         this.pointsPerRow = pointsPerRow;
+        min = Double.POSITIVE_INFINITY;
+        max = Double.NEGATIVE_INFINITY;
+    }
+    
+    public double getMin()
+    {
+        return min;
+    }
+    
+    public double getMax()
+    {
+        return max;
     }
     
     public void addPoint(double pt)
     {
         synchronized(this) {
             points.add(pt);
+
             if(isStreaming)
             {
+                if(pt < min)
+                {
+                    min = pt;
+                }
+                if(pt > max)
+                {
+                    max = pt;
+                }
                 while (points.size() > pointsPerRow) {
                     points.removeFirst();
+                }
+//                min = Double.POSITIVE_INFINITY;
+//                max = Double.NEGATIVE_INFINITY;
+//                for(double p:points)
+//                {
+//                    if(p < min)
+//                    {
+//                        min = p;
+//                    }
+//                    if(p > max)
+//                    {
+//                        max = p;
+//                    }
+//                }
+            }
+            else
+            {
+                if(pt < min)
+                {
+                    min = pt;
+                }
+                if(pt > max)
+                {
+                    max = pt;
                 }
             }
         }
