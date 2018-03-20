@@ -109,8 +109,8 @@ public class BatchNormaliseFilter extends SimpleBatchFilter {
         return min.get(a.name());
     }
     
-    public boolean isValid()
+    public boolean isValid(Instance in)
     {
-        return min.size() > 0 && max.size() > 0;
+        return min.size() == in.numAttributes() && max.size() == in.numAttributes();
     }
 }

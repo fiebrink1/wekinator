@@ -11,7 +11,7 @@ package wekimini.modifiers;
  */
 public class FeatureSingleModifierOutput extends Feature {
     
-    int outputModifierID;
+    private int outputModifierID;
 
     public FeatureSingleModifierOutput(String name) {
         super(name);

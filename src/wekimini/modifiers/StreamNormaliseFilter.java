@@ -30,7 +30,7 @@ public class StreamNormaliseFilter extends SimpleStreamFilter {
     @Override
     protected Instance process(Instance instance) throws NullPointerException {
         double[] newVals = new double[instance.numAttributes()];
-        if(!batchFilter.isValid())
+        if(!batchFilter.isValid(instance))
         {
             return instance;
         }

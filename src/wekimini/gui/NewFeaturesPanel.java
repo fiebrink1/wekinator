@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
@@ -167,9 +168,16 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     public void addFeature(Feature ft)
     {
         ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureAdded(w);
-        w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(ft.name);
-        delegate.featureListUpdated();
-        updateResultsTable(currentResults);
+        if(w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING)
+        {
+            w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(ft.name);
+            delegate.featureListUpdated();
+            updateResultsTable(currentResults);
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "Cannot edit features whilst Running");
+        }
     }
     
     public void featureListUpdated()

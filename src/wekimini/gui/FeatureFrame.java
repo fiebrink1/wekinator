@@ -12,11 +12,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import weka.core.Instance;
+import wekimini.SupervisedLearningManager;
+import wekimini.SupervisedLearningManager.RunningState;
 import wekimini.Wekinator;
 import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeLogging;
@@ -93,9 +96,16 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     private void removeFeature(Feature ft)
     {
         ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureRemoved(w);
-        w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).removeFeatureForKey(ft.name);
-        newFeaturesPanel.featureListUpdated();
-        updateCurrentFeaturesTable();
+        if(w.getSupervisedLearningManager().getRunningState() == RunningState.NOT_RUNNING)
+        {
+            w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).removeFeatureForKey(ft.name);
+            newFeaturesPanel.featureListUpdated();
+            updateCurrentFeaturesTable();
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "Cannot edit features whilst Running");
+        }
     }
     
     public void startTimer()
@@ -314,7 +324,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     
     private void updateSelectedFeature(Feature ft)
     {
-        selectedFeature = ft;
+        selectedFeature = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey(ft.name);
         ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeaturePreviewed(w, selectedFeature);
         PlotRowModel model = new PlotRowModel(100);
         w.getSupervisedLearningManager().isPlotting = true;
@@ -336,7 +346,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     public void featureListUpdated()
     {
         updateCurrentFeaturesTable();
-        updateSelectedFeature(w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey(selectedFeature.name));
+        updateSelectedFeature(selectedFeature);
     }
     
     @Override

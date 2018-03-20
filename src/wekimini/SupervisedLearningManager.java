@@ -949,21 +949,24 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         {
             updatePlots(inputs);
         }
-        for (int i = 0; i < computeMask.length; i++) {
-            Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, i);
-            if (computeMask[i] && paths.get(i).canCompute()) {
-                
-                try {
-                    myComputedOutputs[i] = paths.get(i).compute(instance);
-                } catch (Exception ex) {
-                    w.getStatusUpdateCenter().update(this, "Error encountered in running: Try re-training models");
-                    logger.log(Level.SEVERE, "Error encountered in computing: {0}", ex.getMessage());
+        if(runningState == RunningState.RUNNING)
+        {
+            for (int i = 0; i < computeMask.length; i++) {
+                Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, i);
+                if (computeMask[i] && paths.get(i).canCompute()) {
+
+                    try {
+                        myComputedOutputs[i] = paths.get(i).compute(instance);
+                    } catch (Exception ex) {
+                        w.getStatusUpdateCenter().update(this, "Error encountered in running: Try re-training models");
+                        logger.log(Level.SEVERE, "Error encountered in computing: {0}", ex.getMessage());
+                    }
+                } else {
+                    myComputedOutputs[i] = w.getOutputManager().getCurrentValues()[i];
                 }
-            } else {
-                myComputedOutputs[i] = w.getOutputManager().getCurrentValues()[i];
             }
+            KadenzeLogging.getLogger().supervisedRunData(w, inputs, computeMask, myComputedOutputs);
         }
-        KadenzeLogging.getLogger().supervisedRunData(w, inputs, computeMask, myComputedOutputs);
         return myComputedOutputs;
     }
 

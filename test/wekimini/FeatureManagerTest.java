@@ -11,6 +11,7 @@ import org.junit.Test;
 import wekimini.modifiers.BufferedInput;
 import wekimini.modifiers.Feature;
 import wekimini.modifiers.FeatureCollection;
+import wekimini.modifiers.FeatureSingleModifierOutput;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.MultipleInputWindowedOperation;
 import wekimini.modifiers.PassThroughSingle;
@@ -147,6 +148,18 @@ public class FeatureManagerTest {
         
         assertEquals(3, fm.getFeatureGroups().get(0).getNumModifiers());
         
+    }
+    
+    @Test
+    public void testChangingWindowSizeWihAddedFeatures()
+    {
+        FeatureCollection fc = fm.getFeatureGroups().get(0);
+        fc.clearAdded();
+        fc.addFeatureForKey("MeanAccX");
+        FeatureSingleModifierOutput added = (FeatureSingleModifierOutput) fc.getCurrentFeatures()[0];
+        ModifiedInput outputModifier = fm.getAllFeaturesGroup().getModifiers().getModifierForID(added.getOutputModifierID());
+        fm.setFeatureWindowSize(20,30);
+        ModifiedInput newOutputModifier = fm.getAllFeaturesGroup().getModifiers().getModifierForID(added.getOutputModifierID());
     }
     
     @Test
