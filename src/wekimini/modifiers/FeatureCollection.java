@@ -298,6 +298,7 @@ public final class FeatureCollection
         {
             if(f instanceof FeatureSingleModifierOutput)
             {
+                //If the output modifier of the feature outputs a vector, this will find the index of the first output
                 ((FeatureSingleModifierOutput)f).outputIndex = modifiers.indexForName(f.name+":0");             
             }
             else if(f instanceof FeatureMultipleModifierOutput)
