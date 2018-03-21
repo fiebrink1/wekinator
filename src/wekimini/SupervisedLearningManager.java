@@ -338,6 +338,10 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public void setRecordingState(RecordingState recordingState) {
         RecordingState oldRecordingState = this.recordingState;
         this.recordingState = recordingState;
+        if(recordingState == RecordingState.NOT_RECORDING)
+        {
+            w.save();
+        }
         propertyChangeSupport.firePropertyChange(PROP_RECORDINGSTATE, oldRecordingState, recordingState);
     }
 
@@ -942,7 +946,11 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public double getCurrentValueforFeature(Feature ft, int output)
     {
         Feature allFt = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey(ft.name);
-        int index = allFt.getOutputIndexes()[output];
+        int index = 0;
+        if(allFt.getOutputIndexes().length > output)
+        {
+            index = allFt.getOutputIndexes()[output];
+        }
                 
         //System.out.println("plotting:"+index);
         return currentInputInstance.value(index);

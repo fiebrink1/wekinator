@@ -32,7 +32,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="reevaluateBtn" max="32767" attributes="0"/>
+                  <Component id="evaluateBtn" max="32767" attributes="0"/>
                   <Component id="trainBtn" alignment="1" pref="207" max="32767" attributes="0"/>
                   <Component id="accuracyLabel" alignment="0" max="32767" attributes="0"/>
                   <Component id="outputLabel" alignment="0" max="32767" attributes="0"/>
@@ -50,7 +50,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="outputLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="reevaluateBtn" min="-2" pref="62" max="-2" attributes="0"/>
+              <Component id="evaluateBtn" min="-2" pref="62" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="accuracyLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -79,16 +79,16 @@
         <Property name="text" type="java.lang.String" value="Output:0"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="reevaluateBtn">
+    <Component class="javax.swing.JButton" name="evaluateBtn">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="cc" green="0" red="ff" type="rgb"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Re-evaluate"/>
+        <Property name="text" type="java.lang.String" value="Evaluate"/>
         <Property name="contentAreaFilled" type="boolean" value="false"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="reevaluateBtnActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="evaluateBtnActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="accuracyLabel">

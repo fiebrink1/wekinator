@@ -453,7 +453,7 @@ public final class FeatureCollection
     
     public void didRecalculateFeatures(boolean testSet)
     {
-        if(testSet)
+       if(testSet)
        {
            testSetDirtyFlag = false;
        }

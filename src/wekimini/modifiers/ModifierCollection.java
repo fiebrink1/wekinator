@@ -317,11 +317,6 @@ public class ModifierCollection {
             }
             completedIndex++;
         }
-        for(String name: outputNames)
-        {
-            System.out.println(name);
-        }
-        System.out.println("here");
     }
 
     public double[] computeAndGetValuesForNewInputs(double[] newInputs, HashMap<String, Feature> features) {
@@ -329,6 +324,8 @@ public class ModifierCollection {
         return currentValues;
     }
     
+    //EACH FEATURE CAN HAVE MULTIPLE MODIFIERS THAT OUTPUT, EACH OUTPUTTING MODIFIER CAN OUTPUT A VECTOR
+    //THE NAMING CONVENTION IS {FEATURE_NAME}:{MODIFIER_INDEX}:{OUTPUT_INDEX}
     public String getFeatureNameForModifierID(int id, HashMap<String, Feature> features)
     {
         for(Feature feature:features.values())
@@ -337,7 +334,7 @@ public class ModifierCollection {
             {
                 if(id == ((FeatureSingleModifierOutput) feature).getOutputModifierID())
                 {
-                    return ((FeatureSingleModifierOutput) feature).name;
+                    return ((FeatureSingleModifierOutput) feature).name + ":0";
                 }
             }
             else

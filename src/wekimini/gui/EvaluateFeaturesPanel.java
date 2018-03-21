@@ -147,7 +147,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
 
         trainBtn = new javax.swing.JButton();
         outputLabel = new javax.swing.JLabel();
-        reevaluateBtn = new javax.swing.JButton();
+        evaluateBtn = new javax.swing.JButton();
         accuracyLabel = new javax.swing.JLabel();
         confusionWrapper = new javax.swing.JPanel();
 
@@ -166,12 +166,12 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         outputLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         outputLabel.setText("Output:0");
 
-        reevaluateBtn.setBackground(new java.awt.Color(255, 0, 204));
-        reevaluateBtn.setText("Re-evaluate");
-        reevaluateBtn.setContentAreaFilled(false);
-        reevaluateBtn.addActionListener(new java.awt.event.ActionListener() {
+        evaluateBtn.setBackground(new java.awt.Color(255, 0, 204));
+        evaluateBtn.setText("Evaluate");
+        evaluateBtn.setContentAreaFilled(false);
+        evaluateBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                reevaluateBtnActionPerformed(evt);
+                evaluateBtnActionPerformed(evt);
             }
         });
 
@@ -200,7 +200,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(reevaluateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(evaluateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(trainBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
                     .addComponent(accuracyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(outputLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -215,7 +215,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(outputLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(reevaluateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(evaluateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(accuracyLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -247,8 +247,9 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         System.out.println("CV Finished");
     }
     
-    private void reevaluateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reevaluateBtnActionPerformed
+    private void evaluateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_evaluateBtnActionPerformed
         // TODO add your handling code here:
+        evaluateBtn.setText("Re-evaluate");
         e = new ModelEvaluator(w, new ModelEvaluator.EvaluationResultsReceiver() {
 
             @Override
@@ -278,7 +279,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             }
 
         });
-    }//GEN-LAST:event_reevaluateBtnActionPerformed
+    }//GEN-LAST:event_evaluateBtnActionPerformed
 
     private void trainBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainBtnActionPerformed
         isRunning = w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.RUNNING;
@@ -300,8 +301,8 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel accuracyLabel;
     private javax.swing.JPanel confusionWrapper;
+    private javax.swing.JButton evaluateBtn;
     private javax.swing.JLabel outputLabel;
-    private javax.swing.JButton reevaluateBtn;
     private javax.swing.JButton trainBtn;
     // End of variables declaration//GEN-END:variables
 }
