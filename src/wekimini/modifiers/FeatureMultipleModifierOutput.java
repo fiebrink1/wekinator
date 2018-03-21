@@ -12,7 +12,6 @@ package wekimini.modifiers;
 public class FeatureMultipleModifierOutput extends Feature 
 {
     Integer[] outputModifierIDs;
-    public int[] outputIndexes = new int[1];
 
     public FeatureMultipleModifierOutput(String name) {
         super(name);
@@ -26,6 +25,5 @@ public class FeatureMultipleModifierOutput extends Feature
     public void setOutputModifierIDs(Integer[] modifierIDs)
     {
         this.outputModifierIDs = modifierIDs;
-        outputIndexes = new int[modifierIDs.length];
     }
 }

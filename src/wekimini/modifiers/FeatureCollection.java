@@ -296,19 +296,7 @@ public final class FeatureCollection
     {
         for(Feature f:added.values())
         {
-            if(f instanceof FeatureSingleModifierOutput)
-            {
-                //If the output modifier of the feature outputs a vector, this will find the index of the first output
-                ((FeatureSingleModifierOutput)f).outputIndex = modifiers.indexForName(f.name+":0");             
-            }
-            else if(f instanceof FeatureMultipleModifierOutput)
-            {
-                FeatureMultipleModifierOutput multiF = (FeatureMultipleModifierOutput)f;
-                for(int i = 0; i < multiF.outputIndexes.length; i++)
-                {
-                    multiF.outputIndexes[i] = modifiers.indexForName(f.name+":0:"+i); 
-                }
-            }
+            f.setOutputIndexes(modifiers.indexesForName(f.name));
         }
     }
     

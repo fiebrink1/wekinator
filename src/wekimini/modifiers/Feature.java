@@ -15,19 +15,20 @@ import java.util.Objects;
 
 public class Feature 
 {
-//    public enum InputDiagram {
-//        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
-//    }
+    public enum InputDiagram {
+        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
+    }
     
     public final String name;
     public final ArrayList<Integer> modifierIds = new ArrayList();
     public InputDiagram diagram = InputDiagram.UNKNOWN;
     public ArrayList<String> tags = new ArrayList();
     public String description;
-
-    public enum InputDiagram {
-        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
-    }
+    private ArrayList <Integer> outputIndexes = new ArrayList();
+    
+//    public enum InputDiagram {
+//        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
+//    }
     
     public Feature(String name)
     {
@@ -44,7 +45,19 @@ public class Feature
         int id = mc.addModifier(mod);
         modifierIds.add(id);
         return id;
-    }  
+    } 
+    
+    public Integer[] getOutputIndexes()
+    {
+        Integer[] arr = new Integer[outputIndexes.size()];
+        arr = outputIndexes.toArray(arr);
+        return arr;
+    }
+    
+    public void setOutputIndexes(ArrayList<Integer> arr)
+    {
+        outputIndexes = arr;
+    }
     
     @Override
     public String toString()

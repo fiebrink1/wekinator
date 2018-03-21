@@ -941,16 +941,8 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     
     public double getCurrentValueforFeature(Feature ft, int output)
     {
-        int index = 0;
         Feature allFt = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey(ft.name);
-        if(allFt instanceof FeatureSingleModifierOutput)
-        {
-            index = ((FeatureSingleModifierOutput) allFt).outputIndex;
-        }
-        else if(allFt instanceof FeatureMultipleModifierOutput)
-        {
-            index = ((FeatureMultipleModifierOutput) allFt).outputIndexes[output];
-        }
+        int index = allFt.getOutputIndexes()[output];
                 
         //System.out.println("plotting:"+index);
         return currentInputInstance.value(index);

@@ -222,19 +222,20 @@ public class ModifierCollection {
         return outputNames[index];
     }
     
-    public int indexForName(String name)
+    public ArrayList<Integer> indexesForName(String name)
     {
+        ArrayList<Integer> indexes = new ArrayList();
         int i = 0;
         for(String match:outputNames)
         {
-            if(match.equals(name))
+            String[] split = match.split(":");
+            if(split[0].equals(name))
             {
-                return i;
+                indexes.add(i);
             }
             i++;
         }
-        //System.out.println("index not found: " + name);
-        return 0;
+        return indexes;
     }
     
     public List<ModifiedInput> getModifiers() {
@@ -316,6 +317,11 @@ public class ModifierCollection {
             }
             completedIndex++;
         }
+        for(String name: outputNames)
+        {
+            System.out.println(name);
+        }
+        System.out.println("here");
     }
 
     public double[] computeAndGetValuesForNewInputs(double[] newInputs, HashMap<String, Feature> features) {

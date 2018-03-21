@@ -51,7 +51,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
                     PlotRowModel model = tableModel.getValueAt(i, 0);
                     if(model.isStreaming)
                     {
-                        float val = (float) in.value(model.feature.outputIndex);
+                        float val = (float) in.value(model.feature.getOutputIndexes()[0]);
                         //System.out.print("adding " + val + " to model " + model.pathIndex);
                         model.addPoint(val);
                     }
@@ -216,7 +216,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         }
         else
         {
-            double[][] vals = w.getDataManager().getTrainingDataForFeature(model.pathIndex, model.feature.outputIndex);
+            double[][] vals = w.getDataManager().getTrainingDataForFeature(model.pathIndex, model.feature.getOutputIndexes()[0]);
             for (double[] val : vals) {
                 model.points.add(val[0]);
                 model.classes.add(val[1]);
