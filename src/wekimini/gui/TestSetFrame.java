@@ -227,9 +227,9 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
 
     private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
         // TODO add your handling code here:
-        numExamplesLeftForClass = EXAMPLES_PER_CLASS;
         currentClass++;
         w.getOutputManager().setTestValues(new double[]{currentClass});
+        updateFromModel();
         updateUI();
         
     }//GEN-LAST:event_nextButtonActionPerformed
