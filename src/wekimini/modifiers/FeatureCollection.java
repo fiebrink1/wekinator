@@ -168,7 +168,7 @@ public final class FeatureCollection
             ptr++;
         }
         
-        HashSet<String> keys = new HashSet(added.keySet());
+        ArrayList<String> keys = new ArrayList(added.keySet());
         for(String key:keys)
         {
             removeFeatureForKey(key);

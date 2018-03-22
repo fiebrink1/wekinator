@@ -20,7 +20,7 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
     private double currentClass = 1;
     private boolean canUndo = false;
     private static final int NUM_CLASSES = 6;
-    private static final int EXAMPLES_PER_CLASS = 20;
+    private static final int EXAMPLES_PER_CLASS = 200;
     private int numExamplesLeftForClass = EXAMPLES_PER_CLASS;
     private static final String PLEASE_RECORD_STRING = "Please record examples of Gesture ";
     private static final String EXAMPLES_LEFT_STRING = " Examples left to record";

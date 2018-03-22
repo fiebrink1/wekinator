@@ -16,11 +16,11 @@ public class PlottedFeatureTableModel extends FeatureTableModel {
     
     private ArrayList<PlotRowModel> models = new ArrayList();
     
-    public PlottedFeatureTableModel(Feature[] f) {
+    public PlottedFeatureTableModel(Feature[] f, int pointsPerRow) {
         super(f);
         for(Feature ft : f)
         {
-            PlotRowModel model = new PlotRowModel(10);
+            PlotRowModel model = new PlotRowModel(pointsPerRow);
             model.isStreaming = true;
             model.feature = ft;
             models.add(model);

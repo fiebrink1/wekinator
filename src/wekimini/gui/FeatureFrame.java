@@ -32,8 +32,8 @@ import wekimini.modifiers.Feature;
 public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     
     private Wekinator w;
-    public int selectedRow = -1;
-    public int outputIndex = 0;
+    private int selectedRow = -1;
+    private int outputIndex = 0;
     private Feature selectedFeature;
     private PlotTableCellRenderer plotCellRenderer;
     private PlottedFeatureTableModel currentFeaturesTableModel;
@@ -41,8 +41,9 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     private Feature[] currentFeatures;
     private static final int BUTTON_CELL_WIDTH = 40;
     private static final int PLOT_CELL_WIDTH = 50;
-    private static final int ROW_HEIGHT = 30;
-    private static final int REFRESH_RATE = 50;
+    private static final int ROW_HEIGHT = 35;
+    private static final int PLOT_ROW_REFRESH_RATE = 60;
+    private static final int PLOT_ROW_POINTS_PER_ROW = 10;
 
     
     public FeatureFrame() {
@@ -115,7 +116,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             timer.stop();
         }
         
-        timer = new Timer(REFRESH_RATE, (ActionEvent evt) -> {
+        timer = new Timer(PLOT_ROW_REFRESH_RATE, (ActionEvent evt) -> {
             Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
             if(in != null)
             {
@@ -135,7 +136,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     public void updateCurrentFeaturesTable()
     {
         currentFeatures = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
-        currentFeaturesTableModel = new PlottedFeatureTableModel(currentFeatures);
+        currentFeaturesTableModel = new PlottedFeatureTableModel(currentFeatures, PLOT_ROW_POINTS_PER_ROW);
         currentFeaturesTable.setModel(currentFeaturesTableModel);
         
         plotCellRenderer = new PlotTableCellRenderer(PLOT_CELL_WIDTH,ROW_HEIGHT);
@@ -276,11 +277,9 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(newFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(newFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(featureDetailPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
