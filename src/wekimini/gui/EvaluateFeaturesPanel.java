@@ -235,21 +235,25 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         int[][] arr = ConfusionParser.parseMatrix(confusion);
         confusionPanel.setModel(arr);
         accuracyLabel.setText(results);
+        evaluateBtn.setEnabled(true);
     }
 
     private void cvCancelled() 
     {
+        evaluateBtn.setEnabled(true);
         System.out.println("CV Cancelled!!!");
     }
 
     private void cvFinished(String[] results) 
     {
+        evaluateBtn.setEnabled(true);
         System.out.println("CV Finished");
     }
     
     private void evaluateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_evaluateBtnActionPerformed
         // TODO add your handling code here:
         evaluateBtn.setText("Re-evaluate");
+        evaluateBtn.setEnabled(false);
         e = new ModelEvaluator(w, new ModelEvaluator.EvaluationResultsReceiver() {
 
             @Override

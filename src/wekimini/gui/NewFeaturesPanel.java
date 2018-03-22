@@ -100,12 +100,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                 String tag = (String)availableFiltersTable.getModel().getValueAt(row, col);
                 if(selectedFilters.contains(tag))
                 {
-                    System.out.println("Deselected " + tag);
+                    //System.out.println("Deselected " + tag);
                     selectedFilters.remove(tag);
                 }
                 else
                 {
-                    System.out.println("Selected " + tag);
+                    //System.out.println("Selected " + tag);
                     selectedFilters.add(tag);
                 }
                 updateFilters();
