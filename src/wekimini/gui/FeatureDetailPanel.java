@@ -43,6 +43,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         outputComboBox.setVisible(false);
         outputLabel.setVisible(false);
         plotScrollPane.addComponentListener(new ResizeListener());
+        
     }
     
     class ResizeListener extends ComponentAdapter {

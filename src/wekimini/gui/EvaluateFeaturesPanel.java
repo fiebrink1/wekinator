@@ -77,16 +77,16 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
 
             @Override
             public void update(double[] vals) {
-                outputLabel.setText("Output:" + vals[0]);
+                outputLabel.setText(""+vals[0]);
             }
         });
         
-        trainBtn.setEnabled(w.getDataManager().getNumExamples() > 0);
+        trainBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
     }
     
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
         
-        trainBtn.setEnabled(w.getDataManager().getNumExamples() > 0);
+        trainBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
         
         switch (evt.getPropertyName()) {
             case SupervisedLearningManager.PROP_RECORDINGROUND:
@@ -117,6 +117,11 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             default:
                 break;
         }
+    }
+    
+    public void featuresListUpdated()
+    {
+        trainBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
     }
     
     public void onClose()
@@ -151,12 +156,13 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         trainBtn = new javax.swing.JButton();
-        outputLabel = new javax.swing.JLabel();
+        outputTitle = new javax.swing.JLabel();
         evaluateBtn = new javax.swing.JButton();
         accuracyLabel = new javax.swing.JLabel();
         jLayeredPane1 = new javax.swing.JLayeredPane();
         confusionHoldingImage = new wekimini.gui.ImagePanel();
         confusionWrapper = new javax.swing.JPanel();
+        outputLabel = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(204, 204, 204), null, new java.awt.Color(204, 204, 204)));
@@ -170,8 +176,8 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             }
         });
 
-        outputLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        outputLabel.setText("Output:0");
+        outputTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        outputTitle.setText("Model Output:");
 
         evaluateBtn.setBackground(new java.awt.Color(255, 0, 204));
         evaluateBtn.setText("Evaluate");
@@ -242,6 +248,10 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                     .addContainerGap()))
         );
 
+        outputLabel.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+        outputLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        outputLabel.setText("0");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -250,12 +260,13 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(accuracyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(outputLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(outputTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(trainBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(evaluateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(trainBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(evaluateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(outputLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -263,6 +274,8 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(trainBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(outputTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(outputLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -362,6 +375,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private javax.swing.JButton evaluateBtn;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JLabel outputLabel;
+    private javax.swing.JLabel outputTitle;
     private javax.swing.JButton trainBtn;
     // End of variables declaration//GEN-END:variables
 }

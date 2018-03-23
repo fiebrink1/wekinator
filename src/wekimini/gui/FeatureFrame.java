@@ -101,6 +101,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureRemoved(w);
             w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).removeFeatureForKey(ft.name);
             newFeaturesPanel.featureListUpdated();
+            evaluateFeaturesPanel.featuresListUpdated();
             updateCurrentFeaturesTable();
         }
         else
@@ -325,6 +326,8 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     @Override
     public void featureListUpdated()
     {
+        newFeaturesPanel.featureListUpdated();
+        evaluateFeaturesPanel.featuresListUpdated();
         updateCurrentFeaturesTable();
         updateSelectedFeature(selectedFeature);
     }

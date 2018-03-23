@@ -33,13 +33,14 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="accuracyLabel" alignment="0" max="32767" attributes="0"/>
-                  <Component id="outputLabel" alignment="0" max="32767" attributes="0"/>
+                  <Component id="outputTitle" alignment="0" max="32767" attributes="0"/>
+                  <Component id="trainBtn" alignment="0" max="32767" attributes="0"/>
+                  <Component id="evaluateBtn" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Component id="jLayeredPane1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
-                  <Component id="trainBtn" alignment="0" max="32767" attributes="0"/>
-                  <Component id="evaluateBtn" max="32767" attributes="0"/>
+                  <Component id="outputLabel" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -51,8 +52,10 @@
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="trainBtn" min="-2" pref="56" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="outputLabel" min="-2" max="-2" attributes="0"/>
+              <Component id="outputTitle" min="-2" pref="16" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
+              <Component id="outputLabel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="evaluateBtn" min="-2" pref="62" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="accuracyLabel" min="-2" max="-2" attributes="0"/>
@@ -76,10 +79,10 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="trainBtnActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JLabel" name="outputLabel">
+    <Component class="javax.swing.JLabel" name="outputTitle">
       <Properties>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="Output:0"/>
+        <Property name="text" type="java.lang.String" value="Model Output:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="evaluateBtn">
@@ -182,5 +185,14 @@
         </Container>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JLabel" name="outputLabel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Lucida Grande" size="18" style="1"/>
+        </Property>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="0"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>

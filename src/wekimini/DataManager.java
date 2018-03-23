@@ -1437,11 +1437,11 @@ public class DataManager {
         return 0;
     }
 
-    /**
-     * Set the value of hasInstances
-     *
-     * @param hasInstances new value of hasInstances
-     */
+    public boolean canTrainOrRun(int output)
+    {
+        return getNumExamples() > 0 && featureManager.getFeatureGroups().get(output).getCurrentFeatures().length > 0;
+    }
+    
     private void setHasInstances(boolean hasInstances) {
         boolean oldHasInstances = this.hasInstances;
         this.hasInstances = hasInstances;
