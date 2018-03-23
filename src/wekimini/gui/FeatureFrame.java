@@ -8,6 +8,8 @@ package wekimini.gui;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -39,8 +41,9 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     private PlottedFeatureTableModel currentFeaturesTableModel;
     private Timer timer;
     private Feature[] currentFeatures;
-    private static final int BUTTON_CELL_WIDTH = 40;
-    private static final int PLOT_CELL_WIDTH = 50;
+    private static final int BUTTON_CELL_WIDTH = 30;
+    private static final int TITLE_CELL_WIDTH = 120;
+    private static final int PLOT_CELL_WIDTH_MIN = 50;
     private static final int ROW_HEIGHT = 35;
     private static final int PLOT_ROW_REFRESH_RATE = 60;
     private static final int PLOT_ROW_POINTS_PER_ROW = 10;
@@ -82,6 +85,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             }
         };
         currentFeaturesTable.addMouseListener(featuresMouseListener);
+        currentFeaturesTable.addComponentListener(new ResizeListener());
         getContentPane().setBackground(Color.WHITE);
 //        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 //        setAlwaysOnTop(true);
@@ -92,6 +96,13 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
                 evaluateFeaturesPanel.onClose();
             }
         });        
+    }
+    
+    class ResizeListener extends ComponentAdapter {
+        @Override
+        public void componentResized(ComponentEvent e) {
+            updateCurrentFeaturesTable();
+        }       
     }
     
     private void removeFeature(Feature ft)
@@ -136,14 +147,23 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     
     public void updateCurrentFeaturesTable()
     {
+        int tblWidth = currentFeaturesTable.getWidth();
+        int titleCellWidth = TITLE_CELL_WIDTH;
+        int plotCellWidth = tblWidth- titleCellWidth - BUTTON_CELL_WIDTH;
+        if(plotCellWidth < PLOT_CELL_WIDTH_MIN)
+        {
+            plotCellWidth = PLOT_CELL_WIDTH_MIN;
+            titleCellWidth = tblWidth - plotCellWidth - BUTTON_CELL_WIDTH;
+        }
+        int pointsPerRow = (int)(PLOT_ROW_POINTS_PER_ROW * ((double)plotCellWidth / 50.0f));
         currentFeatures = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
-        currentFeaturesTableModel = new PlottedFeatureTableModel(currentFeatures, PLOT_ROW_POINTS_PER_ROW);
+        currentFeaturesTableModel = new PlottedFeatureTableModel(currentFeatures, pointsPerRow);
         currentFeaturesTable.setModel(currentFeaturesTableModel);
+
         
-        plotCellRenderer = new PlotTableCellRenderer(PLOT_CELL_WIDTH,ROW_HEIGHT);
+        plotCellRenderer = new PlotTableCellRenderer(plotCellWidth,ROW_HEIGHT, pointsPerRow);
         plotCellRenderer.reset();
         
-        int tW = currentFeaturesTable.getWidth();
         TableColumn column;
         TableColumnModel jTableColumnModel = currentFeaturesTable.getColumnModel();
         int cantCols = jTableColumnModel.getColumnCount();
@@ -152,11 +172,11 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             switch(i)
             {
                 case 0:
-                    int pWidth = Math.round(tW - PLOT_CELL_WIDTH - BUTTON_CELL_WIDTH);
+                    int pWidth = Math.round(titleCellWidth - BUTTON_CELL_WIDTH);
                     column.setPreferredWidth(pWidth);
                     break;
                 case 1:
-                    column.setPreferredWidth(PLOT_CELL_WIDTH);
+                    column.setPreferredWidth(plotCellWidth);
                     column.setCellRenderer(plotCellRenderer);
                     break;
                 case 2:

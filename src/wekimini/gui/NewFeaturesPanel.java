@@ -282,7 +282,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     {
         if(results.length == 0)
         {
-            resultsLabel.setText("<html>  No Features Found <br> Matching Criteria </html>");
+            resultsLabel.setText("No Features Found Matching Criteria");
             resultsLabel.setVisible(true);
             resultsTable.setVisible(false);
         }

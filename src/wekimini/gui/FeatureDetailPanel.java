@@ -51,8 +51,8 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         public void componentResized(ComponentEvent e) {
             plotPanel.updateWidth(plotScrollPane.getWidth());
             redrawPlot();
-        }
-}
+        }       
+    }
     
     protected void showNoFeature()
     {

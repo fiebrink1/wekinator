@@ -82,11 +82,13 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         });
         
         trainBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
+        evaluateBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
     }
     
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
         
         trainBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
+        evaluateBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
         
         switch (evt.getPropertyName()) {
             case SupervisedLearningManager.PROP_RECORDINGROUND:
@@ -122,6 +124,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     public void featuresListUpdated()
     {
         trainBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
+        evaluateBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
     }
     
     public void onClose()
@@ -299,27 +302,23 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         int[][] arr = ConfusionParser.parseMatrix(confusion);
         confusionPanel.setModel(arr);
         accuracyLabel.setText(results);
-        evaluateBtn.setEnabled(true);
         confusionWrapper.setVisible(true);
         confusionHoldingImage.setVisible(false);
     }
 
     private void cvCancelled() 
     {
-        evaluateBtn.setEnabled(true);
         System.out.println("CV Cancelled!!!");
     }
 
     private void cvFinished(String[] results) 
     {
-        evaluateBtn.setEnabled(true);
         System.out.println("CV Finished");
     }
     
     private void evaluateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_evaluateBtnActionPerformed
         // TODO add your handling code here:
         evaluateBtn.setText("Re-evaluate");
-        evaluateBtn.setEnabled(false);
         e = new ModelEvaluator(w, new ModelEvaluator.EvaluationResultsReceiver() {
 
             @Override
