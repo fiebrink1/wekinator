@@ -25,25 +25,24 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="exampleIndexLabel" alignment="1" max="32767" attributes="0"/>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="examplesLeftLabel" min="-2" pref="294" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                      <Component id="jLabel2" min="-2" pref="294" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="redoButton" pref="294" max="32767" attributes="0"/>
-                          <Component id="doneButton" pref="294" max="32767" attributes="0"/>
-                          <Component id="nextButton" pref="294" max="32767" attributes="0"/>
-                          <Component id="deleteButton" pref="294" max="32767" attributes="0"/>
-                          <Component id="recordButton" pref="294" max="32767" attributes="0"/>
-                          <Component id="prevButton" alignment="1" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
+                  <Component id="examplesLeftLabel" min="-2" pref="279" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                      <Component id="exampleIndexLabel" max="32767" attributes="0"/>
+                      <Component id="redoButton" pref="294" max="32767" attributes="0"/>
+                      <Component id="doneButton" pref="294" max="32767" attributes="0"/>
+                      <Component id="nextButton" pref="294" max="32767" attributes="0"/>
+                      <Component id="deleteButton" pref="294" max="32767" attributes="0"/>
+                      <Component id="recordButton" pref="294" max="32767" attributes="0"/>
+                      <Component id="prevButton" alignment="1" max="32767" attributes="0"/>
                   </Group>
               </Group>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -52,11 +51,13 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
-              <Component id="exampleIndexLabel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="exampleIndexLabel" min="-2" pref="25" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="examplesLeftLabel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
+              <Component id="jLabel2" min="-2" pref="42" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="recordButton" min="-2" pref="54" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="deleteButton" min="-2" max="-2" attributes="0"/>
@@ -85,7 +86,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="recordButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Start Recording Test Set"/>
+        <Property name="text" type="java.lang.String" value="Start Recording Gesture"/>
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
       <Events>
@@ -147,6 +148,12 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="prevButtonActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel2">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Repeat gesture until enough examples &lt;br&gt;have been provided for each class&lt;/html&gt;"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
