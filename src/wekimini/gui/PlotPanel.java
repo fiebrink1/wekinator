@@ -58,6 +58,13 @@ public class PlotPanel extends JPanel {
 
     }
     
+    public void updateWidth(int newW)
+    {
+        this.w = newW;
+        setPreferredSize(new Dimension((int)w,getHeight()));
+        createEmptyImage((int)w);
+    }
+    
     public void updateWidth(boolean isStreaming)
     {
         double width = isStreaming ? w : (double)((horizontalScale * model.points.size()));

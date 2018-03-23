@@ -100,9 +100,11 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 System.out.println("Callback isRunning:" + isRunning);
                 if (isRunning) {
                     trainBtn.setText("Stop running");
+                    trainBtn.setForeground(Color.red);
                 }
                 else
                 {
+                    trainBtn.setForeground(Color.black);
                     trainBtn.setText("Train and Run");
                 }
                 break;

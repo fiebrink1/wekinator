@@ -6,6 +6,8 @@
 package wekimini.gui;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.net.URL;
 import java.util.NoSuchElementException;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
@@ -40,7 +42,16 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         plotScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
         outputComboBox.setVisible(false);
         outputLabel.setVisible(false);
+        plotScrollPane.addComponentListener(new ResizeListener());
     }
+    
+    class ResizeListener extends ComponentAdapter {
+        @Override
+        public void componentResized(ComponentEvent e) {
+            plotPanel.updateWidth(plotScrollPane.getWidth());
+            redrawPlot();
+        }
+}
     
     protected void showNoFeature()
     {
@@ -85,14 +96,10 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         throw new NoSuchElementException();
     }
     
-    public void setModel(PlotRowModel model)
+    public void redrawPlot()
     {
-        this.model = model;
-        featureOutputIndex = 0;
-        
         plotPanel.updateModel(model);
         plotPanel.reset();
-        titleLabel.setText(model.feature.name);
         plotPanel.updateWidth(model.isStreaming);
         repaint();
         plotScrollPane.revalidate();
@@ -100,6 +107,14 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         plotScrollPane.setViewportView(plotPanel);
         plotScrollPane.revalidate();
         validate();
+    }
+    public void setModel(PlotRowModel model)
+    {
+        this.model = model;
+        featureOutputIndex = 0;
+        titleLabel.setText(model.feature.name);
+
+        redrawPlot();
         
         try
         {
