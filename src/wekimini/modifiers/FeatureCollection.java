@@ -37,7 +37,7 @@ public final class FeatureCollection
     protected static final String RAW_DESCRIPTION = "Raw \nJust the raw signal";
     protected static final String MEAN_DESCRIPTION = "Mean \nUse this feature to smooth out measurements over the given window e.g. if you are only interested in bigger changes over time";
     protected static final String FOD_DESCRIPTION = "1st Order Diff\nUse this feature if you want to distinguish gestures or rotate at different speeds";
-    protected static final String ENERGY_DESCRIPTION = "Energy \n Use this is you are interested in the strength of your signal";
+    protected static final String ENERGY_DESCRIPTION = "Energy \nUse this if you are interested in the strength of your signal";
     protected static final String MAX_DESCRIPTION = "Max \nUse this feature if you are interested in the extremes of your motion";
     protected static final String MIN_DESCRIPTION = "Min \nUse this feature if you are interested in the extremes of your motion";
     protected static final String STDDEV_DESCRIPTION = "Standard Deviation \nUse this feature if you want to model how much variation there is in the signal";

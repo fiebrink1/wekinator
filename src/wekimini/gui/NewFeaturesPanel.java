@@ -636,7 +636,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         {
             return;
         }
-        windowLabel.setText("Window:" + windowSlider.getValue());
+        windowLabel.setText("Window Size:" + windowSlider.getValue());
         boolean isRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
         boolean isPlotting = w.getSupervisedLearningManager().isPlotting;
         prepareForLibraryUpdate(isRunning, isPlotting);

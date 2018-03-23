@@ -42,13 +42,12 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     private Timer timer;
     private Feature[] currentFeatures;
     private static final int BUTTON_CELL_WIDTH = 30;
-    private static final int TITLE_CELL_WIDTH = 120;
+    private static final int TITLE_CELL_WIDTH = 135;
     private static final int PLOT_CELL_WIDTH_MIN = 50;
     private static final int ROW_HEIGHT = 35;
     private static final int PLOT_ROW_REFRESH_RATE = 60;
     private static final int PLOT_ROW_POINTS_PER_ROW = 10;
 
-    
     public FeatureFrame() {
         initComponents();
     }
@@ -155,13 +154,14 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             plotCellWidth = PLOT_CELL_WIDTH_MIN;
             titleCellWidth = tblWidth - plotCellWidth - BUTTON_CELL_WIDTH;
         }
+        
         int pointsPerRow = (int)(PLOT_ROW_POINTS_PER_ROW * ((double)plotCellWidth / 50.0f));
+        
         currentFeatures = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
         currentFeaturesTableModel = new PlottedFeatureTableModel(currentFeatures, pointsPerRow);
         currentFeaturesTable.setModel(currentFeaturesTableModel);
-
         
-        plotCellRenderer = new PlotTableCellRenderer(plotCellWidth,ROW_HEIGHT, pointsPerRow);
+        plotCellRenderer = new PlotTableCellRenderer(plotCellWidth, ROW_HEIGHT, pointsPerRow);
         plotCellRenderer.reset();
         
         TableColumn column;
@@ -181,7 +181,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
                     break;
                 case 2:
                     column.setPreferredWidth(BUTTON_CELL_WIDTH);
-                column.setCellRenderer(new ImageTableCellRenderer("delete.png"));
+                    column.setCellRenderer(new ImageTableCellRenderer("delete.png"));
                     break;
             }
         }
@@ -189,7 +189,6 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         deselectRows(false);
         
         startTimer();
-
     }
    
     /**
