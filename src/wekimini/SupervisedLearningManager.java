@@ -1043,6 +1043,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     }
     
     public void updateInputs(double[] inputs) {
+        //System.out.println("update inputs");
         if (recordingState != RecordingState.NOT_RECORDING) 
         {
             boolean test = recordingState == RecordingState.RECORDING_TEST;

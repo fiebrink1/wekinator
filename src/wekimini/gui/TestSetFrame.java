@@ -34,18 +34,25 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
     public void update(Wekinator w)
     {
         this.w = w;
-        currentClass = 1;
         numExamplesLeftForClass = EXAMPLES_PER_CLASS;
         w.getOutputManager().setTestValues(new double[]{currentClass});
         w.getDataManager().addChangeListener(this);
+        w.getSupervisedLearningManager().getSupervisedLearningController().stopRecord();
         updateUI();
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent evt) {
-                w.save();
+                prepareToDie();
                 dispose();
             }
         });
+    }
+    
+    public void prepareToDie()
+    {
+         w.getDataManager().removeChangeListener(this);
+        w.getSupervisedLearningManager().getSupervisedLearningController().stopRecord();
+        w.save();
     }
     
     private void updateUI()
@@ -73,12 +80,14 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
 
     private void updateFromModel()
     {
-        numExamplesLeftForClass = EXAMPLES_PER_CLASS - w.getDataManager().getNumExamplesOfClassInTestSet(currentClass);
-        if(numExamplesLeftForClass <= 0)
-        {
-            numExamplesLeftForClass = 0;
-            recordButton.setText("Start Recording Test Set");
-            w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.NOT_RECORDING);
+        synchronized(this) {
+            numExamplesLeftForClass = EXAMPLES_PER_CLASS - w.getDataManager().getNumExamplesOfClassInTestSet(currentClass);
+            if(numExamplesLeftForClass <= 0)
+            {
+                numExamplesLeftForClass = 0;
+                recordButton.setText("Start Recording Test Set");
+                w.getSupervisedLearningManager().getSupervisedLearningController().stopRecord();
+            }
         }
     }
     
@@ -227,7 +236,7 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
        else
        {
            recordButton.setText("Start Recording Test Set");
-           w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.NOT_RECORDING);
+           w.getSupervisedLearningManager().getSupervisedLearningController().stopRecord();
        }
     }//GEN-LAST:event_recordButtonActionPerformed
 

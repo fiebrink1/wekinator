@@ -449,7 +449,6 @@ public class DataManager {
         {
             nextTestingID++;
         }
-        
         fireStateChanged();
     }
 

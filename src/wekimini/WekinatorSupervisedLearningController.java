@@ -33,6 +33,7 @@ public class WekinatorSupervisedLearningController {
     }
     
     public void stopRecord() {
+        System.out.println("STOPPING RECORDING");
         m.stopRecording();
         // setStatus("Examples recorded. Press \"Train\" to build models from data.");
         w.getStatusUpdateCenter().update(this, 
