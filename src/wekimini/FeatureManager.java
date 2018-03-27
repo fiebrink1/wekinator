@@ -21,8 +21,8 @@ public class FeatureManager
     //There is one feature group for each path/output
     protected ArrayList<FeatureCollection> featureCollections;
     private FeatureCollection allFeatures;
-    private int windowSize = 10;
-    private int bufferSize = 10;
+    private int windowSize = 15;
+    private int bufferSize = 15;
     protected String[] inputNames;
     
     public FeatureManager()

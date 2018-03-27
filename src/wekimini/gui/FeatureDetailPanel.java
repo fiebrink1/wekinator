@@ -75,6 +75,8 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
             {
                 double val = w.getSupervisedLearningManager().getCurrentValueforFeature(model.feature, featureOutputIndex);
                 model.addPoint(val);
+                model.windowSize = w.getDataManager().featureManager.getFeatureWindowSize();
+                plotPanel.renderWindow = true;
                 plotPanel.updateModel(model);
             }    
         });  

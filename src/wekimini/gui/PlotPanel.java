@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
@@ -20,22 +21,27 @@ import javax.swing.JPanel;
 public class PlotPanel extends JPanel {
     
     private double w = 1;
-    private double h = 1;
+    private double imageHeight = 1;
+    private double plotHeight = 1;
     private BufferedImage image;
     private double x = 0;
     private double y = 0;
     protected double horizontalScale = 1;
     private PlotRowModel model;
     private double pointsPerRow = 20;
+    public boolean renderWindow = false;
+    private double plotY = 0;
     
     private PlotPanel(){}
     
     public PlotPanel(int w, int h, int pointsPerRow)
     {
         this.w = w;
-        this.h = h * 0.875;
+        imageHeight = h;
+        plotHeight = (h * 0.875) - 10.0;
+        plotY = 10.0;
         this.pointsPerRow = pointsPerRow;
-        image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        image = new BufferedImage(w, (int)imageHeight, BufferedImage.TYPE_INT_ARGB);
         setUp();
         model = new PlotRowModel(pointsPerRow);
     }
@@ -109,17 +115,11 @@ public class PlotPanel extends JPanel {
             double f  = model.points.get(n);
             double thisX = (double)(n * horizontalScale);
             double proportion = ((f - model.getMin())/(model.getMax() - model.getMin()));
-            double thisY = y + h - (proportion * h);
+            double thisY = plotY + y + plotHeight - (proportion * plotHeight);
             if (n == 0) 
             {
                 lastPointX = thisX;
                 lastPointY = thisY;
-//                if(model.feature.name.equals("MeanAccX"))
-//                {
-//                    System.out.println("----");
-//                    System.out.println(model.feature.outputIndex);
-//                    System.out.println("f:" + f + " max:" + model.getMax() + " min:" + model.getMin() + " proportion:" + proportion);
-//                }
             } 
             else 
             {
@@ -131,6 +131,15 @@ public class PlotPanel extends JPanel {
                 lastPointX = thisX;
                 lastPointY = thisY;
             }
+        }
+        if(renderWindow)
+        {
+            g2d.setColor(new Color(1.0f,1.0f,0.0f,0.2f));
+            double rectWidth = (double) (model.windowSize * horizontalScale);
+            double rectX =  (w - rectWidth);
+            g2d.fill(new Rectangle2D.Double(rectX, 0, rectWidth, imageHeight));
+            g2d.setPaint(new Color(0.0f,0.0f,1.0f,1.0f));
+            g2d.drawString("Window:"+model.windowSize, (float)rectX + 5, 10.0f);
         }
     }
    
@@ -152,6 +161,6 @@ public class PlotPanel extends JPanel {
 
     private void createEmptyImage(int width)
     {
-        image = new BufferedImage(width, (int)h, BufferedImage.TYPE_INT_ARGB);
+        image = new BufferedImage(width, (int)imageHeight, BufferedImage.TYPE_INT_ARGB);
     }       
 }

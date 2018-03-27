@@ -23,6 +23,8 @@ public class PlotRowModel
     protected LinkedList<Double> points = new LinkedList();
     protected LinkedList<Double> classes = new LinkedList();
     private int pointsPerRow = 20;
+    private boolean updateMinMax = true;
+    public int windowSize = 1;
     
     private PlotRowModel(){}
     
@@ -43,21 +45,35 @@ public class PlotRowModel
         return max;
     }
     
+    public void setMinMax(double min, double max)
+    {
+        updateMinMax = false;
+        this.min = min;
+        this.max = max;
+    }
+    
     public void addPoint(double pt)
     {
         synchronized(this) {
+            
             points.add(pt);
-            if(pt < min)
+            
+            if(updateMinMax)
             {
-                min = pt;
+                if(pt < min)
+                {
+                    min = pt;
+                }
+                if(pt > max)
+                {
+                    max = pt;
+                }
             }
-            if(pt > max)
-            {
-                max = pt;
-            }
+
             if(isStreaming)
             {
-                while (points.size() > pointsPerRow) {
+                while (points.size() > pointsPerRow) 
+                {
                     points.removeFirst();
                 }
             }
