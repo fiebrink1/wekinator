@@ -37,7 +37,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     public FeatureDetailPanel() 
     {
         initComponents();
-        plotPanel = new PlotPanel(PLOT_W, PLOT_H, 100);        
+        plotPanel = new PlotPanel(PLOT_W, PLOT_H);        
         plotScrollPane.setViewportView(plotPanel);
         plotScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
         outputComboBox.setVisible(false);

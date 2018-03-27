@@ -15,8 +15,8 @@ import wekimini.modifiers.Feature;
  */
 public class PlotTableCellRenderer extends PlotPanel implements TableCellRenderer {
     
-    public PlotTableCellRenderer(int w, int h, int pointsPerRow) {
-        super(w, h, pointsPerRow);
+    public PlotTableCellRenderer(int w, int h) {
+        super(w, h);
     }
     
     @Override

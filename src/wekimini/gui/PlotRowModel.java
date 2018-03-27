@@ -22,7 +22,7 @@ public class PlotRowModel
     public boolean isStreaming = false;
     protected LinkedList<Double> points = new LinkedList();
     protected LinkedList<Double> classes = new LinkedList();
-    private int pointsPerRow = 20;
+    public int pointsPerRow = 20;
     private boolean updateMinMax = true;
     public int windowSize = 1;
     

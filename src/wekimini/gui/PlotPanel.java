@@ -28,22 +28,20 @@ public class PlotPanel extends JPanel {
     private double y = 0;
     protected double horizontalScale = 1;
     private PlotRowModel model;
-    private double pointsPerRow = 20;
     public boolean renderWindow = false;
     private double plotY = 0;
     
     private PlotPanel(){}
     
-    public PlotPanel(int w, int h, int pointsPerRow)
+    public PlotPanel(int w, int h)
     {
         this.w = w;
         imageHeight = h;
         plotHeight = (h * 0.875) - 10.0;
         plotY = 10.0;
-        this.pointsPerRow = pointsPerRow;
         image = new BufferedImage(w, (int)imageHeight, BufferedImage.TYPE_INT_ARGB);
+        model = new PlotRowModel(20);
         setUp();
-        model = new PlotRowModel(pointsPerRow);
     }
     
     private void setUp()
@@ -56,12 +54,13 @@ public class PlotPanel extends JPanel {
     
     public void updateModel(PlotRowModel model)
     {
+        //System.out.println("ppr:" + model.pointsPerRow + " points:" + model.points.size());
         this.model = model;
+        rescale();
         if(model.points.size() > 0)
         {
             repaint();
         }
-
     }
     
     public void updateWidth(int newW)
@@ -69,6 +68,7 @@ public class PlotPanel extends JPanel {
         this.w = newW;
         setPreferredSize(new Dimension((int)w,getHeight()));
         createEmptyImage((int)w);
+        rescale();
     }
     
     public void updateWidth(boolean isStreaming)
@@ -77,6 +77,7 @@ public class PlotPanel extends JPanel {
         width = width < 1 ? 1 : width;
         setPreferredSize(new Dimension((int)width,getHeight()));
         createEmptyImage((int)width);
+        rescale();
     }
     
     public Color colorForClass(double classVal)
@@ -109,7 +110,6 @@ public class PlotPanel extends JPanel {
         g2d.setColor(Color.BLUE);
         double lastPointX = 0;
         double lastPointY = 0;
-        double numPts = model.points.size() < pointsPerRow ? model.points.size() : pointsPerRow;
         for(int n = 0; n < model.points.size(); n++)
         {
             double f  = model.points.get(n);
@@ -145,7 +145,7 @@ public class PlotPanel extends JPanel {
    
    protected void rescale() 
    {
-        horizontalScale = (double)w/(double)pointsPerRow;
+        horizontalScale = (double)w/(double)model.pointsPerRow;
    }
    
    public void reset()

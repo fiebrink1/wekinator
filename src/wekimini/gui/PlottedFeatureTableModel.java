@@ -26,7 +26,6 @@ public class PlottedFeatureTableModel extends FeatureTableModel {
             models.add(model);
         }
     }
-   
     
     public PlotRowModel getModel(int index)
     {

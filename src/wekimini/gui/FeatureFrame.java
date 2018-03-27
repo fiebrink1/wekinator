@@ -174,7 +174,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         currentFeaturesTableModel = new PlottedFeatureTableModel(currentFeatures, pointsPerRow);
         currentFeaturesTable.setModel(currentFeaturesTableModel);
         
-        plotCellRenderer = new PlotTableCellRenderer(plotCellWidth, ROW_HEIGHT, pointsPerRow);
+        plotCellRenderer = new PlotTableCellRenderer(plotCellWidth, ROW_HEIGHT);
         plotCellRenderer.reset();
         
         TableColumn column;
@@ -262,10 +262,10 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         jLabel2.setText("Evaluate");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(204, 204, 204), null, new java.awt.Color(204, 204, 204)));
 
         jLabel3.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
-        jLabel3.setText("<html> Parameters (these apply <br> to all features </hml>");
+        jLabel3.setText("<html> Parameters (these apply <br> to all features)</hml>");
 
         windowLabel.setText("Window Size:");
 

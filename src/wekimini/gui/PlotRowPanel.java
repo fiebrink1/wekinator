@@ -47,7 +47,7 @@ public class PlotRowPanel extends javax.swing.JPanel {
         {
             featureComboBox.addItem(feature);
         }
-        plotPanel = new PlotPanel(PLOT_W, PLOT_H, 100);        
+        plotPanel = new PlotPanel(PLOT_W, PLOT_H);        
         plotScrollPanel.setViewportView(plotPanel);
         plotScrollPanel.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
         AdjustmentListener listener = new MyAdjustmentListener();

@@ -93,15 +93,22 @@ public class ConfusionComponent extends javax.swing.JPanel
     {
         int[][] data;    
 
-        public float error(int row, int column)
+        public float error(int row, int col)
         {
-            int sum = 0;
-            for(int i = 0; i < getColumnCount(); i++)
+            if(row < data.length)
             {
-                sum += data[row][i];
-            }
+                if(col < data[row].length)
+                {
+                    int sum = 0;
+                    for(int i = 0; i < getColumnCount(); i++)
+                    {
+                        sum += data[row][i];
+                    }
 
-            return (float)data[row][column]/(float)sum;
+                    return (float)data[row][col]/(float)sum;
+                }
+            }
+            return 0.0f;
         }
 
         @Override
@@ -122,11 +129,24 @@ public class ConfusionComponent extends javax.swing.JPanel
 
         @Override
         public Integer getValueAt(int row, int col) {
-            return data[row][col];
+            if(row < data.length)
+            {
+                if(col < data[row].length)
+                {
+                    return data[row][col];
+                }
+            }
+            return 0;  
         }
 
         public void setValueAt(int value, int row, int col) {
-            data[row][col] = value;
+            if(row < data.length)
+            {
+                if(col < data[row].length)
+                {
+                    data[row][col] = value;
+                }
+            }
         }
 
         @Override
@@ -136,7 +156,7 @@ public class ConfusionComponent extends javax.swing.JPanel
 
         @Override
         public boolean isCellEditable(int row, int col) {
-            return true;        
+            return false;        
         }
     }
 }

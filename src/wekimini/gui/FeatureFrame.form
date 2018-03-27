@@ -169,7 +169,10 @@
         </Property>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.BevelBorderInfo">
-            <BevelBorder/>
+            <BevelBorder>
+              <Color PropertyName="highlightInner" blue="cc" green="cc" red="cc" type="rgb"/>
+              <Color PropertyName="shadowInner" blue="cc" green="cc" red="cc" type="rgb"/>
+            </BevelBorder>
           </Border>
         </Property>
       </Properties>
@@ -212,7 +215,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Lucida Grande" size="13" style="1"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt; Parameters (these apply &lt;br&gt; to all features &lt;/hml&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt; Parameters (these apply &lt;br&gt; to all features)&lt;/hml&gt;"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="windowLabel">
