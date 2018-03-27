@@ -60,9 +60,10 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         System.out.println("making output plot:" + plotHolderPanel.getWidth() + ":" + plotHolderPanel.getHeight());
         
         outputPlot = new PlotPanel(plotHolderPanel.getWidth() - 1, plotHolderPanel.getHeight() - 1);
+        outputPlot.pointPlot = false;
         plotHolderPanel.setLayout(new BorderLayout());
         plotHolderPanel.add(outputPlot, BorderLayout.CENTER);
-        outputPlotModel = new PlotRowModel(20);
+        outputPlotModel = new PlotRowModel(30);
         outputPlotModel.setMinMax(0, 7);
         outputPlotModel.isStreaming = true;
         

@@ -29,6 +29,7 @@ public class PlotPanel extends JPanel {
     protected double horizontalScale = 1;
     private PlotRowModel model;
     public boolean renderWindow = false;
+    public boolean pointPlot = true;
     private double plotY = 0;
     
     private PlotPanel(){}
@@ -127,7 +128,15 @@ public class PlotPanel extends JPanel {
                 {
                     g2d.setColor(colorForClass(model.classes.get(n)));
                 }
-                g2d.draw(new Line2D.Double(lastPointX, lastPointY, thisX, thisY));
+                if(pointPlot)
+                {
+                    g2d.draw(new Line2D.Double(lastPointX, lastPointY, thisX, thisY)); 
+                }
+                else
+                {
+                    g2d.setColor(colorForClass(f));
+                    g2d.draw(new Line2D.Double(lastPointX, thisY, thisX, thisY)); 
+                }
                 lastPointX = thisX;
                 lastPointY = thisY;
             }
