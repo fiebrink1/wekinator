@@ -191,6 +191,8 @@ public class WekinatorSaver {
         saveOutputs(projectDir, w);
         saveData(projectDir, w);
         saveModels(projectDir, w);
+        saveCppSource(projectDir, w);
+        saveJSONDescription(projectDir, w);
 
     }
 
