@@ -90,7 +90,9 @@ public class CppWriter {
             headerPrint.printf("    virtual ~baseModel() {};\n");
             headerPrint.printf("};\n\n");
             headerPrint.printf("#endif");
+            headerPrint.close();
         }
+        headerWrite.close();
     }
 
     private void writeModelSet(String location) throws IOException {
@@ -102,7 +104,9 @@ public class CppWriter {
             headerPrint.printf("#define modelSet_h\n\n");
             headerPrint.printf("#include <vector>\n");
             headerPrint.printf("#include \"baseModel.h\"\n");
+            headerPrint.close();
         }
+        headerWrite.close();
         
         //write cpp
         String cppName = location + "wekiModelSet.cpp";
@@ -119,7 +123,9 @@ public class CppWriter {
             cppPrint.printf("    }\n};\n\n");
             cppPrint.printf("void wekiModelSet::initModelSet() {\n");
             cppPrint.printf("   std::vector<int> whichInputs;\n");     
+            cppPrint.close();
         }
+        cppWrite.close();
     }
  
     public void writeModelSetEnd(String location) throws IOException {
@@ -137,7 +143,9 @@ public class CppWriter {
             headerPrint.printf("    std::vector<baseModel*> myModelSet;\n");
             headerPrint.printf("};\n\n");
             headerPrint.printf("#endif");
+            headerPrint.close();
         }
+        headerWrite.close();
         
         //write cpp
         String cppName = location + "wekiModelSet.cpp";
@@ -152,7 +160,9 @@ public class CppWriter {
             cppPrint.printf("    }\n");
             cppPrint.printf("    return output;\n");
             cppPrint.printf("}");
+            cppPrint.close();
         }
+        cppWrite.close();
     }
 
     private void writeReadMe(String location) throws IOException {
@@ -167,7 +177,9 @@ public class CppWriter {
             readMePrint.printf("trainedModels.initModelSet();\n\n");
             readMePrint.printf("//Wekinator model usage\n");
             readMePrint.printf("double* modelOutput = trainedModels.passInputToModels(toModel);\n");
+            readMePrint.close();
         }
+        readMeWrite.close();
     }
 
     private void writeKnnClass(String location) throws IOException {
@@ -200,14 +212,19 @@ public class CppWriter {
                 headerPrint.printf("	std::pair<int, double>* nearestNeighbours;\n");
                 headerPrint.printf("};\n\n");
                 headerPrint.printf("#endif\n\n");
+                headerPrint.close();
             }
+            headerWrite.close();
+            
             //append to modelSet header
             String mshName = location + "wekiModelSet.h";
             File msh = new File(mshName);
             FileWriter mshWrite = new FileWriter(mshName, true);
             try (PrintWriter headerPrint = new PrintWriter(mshWrite)) {
                 headerPrint.printf("#include \"knnClassification.h\"\n");
+                headerPrint.close();
             }
+            mshWrite.close();
         }
 
         //Write cpp
@@ -352,7 +369,9 @@ public class CppWriter {
             cppPrint.printf("	k = " + numNeighbours + ";\n");
             cppPrint.printf("	numClasses = " + numClasses + ";\n\n");
             cppPrint.printf("	myModelSet.push_back(new knnClassification (" + numInputs + ", whichInputs, neighbours, numExamples, k, numClasses));\n\n");
+            cppPrint.close();
         }
+        cppWrite.close();
     }
 
     private void writeNnClass(String location) throws IOException {
@@ -387,7 +406,10 @@ public class CppWriter {
                 headerPrint.printf("	inline double activationFunction(double);\n");
                 headerPrint.printf("};\n\n");
                 headerPrint.printf("#endif\n\n");
+                headerPrint.close();
             }
+            headerWrite.close();
+            
              //append to modelSet header
             String mshName = location + "wekiModelSet.h";
             File msh = new File(mshName);
@@ -395,6 +417,7 @@ public class CppWriter {
             try (PrintWriter headerPrint = new PrintWriter(mshWrite)) {
                 headerPrint.printf("#include \"neuralNetwork.h\"\n");
             }
+            mshWrite.close();
         }
 
         //Write cpp
@@ -670,6 +693,8 @@ public class CppWriter {
             cppPrint.printf("   myModelSet.push_back(new neuralNetwork");
             cppPrint.printf(" (" + numInputs + ", whichInputs, " + numHiddenNodes);
             cppPrint.printf(", weights, wHiddenOutput, inMaxes, inMins, outMax, outMin));\n\n");
+            cppPrint.close();
         }
+        cppWrite.close();
     }
 }
