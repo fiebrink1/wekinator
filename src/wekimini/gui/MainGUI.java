@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import wekimini.DataManager;
 import wekimini.DtwLearningManager;
 import wekimini.GlobalSettings;
 import wekimini.LearningManager;
@@ -32,6 +33,7 @@ import wekimini.util.Util;
 import wekimini.WekiMiniRunner;
 import wekimini.Wekinator;
 import wekimini.WekinatorFileData;
+import wekimini.WekinatorSaver;
 import wekimini.dtw.gui.DtwEditorFrame;
 import wekimini.dtw.gui.DtwLearningPanel;
 import wekimini.dtw.gui.DtwOutputEditor;
@@ -611,9 +613,13 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuFile = new javax.swing.JMenu();
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
-        menuLoadFromARFF = new javax.swing.JMenuItem();
         menuItemSave = new javax.swing.JMenuItem();
         menuItemSaveAs = new javax.swing.JMenuItem();
+        menuItemSaveModels = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        menuLoadFromARFF = new javax.swing.JMenuItem();
+        menuItemSaveArff = new javax.swing.JMenuItem();
+        menuItemExportCpp = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -675,15 +681,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         menuFile.add(jMenuItem4);
 
-        menuLoadFromARFF.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.META_MASK));
-        menuLoadFromARFF.setText("Import training data from file...");
-        menuLoadFromARFF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuLoadFromARFFActionPerformed(evt);
-            }
-        });
-        menuFile.add(menuLoadFromARFF);
-
         menuItemSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.META_MASK));
         menuItemSave.setText("Save");
         menuItemSave.setToolTipText("");
@@ -702,6 +699,34 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             }
         });
         menuFile.add(menuItemSaveAs);
+
+        menuItemSaveModels.setText("Save models as...");
+        menuFile.add(menuItemSaveModels);
+        menuFile.add(jSeparator1);
+
+        menuLoadFromARFF.setText("Import training data from ARFF...");
+        menuLoadFromARFF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuLoadFromARFFActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuLoadFromARFF);
+
+        menuItemSaveArff.setText("Save data as ARFF...");
+        menuItemSaveArff.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemSaveArffActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuItemSaveArff);
+
+        menuItemExportCpp.setText("Export models as C++...");
+        menuItemExportCpp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemExportCppActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuItemExportCpp);
 
         jMenuBar1.add(menuFile);
 
@@ -892,6 +917,51 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         showArffLoader();
     }//GEN-LAST:event_menuLoadFromARFFActionPerformed
 
+    private void menuItemSaveArffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemSaveArffActionPerformed
+        //TODO unshow this menu if we're doing dtw; same for loading from arff
+        DataManager dataManager = w.getDataManager();
+        if (dataManager != null) {
+
+            File file = Util.findSaveFile("arff",
+                    "data",
+                    "arff file",
+                    this);
+            if (file != null) {
+                try {
+                    dataManager.writeInstancesToArff(file);
+                    /* if (WekinatorRunner.isLogging()) {
+                     Plog.log(Msg.DATA_VIEWER_SAVE_ARFF_BUTTON, file.getAbsolutePath() + "/" + file.getName());
+                     } */
+                    // Util.setLastFile(SimpleDataset.getFileExtension(), file);
+                } catch (Exception ex) {
+                    Logger.getLogger(MainGUI.class.getName()).log(Level.WARNING, null, ex);
+                    Util.showPrettyErrorPane(this, "Could not save to file: " + ex.getMessage());
+                }
+            }
+        } 
+    }//GEN-LAST:event_menuItemSaveArffActionPerformed
+
+    private void menuItemExportCppActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemExportCppActionPerformed
+        // TODO: Check that we have only neural nets or kNN
+        
+        String lastLocation = GlobalSettings.getInstance().getStringValue("CppSaveLocation", "");
+        if (lastLocation.equals("")) {
+            lastLocation = System.getProperty("user.home");
+        }
+        
+        File f = Util.findSaveDirectory("Select directory to save c++ files", lastLocation, this);
+
+        if (f != null) {
+            try {
+                WekinatorSaver.saveCppSource(f.getAbsolutePath() + File.separator, w);
+                GlobalSettings.getInstance().setStringValue("CppSaveLocation", f.getAbsolutePath());
+            } catch (IOException ex) {
+                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+                Util.showPrettyErrorPane(this, "Could not save to C++ files: " + ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_menuItemExportCppActionPerformed
+
     private void flushLogs() {
         KadenzeLogging.getLogger().flush();
     }
@@ -1066,13 +1136,17 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private wekimini.gui.SupervisedLearningPanel learningPanel1;
     private javax.swing.JMenu menuActions;
     private javax.swing.JMenuItem menuConsole;
     private javax.swing.JMenu menuFile;
     private javax.swing.JMenuItem menuItemEvaluation;
+    private javax.swing.JMenuItem menuItemExportCpp;
     private javax.swing.JMenuItem menuItemSave;
+    private javax.swing.JMenuItem menuItemSaveArff;
     private javax.swing.JMenuItem menuItemSaveAs;
+    private javax.swing.JMenuItem menuItemSaveModels;
     private javax.swing.JMenu menuKadenze;
     private javax.swing.JMenuItem menuLoadFromARFF;
     private javax.swing.JCheckBoxMenuItem menuPerformanceCheck;

@@ -34,8 +34,8 @@ import javax.swing.filechooser.FileFilter;
  *
  * @author rebecca
  */
-public class Util { 
-    
+public class Util {
+
     public static String getCanonicalPath(File f) {
         String s;
         try {
@@ -56,27 +56,27 @@ public class Util {
         }
         return ext;
     }
-    
+
     public static int showPrettyOptionPane(Component caller, String msg, String title) {
-        Object[] options = { "OK", "Cancel" };
+        Object[] options = {"OK", "Cancel"};
         return JOptionPane.showOptionDialog(caller,
                 "<html><body><p style='width: 200px;'>" + msg + "</p></body></html>",
                 title,
-                JOptionPane.OK_CANCEL_OPTION, 
+                JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.WARNING_MESSAGE,
                 null, options, options[0]);
     }
-    
+
     public static int showPrettyYesNoPane(Component caller, String msg, String title) {
-        Object[] options = { "Yes", "No" };
+        Object[] options = {"Yes", "No"};
         return JOptionPane.showOptionDialog(caller,
                 "<html><body><p style='width: 200px;'>" + msg + "</p></body></html>",
                 title,
-                JOptionPane.YES_NO_OPTION, 
+                JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE,
                 null, options, options[0]);
     }
-    
+
     public static final int OK_OPTION = 0;
     public static final int CANCEL_OPTION = 1;
 
@@ -86,7 +86,7 @@ public class Util {
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
     }
-    
+
     public static void showPrettyInfoPane(Component caller, String msg, String title) {
         Class c = Util.class;
         ImageIcon icon = new ImageIcon(c.getResource("/wekimini/icons/wekimini_small.png"));
@@ -94,7 +94,7 @@ public class Util {
         JOptionPane.showMessageDialog(caller,
                 "<html><body><p style='width: 200px;'>" + msg + "</p></body></html>",
                 title,
-                JOptionPane.INFORMATION_MESSAGE, 
+                JOptionPane.INFORMATION_MESSAGE,
                 icon);
     }
 
@@ -231,7 +231,7 @@ public class Util {
     public static void logWarning(Object o, String msg) {
         Logger.getLogger(o.getClass().getName()).log(Level.WARNING, msg);
     }
-    
+
     public static File findSaveFile(String startingDirectory, String ext, String defaultName, String description, Component c) {
         File defaultFile = new File(startingDirectory + File.separator + defaultName + "." + ext);
         FileChooserWithExtension fc = new FileChooserWithExtension(
@@ -255,6 +255,34 @@ public class Util {
         return findSaveFile(homeDir, ext, defaultName, description, c);
     }
 
+    public static File findSaveDirectory(String description, String defaultLocation, Component c) {
+        String l = defaultLocation;
+        if (l == null) {
+            l = System.getProperty("user.home");
+        }
+        
+        File file = new File(l);
+        File parent = file.getParentFile();
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(parent);
+        chooser.setSelectedFile(file);
+        chooser.setDialogTitle(description);
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+
+        if (chooser.showDialog(null, "Save") == JFileChooser.APPROVE_OPTION) {
+            File f = chooser.getSelectedFile();
+            if (f.exists()) {
+                return f;
+            } else {
+                return chooser.getCurrentDirectory();
+            }
+        } else {
+            return null;
+        }
+    }
+
     public static boolean isInteger(double d) {
         return d == Math.floor(d);
     }
@@ -262,7 +290,7 @@ public class Util {
     public static File findLoadFileWithDefaultFile(String ext, String description, String defFile, Component c) {
         File defaultFile = null;
         File defaultDir = null;
-        
+
         try {
             defaultFile = new File(defFile);
             defaultDir = defaultFile.getParentFile();
@@ -284,7 +312,7 @@ public class Util {
         }
         return file;
     }
-    
+
     public static File findLoadFile(String ext, String description, String defDir, Component c) {
         /* File defaultFile = null;
          if (defFile != null)
@@ -311,11 +339,11 @@ public class Util {
         return file;
     }
 
-    
     public interface CallableOnClosed {
+
         public void callMe();
     }
-    
+
     public static void callOnClosed(JFrame f, final CallableOnClosed func) {
         f.addWindowListener(new WindowAdapter() {
             @Override
@@ -364,7 +392,7 @@ public class Util {
          }
          }); */
     }
-    
+
     public static String prettyDecimalFormat(double d, int numPlaces) {
         StringBuilder sb = new StringBuilder("#.");
         for (int i = 0; i < numPlaces; i++) {
@@ -373,53 +401,51 @@ public class Util {
         DecimalFormat dFormat = new DecimalFormat(sb.toString());
         return dFormat.format(d);
     }
-    
+
     public static boolean isMac() {
         String osName = System.getProperty("os.name").toLowerCase();
         return osName.startsWith("mac os x");
     }
-    
+
     public static boolean isWindows() {
-      return System.getProperty("os.name").startsWith("Windows");   
+        return System.getProperty("os.name").startsWith("Windows");
     }
-    
+
     /*public static String getVersion() {
-       // String vFile = getClass().getResource("/wekimini/"
-        System.getPrope
-    } */
-    
-   /* public static void writePropertyTest() throws FileNotFoundException, IOException {
-        //InputStream pinput = getClass().getResourceAsStream("/wekimini/util/properties.txt");
-        Util u = new Util();
-        URL p = u.getClass().getResource("/wekimini/util/properties.txt");
-        File f = new File(p.getFile());
-        FileOutputStream out = new FileOutputStream(f);
-        Properties defaultProps = new Properties();
-        defaultProps.put("TestProp1", "TestValue");
-        defaultProps.store(out, "Comments");
-    }/*
-   /* 
+     // String vFile = getClass().getResource("/wekimini/"
+     System.getPrope
+     } */
+    /* public static void writePropertyTest() throws FileNotFoundException, IOException {
+     //InputStream pinput = getClass().getResourceAsStream("/wekimini/util/properties.txt");
+     Util u = new Util();
+     URL p = u.getClass().getResource("/wekimini/util/properties.txt");
+     File f = new File(p.getFile());
+     FileOutputStream out = new FileOutputStream(f);
+     Properties defaultProps = new Properties();
+     defaultProps.put("TestProp1", "TestValue");
+     defaultProps.store(out, "Comments");
+     }/*
+     /* 
      public static void readPropertyTest() throws FileNotFoundException, IOException  {
-        //InputStream pinput = getClass().getResourceAsStream("/wekimini/util/properties.txt");
-        Util u = new Util();
-        URL p = u.getClass().getResource("/wekimini/util/properties.txt");
-        File f = new File(p.getFile());
+     //InputStream pinput = getClass().getResourceAsStream("/wekimini/util/properties.txt");
+     Util u = new Util();
+     URL p = u.getClass().getResource("/wekimini/util/properties.txt");
+     File f = new File(p.getFile());
          
-       Properties defaultProps = new Properties();
-       FileInputStream in = new FileInputStream(f);
-       defaultProps.load(in);
-       in.close();
+     Properties defaultProps = new Properties();
+     FileInputStream in = new FileInputStream(f);
+     defaultProps.load(in);
+     in.close();
         
-         System.out.println("Propreties are:");
-         System.out.println(defaultProps.toString());
+     System.out.println("Propreties are:");
+     System.out.println(defaultProps.toString());
          
-         /*Util u = new Util();
-        URL p = u.getClass().getResource("/wekimini/util/properties.txt");
-        File f = new File(p.getFile());
-        FileOutputStream out = new FileOutputStream(f);
-        Properties defaultProps = new Properties();
-        defaultProps.put("TestProp1", "TestValue");
-        defaultProps.store(out, "Comments"); */
+     /*Util u = new Util();
+     URL p = u.getClass().getResource("/wekimini/util/properties.txt");
+     File f = new File(p.getFile());
+     FileOutputStream out = new FileOutputStream(f);
+     Properties defaultProps = new Properties();
+     defaultProps.put("TestProp1", "TestValue");
+     defaultProps.store(out, "Comments"); */
     //} */
-        
 }

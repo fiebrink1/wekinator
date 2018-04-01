@@ -32,7 +32,7 @@ public class WekinatorSaver {
     private final static String currentAppend = File.separator + "current";
     //  private final static String dataAppend = File.separator + currentAppend + File.separator + "data";
     private final static String modelsAppend = File.separator + currentAppend + File.separator + "models";
-    private final static String cppAppend = File.separator + currentAppend + File.separator + "cpp-source";
+   // private final static String cppAppend = File.separator + currentAppend + File.separator + "cpp-source";
     private final static String stashAppend = File.separator + "saved";
     private final static String inputFilename = File.separator + "inputConfig.xml";
     private final static String outputFilename = File.separator + "outputConfig.xml";
@@ -41,6 +41,10 @@ public class WekinatorSaver {
 
     private static final Logger logger = Logger.getLogger(WekinatorSaver.class.getName());
 
+    public static String getCppLocationForProjectDirectory(File projectDir) {
+        return projectDir + currentAppend + File.separator + "cpp-source" + File.separator;
+    }
+    
     public static Wekinator loadWekinatorFromFile(String wekFilename) throws Exception {
         File wekFile = new File(wekFilename);
         String projectDir = wekFile.getParentFile().getAbsolutePath();
@@ -77,7 +81,7 @@ public class WekinatorSaver {
             saveOutputs(projectDir, w);
             saveData(projectDir, w);
             saveModels(projectDir, w);
-            saveCppSource(projectDir, w);
+            saveCppSource(getCppLocationForProjectDirectory(projectDir), w);
             saveJSONDescription(projectDir, w);
         }
     }
@@ -125,10 +129,16 @@ public class WekinatorSaver {
     }
     
     //MZ: added this to export C++ code
-    private static void saveCppSource (File projectDir, Wekinator w) throws IOException {
+    public static void saveCppSource (String location, Wekinator w) throws IOException {
+        File locationFile = new File(location);
+        if (! locationFile.exists()) {
+            locationFile.mkdirs();
+        }
+        
         CppWriter Cpp = new CppWriter(); 
         List<Path> paths = w.getSupervisedLearningManager().getPaths();
-        String location = projectDir + cppAppend + File.separator;
+       // String location = projectDir + cppAppend + File.separator;
+       // String location = getCppLocationForProjectDirectory(projectDir) + File.separator;
         Cpp.writeStaticFiles(location);
         String[] allInputNames = w.getInputManager().getInputNames();
         for (int i = 0; i < paths.size(); i++) {
@@ -174,8 +184,10 @@ public class WekinatorSaver {
         //  new File(data).mkdirs();
         String models = f.getAbsolutePath() + modelsAppend;
         new File(models).mkdirs();
-        String cppSource = f.getAbsolutePath() + cppAppend;
-        new File(cppSource).mkdirs();
+       // String cppSource = f.getAbsolutePath() + cppAppend;
+        String cppLocation = getCppLocationForProjectDirectory(f);
+        
+        new File(cppLocation).mkdirs();
         String stash = f.getAbsolutePath() + stashAppend;
         new File(stash).mkdirs();
         //String logs = f.getAbsolutePath() + File.separator + "logs";
@@ -191,7 +203,7 @@ public class WekinatorSaver {
         saveOutputs(projectDir, w);
         saveData(projectDir, w);
         saveModels(projectDir, w);
-        saveCppSource(projectDir, w);
+        saveCppSource(getCppLocationForProjectDirectory(projectDir), w);
         saveJSONDescription(projectDir, w);
 
     }
