@@ -60,7 +60,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         System.out.println("making output plot:" + plotHolderPanel.getWidth() + ":" + plotHolderPanel.getHeight());
         
         outputPlot = new PlotPanel(plotHolderPanel.getWidth() - 1, plotHolderPanel.getHeight() - 1);
-        outputPlot.pointPlot = false;
+        outputPlot.interpolatePoints = false;
         plotHolderPanel.setLayout(new BorderLayout());
         plotHolderPanel.add(outputPlot, BorderLayout.CENTER);
         outputPlotModel = new PlotRowModel(30);
@@ -162,11 +162,15 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         boolean completed =  newStatus.getNumToTrain() == newStatus.getNumTrained();
         if(completed)
         {
+            trainBtn.setEnabled(true);
+            trainBtn.setText("Train and Run");
             controller.startRun();
         }
         if (newStatus.isWasCancelled()) 
         {
             s += " Training cancelled.";
+            trainBtn.setEnabled(true);
+            trainBtn.setText("Train and Run");
         }
         w.getStatusUpdateCenter().update(this, s);
     }
@@ -340,7 +344,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         System.out.println("Model " + modelNum + ": " + results);
         int[][] arr = ConfusionParser.parseMatrix(confusion);
         confusionPanel.setModel(arr);
-        accuracyLabel.setText(results);
+        accuracyLabel.setText("<html><strong>CV</strong>: " + results + "</html>");
         confusionWrapper.setVisible(true);
         confusionHoldingImage.setVisible(false);
         evaluateBtn.setText("Re-evaluate");
@@ -401,11 +405,15 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         if(!isRunning)
         {
             if (controller.canTrain()) {
+                trainBtn.setEnabled(false);
+                trainBtn.setText("Training...");
                 controller.train();
             }
         }
         else
         {
+            trainBtn.setEnabled(true);
+            trainBtn.setText("Train and Run");
             controller.stopRun();
         }
         

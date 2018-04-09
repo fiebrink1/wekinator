@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
 import wekimini.DtwLearningManager;
 import wekimini.GlobalSettings;
 import wekimini.LearningManager;
@@ -76,7 +77,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         if (type == LearningManager.LearningType.INITIALIZATION) {
             throw new IllegalStateException("GUI can only be created for Wekinator whose learning type is known");
         }
-
+        //setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         this.w = w;
         setGUIForWekinator(type);
         this.addWindowListener(new WindowAdapter() {

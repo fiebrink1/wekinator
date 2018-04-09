@@ -5,6 +5,7 @@
  */
 package wekimini.gui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -28,9 +29,11 @@ public class PlotPanel extends JPanel {
     private double y = 0;
     protected double horizontalScale = 1;
     private PlotRowModel model;
-    public boolean renderWindow = false;
-    public boolean pointPlot = true;
+    public boolean renderWindowOverlay = false;
+    public boolean interpolatePoints = true;
     private double plotY = 0;
+    private final static BasicStroke THIN_STROKE = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
+    private final static BasicStroke THICK_STROKE = new BasicStroke(5, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
     
     private PlotPanel(){}
     
@@ -88,10 +91,10 @@ public class PlotPanel extends JPanel {
             case 1: return Color.BLUE;
             case 2: return Color.RED;
             case 3: return Color.ORANGE;
-            case 4: return Color.PINK;
+            case 4: return Color.GREEN;
             case 5: return Color.BLACK;
             case 6: return Color.MAGENTA;
-            case 7: return Color.GREEN;
+            case 7: return Color.PINK;
             case 8: return Color.CYAN;
             case 9: return Color.YELLOW;
         }
@@ -124,16 +127,18 @@ public class PlotPanel extends JPanel {
             } 
             else 
             {
-                if(model.classes.size() > n)
+                if(interpolatePoints)
                 {
-                    g2d.setColor(colorForClass(model.classes.get(n)));
-                }
-                if(pointPlot)
-                {
+                    if(model.classes.size() > n)
+                    {
+                        g2d.setColor(colorForClass(model.classes.get(n)));
+                    }
+                    g2d.setStroke(THIN_STROKE);
                     g2d.draw(new Line2D.Double(lastPointX, lastPointY, thisX, thisY)); 
                 }
                 else
                 {
+                    g2d.setStroke(THICK_STROKE);
                     g2d.setColor(colorForClass(f));
                     g2d.draw(new Line2D.Double(lastPointX, thisY, thisX, thisY)); 
                 }
@@ -141,7 +146,7 @@ public class PlotPanel extends JPanel {
                 lastPointY = thisY;
             }
         }
-        if(renderWindow)
+        if(renderWindowOverlay)
         {
             g2d.setColor(new Color(1.0f,1.0f,0.0f,0.2f));
             double rectWidth = (double) (model.windowSize * horizontalScale);

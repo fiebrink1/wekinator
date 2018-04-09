@@ -18,7 +18,7 @@ public class Feature
 //    public enum InputDiagram {
 //        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
 //    }
-//    
+    
     public final String name;
     public final ArrayList<Integer> modifierIds = new ArrayList();
     public InputDiagram diagram = InputDiagram.UNKNOWN;

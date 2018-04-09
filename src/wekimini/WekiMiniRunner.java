@@ -222,7 +222,6 @@ public final class WekiMiniRunner {
             String dir = ((FeaturnatorLogger)KadenzeLogging.getLogger()).getUserDir() + "/user_" + userID + "_Study1_" + dateFormat.format(date);
             File f = new File(dir);
             w = new Wekinator(WekiMiniRunner.generateNextID());
-            
             w.getOSCSender().setHostnameAndPort(InetAddress.getByName(hostName), port);
             String[] inputs = new String[]{"accX","accY","accZ","gyroX","gyroY","gyroZ"};
             int numClasses = inputs.length;
@@ -254,6 +253,18 @@ public final class WekiMiniRunner {
             w.setHasSaveLocation(true);
             w.setProjectLocation(dir);
             w.setProjectName("Study1");
+            
+            w.addCloseListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    logger.log(Level.INFO, "Wekinator project closed");
+                    if (wekinatorCurrentMainFrames.size() == 1) 
+                    {
+                        handleClosingLast();
+                    } 
+                    wekinatorCurrentMainFrames.remove((Wekinator) e.getSource());
+                }
+            });
             
         } catch(IOException e)
         {

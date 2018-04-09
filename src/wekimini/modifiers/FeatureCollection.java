@@ -36,7 +36,7 @@ public final class FeatureCollection
     protected static final String FFT_DESCRIPTION = "FFT \nUse this feature if you are interested in the periodicity of your motion";
     protected static final String RAW_DESCRIPTION = "Raw \nJust the raw signal";
     protected static final String MEAN_DESCRIPTION = "Mean \nUse this feature to smooth out measurements over the given window e.g. if you are only interested in bigger changes over time";
-    protected static final String FOD_DESCRIPTION = "1st Order Diff\nUse this feature if you want to distinguish gestures or rotate at different speeds";
+    protected static final String FOD_DESCRIPTION = "1st Order Diff \nUse this feature if you want to distinguish gestures or rotate at different speeds";
     protected static final String ENERGY_DESCRIPTION = "Energy \nUse this if you are interested in the strength of your signal";
     protected static final String MAX_DESCRIPTION = "Max \nUse this feature if you are interested in the extremes of your motion";
     protected static final String MIN_DESCRIPTION = "Min \nUse this feature if you are interested in the extremes of your motion";
@@ -422,7 +422,7 @@ public final class FeatureCollection
             }
             else
             {
-                 removeFeatureForKey(feature.name);
+                removeFeatureForKey(feature.name);
             }
             ptr++;
         }
