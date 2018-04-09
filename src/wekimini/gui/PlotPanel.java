@@ -157,15 +157,15 @@ public class PlotPanel extends JPanel {
         }
     }
    
-   protected void rescale() 
-   {
+    protected void rescale() 
+    {
         horizontalScale = (double)w/(double)model.pointsPerRow;
-   }
+    }
    
-   public void reset()
-   {
-       rescale();
-   }
+    public void reset()
+    {
+        rescale();
+    }
     
     public void clear()
     {

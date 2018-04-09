@@ -49,6 +49,8 @@ import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
+import mdsj.MDSJ;
+
 
 /**
  *
@@ -76,6 +78,8 @@ public class DataManager {
     private Instances testInstances = null;
     //Array of instances (one for each output) with the selected features calculated from the raw input. 
     private List<Instances> trainingFeatureInstances = null;
+    //Array of instances (one for each output), each represented as a reduced 2 dimensions calculated from the selected features.
+    private List<Instances> trainingMDSInstances = null;
     //Array of instances (one for each output) with the selected features calculated from the test set. 
     private List<Instances> testingFeatureInstances = null;
     //Array of instances (one for each output) with the all the possible features calculated from the raw input (for use in automatic selection) 
@@ -624,6 +628,7 @@ public class DataManager {
         }
         
         trainingFeatureInstances = new ArrayList(numOutputs);
+        trainingMDSInstances = new ArrayList(numOutputs);
         testingFeatureInstances = new ArrayList(numOutputs);
         allFeaturesInstances = new ArrayList(numOutputs);
         allFeaturesTestInstances = new ArrayList(numOutputs);
@@ -1046,6 +1051,44 @@ public class DataManager {
     protected List<Instances> getFeatureInstances(boolean testSet)
     {
         return testSet ? testingFeatureInstances : trainingFeatureInstances;
+    }
+    
+    public Instances getMDSInstances(int outputIndex)
+    {
+        return trainingMDSInstances.get(outputIndex);
+    }
+    
+    public void updateMDSInstances(int i)
+    {
+        Instances featureInstances = getTrainingDataForOutput(i);
+        Instances newInstances = featureManager.getNewMDSInstances(numClasses[i]);
+        double vals[][] = new double[featureInstances.numAttributes()][featureInstances.numInstances()];
+        double outputs[] = new double[featureInstances.numInstances()];
+        for(int j = 0; j < featureInstances.numInstances(); j++)
+        {
+            Instance in = featureInstances.instance(j);
+            outputs[j] = in.value(in.classIndex());
+            for(int k = 0; k < in.numAttributes(); k++)
+            {
+                vals[k][j] = in.value(k);
+            }
+        }
+        double[][] scaled = MDSJ.classicalScaling(vals);
+        for(int j = 0; j < featureInstances.numInstances(); j++)
+        {
+            double[] scaledVals = {scaled[0][j], scaled[1][j], outputs[j]};
+            Instance featureInstance = new Instance(1.0, scaledVals);
+            newInstances.add(featureInstance);
+            newInstances.setClassIndex(scaledVals.length - 1);
+        }
+        if(i < trainingMDSInstances.size())
+        {
+           trainingMDSInstances.set(i, newInstances);
+        }
+        else
+        {
+           trainingMDSInstances.add(newInstances);
+        }
     }
     
     protected Instances getAllFeaturesInstances(int outputIndex, boolean testSet)

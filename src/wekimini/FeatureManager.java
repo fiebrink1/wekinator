@@ -166,6 +166,11 @@ public class FeatureManager
         return getNewInstancesOfLength(length, numClasses);
     }
     
+    protected Instances getNewMDSInstances(int numClasses)
+    {
+        return getNewInstancesOfLength(2, numClasses);
+    }
+    
     protected double[] modifyInputsForOutput(double[] newInputs, int output)
     {        
         return featureCollections.get(output).computeAndGetValuesForNewInputs(newInputs);
