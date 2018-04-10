@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 /**
  *
  * @author louismccallum
@@ -283,8 +284,9 @@ public class ModifierCollection {
         while(completedIndex < completedModifiers.size())
         {
             completedModifier = completedModifiers.get(completedIndex);
-            for (ModifiedInput toComplete : modifiers) 
+            for (Iterator<ModifiedInput> iterator = modifiers.iterator(); iterator.hasNext();)
             {
+                ModifiedInput toComplete = iterator.next();
                 if(!toComplete.hasAllInputs()) 
                 {
                     toComplete.updateRequiredInputs(completedModifier);

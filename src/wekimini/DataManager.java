@@ -964,8 +964,9 @@ public class DataManager {
         fireStateChanged();
     }
     
-    private synchronized void updateFeatureInstances(int index, boolean testSet, boolean allFeatures)
+    private void updateFeatureInstances(int index, boolean testSet, boolean allFeatures)
     { 
+        synchronized(this) {
         if(useAutomaticFeatures && !allFeatures)
         {
             setFeaturesInstancesFromAutomatic(index, testSet);
@@ -1049,6 +1050,7 @@ public class DataManager {
             {
                 e.printStackTrace();
             }
+        }
         }
     }
     

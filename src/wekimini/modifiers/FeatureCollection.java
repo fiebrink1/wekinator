@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.NoSuchElementException;
 import wekimini.modifiers.Feature.InputDiagram;
@@ -53,7 +54,7 @@ public final class FeatureCollection
         //addFeatureForKey("PassThroughAll");
     }
     
-    public void initLibrary(int windowSize, int bufferSize)
+    public synchronized void initLibrary(int windowSize, int bufferSize)
     {
         
         library.clear();
@@ -295,8 +296,9 @@ public final class FeatureCollection
     
     public synchronized void updateFeatureIndexes()
     {
-        for(Feature f:added.values())
+        for(Iterator<Feature> iterator = added.values().iterator(); iterator.hasNext();)
         {
+             Feature f = iterator.next();
             f.setOutputIndexes(modifiers.indexesForName(f.name));
         }
     }

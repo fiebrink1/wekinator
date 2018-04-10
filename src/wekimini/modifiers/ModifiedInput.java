@@ -6,6 +6,7 @@
 package wekimini.modifiers;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -108,8 +109,9 @@ public class ModifiedInput {
     public synchronized void collateInputsFromModifiers(List<ModifiedInput> modifiers)
     {
         int ptr = 0;
-        for(ModifiedInput modifier: modifiers)
+        for(Iterator<ModifiedInput> iterator = modifiers.iterator(); iterator.hasNext();)
         {
+            ModifiedInput modifier = iterator.next();
             for(int input: requiredInputs)
             {
                 if(input == modifier.inputID)
