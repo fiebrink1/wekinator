@@ -157,7 +157,11 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
     {
         if(w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING)
         {
-            ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureAdded(w);
+            if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+            {
+                ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureAdded(w);
+            }
+            w.getDataManager().featureListUpdated();
             w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(ft.name);
             delegate.featureListUpdated();
             updateResultsTable(currentResults);
@@ -191,7 +195,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                 @Override
                 public void done()
                 {
-                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureSearch(w, searchTerm, f);
+                    if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+                    {
+                        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureSearch(w, searchTerm, f);
+                    }
                     updateResultsTable(f);
                 }
             };
@@ -231,7 +238,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
             {
                 if(sf.length > 0)
                 {
-                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureTagSearch(w, sf, f);
+                    if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+                    {
+                        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureTagSearch(w, sf, f);
+                    }
                 }
                 updateResultsTable(f);
             }

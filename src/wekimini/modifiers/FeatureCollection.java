@@ -293,7 +293,7 @@ public final class FeatureCollection
         return tags;
     }
     
-    public void updateFeatureIndexes()
+    public synchronized void updateFeatureIndexes()
     {
         for(Feature f:added.values())
         {

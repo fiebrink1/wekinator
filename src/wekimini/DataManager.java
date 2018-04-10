@@ -80,6 +80,7 @@ public class DataManager {
     private List<Instances> trainingFeatureInstances = null;
     //Array of instances (one for each output), each represented as a reduced 2 dimensions calculated from the selected features.
     private List<Instances> trainingMDSInstances = null;
+    private boolean mdsDirty = true;
     //Array of instances (one for each output) with the selected features calculated from the test set. 
     private List<Instances> testingFeatureInstances = null;
     //Array of instances (one for each output) with the all the possible features calculated from the raw input (for use in automatic selection) 
@@ -430,6 +431,7 @@ public class DataManager {
             else
             {
                 featureManager.setDirty(i);
+                mdsDirty = true;
             }
             if (!outputMask[i]) {
                 in.setMissing(numMetaData + getNumInputs() + i);
@@ -650,6 +652,7 @@ public class DataManager {
             }
             featureManager.setTestSetDirty(i);
             featureManager.setDirty(i);
+            mdsDirty = true;
         }
 
         if(inputs)
@@ -961,7 +964,7 @@ public class DataManager {
         fireStateChanged();
     }
     
-    private void updateFeatureInstances(int index, boolean testSet, boolean allFeatures)
+    private synchronized void updateFeatureInstances(int index, boolean testSet, boolean allFeatures)
     { 
         if(useAutomaticFeatures && !allFeatures)
         {
@@ -979,6 +982,7 @@ public class DataManager {
             {
                 newInstances = featureManager.getNewInstances(index, numClasses[index]);
                 featureManager.resetAllModifiers();
+                mdsDirty = true;
             }
             try{
                 Instances in = testSet ? testInstances : inputInstances;
@@ -1050,28 +1054,76 @@ public class DataManager {
     
     protected List<Instances> getFeatureInstances(boolean testSet)
     {
+        if(testSet)
+        {
+            for(int i = 0; i < numOutputs; i++)
+            {
+                if(featureManager.isTestSetDirty(i))
+                {
+                    updateFeatureInstances(i, true, false);
+                }
+            }
+
+        }
+        else
+        {
+            for(int i = 0; i < numOutputs; i++)
+            {
+                if(featureManager.isDirty(i))
+                {
+                    updateFeatureInstances(i, false, false);
+                }
+            }
+        }
         return testSet ? testingFeatureInstances : trainingFeatureInstances;
     }
     
-    public Instances getMDSInstances(int outputIndex)
+    public void featureListUpdated()
     {
+        mdsDirty = true;
+    }
+    
+    public synchronized Instances getMDSInstances(int outputIndex)
+    {
+        System.out.println("get MDS");
+        if(mdsDirty)
+        {
+            System.out.println("MDS dirty, updating");
+            for(int i = 0; i < numOutputs; i++)
+            {
+                updateMDSInstances(i);
+            }
+            mdsDirty = false;
+        }
         return trainingMDSInstances.get(outputIndex);
     }
     
     public void updateMDSInstances(int i)
     {
         Instances featureInstances = getTrainingDataForOutput(i);
+        
+        if(featureInstances.numInstances() == 0)
+        {
+            return;
+        }
+        
         Instances newInstances = featureManager.getNewMDSInstances(numClasses[i]);
-        double vals[][] = new double[featureInstances.numAttributes()][featureInstances.numInstances()];
+        double vals[][] = new double[featureInstances.numInstances()][featureInstances.numInstances()];
         double outputs[] = new double[featureInstances.numInstances()];
         for(int j = 0; j < featureInstances.numInstances(); j++)
         {
             Instance in = featureInstances.instance(j);
-            outputs[j] = in.value(in.classIndex());
-            for(int k = 0; k < in.numAttributes(); k++)
+            for(int k = 0; k < featureInstances.numInstances(); k++)
             {
-                vals[k][j] = in.value(k);
+                double delta = 0;
+                Instance in2 = featureInstances.instance(k);
+                for(int l = 0; l < in2.numAttributes() - 1; l++)
+                {
+                    delta += Math.abs(in.value(l) - in2.value(l));
+                }
+                vals[j][k] = delta;
             }
+            outputs[j] = in.value(in.classIndex());
         }
         double[][] scaled = MDSJ.classicalScaling(vals);
         for(int j = 0; j < featureInstances.numInstances(); j++)

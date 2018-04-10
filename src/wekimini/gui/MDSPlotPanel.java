@@ -25,11 +25,10 @@ public class MDSPlotPanel extends JPanel {
     
     private double w = 1;
     private double maxVal = 0;
+    private double minVal = 0;
     private double imageHeight = 1;
     private double plotHeight = 1;
     private BufferedImage image;
-    private double x = 0;
-    private double y = 0;
     private double plotY = 0;
     private final static BasicStroke STROKE = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
     private Instances points;
@@ -44,8 +43,23 @@ public class MDSPlotPanel extends JPanel {
         plotY = 10.0;
         image = new BufferedImage(w, (int)imageHeight, BufferedImage.TYPE_INT_ARGB);
         setBackground(Color.white);
-        x = 0;
-        y = 0;
+    }
+    
+    public Color colorForClass(double classVal)
+    {
+        switch((int)classVal)
+        {
+            case 1: return Color.BLUE;
+            case 2: return Color.RED;
+            case 3: return Color.ORANGE;
+            case 4: return Color.GREEN;
+            case 5: return Color.BLACK;
+            case 6: return Color.MAGENTA;
+            case 7: return Color.PINK;
+            case 8: return Color.CYAN;
+            case 9: return Color.YELLOW;
+        }
+        return Color.BLUE;
     }
     
     @Override
@@ -57,35 +71,53 @@ public class MDSPlotPanel extends JPanel {
             g.drawImage(image, 0, 0, null);
         }
         
-        Graphics2D g2d = (Graphics2D)g;
-        g2d.setColor(Color.BLUE);
-        g2d.setStroke(STROKE);
+        System.out.println("redrawing MDS");
         
-        for(int i = 0; i < points.numInstances(); i++)
+        if(points != null)
         {
-            Instance pt = points.instance(i);
-            double x = pt.value(0);
-            double y = pt.value(1);
-            x *= (double)w / maxVal;
-            y *= (double)imageHeight / maxVal;
-            g2d.draw(new Line2D.Double(x, y, x + 1, y +1));
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setStroke(STROKE);
+            double delta = maxVal - minVal;
+            for(int i = 0; i < points.numInstances(); i++)
+            {
+                Instance pt = points.instance(i);
+                //System.out.println("vals (" + pt.value(0) + "," +pt.value(1) +")");
+                double x = pt.value(0) - minVal;
+                double y = pt.value(1) - minVal;
+                g2d.setColor(colorForClass(pt.value(2)));
+                x *= ((double)w / delta);
+                y *= ((double)plotHeight / delta);
+                y += plotY;
+                //System.out.println("plotting (" + x + "," + y +")");
+                g2d.draw(new Line2D.Double(x, y, x + 1, y +1));
+            }
         }
     }
     
     public void updateWithInstances(Instances scaled)
     {
+        System.out.println("updating MDS");
         points = scaled;
-        double max = Double.NEGATIVE_INFINITY;
+        maxVal = Double.NEGATIVE_INFINITY;
+        minVal = Double.POSITIVE_INFINITY;
         for(int i = 0; i < points.numInstances(); i++)
         {
             Instance pt = points.instance(i);
-            if(pt.value(0) > max)
+            if(pt.value(0) > maxVal)
             {
-                max = pt.value(0);
+                maxVal = pt.value(0);
             }
-            if(pt.value(1) > max)
+            if(pt.value(1) > maxVal)
             {
-                max = pt.value(1);
+                maxVal = pt.value(1);
+            }
+            if(pt.value(0) < minVal)
+            {
+                minVal = pt.value(0);
+            }
+            if(pt.value(1) < minVal)
+            {
+                minVal = pt.value(1);
             }
         }
         repaint();

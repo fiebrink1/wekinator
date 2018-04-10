@@ -121,8 +121,12 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     {
         if(w.getSupervisedLearningManager().getRunningState() == RunningState.NOT_RUNNING)
         {
-            ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureRemoved(w);
+            if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+            {
+                ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureRemoved(w);
+            }
             w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).removeFeatureForKey(ft.name);
+            w.getDataManager().featureListUpdated();
             newFeaturesPanel.featureListUpdated();
             evaluateFeaturesPanel.featuresListUpdated();
             updateCurrentFeaturesTable();
@@ -338,7 +342,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 425, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(featureDetailPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -410,7 +414,10 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     private void updateSelectedFeature(Feature ft)
     {
         selectedFeature = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey(ft.name);
-        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeaturePreviewed(w, selectedFeature);
+        if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+        {
+            ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeaturePreviewed(w, selectedFeature);
+        }
         PlotRowModel model = new PlotRowModel(100);
         w.getSupervisedLearningManager().isPlotting = true;
         model.isStreaming = true;
@@ -430,6 +437,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     @Override
     public void featureListUpdated()
     {
+        w.getDataManager().featureListUpdated();
         newFeaturesPanel.featureListUpdated();
         evaluateFeaturesPanel.featuresListUpdated();
         updateCurrentFeaturesTable();
@@ -439,6 +447,9 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     @Override
     public void featureLibraryUpdated(boolean sizeDidChange)
     {
+        w.getDataManager().featureListUpdated();
+        newFeaturesPanel.featureListUpdated();
+        evaluateFeaturesPanel.featuresListUpdated();
         updateCurrentFeaturesTable();
         if(sizeDidChange)
         {
@@ -489,7 +500,8 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         {
             w.getSupervisedLearningManager().isPlotting = isPlotting;
         }
-        newFeaturesPanel.refreshResultsTable();;
+        newFeaturesPanel.refreshResultsTable();
+        w.getDataManager().featureListUpdated();
         featureLibraryUpdated(buffers);
     }
 

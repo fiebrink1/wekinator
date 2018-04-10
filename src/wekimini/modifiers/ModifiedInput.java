@@ -105,7 +105,7 @@ public class ModifiedInput {
         return requiredInputs;
     }
     
-    public void collateInputsFromModifiers(List<ModifiedInput> modifiers)
+    public synchronized void collateInputsFromModifiers(List<ModifiedInput> modifiers)
     {
         int ptr = 0;
         for(ModifiedInput modifier: modifiers)
