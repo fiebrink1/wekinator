@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 import javax.swing.BorderFactory;
 import javax.swing.Timer;
@@ -29,6 +30,8 @@ import wekimini.WekinatorSupervisedLearningController;
 import wekimini.gui.ModelEvaluationFrame.EvaluationMode;
 import wekimini.learning.ModelEvaluator;
 import wekimini.modifiers.Feature;
+import wekimini.osc.OSCClassificationOutput;
+import wekimini.osc.OSCOutput;
 import wekimini.util.ConfusionParser;
 
 /**
@@ -70,13 +73,15 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         System.out.println("making output plot:" + plotHolderPanel.getWidth() + ":" + plotHolderPanel.getHeight());
         
         outputPlot = new PlotPanel(plotHolderPanel.getWidth() - 1, plotHolderPanel.getHeight() - 1);
-        outputPlot.interpolatePoints = false;
+        Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
+        OSCOutput o = path.getOSCOutput();
+        outputPlot.interpolatePoints = !(o instanceof OSCClassificationOutput);
+        
         plotHolderPanel.setLayout(new BorderLayout());
         plotHolderPanel.add(outputPlot, BorderLayout.CENTER);
         outputPlotModel = new PlotRowModel(30);
         outputPlotModel.setMinMax(0, 7);
         outputPlotModel.isStreaming = true;
-        
         controller = new WekinatorSupervisedLearningController(w.getSupervisedLearningManager(),w);
         trainingListener = new PropertyChangeListener() {
 
@@ -133,7 +138,8 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     
     private void outputUpdated(double vals[])
     {
-        outputLabel.setText(""+vals[0]);
+        DecimalFormat df = new DecimalFormat("0.00"); 
+        outputLabel.setText(df.format(vals[0]));
         outputPlotModel.addPoint(vals[0]);
         outputPlot.updateModel(outputPlotModel);
         repaint();
