@@ -1087,10 +1087,8 @@ public class DataManager {
     
     public synchronized Instances getMDSInstances(int outputIndex)
     {
-        System.out.println("get MDS");
         if(mdsDirty)
         {
-            System.out.println("MDS dirty, updating");
             for(int i = 0; i < numOutputs; i++)
             {
                 updateMDSInstances(i);
@@ -1100,9 +1098,21 @@ public class DataManager {
         return trainingMDSInstances.get(outputIndex);
     }
     
+    public void updateMDSInstances(int i, Instance newVals)
+    {
+        Instances featureInstances = getTrainingDataForOutput(i);
+        featureInstances.add(newVals);
+        updateMDSInstances(i, featureInstances);
+    }
+    
     public void updateMDSInstances(int i)
     {
         Instances featureInstances = getTrainingDataForOutput(i);
+        updateMDSInstances(i, featureInstances);
+    }
+    
+    private void updateMDSInstances(int i, Instances featureInstances)
+    {
         
         if(featureInstances.numInstances() == 0)
         {

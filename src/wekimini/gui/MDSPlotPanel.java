@@ -13,6 +13,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import javax.swing.JPanel;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -30,17 +31,20 @@ public class MDSPlotPanel extends JPanel {
     private double plotHeight = 1;
     private BufferedImage image;
     private double plotY = 0;
+    private double plotX = 0;
     private final static BasicStroke STROKE = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
     private Instances points;
+    private ArrayList<Integer> keyClasses = new ArrayList();
     
     private MDSPlotPanel(){}
     
     public MDSPlotPanel(int w, int h)
     {
-        this.w = w;
-        imageHeight = h;
-        plotHeight = (h * 0.875) - 10.0;
         plotY = 10.0;
+        plotX = 10.0;
+        this.w = w - plotX;
+        imageHeight = h;
+        plotHeight = (h * 0.875) - plotY;
         image = new BufferedImage(w, (int)imageHeight, BufferedImage.TYPE_INT_ARGB);
         setBackground(Color.white);
     }
@@ -70,9 +74,7 @@ public class MDSPlotPanel extends JPanel {
         {
             g.drawImage(image, 0, 0, null);
         }
-        
-        System.out.println("redrawing MDS");
-        
+                
         if(points != null)
         {
             Graphics2D g2d = (Graphics2D)g;
@@ -88,18 +90,27 @@ public class MDSPlotPanel extends JPanel {
                 x *= ((double)w / delta);
                 y *= ((double)plotHeight / delta);
                 y += plotY;
+                x += plotX;
                 //System.out.println("plotting (" + x + "," + y +")");
                 g2d.draw(new Line2D.Double(x, y, x + 1, y +1));
             }
+            int keyH = 15;
+            int totalH = keyClasses.size() * keyH;
+            int startY = ((int)plotHeight - totalH) / 2;
+            for(int i = 0; i < keyClasses.size(); i++)
+            {
+                g2d.setPaint(colorForClass(keyClasses.get(i)));
+                g2d.drawString( ""+(i+1), 2, startY + ((i+1)*keyH));
+            }
         }
     }
-    
+       
     public void updateWithInstances(Instances scaled)
     {
-        System.out.println("updating MDS");
         points = scaled;
         maxVal = Double.NEGATIVE_INFINITY;
         minVal = Double.POSITIVE_INFINITY;
+        keyClasses.clear();
         for(int i = 0; i < points.numInstances(); i++)
         {
             Instance pt = points.instance(i);
@@ -118,6 +129,11 @@ public class MDSPlotPanel extends JPanel {
             if(pt.value(1) < minVal)
             {
                 minVal = pt.value(1);
+            }
+            int keyClass = (int)pt.value(2);
+            if(!keyClasses.contains(keyClass))
+            {
+                keyClasses.add(keyClass);
             }
         }
         repaint();

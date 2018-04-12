@@ -9,12 +9,16 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.LinkedList;
 import javax.swing.BorderFactory;
+import javax.swing.Timer;
 import javax.swing.border.Border;
 import org.jdesktop.swingworker.SwingWorker;
+import weka.core.Instance;
 import wekimini.DataManager;
 import wekimini.OutputManager;
 import wekimini.Path;
@@ -24,6 +28,7 @@ import wekimini.Wekinator;
 import wekimini.WekinatorSupervisedLearningController;
 import wekimini.gui.ModelEvaluationFrame.EvaluationMode;
 import wekimini.learning.ModelEvaluator;
+import wekimini.modifiers.Feature;
 import wekimini.util.ConfusionParser;
 
 /**
@@ -44,6 +49,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private PlotRowModel outputPlotModel;
     private MDSPlotPanel mdsPlot;
     private boolean updatingMDS = false;
+    private Timer timer;
     
     public EvaluateFeaturesPanel() {
         initComponents();
@@ -60,7 +66,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     {
         this.w = w;
         this.outputIndex = output;
-        
+        timer = new Timer(1,new ActionListener() {public void actionPerformed(ActionEvent evt) {}});
         System.out.println("making output plot:" + plotHolderPanel.getWidth() + ":" + plotHolderPanel.getHeight());
         
         outputPlot = new PlotPanel(plotHolderPanel.getWidth() - 1, plotHolderPanel.getHeight() - 1);
@@ -105,10 +111,24 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         mdsPlot = new MDSPlotPanel(mdsPlotHolder.getWidth(), mdsPlotHolder.getHeight());
         mdsPlotHolder.setLayout(new BorderLayout());
         mdsPlotHolder.add(mdsPlot, BorderLayout.CENTER);
-        if(w.getDataManager().canTrainOrRun(outputIndex))
+        //startTimer();
+    }
+    
+     public void startTimer()
+    {
+        if(timer.isRunning())
         {
-            mdsPlot.updateWithInstances(w.getDataManager().getMDSInstances(outputIndex));
-        }     
+            timer.stop();
+        }
+        
+        timer = new Timer(10, (ActionEvent evt) -> {
+            if(w.getDataManager().canTrainOrRun(outputIndex) && !updatingMDS)
+            { 
+                mdsPlot.updateWithInstances(w.getDataManager().getMDSInstances(outputIndex));
+            }
+        });  
+        
+        timer.start();
     }
     
     private void outputUpdated(double vals[])
@@ -305,7 +325,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         jLayeredPane1Layout.setVerticalGroup(
             jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jLayeredPane1Layout.createSequentialGroup()
-                .addGap(0, 14, Short.MAX_VALUE)
+                .addContainerGap()
                 .addComponent(confusionHoldingImage, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jLayeredPane1Layout.createSequentialGroup()
@@ -343,7 +363,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         );
         plotHolderPanelLayout.setVerticalGroup(
             plotHolderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 36, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -362,26 +382,27 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                     .addComponent(trainBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(outputLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(accuracyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(20, 20, 20))))
+                        .addGap(6, 6, 6)
+                        .addComponent(accuracyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(trainBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(trainBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(outputTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(outputLabel)
+                .addComponent(outputLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(plotHolderPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(evaluateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(evaluateBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(accuracyLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tabbedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(tabbedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
