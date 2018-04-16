@@ -37,7 +37,7 @@ public class Study1Prompt extends javax.swing.JFrame implements Closeable {
      */
     public Study1Prompt() {
         initComponents();
-        currentSaveLocation = System.getProperty("user.home") + File.separator + "study1";
+        currentSaveLocation = System.getProperty("user.home") + File.separator + "/Documents/Goldsmiths/Study1_logs";
     }
     
     @Override

@@ -8,9 +8,7 @@ package wekimini.study1analysis;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -23,8 +21,12 @@ import wekimini.Wekinator;
 import wekimini.WekinatorSaver;
 import wekimini.gui.ModelEvaluationFrame;
 import wekimini.learning.ModelEvaluator;
-import wekimini.modifiers.Feature;
-import wekimini.util.ConfusionParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.FileOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 /**
  *
@@ -33,12 +35,14 @@ import wekimini.util.ConfusionParser;
 public class AccuracyExperiment {
     
     private Wekinator w;
-    private final String ROOT_DIR = "/Users/louismccallum/study1";
-    private final String CVS_KEY = "id, userAcc, forwardAcc, backwardsAcc, infoGainAcc, allAcc, randomAcc, forwardsTime, backwardsTime";
+    private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
+    private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
     private ModelEvaluator evaluator;
-    private String[] results;
+    private Participant participant;
     private int featuresPtr;
-    private String[][] features;
+    Iterator it;
+    private ArrayList<Participant> participants;
+    
     
     public static void main(String[] args)
     {
@@ -49,49 +53,88 @@ public class AccuracyExperiment {
     private void runTests()
     {
         HashMap<String, String> projects = getProjectLocations();
-        Iterator it = projects.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            System.out.println(pair.getKey() + " = " + pair.getValue());
-            String location = (String) pair.getValue();
-            String participantID = (String) pair.getKey();
-            try {
-                w = WekinatorSaver.loadWekinatorFromFile(location);
-            } catch (Exception ex) {
-                Logger.getLogger(AccuracyExperiment.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-            featuresPtr = 0;
-            results = new String[6];
-            
-            features = new String[6][];
-            features[0] = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames();
-            features[1] = w.getDataManager().featureManager.getFeatureGroups().get(0).getNames();
-            
-            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
-            features[2] = w.getDataManager().selectedFeatureNames[0];
-            
-            //Select features with backwards select, log time taken 
-            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
-            features[3] = w.getDataManager().selectedFeatureNames[0];
-            
-            int mean = (features[2].length + features[3].length) / 2;
-            
-            //Select features with info gain, log time taken 
-            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
-            features[4] = w.getDataManager().selectedFeatureNames[0];
-            
-            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.RANDOM, mean);
-            features[5] = w.getDataManager().selectedFeatureNames[0];
-            
-            //Get test set accuracy with user selected features (these should be automatically loaded?)
-            setFeatures(features[featuresPtr]);
-            evaluate();
-            it.remove(); 
+        it = projects.entrySet().iterator();
+        participants = new ArrayList();
+        if(it.hasNext())
+        {
+            runForNextParticipant();
         }
-        
     }
     
+    private void logParticipant()
+    {
+        System.out.println(participant.participantID);
+        System.out.println(participant.timeTakenForwards);
+        System.out.println(participant.timeTakenBackwards);
+        System.out.println(Arrays.toString(participant.results));
+        System.out.println(Arrays.toString(participant.features));
+        participants.add(participant);
+    }
+    
+    private void logAll()
+    {
+        ObjectMapper json = new ObjectMapper();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+        Date date = new Date();
+        String path = RESULTS_DIR + File.separator + "accuracyExperiment_" + dateFormat.format(date) + ".json";
+        try{
+            json.writeValue(new FileOutputStream(path), participants);
+        }
+        catch(Exception e)
+        {
+            System.out.println("ERROR: writing file");
+        }
+    }
+    
+    private void reset()
+    {
+        featuresPtr = 0;
+        participant = new Participant();
+        participant.results = new String[6];
+        participant.features = new String[6][];
+    }
+    
+    private void runForNextParticipant()
+    {
+        reset();
+                
+        Map.Entry pair = (Map.Entry)it.next();
+        System.out.println(pair.getKey() + " = " + pair.getValue());
+        String location = (String) pair.getValue();
+        participant.participantID = (String) pair.getKey();
+        try {
+            w = WekinatorSaver.loadWekinatorFromFile(location);
+        } catch (Exception ex) {
+            Logger.getLogger(AccuracyExperiment.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        participant.features[0] = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames();
+        participant.features[1] = w.getDataManager().featureManager.getFeatureGroups().get(0).getNames();
+
+        participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
+        //participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
+        participant.features[2] = w.getDataManager().selectedFeatureNames[0];
+
+        //Select features with backwards select, log time taken
+        participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
+        //participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
+        participant.features[3] = w.getDataManager().selectedFeatureNames[0];
+
+        int mean = (participant.features[2].length + participant.features[3].length) / 2;
+
+        //Select features with info gain, log time taken 
+        w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
+        participant.features[4] = w.getDataManager().selectedFeatureNames[0];
+
+        w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.RANDOM, mean);
+        participant.features[5] = w.getDataManager().selectedFeatureNames[0];
+
+        //Get test set accuracy with user selected features (these should be automatically loaded?)
+        setFeatures(participant.features[featuresPtr]);
+        evaluate();
+        it.remove(); 
+    }
+            
     private void setFeatures(String[] ft)
     {
         w.getDataManager().featureManager.getFeatureGroups().get(0).removeAll();
@@ -150,10 +193,24 @@ public class AccuracyExperiment {
 
     private void evaluatorFinished(String[] results) 
     {
-        this.results[featuresPtr] = results[0];
+        participant.results[featuresPtr] = results[0];
         featuresPtr++;
-        setFeatures(features[featuresPtr]);
-        evaluate();
+        if(featuresPtr < participant.features.length)
+        {
+            setFeatures(participant.features[featuresPtr]);
+            evaluate();
+        }
+        else if(it.hasNext())
+        {
+            logParticipant();
+            runForNextParticipant();
+        }
+        else
+        {
+            logParticipant();
+            logAll();
+        }
+
     }
     
     private HashMap<String, String> getProjectLocations()
@@ -163,18 +220,20 @@ public class AccuracyExperiment {
         File[] listOfFiles = folder.listFiles();
         for(File file : listOfFiles)
         {
-            String[] split = file.getName().split("_");
-            String participantID = split[1];
-            File studyFolder = new File(file.getAbsolutePath() + File.pathSeparator + "featurnator_study_1");
-            File[] listOfStudyFiles = studyFolder.listFiles();
-            for(File studyFile : listOfStudyFiles)
+            if(file.isDirectory())
             {
-                if(studyFile.getName().contains("ProjectFiles"))
+                String pID = file.getName();
+                File studyFolder = new File(file.getAbsolutePath() + File.separator + "featurnator_study_1");
+                File[] listOfStudyFiles = studyFolder.listFiles();
+                for(File studyFile : listOfStudyFiles)
                 {
-                    String projectFile = studyFile.getAbsolutePath() + File.pathSeparator + "Study1.wekproj";
-                    projects.put(participantID, projectFile);
-                    break;
-                } 
+                    if(studyFile.getName().contains("ProjectFiles"))
+                    {
+                        String projectFile = studyFile.getAbsolutePath() + File.separator + "Study1.wekproj";
+                        projects.put(pID, projectFile);
+                        break;
+                    } 
+                }
             }
         }
         return projects;

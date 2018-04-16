@@ -909,12 +909,12 @@ public class DataManager {
             featureManager.didRecalculateFeatures(outputIndex);
         }
     }
-    public void selectFeaturesAutomatically(AutoSelect autoSelect)
+    public double selectFeaturesAutomatically(AutoSelect autoSelect)
     {
-        selectFeaturesAutomatically(autoSelect,-1);
+        return selectFeaturesAutomatically(autoSelect,-1);
     }
     
-    public void selectFeaturesAutomatically(AutoSelect autoSelect, int targetSize)
+    public double selectFeaturesAutomatically(AutoSelect autoSelect, int targetSize)
     {
         boolean useTestSet = true;
         if(featureManager.isAllFeaturesDirty(useTestSet))
@@ -974,6 +974,7 @@ public class DataManager {
         }
         w.getSupervisedLearningManager().setAbleToRun(false);
         fireStateChanged();
+        return sel.timeTaken;
     }
     
     private void updateFeatureInstances(int index, boolean testSet, boolean allFeatures)

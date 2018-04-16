@@ -21,6 +21,8 @@ import weka.filters.unsupervised.attribute.Remove;
  */
 public class FeatureSelector {
     
+    public double timeTaken = 0;
+    
     public int[] getAttributeIndicesForInstances(Instances instances){
         return new int[0];
     }
