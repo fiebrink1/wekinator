@@ -19,9 +19,7 @@ import weka.filters.unsupervised.attribute.NumericToNominal;
  *
  * @author louismccallum
  */
-public class InfoGainSelector extends FeatureSelector {
- 
-    double threshold = 0.2;
+public class InfoGainSelector extends RankedFeatureSelector {
     
     @Override
     public int[] getAttributeIndicesForInstances(Instances instances)
@@ -49,9 +47,12 @@ public class InfoGainSelector extends FeatureSelector {
             
             //Return best results from ranked array
             int[] ranked =  attsel.selectedAttributes();
-            int i = (int)(((double)ranked.length)*threshold);
-            int[] thresholded = new int[i];
-            System.arraycopy(ranked, 0, thresholded, 0, i);
+            if(useThreshold)
+            {
+                featuresToPick = (int)(((double)ranked.length)*threshold);
+            }
+            int[] thresholded = new int[featuresToPick];
+            System.arraycopy(ranked, 0, thresholded, 0, featuresToPick);
             for(int s:thresholded)
             {
                 if(s == classIndex)

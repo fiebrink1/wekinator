@@ -13,9 +13,7 @@ import weka.core.Instances;
  *
  * @author louismccallum
  */
-public class RandomSelector extends FeatureSelector {
-    
-    double threshold = 0.2; 
+public class RandomSelector extends RankedFeatureSelector {
     
     @Override
     public int[] getAttributeIndicesForInstances(Instances instances)
@@ -23,9 +21,12 @@ public class RandomSelector extends FeatureSelector {
         int len = instances.numAttributes() - 2;
         int[] indicies = IntStream.range(0, len).toArray();
         RandomSelector.shuffleArray(indicies);
-        int i = (int)(((double)indicies.length)*threshold);
-        int[] thresholded = new int[i];
-        System.arraycopy(indicies, 0, thresholded, 0, i);
+        if(useThreshold)
+        {
+            featuresToPick = (int)(((double)indicies.length)*threshold);
+        }
+        int[] thresholded = new int[featuresToPick];
+        System.arraycopy(indicies, 0, thresholded, 0, featuresToPick);
         return thresholded;
     }
     

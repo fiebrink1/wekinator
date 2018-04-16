@@ -21,6 +21,14 @@ import weka.classifiers.Classifier;
 public class WrapperSelector extends FeatureSelector {
     
     public Classifier classifier;
+    private boolean forwards;
+    
+    private WrapperSelector(){}
+    
+    public WrapperSelector(boolean forwards)
+    {
+        this.forwards = forwards;
+    }
     
     @Override
     public int[] getAttributeIndicesForInstances(Instances instances)
@@ -34,8 +42,9 @@ public class WrapperSelector extends FeatureSelector {
             AttributeSelection attsel = new AttributeSelection();
             WrapperSubsetEval eval = new WrapperSubsetEval();
             BestFirst search = new BestFirst();
-            //String[] options = {"D","0"};
-            //search.setOptions(options);
+            String dir = forwards ? "0":"1"; 
+            String[] options = {"D", dir};
+            search.setOptions(options);
             search.setSearchTermination(6);
             eval.setClassifier(classifier);
             attsel.setEvaluator(eval);

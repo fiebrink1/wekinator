@@ -50,6 +50,7 @@ import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
 import mdsj.MDSJ;
+import wekimini.featureanalysis.RankedFeatureSelector;
 
 
 /**
@@ -124,7 +125,7 @@ public class DataManager {
     private static final Logger logger = Logger.getLogger(DataManager.class.getName());
 
     public enum AutoSelect {
-        WRAPPER,INFOGAIN,RANDOM
+        WRAPPER_FORWARDS, WRAPPER_BACKWARDS, INFOGAIN, RANDOM
     }
     
     /**
@@ -908,8 +909,12 @@ public class DataManager {
             featureManager.didRecalculateFeatures(outputIndex);
         }
     }
+    public void selectFeaturesAutomatically(AutoSelect autoSelect)
+    {
+        selectFeaturesAutomatically(autoSelect,-1);
+    }
     
-    public void selectFeaturesAutomatically(AutoSelect autoSelect, boolean test)
+    public void selectFeaturesAutomatically(AutoSelect autoSelect, int targetSize)
     {
         boolean useTestSet = true;
         if(featureManager.isAllFeaturesDirty(useTestSet))
@@ -924,13 +929,15 @@ public class DataManager {
         FeatureSelector sel;
         switch(autoSelect)
         {
-            case WRAPPER : sel = new WrapperSelector();
+            case WRAPPER_FORWARDS : sel = new WrapperSelector(true);
+            break;
+            case WRAPPER_BACKWARDS : sel = new WrapperSelector(false);
             break;
             case RANDOM : sel = new RandomSelector();
             break;
             case INFOGAIN : sel = new InfoGainSelector();
             break;
-            default:INFOGAIN : sel = new InfoGainSelector();
+            default : sel = new InfoGainSelector();
             break;
         }
         
@@ -941,14 +948,19 @@ public class DataManager {
         {
             Instances formatted = getAllFeaturesInstances(outputIndex, useTestSet);
             
-            if(autoSelect == AutoSelect.WRAPPER)
+            if(autoSelect == AutoSelect.WRAPPER_FORWARDS || autoSelect == AutoSelect.WRAPPER_BACKWARDS)
             {
                 Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
                 Classifier c = path.getModelBuilder().getClassifier();
                 ((WrapperSelector)sel).classifier = c;
             }
+            else if (sel instanceof RankedFeatureSelector)
+            {
+                ((RankedFeatureSelector)sel).useThreshold = targetSize < 0;
+                ((RankedFeatureSelector)sel).featuresToPick = targetSize;
+            }
             System.out.println("selecting attributes for output " + outputIndex);
-            int[] indices = test ? new int[]{0, 1, 33, 35} : sel.getAttributeIndicesForInstances(formatted);
+            int[] indices =  sel.getAttributeIndicesForInstances(formatted);
             System.out.println("DONE selecting attributes for output " + outputIndex);
             selectedFeatureNames[outputIndex] = new String[indices.length];
             selectedFeatureIndices[outputIndex] = indices;

@@ -219,7 +219,7 @@ public final class WekiMiniRunner {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
             Date date = new Date();
-            String dir = ((FeaturnatorLogger)KadenzeLogging.getLogger()).getUserDir() + "/user_" + userID + "_Study1_" + dateFormat.format(date);
+            String dir = ((FeaturnatorLogger)KadenzeLogging.getLogger()).getUserDir() + "/ProjectFiles_" + userID + "_Study1_" + dateFormat.format(date);
             File f = new File(dir);
             w = new Wekinator(WekiMiniRunner.generateNextID());
             w.getOSCSender().setHostnameAndPort(InetAddress.getByName(hostName), port);

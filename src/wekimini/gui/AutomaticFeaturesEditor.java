@@ -180,7 +180,7 @@ public class AutomaticFeaturesEditor extends javax.swing.JFrame {
             @Override
             public AutoSelect doInBackground()
             {
-                w.getDataManager().selectFeaturesAutomatically(mode, false);
+                w.getDataManager().selectFeaturesAutomatically(mode);
                 return mode;
             }
             
@@ -195,7 +195,7 @@ public class AutomaticFeaturesEditor extends javax.swing.JFrame {
     
     private void wrapperButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wrapperButtonActionPerformed
         // TODO add your handling code here:
-        select(AutoSelect.WRAPPER);
+        select(AutoSelect.WRAPPER_FORWARDS);
     }//GEN-LAST:event_wrapperButtonActionPerformed
 
     

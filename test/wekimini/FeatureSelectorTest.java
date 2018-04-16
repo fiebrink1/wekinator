@@ -144,7 +144,7 @@ public class FeatureSelectorTest {
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getSupervisedLearningManager().buildAll();
         Thread.sleep(50);
-        w.getDataManager().selectFeaturesAutomatically(AutoSelect.WRAPPER,true);
+        w.getDataManager().selectFeaturesAutomatically(AutoSelect.RANDOM, 4);
         //When we are running on the 4 selected automatic features the computed output for running should be 4 + 1
         w.getDataManager().setUseAutomatic(true);
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
@@ -185,7 +185,7 @@ public class FeatureSelectorTest {
     public void testWrapperKnn() throws IOException
     {
         Instances data = getTestSet(2000, 5, 5, 25, 0.5);
-        WrapperSelector wrapperSelector = new WrapperSelector();
+        WrapperSelector wrapperSelector = new WrapperSelector(true);
         IBk knn = new IBk();
         knn.setKNN(1);
         wrapperSelector.classifier = knn;
@@ -198,7 +198,7 @@ public class FeatureSelectorTest {
     public void testWrapperPerceptron() throws IOException
     {
         Instances data = getTestSet(50, 4, 4, 10, 0.5);
-        WrapperSelector wrapperSelector = new WrapperSelector();
+        WrapperSelector wrapperSelector = new WrapperSelector(true);
         NeuralNetModelBuilder builder = new NeuralNetModelBuilder();
         MultilayerPerceptron classifier = (MultilayerPerceptron)builder.getClassifier();
         wrapperSelector.classifier = classifier;
@@ -215,7 +215,7 @@ public class FeatureSelectorTest {
         w.getSupervisedLearningManager().buildAll();
         Thread.sleep(50);
         List<Instances> featureInstances = w.getDataManager().getFeatureInstances(false);
-        WrapperSelector wrapperSelector = new WrapperSelector();
+        WrapperSelector wrapperSelector = new WrapperSelector(true);
         int ptr = 0;
         for(Instances data:featureInstances)
         {
@@ -254,6 +254,8 @@ public class FeatureSelectorTest {
     public void testRandomSelection() throws InterruptedException
     {
         RandomSelector sel = new RandomSelector();
+        sel.useThreshold = true;
+        sel.threshold = 0.2;
         Method method;
         try {
             method = w.getDataManager().getClass().getDeclaredMethod("updateFeatureInstances", int.class, boolean.class, boolean.class);

@@ -371,7 +371,7 @@ public class KadenzeAssignment {
             case ASSIGNMENT7:
                 return "assignment7" + File.separator + "assignment7";
             case FEATURNATOR_STUDY_1:
-                return "featurnator_study_1" + File.separator + "featurnator_study_1";
+                return "featurnator_study_1";
             default:
                 System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
                 return "";

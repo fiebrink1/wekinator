@@ -406,6 +406,20 @@ public final class FeatureCollection
         return ft;
     }
     
+    public String[] getCurrentFeatureNames()
+    {
+        Feature[] ft = getCurrentFeatures();
+        String[] names = new String[ft.length];
+        int ptr = 0;
+        for(Feature f : ft)
+        {
+            names[ptr] = ft[ptr].name;
+            ptr++;
+        }
+        return names;
+    }
+    
+    
     public void clearAdded()
     {
         added.clear();
