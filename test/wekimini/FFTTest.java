@@ -13,6 +13,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import wekimini.modifiers.FFTModifier;
 import wekimini.modifiers.ModifiedInput;
+import wekimini.modifiers.PassThroughVector;
 
 /**
  *
@@ -42,6 +43,15 @@ public class FFTTest {
         ModifiedInput fft1 = new FFTModifier("input-1",0,50,bins);
         fft1.addRequiredModifierID(0);
         int id = w.getDataManager().featureManager.addModifierToOutput(fft1, 0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
+    }
+    
+    public void addPassThroughForOutput(int output)
+    {
+        PassThroughVector passThrough = new PassThroughVector(new String[] {"input1","input2","input3"}, 1);
+        passThrough.addRequiredModifierID(0);
+        w.getDataManager().featureManager.addModifierToOutput(passThrough, output);
     }
     
     public void testInputs(int instanceIndex, int windowSize, double[] inputs)

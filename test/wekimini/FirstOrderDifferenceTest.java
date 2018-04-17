@@ -26,6 +26,8 @@ public class FirstOrderDifferenceTest extends ModifierTest {
         FirstOrderDifference fod2 = new FirstOrderDifference("FOD",1,0);
         fod2.addRequiredModifierID(0);
         int idFOD2 = w.getDataManager().featureManager.addModifierToOutput(fod2, 0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
     }
     
     @Override

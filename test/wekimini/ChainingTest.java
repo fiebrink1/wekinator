@@ -32,6 +32,8 @@ public class ChainingTest extends ModifierTest {
         ModifiedInput buffer = new BufferedInput("input-1b",0,windowSize,0);
         buffer.addRequiredModifierID(windowID);
         w.getDataManager().featureManager.addModifierToOutput(buffer, 0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
     }
     
     @Override

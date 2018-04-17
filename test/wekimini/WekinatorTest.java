@@ -67,6 +67,9 @@ public class WekinatorTest {
     @Test
     public void testDefaultModifiersAddedToFeatureManager()
     {
+        addPassThroughForOutput(0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
         int numOutputs = w.getDataManager().featureManager.numModifiedInputs(0);
         int expResult = 3;
         int result = numOutputs;
@@ -79,12 +82,22 @@ public class WekinatorTest {
         assertEquals(expResult, result);
     }
     
+    public void addPassThroughForOutput(int output)
+    {
+        PassThroughVector passThrough = new PassThroughVector(new String[] {"input1","input2","input3"}, 1);
+        passThrough.addRequiredModifierID(0);
+        w.getDataManager().featureManager.addModifierToOutput(passThrough, output);
+    }
+    
     @Test
     public void testInputsPassThroughForTraining()
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
         w.getSupervisedLearningManager().buildAll();
+        addPassThroughForOutput(0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
         List<Instances> featureInstances = w.getDataManager().getFeatureInstances(false);
         for(int i = 0; i < featureInstances.size(); i++)
         {
@@ -122,6 +135,10 @@ public class WekinatorTest {
         ModifiedInput modifier3 = new PassThroughSingle("input-1c",0,0);
         modifier3.addRequiredModifierID(id2);
         int id3 = w.getDataManager().featureManager.addModifierToOutput(modifier3, 0);
+        
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
+        
         w.getSupervisedLearningManager().buildAll();
         List<Instances> featureInstances = w.getDataManager().getFeatureInstances(false);
         for(int i = 0; i < featureInstances.size(); i++)
@@ -158,6 +175,9 @@ public class WekinatorTest {
     @Test
     public void testInputsGetClassifiableInstanceWithInputsPassedThrough()
     {
+        addPassThroughForOutput(0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
         double[] input = {1,1,1};
         Instance instance = w.getDataManager().getClassifiableInstanceForOutput(input, 0);
         assert(instance.numAttributes() == 4);

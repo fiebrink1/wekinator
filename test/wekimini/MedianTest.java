@@ -25,6 +25,8 @@ public class MedianTest extends ModifierTest {
         ModifiedInput window = new WindowedOperation("input-1",new MedianWindowOperation(),0,windowSize,0);
         window.addRequiredModifierID(0);
         int id = w.getDataManager().featureManager.addModifierToOutput(window, 0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
     }
     
     @Override

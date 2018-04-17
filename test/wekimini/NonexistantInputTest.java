@@ -31,6 +31,8 @@ public class NonexistantInputTest extends ModifierTest {
         passThrough2.addRequiredModifierID(Integer.MAX_VALUE);
         passThrough2.addToOutput = true;
         int id2 = w.getDataManager().featureManager.addModifierToOutput(passThrough2, 0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
     }
     
     /*
