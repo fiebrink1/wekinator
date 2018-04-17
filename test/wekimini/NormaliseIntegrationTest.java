@@ -15,6 +15,7 @@ import weka.core.Instances;
 import wekimini.modifiers.AverageWindowOperation;
 import wekimini.modifiers.EnergyWindowOperation;
 import wekimini.modifiers.ModifiedInput;
+import wekimini.modifiers.PassThroughVector;
 import wekimini.modifiers.WindowedOperation;
 
 /**
@@ -45,8 +46,17 @@ public class NormaliseIntegrationTest {
     public void setUpFilters(int windowSize)
     {
         w.getDataManager().doNormalise = true;
-        w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
-        w.getDataManager().featureManager.passThroughInputToOutput(true, 0);
+        addPassThroughForOutput(0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
+    }
+    
+    public void addPassThroughForOutput(int output)
+    {
+        w.getDataManager().featureManager.getFeatureGroups().get(output).removeAll();
+        PassThroughVector passThrough = new PassThroughVector(new String[] {"input1","input2","input3"}, 1);
+        passThrough.addRequiredModifierID(0);
+        w.getDataManager().featureManager.addModifierToOutput(passThrough, output);
     }
     
     public int getMainWindowSize()

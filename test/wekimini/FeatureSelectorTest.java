@@ -33,6 +33,7 @@ import wekimini.DataManager.AutoSelect;
 import wekimini.featureanalysis.FeatureSelector;
 import wekimini.featureanalysis.RandomSelector;
 import wekimini.learning.NeuralNetModelBuilder;
+import wekimini.modifiers.PassThroughVector;
 /**
  *
  * @author louismccallum
@@ -162,6 +163,11 @@ public class FeatureSelectorTest {
             assertEquals(1.0, computed.length,0);
         } 
         //When we switch back to the manual the computed values for running should be the original 6 + 1
+        
+        PassThroughVector passThrough = new PassThroughVector(new String[] {"input1","input2","input3","input4","input5","input6"}, 1);
+        passThrough.addRequiredModifierID(0);
+        w.getDataManager().featureManager.addModifierToOutput(passThrough, 0);
+        
         w.getDataManager().setUseAutomatic(false);
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
         w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);

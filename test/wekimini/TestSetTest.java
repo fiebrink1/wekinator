@@ -176,7 +176,7 @@ public class TestSetTest {
         
         Thread.sleep(50);
         
-        w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.RANDOM);
+        w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.RANDOM,4);
         w.getDataManager().setUseAutomatic(true);
         Instances testSet = w.getDataManager().getTestingDataForOutput(0);
         assertEquals(5, testSet.numAttributes(), 0);
