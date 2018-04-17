@@ -100,12 +100,13 @@ public class AccuracyExperiment {
         System.out.println(pair.getKey() + " = " + pair.getValue());
         String location = (String) pair.getValue();
         participant.participantID = (String) pair.getKey();
+        
         try {
             w = WekinatorSaver.loadWekinatorFromFile(location);
         } catch (Exception ex) {
             Logger.getLogger(AccuracyExperiment.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
         participant.userFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames();
         participant.allFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getNames();
 

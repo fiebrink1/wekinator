@@ -12,6 +12,7 @@ package wekimini.study1analysis;
 public class Participant {
     public double timeTakenForwards;
     public double timeTakenBackwards;
+    public int numExamples;
     public String participantID;
     public double[] results;
     public String[] userFeatures;
