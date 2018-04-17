@@ -25,6 +25,8 @@ public class SecondOrderDifferenceTest extends ModifierTest {
         SecondOrderDifference sod2 = new SecondOrderDifference("SOD",1,0);
         sod2.addRequiredModifierID(0);
         int idSOD2 = w.getDataManager().featureManager.addModifierToOutput(sod2, 0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
     }
     
     @Override

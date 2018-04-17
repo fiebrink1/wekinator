@@ -12,6 +12,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import weka.core.Instance;
 import weka.core.Instances;
+import wekimini.modifiers.PassThroughVector;
 
 /**
  *
@@ -20,6 +21,14 @@ import weka.core.Instances;
 @Ignore public class ModifierTest {
             
     public Wekinator w;
+    
+    /*
+        Load test file. This dataset has three inputs with 100 rows. 
+        0 = > 1,2,3,4....100, 
+        1 => 1,1,1,1,1....1, 
+        2 => 0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.9,0.1,0.1.....etc
+        And three outputs, each classifiers with classes 1,2 and 3 respectively
+    */
             
     @Before
     public void setUp() {
@@ -46,6 +55,13 @@ import weka.core.Instances;
     public void setUpFilters(int windowSize)
     {
 
+    }
+    
+    public void addPassThroughForOutput(int output)
+    {
+        PassThroughVector passThrough = new PassThroughVector(new String[] {"input1","input2","input3"}, 1);
+        passThrough.addRequiredModifierID(0);
+        w.getDataManager().featureManager.addModifierToOutput(passThrough, output);
     }
     
     public void testInputs(int instanceIndex, int windowSize, double[] inputs)

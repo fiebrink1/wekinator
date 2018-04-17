@@ -28,6 +28,8 @@ public class MeanTest extends ModifierTest {
         ModifiedInput window2 = new WindowedOperation("input-2",new EnergyWindowOperation(),0,windowSize,0);
         window2.addRequiredModifierID(0);
         int id2 = w.getDataManager().featureManager.addModifierToOutput(window2, 0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
     }
     
     @Override

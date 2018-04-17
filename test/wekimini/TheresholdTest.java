@@ -32,6 +32,8 @@ public class TheresholdTest extends ModifierTest {
         thresh3.threshold = 0.5;
         thresh3.addRequiredModifierID(0);
         int idThresh3 = w.getDataManager().featureManager.addModifierToOutput(thresh3, 0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
     }
     
     @Override

@@ -48,66 +48,66 @@ public class FeatureCollectionTest {
     @Test
     public void testMultipleModifiers()
     {
-        fc.addFeatureForKey("AllAcc");
-        assertEquals(4, fc.getNumModifiers());
-        fc.removeFeatureForKey("AllAcc");
+        fc.addFeatureForKey("MeanFODAccX");
+        assertEquals(3, fc.getNumModifiers());
+        fc.removeFeatureForKey("MeanFODAccX");
         assertEquals(1, fc.getNumModifiers());
     }
     
     @Test
     public void testChained()
     {
-        fc.addFeatureForKey("MaxFFTAccX");
+        fc.addFeatureForKey("MaxBinFFTAccX");
         assertEquals(3, fc.getNumModifiers());
-        fc.removeFeatureForKey("MaxFFTAccX");
+        fc.removeFeatureForKey("MaxBinFFTAccX");
         assertEquals(1, fc.getNumModifiers());
     }
     
     @Test
     public void testShared()
     {
-        fc.addFeatureForKey("MaxFFTAccX");
+        fc.addFeatureForKey("MaxBinFFTAccX");
         assertEquals(3, fc.getNumModifiers());
-        fc.addFeatureForKey("MinFFTAccX");
+        fc.addFeatureForKey("MinBinFFTAccX");
         assertEquals(4, fc.getNumModifiers());
-        fc.removeFeatureForKey("MaxFFTAccX");
+        fc.removeFeatureForKey("MaxBinFFTAccX");
         assertEquals(3, fc.getNumModifiers());
-        fc.removeFeatureForKey("MinFFTAccX");
+        fc.removeFeatureForKey("MinBinFFTAccX");
         assertEquals(1, fc.getNumModifiers());
     }
     
     @Test
     public void testMultipleFeatures()
     {
-        fc.addFeatureForKey("MaxFFTAccX");
+        fc.addFeatureForKey("MaxBinFFTAccX");
         assertEquals(3, fc.getNumModifiers());
-        fc.addFeatureForKey("AllAcc");
-        assertEquals(6, fc.getNumModifiers());
-        fc.removeFeatureForKey("MaxFFTAccX");
-        assertEquals(4, fc.getNumModifiers());
-        fc.removeFeatureForKey("AllAcc");
+        fc.addFeatureForKey("MeanFODAccX");
+        assertEquals(5, fc.getNumModifiers());
+        fc.removeFeatureForKey("MaxBinFFTAccX");
+        assertEquals(3, fc.getNumModifiers());
+        fc.removeFeatureForKey("MeanFODAccX");
         assertEquals(1, fc.getNumModifiers());
     }
     
     @Test
     public void testRemoveNotAddedFeature()
     {
-       fc.addFeatureForKey("MaxFFTAccX");
+       fc.addFeatureForKey("MaxBinFFTAccX");
        assertEquals(3, fc.getNumModifiers()); 
-       fc.removeFeatureForKey("AllAcc");
+       fc.removeFeatureForKey("MeanFODAccX");
        assertEquals(3, fc.getNumModifiers()); 
     }
     
     @Test 
     public void testGetConnections()
     {
-       fc.addFeatureForKey("MaxFFTAccX");
+       fc.addFeatureForKey("MaxBinFFTAccX");
        assertEquals(3, fc.getNumModifiers()); 
        boolean[] connections = fc.getConnections();
        int ptr = 0;
        for(boolean isEnabled:connections)
        {
-           assertEquals(ptr == 67, isEnabled);
+           assertEquals(ptr == 100, isEnabled);
            ptr++;
        }
     }
@@ -115,7 +115,7 @@ public class FeatureCollectionTest {
     @Test
     public void testSetConnections()
     {
-        fc.addFeatureForKey("MaxFFTAccX");
+        fc.addFeatureForKey("MaxBinFFTAccX");
         assertEquals(3, fc.getNumModifiers()); 
         
         boolean[] onOff = new boolean[fc.getNames().length];
@@ -130,7 +130,7 @@ public class FeatureCollectionTest {
            assertEquals(ptr < 2, isEnabled);
            ptr++;
         }
-        assertEquals(5, fc.getNumModifiers());
+        assertEquals(3, fc.getNumModifiers());
         
     }
     
@@ -194,7 +194,6 @@ public class FeatureCollectionTest {
         assertTrue(results.contains(fc.getFeatureForKey("MaxAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("StdDevAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("EnergyAccX")));
-        assertTrue(results.contains(fc.getFeatureForKey("BufferAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("MagAcc")));
         assertTrue(results.contains(fc.getFeatureForKey("MagFODAcc")));
         assertTrue(results.contains(fc.getFeatureForKey("AccXFOD")));
@@ -202,23 +201,20 @@ public class FeatureCollectionTest {
         assertTrue(results.contains(fc.getFeatureForKey("StdDevFODAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("CorrelateAccXY")));
         assertTrue(results.contains(fc.getFeatureForKey("CorrelateAccXZ")));
-        assertTrue(results.contains(fc.getFeatureForKey("FFTAccX7Bins")));
-        assertTrue(results.contains(fc.getFeatureForKey("MaxFFTAccX")));
-        assertTrue(results.contains(fc.getFeatureForKey("MinFFTAccX")));
+        assertTrue(results.contains(fc.getFeatureForKey("MaxBinFFTAccX")));
+        assertTrue(results.contains(fc.getFeatureForKey("MinBinFFTAccX")));
         assertFalse(results.contains(fc.getFeatureForKey("MeanGyroY")));
         assertFalse(results.contains(fc.getFeatureForKey("MaxGyroY")));
         assertFalse(results.contains(fc.getFeatureForKey("StdDevGyroY")));
         assertFalse(results.contains(fc.getFeatureForKey("EnergyGyroY")));
-        assertFalse(results.contains(fc.getFeatureForKey("BufferGyroY")));
         assertFalse(results.contains(fc.getFeatureForKey("MagGyro")));
         assertFalse(results.contains(fc.getFeatureForKey("MagFODGyro")));
         assertFalse(results.contains(fc.getFeatureForKey("GyroYFOD")));
         assertFalse(results.contains(fc.getFeatureForKey("MeanFODGyroY")));
         assertFalse(results.contains(fc.getFeatureForKey("StdDevFODGyroY")));
         assertFalse(results.contains(fc.getFeatureForKey("CorrelateGyroYZ")));
-        assertFalse(results.contains(fc.getFeatureForKey("FFTGyroY7Bins")));
-        assertFalse(results.contains(fc.getFeatureForKey("MaxFFTGyroY")));
-        assertFalse(results.contains(fc.getFeatureForKey("MinFFTGyroY")));
+        assertFalse(results.contains(fc.getFeatureForKey("MaxBinFFTGyroY")));
+        assertFalse(results.contains(fc.getFeatureForKey("MinBinFFTGyroY")));
     }
     
     @Test

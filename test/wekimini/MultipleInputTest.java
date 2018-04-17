@@ -36,6 +36,8 @@ public class MultipleInputTest extends ModifierTest {
         sum.addRequiredModifierID(rawID1);
         sum.addRequiredModifierID(rawID2);
         int id = w.getDataManager().featureManager.addModifierToOutput(sum, 0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
     }
     
     @Override

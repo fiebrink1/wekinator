@@ -27,6 +27,8 @@ public class MinMaxInputTest extends ModifierTest
         min.addRequiredModifierID(0);
         int idMax = w.getDataManager().featureManager.addModifierToOutput(max, 0);
         int idMin = w.getDataManager().featureManager.addModifierToOutput(min, 0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
     }
     
     @Override

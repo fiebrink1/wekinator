@@ -14,6 +14,7 @@ import weka.core.Instances;
 import wekimini.modifiers.BufferedInput;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.WekinatorSaver;
+import wekimini.modifiers.PassThroughVector;
 
 /**
  *
@@ -196,6 +197,11 @@ public class TestSetTest {
             double[] inputs = {i + 1, 2, 3};
             w.getSupervisedLearningManager().updateInputs(inputs);
         }
+        
+        addPassThroughForOutput(0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
+        
         Instances testSet = w.getDataManager().getTestingDataForOutput(0);
         assertEquals(100, testSet.numInstances(), 0);
         Instance in = testSet.firstInstance();
@@ -248,10 +254,19 @@ public class TestSetTest {
         }
     }
     
+    public void addPassThroughForOutput(int output)
+    {
+        PassThroughVector passThrough = new PassThroughVector(new String[] {"input1","input2","input3"}, 1);
+        passThrough.addRequiredModifierID(0);
+        w.getDataManager().featureManager.addModifierToOutput(passThrough, output);
+    }
+    
     public void testLoadedData()
     {
         setUp();
-        
+        addPassThroughForOutput(0);
+        addPassThroughForOutput(1);
+        addPassThroughForOutput(2);
         Instances testSet = w.getDataManager().getTestingDataForOutput(0);
         assertEquals(200, testSet.numInstances(), 0);
         Instance in = testSet.firstInstance();
