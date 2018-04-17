@@ -35,6 +35,7 @@ import java.util.Date;
 public class AccuracyExperiment {
     
     private Wekinator w;
+    private final int NUM_FEATURE_SETS = 6;
     private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
     private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
     private ModelEvaluator evaluator;
@@ -67,7 +68,6 @@ public class AccuracyExperiment {
         System.out.println(participant.timeTakenForwards);
         System.out.println(participant.timeTakenBackwards);
         System.out.println(Arrays.toString(participant.results));
-        System.out.println(Arrays.toString(participant.features));
         participants.add(participant);
     }
     
@@ -90,8 +90,6 @@ public class AccuracyExperiment {
     {
         featuresPtr = 0;
         participant = new Participant();
-        participant.results = new String[6];
-        participant.features = new String[6][];
     }
     
     private void runForNextParticipant()
@@ -108,31 +106,45 @@ public class AccuracyExperiment {
             Logger.getLogger(AccuracyExperiment.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        participant.features[0] = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames();
-        participant.features[1] = w.getDataManager().featureManager.getFeatureGroups().get(0).getNames();
+        participant.userFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames();
+        participant.allFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getNames();
 
         participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
         //participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
-        participant.features[2] = w.getDataManager().selectedFeatureNames[0];
+        participant.forwardsFeatures = w.getDataManager().selectedFeatureNames[0];
 
         //Select features with backwards select, log time taken
         participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
         //participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
-        participant.features[3] = w.getDataManager().selectedFeatureNames[0];
+        participant.backwardsFeatures = w.getDataManager().selectedFeatureNames[0];
 
-        int mean = (participant.features[2].length + participant.features[3].length) / 2;
+        int mean = (participant.forwardsFeatures.length + participant.backwardsFeatures.length) / 2;
 
         //Select features with info gain, log time taken 
         w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
-        participant.features[4] = w.getDataManager().selectedFeatureNames[0];
+        participant.infoGainFeatures = w.getDataManager().selectedFeatureNames[0];
 
         w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.RANDOM, mean);
-        participant.features[5] = w.getDataManager().selectedFeatureNames[0];
+        participant.randomFeatures = w.getDataManager().selectedFeatureNames[0];
 
         //Get test set accuracy with user selected features (these should be automatically loaded?)
-        setFeatures(participant.features[featuresPtr]);
+        setFeatures(featuresForPtr(featuresPtr));
         evaluate();
         it.remove(); 
+    }
+    
+    private String[] featuresForPtr(int ptr)
+    {
+        switch(ptr)
+        {
+            case 0 : return participant.userFeatures; 
+            case 1 : return participant.allFeatures;
+            case 2 : return participant.backwardsFeatures;
+            case 3 : return participant.forwardsFeatures;
+            case 4 : return participant.infoGainFeatures;
+            case 5 : return participant.randomFeatures;
+            default: return participant.userFeatures;
+        }
     }
             
     private void setFeatures(String[] ft)
@@ -140,6 +152,7 @@ public class AccuracyExperiment {
         w.getDataManager().featureManager.getFeatureGroups().get(0).removeAll();
         for(String f:ft)
         {
+            f = f.replaceAll(":0", "");
             w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey(f);
         }
     }
@@ -193,11 +206,11 @@ public class AccuracyExperiment {
 
     private void evaluatorFinished(String[] results) 
     {
-        participant.results[featuresPtr] = results[0];
+        participant.results[featuresPtr] = Double.parseDouble((results[0].replaceAll("%", "")));
         featuresPtr++;
-        if(featuresPtr < participant.features.length)
+        if(featuresPtr < NUM_FEATURE_SETS)
         {
-            setFeatures(participant.features[featuresPtr]);
+            setFeatures(featuresForPtr(featuresPtr));
             evaluate();
         }
         else if(it.hasNext())
@@ -210,7 +223,6 @@ public class AccuracyExperiment {
             logParticipant();
             logAll();
         }
-
     }
     
     private HashMap<String, String> getProjectLocations()
@@ -238,5 +250,4 @@ public class AccuracyExperiment {
         }
         return projects;
     }
-    
 }
