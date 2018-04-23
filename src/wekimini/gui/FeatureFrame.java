@@ -23,6 +23,7 @@ import weka.core.Instance;
 import wekimini.SupervisedLearningManager;
 import wekimini.SupervisedLearningManager.RunningState;
 import wekimini.Wekinator;
+import wekimini.WekinatorSupervisedLearningController;
 import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.modifiers.Feature;
@@ -133,8 +134,21 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         }
         else
         {
-            JOptionPane.showMessageDialog(null, "Cannot edit features whilst Running");
+            Object[] options = {"Stop Running","OK"};
+            int n = JOptionPane.showOptionDialog(null,
+                "Cannot edit features whilst Running",
+                "Warning",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,     
+                options,  
+                options[0]); 
+            if(n ==0)
+            {
+                new WekinatorSupervisedLearningController(w.getSupervisedLearningManager(),w).stopRun();
+            }
         }
+                   
     }
     
     public void startTimer()
@@ -363,8 +377,19 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         
         if(w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING)
         {
-
-            JOptionPane.showMessageDialog(null, "Cannot edit features whilst Running");
+            Object[] options = {"Stop Running","OK"};
+            int n = JOptionPane.showOptionDialog(null,
+                "Cannot edit features whilst Running",
+                "Warning",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,     
+                options,  
+                options[0]); 
+            if(n ==0)
+            {
+                new WekinatorSupervisedLearningController(w.getSupervisedLearningManager(),w).stopRun();
+            }
             return;
         }
 

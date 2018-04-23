@@ -23,6 +23,7 @@ import javax.swing.table.TableColumnModel;
 import org.jdesktop.swingworker.SwingWorker;
 import wekimini.SupervisedLearningManager;
 import wekimini.Wekinator;
+import wekimini.WekinatorSupervisedLearningController;
 import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.modifiers.Feature;
@@ -168,7 +169,19 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         }
         else
         {
-            JOptionPane.showMessageDialog(null, "Cannot edit features whilst Running");
+            Object[] options = {"Stop Running","OK"};
+            int n = JOptionPane.showOptionDialog(null,
+                "Cannot edit features whilst Running",
+                "Warning",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,     
+                options,  
+                options[0]); 
+            if(n ==0)
+            {
+                new WekinatorSupervisedLearningController(w.getSupervisedLearningManager(),w).stopRun();
+            }
         }
     }
     

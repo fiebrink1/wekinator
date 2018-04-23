@@ -86,6 +86,7 @@ public class AccuracyExperiment {
         {
             System.out.println("ERROR: writing file");
         }
+        System.exit(0);
     }
     
     private void reset()
