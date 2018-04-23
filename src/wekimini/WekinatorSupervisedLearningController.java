@@ -66,6 +66,13 @@ public class WekinatorSupervisedLearningController {
     }
 
     public void startRun() {
+        
+        if(!canRun())
+        {
+            w.getStatusUpdateCenter().update(this, "Unable to run");
+            return;
+        }
+        
         if (m.getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING_TRAIN) {
             m.stopRecording();
         }
@@ -145,10 +152,11 @@ public class WekinatorSupervisedLearningController {
     public boolean canTrain() {
         SupervisedLearningManager.LearningState ls = m.getLearningState();
         return (ls == SupervisedLearningManager.LearningState.DONE_TRAINING ||
-                ls == SupervisedLearningManager.LearningState.READY_TO_TRAIN);
+                ls == SupervisedLearningManager.LearningState.READY_TO_TRAIN) &&
+                w.getDataManager().canTrain();
     }
     
     public boolean canRun() {
-        return m.isAbleToRun();
+        return m.isAbleToRun() && w.getDataManager().canRun();
     }  
 }

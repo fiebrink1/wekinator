@@ -52,7 +52,6 @@ public final class FeatureCollection
     {
         initLibrary(10, 10);
         modifiers = new ModifierCollection(inputNames);
-        //addFeatureForKey("PassThroughAll");
     }
     
     public synchronized void initLibrary(int windowSize, int bufferSize)

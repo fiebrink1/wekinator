@@ -36,6 +36,8 @@ public class AccuracyExperiment {
     
     private Wekinator w;
     private final int NUM_FEATURE_SETS = 6;
+    private final String STUDY_DIR = "featurnator_study_1";
+    private final String PROJECT_NAME = "Study1.wekproj";
     private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
     private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
     private ModelEvaluator evaluator;
@@ -236,13 +238,13 @@ public class AccuracyExperiment {
             if(file.isDirectory())
             {
                 String pID = file.getName();
-                File studyFolder = new File(file.getAbsolutePath() + File.separator + "featurnator_study_1");
+                File studyFolder = new File(file.getAbsolutePath() + File.separator + STUDY_DIR);
                 File[] listOfStudyFiles = studyFolder.listFiles();
                 for(File studyFile : listOfStudyFiles)
                 {
                     if(studyFile.getName().contains("ProjectFiles"))
                     {
-                        String projectFile = studyFile.getAbsolutePath() + File.separator + "Study1.wekproj";
+                        String projectFile = studyFile.getAbsolutePath() + File.separator + PROJECT_NAME;
                         projects.put(pID, projectFile);
                         break;
                     } 

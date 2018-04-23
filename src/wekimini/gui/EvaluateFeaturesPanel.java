@@ -52,6 +52,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private PlotRowModel outputPlotModel;
     private MDSPlotPanel mdsPlot;
     private boolean updatingMDS = false;
+    private boolean runAfterTraining = false;
     private Timer timer;
     
     public EvaluateFeaturesPanel() {
@@ -110,8 +111,8 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             }
         });
         
-        trainBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
-        evaluateBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
+        trainBtn.setEnabled(controller.canRun());
+        evaluateBtn.setEnabled(controller.canRun());
         
         mdsPlot = new MDSPlotPanel(mdsPlotHolder.getWidth(), mdsPlotHolder.getHeight());
         mdsPlotHolder.setLayout(new BorderLayout());
@@ -127,7 +128,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         }
         
         timer = new Timer(10, (ActionEvent evt) -> {
-            if(w.getDataManager().canTrainOrRun(outputIndex) && !updatingMDS)
+            if(w.getDataManager().canRun(outputIndex) && !updatingMDS)
             { 
                 mdsPlot.updateWithInstances(w.getDataManager().getMDSInstances(outputIndex));
             }
@@ -147,8 +148,8 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
         
-        trainBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
-        evaluateBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
+        trainBtn.setEnabled(w.getDataManager().canRun(outputIndex));
+        evaluateBtn.setEnabled(w.getDataManager().canRun(outputIndex));
         
         switch (evt.getPropertyName()) {
             case SupervisedLearningManager.PROP_RECORDINGROUND:
@@ -156,6 +157,19 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             case SupervisedLearningManager.PROP_RECORDINGSTATE:
                 break;
             case SupervisedLearningManager.PROP_LEARNINGSTATE:
+                System.out.println("learning state changed *******");
+                if(w.getSupervisedLearningManager().getLearningState() == SupervisedLearningManager.LearningState.DONE_TRAINING)
+                {
+                    System.out.println("DONE TRAINING!");
+                    w.getStatusUpdateCenter().update(this, "Done training");
+                    trainBtn.setEnabled(true);
+                    trainBtn.setText("Train and Run");
+                    if(runAfterTraining)
+                    {
+                        controller.startRun();
+                    }
+                    runAfterTraining = false;
+                } 
                 break;
             case SupervisedLearningManager.PROP_RUNNINGSTATE:
                 isRunning = w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.RUNNING;
@@ -183,9 +197,9 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     
     public void featuresListUpdated()
     {
-        trainBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
-        evaluateBtn.setEnabled(w.getDataManager().canTrainOrRun(outputIndex));
-        if(w.getDataManager().canTrainOrRun(outputIndex) && !updatingMDS)
+        trainBtn.setEnabled(w.getDataManager().canRun(outputIndex));
+        evaluateBtn.setEnabled(w.getDataManager().canRun(outputIndex));
+        if(w.getDataManager().canRun(outputIndex) && !updatingMDS)
         {
             SwingWorker worker = new SwingWorker<String,Void>()
             {            
@@ -219,12 +233,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 + " models trained, " + newStatus.getNumErrorsEncountered()
                 + " errors encountered.";
         boolean completed =  newStatus.getNumToTrain() == newStatus.getNumTrained();
-        if(completed)
-        {
-            trainBtn.setEnabled(true);
-            trainBtn.setText("Train and Run");
-            controller.startRun();
-        }
+
         if (newStatus.isWasCancelled()) 
         {
             s += " Training cancelled.";
@@ -485,6 +494,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             if (controller.canTrain()) {
                 trainBtn.setEnabled(false);
                 trainBtn.setText("Training...");
+                runAfterTraining = true;
                 controller.train();
             }
         }

@@ -62,7 +62,7 @@ public final class WekiMiniRunner {
     private final ImageIcon myIcon = new ImageIcon(getClass().getResource("/wekimini/icons/wekimini_small.png"));
     private static boolean isKadenze = false;
     private static int nextID = 1;
-    private static final boolean IS_STUDY_1 = false;
+    private static final boolean IS_STUDY_1 = true;
     
     //Load it and start running, handle old project
     public void runNewProjectAutomatically(Wekinator oldWekinator, String filename, NewProjectOptions options) throws Exception {

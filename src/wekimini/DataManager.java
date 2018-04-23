@@ -1555,10 +1555,39 @@ public class DataManager {
         }
         return 0;
     }
-
-    public boolean canTrainOrRun(int output)
+    
+    public boolean canRun()
+    {
+        for(int i = 0; i < numOutputs; i++)
+        {
+            if(!canRun(i))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public boolean canRun(int output)
     {
         return getNumExamples() > 0 && featureManager.getFeatureGroups().get(output).getCurrentFeatures().length > 0;
+    }
+
+    public boolean canTrain()
+    {
+        for(int i = 0; i < numOutputs; i++)
+        {
+            if(!canTrain(i))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public boolean canTrain(int output)
+    {
+        return getNumExamples() > 0;
     }
     
     private void setHasInstances(boolean hasInstances) {

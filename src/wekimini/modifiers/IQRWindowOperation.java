@@ -16,8 +16,8 @@ public class IQRWindowOperation implements WindowedOperation.Operation
     @Override
     public double doOperation(double[] vals, int startPtr) {
         double half1 = Math.ceil((double)vals.length/2.0);
-        double q1 = 0.0;
-        double q3 = 0.0;
+        double q1;
+        double q3;
         double[] sorted = vals.clone();
         Arrays.sort(sorted);
         if(half1 % 2 == 0)

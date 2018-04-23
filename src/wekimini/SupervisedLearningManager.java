@@ -300,6 +300,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         pathEditedListeners.remove(l);
     }
 
+    //THIS WHEN THE THREAD IS FINISHED, NOT WHEN THE STATUS CHANGE iS FIRED
     private void trainingWorkerChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("state")) {
             if (evt.getNewValue() == SwingWorker.StateValue.DONE) {
@@ -330,11 +331,6 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         return recordingRound;
     }
 
-    /**
-     * Set the value of recordingState
-     *
-     * @param recordingState new value of recordingState
-     */
     public void setRecordingState(RecordingState recordingState) {
         RecordingState oldRecordingState = this.recordingState;
         this.recordingState = recordingState;
@@ -371,20 +367,10 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         setRecordingState(RecordingState.NOT_RECORDING);
     }
 
-    /**
-     * Get the value of runningState
-     *
-     * @return the value of runningState
-     */
     public RunningState getRunningState() {
         return runningState;
     }
 
-    /**
-     * Set the value of runningState
-     *
-     * @param runningState new value of runningState
-     */
     public void setRunningState(RunningState runningState) {
         RunningState oldRunningState = this.runningState;
         this.runningState = runningState;
@@ -404,20 +390,12 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         }
     }
 
-    /**
-     * Get the value of learningState
-     *
-     * @return the value of learningState
-     */
+ 
     public LearningState getLearningState() {
         return learningState;
     }
 
-    /**
-     * Set the value of learningState
-     *
-     * @param learningState new value of learningState
-     */
+
     protected void setLearningState(LearningState learningState) {
         LearningState oldLearningState = this.learningState;
         this.learningState = learningState;
@@ -427,20 +405,11 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-    /**
-     * Add PropertyChangeListener.
-     *
-     * @param listener
-     */
+
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(listener);
     }
 
-    /**
-     * Remove PropertyChangeListener.
-     *
-     * @param listener
-     */
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
@@ -765,7 +734,6 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             setAbleToRun(false);
             return;
         }
-        //if (learningState == LearningState.DONE_TRAINING ) {
         if (learningState != LearningState.TRAINING) {
             for (Path p : paths) {
                 if (p.canCompute()) {
@@ -1195,6 +1163,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
      * @param ableToRun new value of ableToRun
      */
     public void setAbleToRun(boolean ableToRun) {
+        System.out.println("setting is able to run to " + ableToRun);
         boolean oldAbleToRun = this.ableToRun;
         this.ableToRun = ableToRun;
         propertyChangeSupport.firePropertyChange(PROP_ABLE_TO_RUN, oldAbleToRun, ableToRun);
