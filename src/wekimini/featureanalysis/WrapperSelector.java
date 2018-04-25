@@ -12,6 +12,7 @@ import weka.attributeSelection.WrapperSubsetEval;
 import weka.attributeSelection.BestFirst;
 import weka.core.Instances;
 import weka.classifiers.Classifier;
+import weka.core.SelectedTag;
 
 /**
  *
@@ -42,8 +43,8 @@ public class WrapperSelector extends FeatureSelector {
             AttributeSelection attsel = new AttributeSelection();
             WrapperSubsetEval eval = new WrapperSubsetEval();
             BestFirst search = new BestFirst();
-            String dir = forwards ? "0":"1"; 
-            String[] options = {"D", dir};
+            String dir = forwards ? "1":"0"; 
+            String[] options = {"-D", dir};
             search.setOptions(options);
             search.setSearchTermination(6);
             eval.setClassifier(classifier);

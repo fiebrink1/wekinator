@@ -112,15 +112,14 @@ public class AccuracyExperiment {
         participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
         participant.userFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames();
         participant.allFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getNames();
-
-        participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
-        //participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
-        participant.forwardsFeatures = w.getDataManager().selectedFeatureNames[0];
-
         //Select features with backwards select, log time taken
         participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
         //participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
         participant.backwardsFeatures = w.getDataManager().selectedFeatureNames[0];
+        
+        participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
+        //participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
+        participant.forwardsFeatures = w.getDataManager().selectedFeatureNames[0];
 
         int mean = (participant.forwardsFeatures.length + participant.backwardsFeatures.length) / 2;
 
