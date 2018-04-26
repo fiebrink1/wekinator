@@ -14,7 +14,8 @@ public class Participant {
     public double timeTakenBackwards;
     public int numExamples;
     public String participantID;
-    public double[] results;
+    public double[] testSetResults;
+    public double[] trainingSetResults;
     public String[] userFeatures;
     public String[] backwardsFeatures;
     public String[] forwardsFeatures;
@@ -24,7 +25,8 @@ public class Participant {
     
     public Participant()
     {
-        results = new double[6];
+        testSetResults = new double[6];
+        trainingSetResults = new double[6];
         userFeatures = new String[6];
         backwardsFeatures = new String[6];
         forwardsFeatures = new String[6];

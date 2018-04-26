@@ -43,9 +43,10 @@ public class AccuracyExperiment {
     private ModelEvaluator evaluator;
     private Participant participant;
     private int featuresPtr;
-    Iterator it;
+    private Iterator it;
     private ArrayList<Participant> participants;
-    
+    private boolean testSet = true;
+    private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot"};
     
     public static void main(String[] args)
     {
@@ -69,7 +70,8 @@ public class AccuracyExperiment {
         System.out.println(participant.participantID);
         System.out.println(participant.timeTakenForwards);
         System.out.println(participant.timeTakenBackwards);
-        System.out.println(Arrays.toString(participant.results));
+        System.out.println(Arrays.toString(participant.testSetResults));
+        System.out.println(Arrays.toString(participant.trainingSetResults));
         participants.add(participant);
     }
     
@@ -92,48 +94,77 @@ public class AccuracyExperiment {
     private void reset()
     {
         featuresPtr = 0;
+        testSet = true;
         participant = new Participant();
+    }
+    
+    private boolean isBlackListed(String pID)
+    {
+        for(String blackListed : blackList)
+        {
+            if(pID.equals(blackListed))
+            {
+                return true;
+            }
+        }
+        return false;
     }
     
     private void runForNextParticipant()
     {
         reset();
                 
-        Map.Entry pair = (Map.Entry)it.next();
-        System.out.println(pair.getKey() + " = " + pair.getValue());
-        String location = (String) pair.getValue();
-        participant.participantID = (String) pair.getKey();
-        
-        try {
-            w = WekinatorSaver.loadWekinatorFromFile(location);
-        } catch (Exception ex) {
-            Logger.getLogger(AccuracyExperiment.class.getName()).log(Level.SEVERE, null, ex);
+        if(it.hasNext())
+        {
+            Map.Entry pair = (Map.Entry)it.next();
+       
+            while(isBlackListed((String)pair.getKey()))
+            {
+                System.out.println("Skipping " + (String)pair.getKey() + "(blacklisted)");
+                if(!it.hasNext())
+                {
+                    return;
+                }
+                pair = (Map.Entry)it.next();
+            }
+
+            System.out.println(pair.getKey() + " = " + pair.getValue());
+            String location = (String) pair.getValue();
+            String pID = (String) pair.getKey();
+            participant.participantID = pID;
+
+            try {
+                w = WekinatorSaver.loadWekinatorFromFile(location);
+            } catch (Exception ex) {
+                Logger.getLogger(AccuracyExperiment.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
+            participant.userFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames();
+            participant.allFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getNames();
+
+            //Select features with backwards select, log time taken
+            participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
+            //participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
+            participant.backwardsFeatures = w.getDataManager().selectedFeatureNames[0];
+
+            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
+            //participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
+            participant.forwardsFeatures = w.getDataManager().selectedFeatureNames[0];
+
+            int mean = (participant.forwardsFeatures.length + participant.backwardsFeatures.length) / 2;
+
+            //Select features with info gain, log time taken 
+            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
+            participant.infoGainFeatures = w.getDataManager().selectedFeatureNames[0];
+
+            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.RANDOM, mean);
+            participant.randomFeatures = w.getDataManager().selectedFeatureNames[0];
+
+            //Get test set accuracy with user selected features (these should be automatically loaded?)
+            setFeatures(featuresForPtr(featuresPtr));
+            evaluate();
+            it.remove(); 
         }
-        participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
-        participant.userFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames();
-        participant.allFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getNames();
-        //Select features with backwards select, log time taken
-        participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
-        //participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
-        participant.backwardsFeatures = w.getDataManager().selectedFeatureNames[0];
-        
-        participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
-        //participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
-        participant.forwardsFeatures = w.getDataManager().selectedFeatureNames[0];
-
-        int mean = (participant.forwardsFeatures.length + participant.backwardsFeatures.length) / 2;
-
-        //Select features with info gain, log time taken 
-        w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
-        participant.infoGainFeatures = w.getDataManager().selectedFeatureNames[0];
-
-        w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.RANDOM, mean);
-        participant.randomFeatures = w.getDataManager().selectedFeatureNames[0];
-
-        //Get test set accuracy with user selected features (these should be automatically loaded?)
-        setFeatures(featuresForPtr(featuresPtr));
-        evaluate();
-        it.remove(); 
     }
     
     private String[] featuresForPtr(int ptr)
@@ -146,7 +177,7 @@ public class AccuracyExperiment {
             case 3 : return participant.forwardsFeatures;
             case 4 : return participant.infoGainFeatures;
             case 5 : return participant.randomFeatures;
-            default: return participant.userFeatures;
+            default: return participant.allFeatures;
         }
     }
             
@@ -180,7 +211,7 @@ public class AccuracyExperiment {
                 evaluatorCancelled();
             }
         });
-        ModelEvaluationFrame.EvaluationMode eval = ModelEvaluationFrame.EvaluationMode.TESTING_SET;
+        ModelEvaluationFrame.EvaluationMode eval = testSet ? ModelEvaluationFrame.EvaluationMode.TESTING_SET : ModelEvaluationFrame.EvaluationMode.CROSS_VALIDATION;
         Path p = w.getSupervisedLearningManager().getPaths().get(0);
         LinkedList<Path> paths = new LinkedList<>();
         paths.add(p);
@@ -209,22 +240,33 @@ public class AccuracyExperiment {
 
     private void evaluatorFinished(String[] results) 
     {
-        participant.results[featuresPtr] = Double.parseDouble((results[0].replaceAll("%", "")));
-        featuresPtr++;
-        if(featuresPtr < NUM_FEATURE_SETS)
+        if(testSet)
         {
-            setFeatures(featuresForPtr(featuresPtr));
+            participant.testSetResults[featuresPtr] = Double.parseDouble((results[0].replaceAll("%", "")));
+            testSet = false;
             evaluate();
-        }
-        else if(it.hasNext())
-        {
-            logParticipant();
-            runForNextParticipant();
         }
         else
         {
-            logParticipant();
-            logAll();
+            participant.trainingSetResults[featuresPtr] = Double.parseDouble((results[0].replaceAll("%", "")));
+            testSet = true;
+            featuresPtr++;
+            
+            if(featuresPtr < NUM_FEATURE_SETS)
+            {
+                setFeatures(featuresForPtr(featuresPtr));
+                evaluate();
+            }
+            else if(it.hasNext())
+            {
+                logParticipant();
+                runForNextParticipant();
+            }
+            else
+            {
+                logParticipant();
+                logAll();
+            }
         }
     }
     
