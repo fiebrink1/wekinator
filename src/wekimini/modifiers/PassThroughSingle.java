@@ -9,7 +9,7 @@ package wekimini.modifiers;
  *
  * @author louismccallum
  */
-public class PassThroughSingle extends ModifiedInputSingle {
+public class PassThroughSingle extends ModifiedInputSingleOutput {
      
     public PassThroughSingle(String originalName, int index, int increment) {
         if (increment == 1) {

@@ -9,7 +9,7 @@ package wekimini.modifiers;
  *
  * @author louismccallum
  */
-public class Threshold extends ModifiedInputSingle {
+public class Threshold extends ModifiedInputSingleOutput {
     
     public double threshold = 0.5;
     

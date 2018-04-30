@@ -12,7 +12,7 @@ import java.io.ObjectInputStream;
  *
  * @author rebecca
  */
-public class BufferedInput extends ModifiedInputVector {
+public class BufferedInput extends ModifiedInputVectorOutput {
     public final int bufferSize;
     private transient double[] history;
     private transient int startPointer;

@@ -10,7 +10,7 @@ package wekimini.modifiers;
  * @author louismccallum
  */
 
-public class MultipleInputWindowedOperation extends ModifiedInputSingle {
+public class MultipleInputWindowedOperation extends ModifiedInputSingleOutput {
     
     public final int windowSize;
     private double[][] history;
@@ -29,11 +29,15 @@ public class MultipleInputWindowedOperation extends ModifiedInputSingle {
         return op;
     }
     
-    public MultipleInputWindowedOperation(String originalName, MultipleInputOperation op, int windowSize, int nameIncrement) {
+    public MultipleInputWindowedOperation(String originalName, 
+            MultipleInputOperation op, 
+            int windowSize, 
+            int nameIncrement,
+            int numInputs) {
         name = makeName(originalName, op.shortName(), windowSize, nameIncrement);       
         this.windowSize = windowSize;
         this.op = op;
-        history = new double[1][windowSize];
+        history = new double[numInputs][windowSize];
         startPointer = 0;
     }
     

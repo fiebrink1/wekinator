@@ -10,7 +10,7 @@ package wekimini.modifiers;
  * @author louismccallum
  */
 
-public class PassThroughVector extends ModifiedInputVector {
+public class PassThroughVector extends ModifiedInputVectorOutput {
     
     public PassThroughVector(String[] originalNames, int increment) {
         if (increment == 1) {

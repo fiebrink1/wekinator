@@ -9,7 +9,7 @@ package wekimini.modifiers;
  *
  * @author louismccallum
  */
-public class MaxInputs extends ModifiedInputSingle {
+public class MaxInputs extends ModifiedInputSingleOutput {
     
     private double[] values;
     

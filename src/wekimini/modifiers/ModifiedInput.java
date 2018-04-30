@@ -117,13 +117,13 @@ public class ModifiedInput {
                 if(input == modifier.inputID)
                 {
                     double newInputs[] = new double[1];
-                    if (modifier instanceof ModifiedInputSingle) 
+                    if (modifier instanceof ModifiedInputSingleOutput) 
                     {
-                        newInputs[0] = ((ModifiedInputSingle)modifier).getValue();
+                        newInputs[0] = ((ModifiedInputSingleOutput)modifier).getValue();
                     }
                     else    
                     {
-                        newInputs = ((ModifiedInputVector)modifier).getValues();
+                        newInputs = ((ModifiedInputVectorOutput)modifier).getValues();
                     }
                     double [] newVals = new double[newInputs.length + inputValues.length];
                     System.arraycopy(inputValues, 0, newVals, 0, inputValues.length);

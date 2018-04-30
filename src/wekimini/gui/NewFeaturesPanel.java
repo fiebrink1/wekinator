@@ -323,7 +323,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
 
         @Override
         public int getRowCount() {
-            return (int)Math.ceil(tags.length/getColumnCount());
+            return (int)Math.ceil((double)tags.length/(double)getColumnCount());
         }
 
         @Override
@@ -336,7 +336,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
             int r = rowIndex * getColumnCount();
             int c = columnIndex % getColumnCount();
             //System.out.println("rowIndex:"+rowIndex+" columnIndex:" + columnIndex + " r:" + r + " c:" + c + " index:" + (r+c));
-            return tags[c + r];
+            int index = c + r;
+            return index < tags.length ? tags[index] : "";
         }
         
         @Override

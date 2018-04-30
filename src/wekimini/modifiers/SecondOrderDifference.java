@@ -9,7 +9,7 @@ package wekimini.modifiers;
  *
  * @author louismccallum
  */
-public class SecondOrderDifference extends ModifiedInputSingle {
+public class SecondOrderDifference extends ModifiedInputSingleOutput {
     
     private transient double x_n2 = 0;
     private transient double x_n1 = 0;

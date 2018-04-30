@@ -9,7 +9,7 @@ package wekimini.modifiers;
  *
  * @author rebecca
  */
-public class ModifiedInputSingle extends ModifiedInput {
+public class ModifiedInputSingleOutput extends ModifiedInput {
     
     protected transient double value = 0;
     protected String name;

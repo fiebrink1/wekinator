@@ -277,7 +277,7 @@ public class ModifierCollection {
         completedModifiers.add(modifiers.get(0));
         if(completedModifier.addToOutput)
         {
-            System.arraycopy(((ModifiedInputVector)completedModifier).getValues(), 0, currentValues, modifierOutputIndex, completedModifier.getSize());
+            System.arraycopy(((ModifiedInputVectorOutput)completedModifier).getValues(), 0, currentValues, modifierOutputIndex, completedModifier.getSize());
             modifierOutputIndex += completedModifier.getSize();
         }
 
@@ -299,14 +299,14 @@ public class ModifierCollection {
                         {
                             //SAVE THE INDEX OF THE VALUE ADDED AND A REFERNCE TO ITS SOURCE (THE MODIFIER)
                             String featureName = getFeatureNameForModifierID(toComplete.inputID, features);
-                            if (toComplete instanceof ModifiedInputSingle) 
+                            if (toComplete instanceof ModifiedInputSingleOutput) 
                             {
-                                currentValues[modifierOutputIndex] = ((ModifiedInputSingle)toComplete).getValue();
+                                currentValues[modifierOutputIndex] = ((ModifiedInputSingleOutput)toComplete).getValue();
                                 outputNames[modifierOutputIndex] = featureName + ":0";
                             } 
                             else 
                             {
-                                System.arraycopy(((ModifiedInputVector)toComplete).getValues(), 0, currentValues, modifierOutputIndex, toComplete.getSize());
+                                System.arraycopy(((ModifiedInputVectorOutput)toComplete).getValues(), 0, currentValues, modifierOutputIndex, toComplete.getSize());
                                 for(int i = 0; i < toComplete.getSize(); i++)
                                 {
                                     outputNames[modifierOutputIndex + i] = featureName + ":" + i;

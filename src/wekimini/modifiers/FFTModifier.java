@@ -9,7 +9,7 @@ import org.jtransforms.fft.DoubleFFT_1D;
  *
  * @author louismccallum
  */
-public class FFTModifier extends ModifiedInputVector {
+public class FFTModifier extends ModifiedInputVectorOutput {
     
     int[] outputBins;
     int windowSize;
