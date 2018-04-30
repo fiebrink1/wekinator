@@ -8,9 +8,11 @@ package wekimini.modifiers;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import wekimini.modifiers.Feature.InputDiagram;
 import wekimini.modifiers.WindowedOperation.Operation;
@@ -34,6 +36,7 @@ public final class FeatureCollection
     protected static final int GYROX = 3;
     protected static final int GYROY = 4;
     protected static final int GYROZ = 5;
+    protected HashMap<String, Integer> inputs = new HashMap();
     protected static final String FFT_DESCRIPTION = "FFT \nUse this feature if you are interested in the periodicity of your motion";
     protected static final String RAW_DESCRIPTION = "Raw \nJust the raw signal";
     protected static final String MEAN_DESCRIPTION = "Mean \nUse this feature to smooth out measurements over the given window e.g. if you are only interested in bigger changes over time";
@@ -50,6 +53,12 @@ public final class FeatureCollection
     
     public FeatureCollection(String[] inputNames)
     {
+        inputs.put("AccX", ACCX);
+        inputs.put("AccY", ACCY);
+        inputs.put("AccZ", ACCZ);
+        inputs.put("GyroX", GYROX);
+        inputs.put("GyroY", GYROY);
+        inputs.put("GyroZ", GYROZ);
         initLibrary(10, 10);
         modifiers = new ModifierCollection(inputNames);
     }
@@ -59,55 +68,138 @@ public final class FeatureCollection
         
         library.clear();
         
-        //library.add(new PassThroughAll("PassThroughAll"));
-        library.add(new PassThrough("AccX",new int[]{ACCX}));
-        library.add(new PassThrough("AccY",new int[]{ACCY}));
-        library.add(new PassThrough("AccZ",new int[]{ACCZ}));
-        library.add(new PassThrough("GyroX",new int[]{GYROX}));
-        library.add(new PassThrough("GyroY",new int[]{GYROY}));
-        library.add(new PassThrough("GyroZ",new int[]{GYROZ}));
-        library.add(new WindowedFeature("MeanAccX",new AverageWindowOperation(),ACCX,windowSize));
-        library.add(new WindowedFeature("MeanAccY",new AverageWindowOperation(),ACCY,windowSize));
-        library.add(new WindowedFeature("MeanAccZ",new AverageWindowOperation(),ACCZ,windowSize));
-        library.add(new WindowedFeature("MeanGyroX",new AverageWindowOperation(),GYROX,windowSize));
-        library.add(new WindowedFeature("MeanGyroY",new AverageWindowOperation(),GYROY,windowSize));
-        library.add(new WindowedFeature("MeanGyroZ",new AverageWindowOperation(),GYROZ,windowSize));
-        library.add(new WindowedFeature("StdDevAccX",new StdDevWindowOperation(),ACCX,windowSize));
-        library.add(new WindowedFeature("StdDevAccY",new StdDevWindowOperation(),ACCY,windowSize));
-        library.add(new WindowedFeature("StdDevAccZ",new StdDevWindowOperation(),ACCZ,windowSize));
-        library.add(new WindowedFeature("StdDevGyroX",new StdDevWindowOperation(),GYROX,windowSize));
-        library.add(new WindowedFeature("StdDevGyroY",new StdDevWindowOperation(),GYROY,windowSize));
-        library.add(new WindowedFeature("StdDevGyroZ",new StdDevWindowOperation(),GYROZ,windowSize));
-        library.add(new WindowedFeature("MaxAccX",new MaxWindowOperation(),ACCX,windowSize));
-        library.add(new WindowedFeature("MaxAccY",new MaxWindowOperation(),ACCY,windowSize));
-        library.add(new WindowedFeature("MaxAccZ",new MaxWindowOperation(),ACCZ,windowSize));
-        library.add(new WindowedFeature("MaxGyroX",new MaxWindowOperation(),GYROX,windowSize));
-        library.add(new WindowedFeature("MaxGyroY",new MaxWindowOperation(),GYROY,windowSize));
-        library.add(new WindowedFeature("MaxGyroZ",new MaxWindowOperation(),GYROZ,windowSize));
-        library.add(new WindowedFeature("MinAccX",new MinWindowOperation(),ACCX,windowSize));
-        library.add(new WindowedFeature("MinAccY",new MinWindowOperation(),ACCY,windowSize));
-        library.add(new WindowedFeature("MinAccZ",new MinWindowOperation(),ACCZ,windowSize));
-        library.add(new WindowedFeature("MinGyroX",new MinWindowOperation(),GYROX,windowSize));
-        library.add(new WindowedFeature("MinGyroY",new MinWindowOperation(),GYROY,windowSize));
-        library.add(new WindowedFeature("MinGyroZ",new MinWindowOperation(),GYROZ,windowSize));
-        library.add(new WindowedFeature("EnergyAccX",new EnergyWindowOperation(),ACCX,windowSize));
-        library.add(new WindowedFeature("EnergyAccY",new EnergyWindowOperation(),ACCY,windowSize));
-        library.add(new WindowedFeature("EnergyAccZ",new EnergyWindowOperation(),ACCZ,windowSize));
-        library.add(new WindowedFeature("EnergyGyroX",new EnergyWindowOperation(),GYROX,windowSize));
-        library.add(new WindowedFeature("EnergyGyroY",new EnergyWindowOperation(),GYROY,windowSize));
-        library.add(new WindowedFeature("EnergyGyroZ",new EnergyWindowOperation(),GYROZ,windowSize));
-        library.add(new WindowedFeature("IQRAccX",new IQRWindowOperation(),ACCX,windowSize));
-        library.add(new WindowedFeature("IQRAccY",new IQRWindowOperation(),ACCY,windowSize));
-        library.add(new WindowedFeature("IQRAccZ",new IQRWindowOperation(),ACCZ,windowSize));
-        library.add(new WindowedFeature("IQRGyroX",new IQRWindowOperation(),GYROX,windowSize));
-        library.add(new WindowedFeature("IQRGyroY",new IQRWindowOperation(),GYROY,windowSize));
-        library.add(new WindowedFeature("IQRGyroZ",new IQRWindowOperation(),GYROZ,windowSize));
-//        library.add(new BufferFeature("BufferAccX", ACCX, bufferSize));
-//        library.add(new BufferFeature("BufferAccY", ACCY, bufferSize));
-//        library.add(new BufferFeature("BufferAccZ", ACCZ, bufferSize));
-//        library.add(new BufferFeature("BufferGyroX", GYROX, bufferSize));
-//        library.add(new BufferFeature("BufferGyroY", GYROY, bufferSize));
-//        library.add(new BufferFeature("BufferGyroZ", GYROZ, bufferSize));
+        Iterator it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new PassThrough(pair.getKey(),new int[]{pair.getValue()}));
+        }
+        
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new WindowedFeature("Mean" + pair.getKey(),new AverageWindowOperation(),pair.getValue(),windowSize));
+        }
+        
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new WindowedFeature("StdDev" + pair.getKey(),new StdDevWindowOperation(),pair.getValue(),windowSize));
+        }
+        
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new WindowedFeature("Max" + pair.getKey(),new MaxWindowOperation(),pair.getValue(),windowSize));
+        }
+        
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new WindowedFeature("Min" + pair.getKey(),new MinWindowOperation(),pair.getValue(),windowSize));
+        }
+        
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new WindowedFeature("Energy" + pair.getKey(),new EnergyWindowOperation(),pair.getValue(),windowSize));
+        }
+        
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new WindowedFeature("IQR" + pair.getKey(),new IQRWindowOperation(),pair.getValue(),windowSize));
+        }
+
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new FODRaw("FOD" + pair.getKey(), pair.getValue()));
+        }
+        
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new WindowedFOD("MeanFOD" + pair.getKey(),new AverageWindowOperation(),pair.getValue(),windowSize));
+        }
+        
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new WindowedFOD("StdDevFOD" + pair.getKey(),new StdDevWindowOperation(),pair.getValue(),windowSize));
+        }
+        
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new WindowedFOD("MaxFOD" + pair.getKey(),new MaxWindowOperation(),pair.getValue(),windowSize));
+        }
+        
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new WindowedFOD("MinFOD" + pair.getKey(),new MinWindowOperation(),pair.getValue(),windowSize));
+        }
+        
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new WindowedFOD("IQRFOD" + pair.getKey(),new IQRWindowOperation(),pair.getValue(),windowSize));
+        }
+        
+        int [] bins = new int[]{0,8,16,24,36,48,60};
+        for(int i = 0; i < 7; i++)
+        {
+            it = inputs.entrySet().iterator();
+            while(it.hasNext())
+            {
+                Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+                library.add(new FFTSingleBinFeature("FFT" + pair.getKey() + "("+bins[i]+"/128)", pair.getValue(), 128, bins[i]));
+                library.add(new FFTFODSingleBinFeature("FFTFOD" + pair.getKey() + "("+bins[i]+"/128)", pair.getValue(), 128, bins[i]));
+            }
+        }
+        
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new MaxFFT("MaxBinFFT" + pair.getKey(), pair.getValue(), 128));
+        }
+        
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new MinFFT("MinBinFFT" + pair.getKey(), pair.getValue(), 128));
+        }
+        
+        //Less obvious how to make these modular
+
+        library.add(new CorrelateFeature("CorrelateAccXY",new int[]{ACCX,ACCY},windowSize));
+        library.add(new CorrelateFeature("CorrelateAccXZ",new int[]{ACCX,ACCZ},windowSize));
+        library.add(new CorrelateFeature("CorrelateAccYZ",new int[]{ACCY,ACCZ},windowSize));
+        library.add(new CorrelateFeature("CorrelateGyroXY",new int[]{GYROX,GYROY},windowSize));
+        library.add(new CorrelateFeature("CorrelateGyroXZ",new int[]{GYROX,GYROZ},windowSize));
+        library.add(new CorrelateFeature("CorrelateGyroYZ",new int[]{GYROY,GYROZ},windowSize));
+        library.add(new CorrelateFOD("CorrelateFODAccXY",new int[]{ACCX,ACCY},windowSize));
+        library.add(new CorrelateFOD("CorrelateFODAccXZ",new int[]{ACCX,ACCZ},windowSize));
+        library.add(new CorrelateFOD("CorrelateFODAccYZ",new int[]{ACCY,ACCZ},windowSize));
+        library.add(new CorrelateFOD("CorrelateFODGyroXY",new int[]{GYROX,GYROY},windowSize));
+        library.add(new CorrelateFOD("CorrelateFODGyroXZ",new int[]{GYROX,GYROZ},windowSize));
+        library.add(new CorrelateFOD("CorrelateFODGyroYZ",new int[]{GYROY,GYROZ},windowSize));
+        
         library.add(new MagnitudeFeature("MagAcc", new int[]{ACCX,ACCY,ACCZ}, 2));
         library.add(new WindowedMagnitudeFeature("MeanMagAcc", new AverageWindowOperation(), new int[]{ACCX,ACCY,ACCZ}, 2));
         library.add(new WindowedMagnitudeFeature("StdDevMagAcc", new StdDevWindowOperation(), new int[]{ACCX,ACCY,ACCZ}, 2));
@@ -124,83 +216,6 @@ public final class FeatureCollection
         library.add(new WindowedMagnitudeFeature("IQRMagGyro", new IQRWindowOperation(), new int[]{GYROX,GYROY,GYROZ}, 2));
         library.add(new MagnitudeFODFeature("MagFODAcc", new int[]{ACCX,ACCY,ACCZ}, 2));
         library.add(new MagnitudeFODFeature("MagFODGyro", new int[]{GYROX,GYROY,GYROZ}, 2));
-        library.add(new FODRaw("AccXFOD", ACCX));
-        library.add(new FODRaw("AccYFOD", ACCY));
-        library.add(new FODRaw("AccZFOD", ACCZ));
-        library.add(new FODRaw("GyroXFOD", GYROX));
-        library.add(new FODRaw("GyroYFOD", GYROY));
-        library.add(new FODRaw("GyroZFOD", GYROZ));
-        library.add(new WindowedFOD("MeanFODAccX",new AverageWindowOperation(),ACCX,windowSize));
-        library.add(new WindowedFOD("MeanFODAccY",new AverageWindowOperation(),ACCY,windowSize));
-        library.add(new WindowedFOD("MeanFODAccZ",new AverageWindowOperation(),ACCZ,windowSize));
-        library.add(new WindowedFOD("MeanFODGyroX",new AverageWindowOperation(),GYROX,windowSize));
-        library.add(new WindowedFOD("MeanFODGyroY",new AverageWindowOperation(),GYROY,windowSize));
-        library.add(new WindowedFOD("MeanFODGyroZ",new AverageWindowOperation(),GYROZ,windowSize));
-        library.add(new WindowedFOD("StdDevFODAccX",new StdDevWindowOperation(),ACCX,windowSize));
-        library.add(new WindowedFOD("StdDevFODAccY",new StdDevWindowOperation(),ACCY,windowSize));
-        library.add(new WindowedFOD("StdDevFODAccZ",new StdDevWindowOperation(),ACCZ,windowSize));
-        library.add(new WindowedFOD("StdDevFODGyroX",new StdDevWindowOperation(),GYROX,windowSize));
-        library.add(new WindowedFOD("StdDevFODGyroY",new StdDevWindowOperation(),GYROY,windowSize));
-        library.add(new WindowedFOD("StdDevFODGyroZ",new StdDevWindowOperation(),GYROZ,windowSize));
-        library.add(new WindowedFOD("MaxFODAccX",new MaxWindowOperation(),ACCX,windowSize));
-        library.add(new WindowedFOD("MaxFODAccY",new MaxWindowOperation(),ACCY,windowSize));
-        library.add(new WindowedFOD("MaxFODAccZ",new MaxWindowOperation(),ACCZ,windowSize));
-        library.add(new WindowedFOD("MaxFODGyroX",new MaxWindowOperation(),GYROX,windowSize));
-        library.add(new WindowedFOD("MaxFODGyroY",new MaxWindowOperation(),GYROY,windowSize));
-        library.add(new WindowedFOD("MaxFODGyroZ",new MaxWindowOperation(),GYROZ,windowSize));
-        library.add(new WindowedFOD("MinFODAccX",new MinWindowOperation(),ACCX,windowSize));
-        library.add(new WindowedFOD("MinFODAccY",new MinWindowOperation(),ACCY,windowSize));
-        library.add(new WindowedFOD("MinFODAccZ",new MinWindowOperation(),ACCZ,windowSize));
-        library.add(new WindowedFOD("MinFODGyroX",new MinWindowOperation(),GYROX,windowSize));
-        library.add(new WindowedFOD("MinFODGyroY",new MinWindowOperation(),GYROY,windowSize));
-        library.add(new WindowedFOD("MinFODGyroZ",new MinWindowOperation(),GYROZ,windowSize));
-        library.add(new WindowedFOD("IQRFODAccX",new IQRWindowOperation(),ACCX,windowSize));
-        library.add(new WindowedFOD("IQRFODAccY",new IQRWindowOperation(),ACCY,windowSize));
-        library.add(new WindowedFOD("IQRFODAccZ",new IQRWindowOperation(),ACCZ,windowSize));
-        library.add(new WindowedFOD("IQRFODGyroX",new IQRWindowOperation(),GYROX,windowSize));
-        library.add(new WindowedFOD("IQRFODGyroY",new IQRWindowOperation(),GYROY,windowSize));
-        library.add(new WindowedFOD("IQRFODGyroZ",new IQRWindowOperation(),GYROZ,windowSize));
-        library.add(new CorrelateFeature("CorrelateAccXY",new int[]{ACCX,ACCY},windowSize));
-        library.add(new CorrelateFeature("CorrelateAccXZ",new int[]{ACCX,ACCZ},windowSize));
-        library.add(new CorrelateFeature("CorrelateAccYZ",new int[]{ACCY,ACCZ},windowSize));
-        library.add(new CorrelateFeature("CorrelateGyroXY",new int[]{GYROX,GYROY},windowSize));
-        library.add(new CorrelateFeature("CorrelateGyroXZ",new int[]{GYROX,GYROZ},windowSize));
-        library.add(new CorrelateFeature("CorrelateGyroYZ",new int[]{GYROY,GYROZ},windowSize));
-        library.add(new CorrelateFOD("CorrelateFODAccXY",new int[]{ACCX,ACCY},windowSize));
-        library.add(new CorrelateFOD("CorrelateFODAccXZ",new int[]{ACCX,ACCZ},windowSize));
-        library.add(new CorrelateFOD("CorrelateFODAccYZ",new int[]{ACCY,ACCZ},windowSize));
-        library.add(new CorrelateFOD("CorrelateFODGyroXY",new int[]{GYROX,GYROY},windowSize));
-        library.add(new CorrelateFOD("CorrelateFODGyroXZ",new int[]{GYROX,GYROZ},windowSize));
-        library.add(new CorrelateFOD("CorrelateFODGyroYZ",new int[]{GYROY,GYROZ},windowSize));
-        
-        int [] bins = new int[]{0,8,16,24,36,48,60};
-        for(int i = 0; i < 7; i++)
-        {
-            library.add(new FFTSingleBinFeature("FFTAccX("+bins[i]+"/128)", ACCX, 128, bins[i]));
-            library.add(new FFTFODSingleBinFeature("FFTFODAccX("+bins[i]+"/128)", ACCX, 128, bins[i]));
-            library.add(new FFTSingleBinFeature("FFTAccY("+bins[i]+"/128)", ACCY, 128, bins[i]));
-            library.add(new FFTFODSingleBinFeature("FFTFODAccY("+bins[i]+"/128)", ACCY, 128, bins[i]));
-            library.add(new FFTSingleBinFeature("FFTAccZ("+bins[i]+"/128)", ACCZ, 128, bins[i]));
-            library.add(new FFTFODSingleBinFeature("FFTFODAccZ("+bins[i]+"/128)", ACCZ, 128, bins[i]));
-            library.add(new FFTSingleBinFeature("FFTGyroX("+bins[i]+"/128)", GYROX, 128, bins[i]));
-            library.add(new FFTFODSingleBinFeature("FFTFODGyroX("+bins[i]+"/128)", GYROX, 128, bins[i]));
-            library.add(new FFTSingleBinFeature("FFTGyroY("+bins[i]+"/128)", GYROX, 128, bins[i]));
-            library.add(new FFTFODSingleBinFeature("FFTFODGyroY("+bins[i]+"/128)", GYROX, 128, bins[i]));
-            library.add(new FFTSingleBinFeature("FFTGyroZ("+bins[i]+"/128)", GYROZ, 128, bins[i]));
-            library.add(new FFTFODSingleBinFeature("FFTFODGyroZ("+bins[i]+"/128)", GYROZ, 128, bins[i]));
-        }
-        library.add(new MaxFFT("MaxBinFFTAccX", ACCX, 128));
-        library.add(new MaxFFT("MaxBinFFTAccY", ACCY, 128));
-        library.add(new MaxFFT("MaxBinFFTAccZ", ACCZ, 128));
-        library.add(new MaxFFT("MaxBinFFTGyroX", GYROX, 128));
-        library.add(new MaxFFT("MaxBinFFTGyroY", GYROY, 128));
-        library.add(new MaxFFT("MaxBinFFTGyroZ", GYROZ, 128));
-        library.add(new MinFFT("MinBinFFTAccX", ACCX, 128));
-        library.add(new MinFFT("MinBinFFTAccY", ACCY, 128));
-        library.add(new MinFFT("MinBinFFTAccZ", ACCZ, 128));
-        library.add(new MinFFT("MinBinFFTGyroX", GYROX, 128));
-        library.add(new MinFFT("MinBinFFTGyroY", GYROY, 128));
-        library.add(new MinFFT("MinBinFFTGyroZ", GYROZ, 128));
         
         names = new String[library.size()];
         int ptr = 0;

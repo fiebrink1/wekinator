@@ -40,7 +40,6 @@ public class AccuracyExperiment {
     private final String PROJECT_NAME = "Study1.wekproj";
     private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
     private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
-    private ModelEvaluator evaluator;
     private Participant participant;
     private int featuresPtr;
     private Iterator it;
@@ -194,7 +193,7 @@ public class AccuracyExperiment {
     private void evaluate()
     {
         
-        evaluator = new ModelEvaluator(w, new ModelEvaluator.EvaluationResultsReceiver() {
+        ModelEvaluator evaluator = new ModelEvaluator(w, new ModelEvaluator.EvaluationResultsReceiver() {
 
             @Override
             public void finishedModel(int modelNum, String results, String confusion) {
