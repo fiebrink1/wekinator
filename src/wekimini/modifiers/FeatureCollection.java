@@ -624,7 +624,7 @@ class FeatureMetadata
         return "";
     }
     
-    static String tagForMultiOperation(MultipleInputWindowedOperation.MultipleInputOperation op)
+    static String descriptionForMultiOperation(MultipleInputWindowedOperation.MultipleInputOperation op)
     {
         if(op.getClass().equals(CorrelateWindowOperation.class))
         {
@@ -637,7 +637,7 @@ class FeatureMetadata
         return "";
     }
     
-    static String descriptionForMultiOperation(MultipleInputWindowedOperation.MultipleInputOperation op)
+    static String tagForMultiOperation(MultipleInputWindowedOperation.MultipleInputOperation op)
     {
         if(op.getClass().equals(CorrelateWindowOperation.class))
         {
