@@ -15,9 +15,9 @@ import java.util.Objects;
 
 public class Feature 
 {
-//    public enum InputDiagram {
-//        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
-//    }
+    public enum InputDiagram {
+        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
+    }
     
     public final String name;
     public final ArrayList<Integer> modifierIds = new ArrayList();
@@ -26,9 +26,9 @@ public class Feature
     public String description;
     private ArrayList <Integer> outputIndexes = new ArrayList();
     
-    public enum InputDiagram {
-        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
-    }
+//    public enum InputDiagram {
+//        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
+//    }
     
     public Feature(String name)
     {

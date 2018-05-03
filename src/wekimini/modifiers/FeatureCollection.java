@@ -1060,12 +1060,13 @@ class MultipleInputWindowedFeature extends FeatureSingleModifierOutput
         
         int[] inputIDs = new int[inputs.length];
         
-        for(int index : inputs)
+        for(int i = 0; i < inputs.length; i++)
         {
-            PassThroughSingle input = new PassThroughSingle("input"+index, inputs[index], 0);
+            int index = inputs[i];
+            PassThroughSingle input = new PassThroughSingle("input"+index, index, 0);
             input.addToOutput = false;
             input.addRequiredModifierID(0);
-            inputIDs[index] = addModifier(mc, input);
+            inputIDs[i] = addModifier(mc, input);
         }
         
         ModifiedInput multi = new MultipleInputWindowedOperation("window", op, windowSize, 0, inputs.length);
@@ -1119,12 +1120,13 @@ class MultipleInputFeature extends FeatureSingleModifierOutput
         
         int[] inputIDs = new int[inputs.length];
         
-        for(int index : inputs)
+        for(int i = 0; i < inputs.length; i++)
         {
-            PassThroughSingle input = new PassThroughSingle("input"+index, inputs[index], 0);
+            int index = inputs[i];
+            PassThroughSingle input = new PassThroughSingle("input"+index, index, 0);
             input.addToOutput = false;
             input.addRequiredModifierID(0);
-            inputIDs[index] = addModifier(mc, input);
+            inputIDs[i] = addModifier(mc, input);
         }
         
         ModifiedInput multi = new MultipleInputWindowedOperation("window", op, windowSize, 0, inputs.length);
@@ -1143,18 +1145,18 @@ class MultipleInputFeature extends FeatureSingleModifierOutput
 class MultipleInputFODFeature extends FeatureSingleModifierOutput
 {
     int windowSize;
-    int[] indexes;
+    int[] inputs;
     MultipleInputWindowedOperation.MultipleInputOperation op;
     
     public MultipleInputFODFeature(String name, int inputs[], int windowSize, MultipleInputWindowedOperation.MultipleInputOperation op) {
         super(name);
-        this.indexes = inputs;
+        this.inputs = inputs;
         this.windowSize = windowSize;
         this.diagram = InputDiagram.MULTIPLE;
         this.op = op;
-        //tags.add("Correlation");
         tags.add("1st Order Diff");
-        //this.description = FeatureCollection.CORRELATION_DESCRIPTION;
+        tags.add(FeatureMetadata.tagForMultiOperation(op));
+        this.description = FeatureMetadata.descriptionForMultiOperation(op);
         for(int input:inputs)
         {
             String[] inputTags = FeatureMetadata.tagsForInput(input);
@@ -1171,17 +1173,18 @@ class MultipleInputFODFeature extends FeatureSingleModifierOutput
     @Override
     public void addFeature(ModifierCollection mc)
     {
-        int[] inputIDs = new int[indexes.length];
+        int[] inputIDs = new int[inputs.length];
         
-        for(int index : indexes)
+        for(int i = 0; i < inputs.length; i++)
         {
-            FirstOrderDifference input = new FirstOrderDifference("fod"+index, indexes[index], 0);
+            int index = inputs[i];
+            FirstOrderDifference input = new FirstOrderDifference("fod"+index, index, 0);
             input.addToOutput = false;
             input.addRequiredModifierID(0);
-            inputIDs[index] = addModifier(mc, input);
+            inputIDs[i] = addModifier(mc, input);
         }
        
-        ModifiedInput window = new MultipleInputWindowedOperation("window", op, windowSize, 0, indexes.length);
+        ModifiedInput window = new MultipleInputWindowedOperation("window", op, windowSize, 0, inputs.length);
         
         for(int id : inputIDs)
         {

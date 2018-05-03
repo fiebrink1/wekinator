@@ -29,7 +29,7 @@ public class FeatureCollectionTest {
     public void setUp()
     {
         fm = new FeatureManager();
-        String[] names = {"1","2","3"};
+        String[] names = {"1","2","3","4","5","6"};
         fm.addOutputs(1, names);
         assertEquals(1, fm.getFeatureGroups().size());
         fm.passThroughInputToOutput(false, 0);
@@ -107,7 +107,7 @@ public class FeatureCollectionTest {
        int ptr = 0;
        for(boolean isEnabled:connections)
        {
-           assertEquals(ptr == 100, isEnabled);
+           assertEquals(ptr == 164, isEnabled);
            ptr++;
        }
     }
@@ -196,7 +196,7 @@ public class FeatureCollectionTest {
         assertTrue(results.contains(fc.getFeatureForKey("EnergyAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("MagAcc")));
         assertTrue(results.contains(fc.getFeatureForKey("MagFODAcc")));
-        assertTrue(results.contains(fc.getFeatureForKey("AccXFOD")));
+        assertTrue(results.contains(fc.getFeatureForKey("FODAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("MeanFODAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("StdDevFODAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("CorrelateAccXY")));
@@ -209,7 +209,7 @@ public class FeatureCollectionTest {
         assertFalse(results.contains(fc.getFeatureForKey("EnergyGyroY")));
         assertFalse(results.contains(fc.getFeatureForKey("MagGyro")));
         assertFalse(results.contains(fc.getFeatureForKey("MagFODGyro")));
-        assertFalse(results.contains(fc.getFeatureForKey("GyroYFOD")));
+        assertFalse(results.contains(fc.getFeatureForKey("FODGyroY")));
         assertFalse(results.contains(fc.getFeatureForKey("MeanFODGyroY")));
         assertFalse(results.contains(fc.getFeatureForKey("StdDevFODGyroY")));
         assertFalse(results.contains(fc.getFeatureForKey("CorrelateGyroYZ")));
@@ -242,9 +242,10 @@ public class FeatureCollectionTest {
         assertEquals(results.size(),0);
         
         results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"AccelerometerX","Mean"})));
-        assertEquals(2, results.size());
+        assertEquals(3, results.size());
         assertTrue(results.contains(fc.getFeatureForKey("MeanAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("MeanFODAccX")));
+        assertTrue(results.contains(fc.getFeatureForKey("MeanMagAcc")));
         
         results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[0])));
         assertEquals(0, results.size());
