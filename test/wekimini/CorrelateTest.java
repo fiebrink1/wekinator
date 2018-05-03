@@ -50,12 +50,12 @@ public class CorrelateTest extends ModifierTest {
         raw3.addRequiredModifierID(0);
         int rawID3 = w.getDataManager().featureManager.addModifierToOutput(raw3, 0);
         
-        ModifiedInput correlatePos = new MultipleInputWindowedOperation("input-1",new CorrelateWindowOperation(),windowSize,0);
+        ModifiedInput correlatePos = new MultipleInputWindowedOperation("input-1",new CorrelateWindowOperation(),windowSize,0, 2);
         correlatePos.addRequiredModifierID(rawID1);
         correlatePos.addRequiredModifierID(rawID2);
         int id1 = w.getDataManager().featureManager.addModifierToOutput(correlatePos, 0);
 
-        ModifiedInput correlateNeg = new MultipleInputWindowedOperation("input-2",new CorrelateWindowOperation(),windowSize,0);
+        ModifiedInput correlateNeg = new MultipleInputWindowedOperation("input-2",new CorrelateWindowOperation(),windowSize,0, 2);
         correlateNeg.addRequiredModifierID(rawID1);
         correlateNeg.addRequiredModifierID(rawID3);
         int id2 = w.getDataManager().featureManager.addModifierToOutput(correlateNeg, 0);

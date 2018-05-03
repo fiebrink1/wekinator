@@ -58,7 +58,7 @@ public class MagnitudeTest extends ModifierTest {
         raw3.addRequiredModifierID(0);
         int rawID3 = w.getDataManager().featureManager.addModifierToOutput(raw3, 0);
         
-        ModifiedInput mag = new MultipleInputWindowedOperation("input-1",new ThreeDimensionalMagnitude(),windowSize,0);
+        ModifiedInput mag = new MultipleInputWindowedOperation("input-1",new ThreeDimensionalMagnitude(),windowSize,0, 3);
         mag.addRequiredModifierID(rawID1);
         mag.addRequiredModifierID(rawID2);
         mag.addRequiredModifierID(rawID3);

@@ -32,7 +32,7 @@ public class MultipleInputTest extends ModifierTest {
         raw2.addRequiredModifierID(0);
         int rawID1 = w.getDataManager().featureManager.addModifierToOutput(raw1, 0);
         int rawID2 = w.getDataManager().featureManager.addModifierToOutput(raw2, 0);
-        ModifiedInput sum = new MultipleInputWindowedOperation("input-1",new SumInputsWindowOperation(),windowSize,0);
+        ModifiedInput sum = new MultipleInputWindowedOperation("input-1",new SumInputsWindowOperation(),windowSize,0, 2);
         sum.addRequiredModifierID(rawID1);
         sum.addRequiredModifierID(rawID2);
         int id = w.getDataManager().featureManager.addModifierToOutput(sum, 0);

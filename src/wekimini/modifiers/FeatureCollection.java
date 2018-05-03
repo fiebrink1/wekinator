@@ -77,7 +77,7 @@ public final class FeatureCollection
         while(it.hasNext())
         {
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-            library.add(new PassThrough(pair.getKey(),new int[]{pair.getValue()}));
+            library.add(new RawFeature(pair.getKey(),new int[]{pair.getValue()}));
         }
         
         it = inputs.entrySet().iterator();
@@ -126,42 +126,42 @@ public final class FeatureCollection
         while(it.hasNext())
         {
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-            library.add(new FODRaw("FOD" + pair.getKey(), pair.getValue()));
+            library.add(new RawFODFeature("FOD" + pair.getKey(), pair.getValue()));
         }
         
         it = inputs.entrySet().iterator();
         while(it.hasNext())
         {
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-            library.add(new WindowedFOD("MeanFOD" + pair.getKey(),new AverageWindowOperation(),pair.getValue(),windowSize));
+            library.add(new WindowedFODFeature("MeanFOD" + pair.getKey(),new AverageWindowOperation(),pair.getValue(),windowSize));
         }
         
         it = inputs.entrySet().iterator();
         while(it.hasNext())
         {
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-            library.add(new WindowedFOD("StdDevFOD" + pair.getKey(),new StdDevWindowOperation(),pair.getValue(),windowSize));
+            library.add(new WindowedFODFeature("StdDevFOD" + pair.getKey(),new StdDevWindowOperation(),pair.getValue(),windowSize));
         }
         
         it = inputs.entrySet().iterator();
         while(it.hasNext())
         {
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-            library.add(new WindowedFOD("MaxFOD" + pair.getKey(),new MaxWindowOperation(),pair.getValue(),windowSize));
+            library.add(new WindowedFODFeature("MaxFOD" + pair.getKey(),new MaxWindowOperation(),pair.getValue(),windowSize));
         }
         
         it = inputs.entrySet().iterator();
         while(it.hasNext())
         {
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-            library.add(new WindowedFOD("MinFOD" + pair.getKey(),new MinWindowOperation(),pair.getValue(),windowSize));
+            library.add(new WindowedFODFeature("MinFOD" + pair.getKey(),new MinWindowOperation(),pair.getValue(),windowSize));
         }
         
         it = inputs.entrySet().iterator();
         while(it.hasNext())
         {
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-            library.add(new WindowedFOD("IQRFOD" + pair.getKey(),new IQRWindowOperation(),pair.getValue(),windowSize));
+            library.add(new WindowedFODFeature("IQRFOD" + pair.getKey(),new IQRWindowOperation(),pair.getValue(),windowSize));
         }
         
         int [] bins = new int[]{0,8,16,24,36,48,60};
@@ -194,19 +194,20 @@ public final class FeatureCollection
         while(it.hasNext())
         {
             Map.Entry<String, int[]> pair = (Map.Entry)it.next();
-            library.add(new MagnitudeFeature("Mag" + pair.getKey(), pair.getValue(), windowSize));
-            library.add(new WindowedMagnitudeFeature("MeanMag" + pair.getKey(), new AverageWindowOperation(), pair.getValue(), windowSize));
-            library.add(new WindowedMagnitudeFeature("StdDevMag" + pair.getKey(), new StdDevWindowOperation(), pair.getValue(), windowSize));
-            library.add(new WindowedMagnitudeFeature("MaxMag" + pair.getKey(), new MaxWindowOperation(), pair.getValue(), windowSize));
-            library.add(new WindowedMagnitudeFeature("MinMag" + pair.getKey(), new MinWindowOperation(), pair.getValue(), windowSize));
-            library.add(new WindowedMagnitudeFeature("EnergyMag" + pair.getKey(), new EnergyWindowOperation(), pair.getValue(), windowSize));
-            library.add(new WindowedMagnitudeFeature("IQRMag" + pair.getKey(), new IQRWindowOperation(), pair.getValue(), windowSize));
-            library.add(new CorrelateFeature("Correlate" + pair.getKey() + "XY", new int[]{pair.getValue()[0], pair.getValue()[1]}, windowSize));
-            library.add(new CorrelateFeature("Correlate" + pair.getKey() + "XZ", new int[]{pair.getValue()[0], pair.getValue()[2]}, windowSize));
-            library.add(new CorrelateFeature("Correlate" + pair.getKey() + "YZ", new int[]{pair.getValue()[1], pair.getValue()[2]}, windowSize));
-            library.add(new CorrelateFOD("CorrelateFOD" + pair.getKey() + "XY", new int[]{pair.getValue()[0], pair.getValue()[1]}, windowSize));
-            library.add(new CorrelateFOD("CorrelateFOD" + pair.getKey() + "XZ", new int[]{pair.getValue()[0], pair.getValue()[2]}, windowSize));
-            library.add(new CorrelateFOD("CorrelateFOD" + pair.getKey() + "YZ", new int[]{pair.getValue()[1], pair.getValue()[2]}, windowSize));
+            library.add(new MultipleInputFeature("Mag" + pair.getKey(), pair.getValue(), windowSize, new ThreeDimensionalMagnitude()));
+            library.add(new MultipleInputWindowedFeature("MeanMag" + pair.getKey(), new AverageWindowOperation(), pair.getValue(), windowSize, new ThreeDimensionalMagnitude()));
+            library.add(new MultipleInputWindowedFeature("StdDevMag" + pair.getKey(), new StdDevWindowOperation(), pair.getValue(), windowSize, new ThreeDimensionalMagnitude()));
+            library.add(new MultipleInputWindowedFeature("MaxMag" + pair.getKey(), new MaxWindowOperation(), pair.getValue(), windowSize, new ThreeDimensionalMagnitude()));
+            library.add(new MultipleInputWindowedFeature("MinMag" + pair.getKey(), new MinWindowOperation(), pair.getValue(), windowSize, new ThreeDimensionalMagnitude()));
+            library.add(new MultipleInputWindowedFeature("EnergyMag" + pair.getKey(), new EnergyWindowOperation(), pair.getValue(), windowSize, new ThreeDimensionalMagnitude()));
+            library.add(new MultipleInputWindowedFeature("IQRMag" + pair.getKey(), new IQRWindowOperation(), pair.getValue(), windowSize, new ThreeDimensionalMagnitude()));
+            library.add(new MultipleInputFODFeature("MagFOD" + pair.getKey(), pair.getValue(), windowSize, new ThreeDimensionalMagnitude()));
+            library.add(new MultipleInputFeature("Correlate" + pair.getKey() + "XY", new int[]{pair.getValue()[0], pair.getValue()[1]}, windowSize, new CorrelateWindowOperation()));
+            library.add(new MultipleInputFeature("Correlate" + pair.getKey() + "XZ", new int[]{pair.getValue()[0], pair.getValue()[2]}, windowSize, new CorrelateWindowOperation()));
+            library.add(new MultipleInputFeature("Correlate" + pair.getKey() + "YZ", new int[]{pair.getValue()[1], pair.getValue()[2]}, windowSize, new CorrelateWindowOperation()));
+            library.add(new MultipleInputFODFeature("CorrelateFOD" + pair.getKey() + "XY", new int[]{pair.getValue()[0], pair.getValue()[1]}, windowSize, new CorrelateWindowOperation()));
+            library.add(new MultipleInputFODFeature("CorrelateFOD" + pair.getKey() + "XZ", new int[]{pair.getValue()[0], pair.getValue()[2]}, windowSize, new CorrelateWindowOperation()));
+            library.add(new MultipleInputFODFeature("CorrelateFOD" + pair.getKey() + "YZ", new int[]{pair.getValue()[1], pair.getValue()[2]}, windowSize, new CorrelateWindowOperation()));
         }
         
         names = new String[library.size()];
@@ -622,6 +623,32 @@ class FeatureMetadata
         }
         return "";
     }
+    
+    static String tagForMultiOperation(MultipleInputWindowedOperation.MultipleInputOperation op)
+    {
+        if(op.getClass().equals(CorrelateWindowOperation.class))
+        {
+            return FeatureCollection.CORRELATION_DESCRIPTION;
+        }
+        else if(op.getClass().equals(ThreeDimensionalMagnitude.class))
+        {
+            return FeatureCollection.MAG_DESCRIPTION;
+        }
+        return "";
+    }
+    
+    static String descriptionForMultiOperation(MultipleInputWindowedOperation.MultipleInputOperation op)
+    {
+        if(op.getClass().equals(CorrelateWindowOperation.class))
+        {
+            return "Correlation";
+        }
+        else if(op.getClass().equals(ThreeDimensionalMagnitude.class))
+        {
+            return "Magnitude";
+        }
+        return "";
+    }
 }
 
 class FFTFODSingleBinFeature extends FeatureSingleModifierOutput
@@ -842,11 +869,11 @@ class WindowedFeature extends FeatureSingleModifierOutput
     }
 }
 
-class PassThrough extends FeatureMultipleModifierOutput
+class RawFeature extends FeatureMultipleModifierOutput
 {
     int[] indexes;
     
-    public PassThrough(String name, int[] inputs) {
+    public RawFeature(String name, int[] inputs) {
         super(name);
         this.indexes = inputs;
         this.diagram = InputDiagram.MULTIPLE;
@@ -936,183 +963,11 @@ class BufferFeature extends FeatureSingleModifierOutput
     }
 }
 
-class MagnitudeFODFeature extends FeatureSingleModifierOutput
-{
-    int[] inputs;
-    int windowSize;
-    
-    public MagnitudeFODFeature(String name, int[] inputs, int windowSize)
-    {
-        super(name);
-        this.inputs = inputs;
-        this.windowSize = windowSize;
-        this.diagram = InputDiagram.MULTIPLE;
-        tags.add("Magnitude");
-        tags.add("1st Order Diff");
-        this.description = FeatureCollection.MAG_DESCRIPTION;
-        for(int input:inputs)
-        {
-            String[] inputTags = FeatureMetadata.tagsForInput(input);
-            for(String tag:inputTags)
-            {
-                if(!tags.contains(tag))
-                {
-                    tags.add(tag);
-                }
-            }
-        }
-    }
-    
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        
-        FirstOrderDifference fod1 = new FirstOrderDifference("FOD-1",inputs[0],0);
-        fod1.addRequiredModifierID(0);
-        fod1.addToOutput = false;
-        int fod1ID = addModifier(mc, fod1);
-                    
-        FirstOrderDifference fod2 = new FirstOrderDifference("FOD-2",inputs[1],0);
-        fod2.addRequiredModifierID(0);
-        fod2.addToOutput = false;
-        int fod2ID = addModifier(mc, fod2);
-         
-        FirstOrderDifference fod3 = new FirstOrderDifference("FOD-3",inputs[2],0);
-        fod3.addRequiredModifierID(0);
-        fod3.addToOutput = false;
-        int fod3ID = addModifier(mc, fod3);
-        
-        ModifiedInput mag = new MultipleInputWindowedOperation("input-1",new ThreeDimensionalMagnitude(),windowSize,0, 3);
-        mag.addRequiredModifierID(fod1ID);
-        mag.addRequiredModifierID(fod2ID);
-        mag.addRequiredModifierID(fod3ID);
-        int id1 = addModifier(mc, mag);
-        setOutputModifierID(id1);
-    }
-}
-
-class MagnitudeFeature extends FeatureSingleModifierOutput
-{
-    int[] inputs;
-    int windowSize;
-    
-    public MagnitudeFeature(String name, int[] inputs, int windowSize)
-    {
-        super(name);
-        this.inputs = inputs;
-        this.windowSize = windowSize;
-        this.diagram = InputDiagram.MULTIPLE;
-        tags.add("Magnitude");
-        this.description = FeatureCollection.FOD_DESCRIPTION;
-        for(int input:inputs)
-        {
-            String[] inputTags = FeatureMetadata.tagsForInput(input);
-            for(String tag:inputTags)
-            {
-                if(!tags.contains(tag))
-                {
-                    tags.add(tag);
-                }
-            }
-        }
-    }
-    
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        
-        ModifiedInput raw1 = new PassThroughSingle("raw-1",inputs[0],0);
-        raw1.addToOutput = false;
-        raw1.addRequiredModifierID(0);
-        int rawID1 = addModifier(mc, raw1);
-        
-        ModifiedInput raw2 = new PassThroughSingle("raw-2",inputs[1],0);
-        raw2.addToOutput = false;
-        raw2.addRequiredModifierID(0);
-        int rawID2 = addModifier(mc, raw2);
-        
-        ModifiedInput raw3 = new PassThroughSingle("raw-3",inputs[2],0);
-        raw3.addToOutput = false;
-        raw3.addRequiredModifierID(0);
-        int rawID3 = addModifier(mc, raw3);
-        
-        ModifiedInput mag = new MultipleInputWindowedOperation("input-1",new ThreeDimensionalMagnitude(), windowSize, 0, 3);
-        mag.addRequiredModifierID(rawID1);
-        mag.addRequiredModifierID(rawID2);
-        mag.addRequiredModifierID(rawID3);
-        int id1 = addModifier(mc, mag);
-        setOutputModifierID(id1);
-    }
-}
-
-class WindowedMagnitudeFeature extends FeatureSingleModifierOutput
-{
-    int[] inputs;
-    int windowSize;
-    Operation op;
-    
-    public WindowedMagnitudeFeature(String name, Operation op, int[] inputs, int windowSize)
-    {
-        super(name);
-        this.op = op;
-        this.inputs = inputs;
-        this.windowSize = windowSize;
-        this.diagram = InputDiagram.MULTIPLE;
-        tags.add("Magnitude");
-        tags.add(FeatureMetadata.tagForOperation(op));
-        this.description = FeatureCollection.FOD_DESCRIPTION;
-        for(int input:inputs)
-        {
-            String[] inputTags = FeatureMetadata.tagsForInput(input);
-            for(String tag:inputTags)
-            {
-                if(!tags.contains(tag))
-                {
-                    tags.add(tag);
-                }
-            }
-        }
-    }
-    
-    @Override
-    public void addFeature(ModifierCollection mc)
-    {
-        
-        ModifiedInput raw1 = new PassThroughSingle("raw-1",inputs[0],0);
-        raw1.addToOutput = false;
-        raw1.addRequiredModifierID(0);
-        int rawID1 = addModifier(mc, raw1);
-        
-        ModifiedInput raw2 = new PassThroughSingle("raw-2",inputs[1],0);
-        raw2.addToOutput = false;
-        raw2.addRequiredModifierID(0);
-        int rawID2 = addModifier(mc, raw2);
-        
-        ModifiedInput raw3 = new PassThroughSingle("raw-3",inputs[2],0);
-        raw3.addToOutput = false;
-        raw3.addRequiredModifierID(0);
-        int rawID3 = addModifier(mc, raw3);
-        
-        ModifiedInput mag = new MultipleInputWindowedOperation("mag",new ThreeDimensionalMagnitude(), windowSize, 0, 3);
-        mag.addRequiredModifierID(rawID1);
-        mag.addRequiredModifierID(rawID2);
-        mag.addRequiredModifierID(rawID3);
-        mag.addToOutput = false;
-        int magID = addModifier(mc, mag);
-        
-        ModifiedInput window = new WindowedOperation("window",op, 0, windowSize, 0);
-        window.addRequiredModifierID(magID);
-        int windowID = addModifier(mc, window);
-
-        setOutputModifierID(windowID);
-    }
-}
-
-class FODRaw extends FeatureSingleModifierOutput
+class RawFODFeature extends FeatureSingleModifierOutput
 {
     int index;
     
-    public FODRaw(String name, int index)
+    public RawFODFeature(String name, int index)
     {
         super(name);
         this.index = index;
@@ -1133,13 +988,13 @@ class FODRaw extends FeatureSingleModifierOutput
     }
 }
 
-class WindowedFOD extends FeatureSingleModifierOutput
+class WindowedFODFeature extends FeatureSingleModifierOutput
 {
     Operation op;
     int windowSize;
     int index;
     
-    public WindowedFOD(String name, Operation op, int index, int windowSize) {
+    public WindowedFODFeature(String name, Operation op, int index, int windowSize) {
         super(name);
         this.op = op;
         this.index = index;
@@ -1168,67 +1023,24 @@ class WindowedFOD extends FeatureSingleModifierOutput
     }
 }
 
-class CorrelateFOD extends FeatureSingleModifierOutput
+class MultipleInputWindowedFeature extends FeatureSingleModifierOutput
 {
+    int[] inputs;
     int windowSize;
-    int[] indexes;
+    MultipleInputWindowedOperation.MultipleInputOperation op;
+    Operation windowOp;
     
-    public CorrelateFOD(String name, int inputs[], int windowSize) {
-        super(name);
-        this.indexes = inputs;
-        this.windowSize = windowSize;
-        this.diagram = InputDiagram.MULTIPLE;
-        tags.add("Correlation");
-        tags.add("1st Order Diff");
-        this.description = FeatureCollection.CORRELATION_DESCRIPTION;
-        for(int input:inputs)
-        {
-            String[] inputTags = FeatureMetadata.tagsForInput(input);
-            for(String tag:inputTags)
-            {
-                if(!tags.contains(tag))
-                {
-                    tags.add(tag);
-                }
-            }
-        }
-    }
-    
-        @Override
-    public void addFeature(ModifierCollection mc)
+    public MultipleInputWindowedFeature(String name, Operation windowOp, int[] inputs, int windowSize, MultipleInputWindowedOperation.MultipleInputOperation op)
     {
-        
-        ModifiedInput fod1 = new FirstOrderDifference("fod-1",indexes[0],0);
-        fod1.addToOutput = false;
-        fod1.addRequiredModifierID(0);
-        int fodID1 = addModifier(mc, fod1);
-        
-        ModifiedInput fod2 = new FirstOrderDifference("fod-2",indexes[1],0);
-        fod2.addToOutput = false;
-        fod2.addRequiredModifierID(0);
-        int fodID2 = addModifier(mc, fod2);
-       
-        ModifiedInput correlate = new MultipleInputWindowedOperation("input-1",new CorrelateWindowOperation(),windowSize,0,3);
-        correlate.addRequiredModifierID(fodID1);
-        correlate.addRequiredModifierID(fodID2);
-        int correlateID = addModifier(mc, correlate);
-
-        setOutputModifierID(correlateID);
-    }
-}
-
-class CorrelateFeature extends FeatureSingleModifierOutput
-{
-    int windowSize;
-    int[] indexes;
-    
-    public CorrelateFeature(String name, int inputs[], int windowSize) {
         super(name);
-        this.indexes = inputs;
+        this.op = op;
+        this.windowOp = windowOp;
+        this.inputs = inputs;
         this.windowSize = windowSize;
         this.diagram = InputDiagram.MULTIPLE;
-        tags.add("Correlation");
-        this.description = FeatureCollection.CORRELATION_DESCRIPTION;
+        tags.add(FeatureMetadata.tagForMultiOperation(op));
+        tags.add(FeatureMetadata.tagForOperation(windowOp));
+        this.description = FeatureMetadata.descriptionForMultiOperation(op);
         for(int input:inputs)
         {
             String[] inputTags = FeatureMetadata.tagsForInput(input);
@@ -1246,21 +1058,138 @@ class CorrelateFeature extends FeatureSingleModifierOutput
     public void addFeature(ModifierCollection mc)
     {
         
-        ModifiedInput raw1 = new PassThroughSingle("raw-1",indexes[0],0);
-        raw1.addToOutput = false;
-        raw1.addRequiredModifierID(0);
-        int rawID1 = addModifier(mc, raw1);
+        int[] inputIDs = new int[inputs.length];
         
-        ModifiedInput raw2 = new PassThroughSingle("raw-2",indexes[1],0);
-        raw2.addToOutput = false;
-        raw2.addRequiredModifierID(0);
-        int rawID2 = addModifier(mc, raw2);
-       
-        ModifiedInput correlate = new MultipleInputWindowedOperation("input-1",new CorrelateWindowOperation(),windowSize,0,3);
-        correlate.addRequiredModifierID(rawID1);
-        correlate.addRequiredModifierID(rawID2);
-        int correlateID = addModifier(mc, correlate);
+        for(int index : inputs)
+        {
+            PassThroughSingle input = new PassThroughSingle("input"+index, inputs[index], 0);
+            input.addToOutput = false;
+            input.addRequiredModifierID(0);
+            inputIDs[index] = addModifier(mc, input);
+        }
+        
+        ModifiedInput multi = new MultipleInputWindowedOperation("window", op, windowSize, 0, inputs.length);
+        
+        for(int id : inputIDs)
+        {
+            multi.addRequiredModifierID(id);
+        }
+        
+        int multiID = addModifier(mc, multi);
+        
+        ModifiedInput window = new WindowedOperation("window",windowOp, 0, windowSize, 0);
+        window.addRequiredModifierID(multiID);
+        int windowID = addModifier(mc, window);
 
-        setOutputModifierID(correlateID);
+        setOutputModifierID(windowID);
+    }
+}
+
+class MultipleInputFeature extends FeatureSingleModifierOutput
+{
+    int[] inputs;
+    int windowSize;
+    MultipleInputWindowedOperation.MultipleInputOperation op;
+    
+    public MultipleInputFeature(String name, int[] inputs, int windowSize, MultipleInputWindowedOperation.MultipleInputOperation op)
+    {
+        super(name);
+        this.op = op;
+        this.inputs = inputs;
+        this.windowSize = windowSize;
+        this.diagram = InputDiagram.MULTIPLE;
+        tags.add(FeatureMetadata.tagForMultiOperation(op));
+        this.description = FeatureMetadata.descriptionForMultiOperation(op);
+        for(int input:inputs)
+        {
+            String[] inputTags = FeatureMetadata.tagsForInput(input);
+            for(String tag:inputTags)
+            {
+                if(!tags.contains(tag))
+                {
+                    tags.add(tag);
+                }
+            }
+        }
+    }
+    
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        
+        int[] inputIDs = new int[inputs.length];
+        
+        for(int index : inputs)
+        {
+            PassThroughSingle input = new PassThroughSingle("input"+index, inputs[index], 0);
+            input.addToOutput = false;
+            input.addRequiredModifierID(0);
+            inputIDs[index] = addModifier(mc, input);
+        }
+        
+        ModifiedInput multi = new MultipleInputWindowedOperation("window", op, windowSize, 0, inputs.length);
+        
+        for(int id : inputIDs)
+        {
+            multi.addRequiredModifierID(id);
+        }
+        
+        int multiID = addModifier(mc, multi);
+
+        setOutputModifierID(multiID);
+    }
+}
+
+class MultipleInputFODFeature extends FeatureSingleModifierOutput
+{
+    int windowSize;
+    int[] indexes;
+    MultipleInputWindowedOperation.MultipleInputOperation op;
+    
+    public MultipleInputFODFeature(String name, int inputs[], int windowSize, MultipleInputWindowedOperation.MultipleInputOperation op) {
+        super(name);
+        this.indexes = inputs;
+        this.windowSize = windowSize;
+        this.diagram = InputDiagram.MULTIPLE;
+        this.op = op;
+        //tags.add("Correlation");
+        tags.add("1st Order Diff");
+        //this.description = FeatureCollection.CORRELATION_DESCRIPTION;
+        for(int input:inputs)
+        {
+            String[] inputTags = FeatureMetadata.tagsForInput(input);
+            for(String tag:inputTags)
+            {
+                if(!tags.contains(tag))
+                {
+                    tags.add(tag);
+                }
+            }
+        }
+    }
+    
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        int[] inputIDs = new int[indexes.length];
+        
+        for(int index : indexes)
+        {
+            FirstOrderDifference input = new FirstOrderDifference("fod"+index, indexes[index], 0);
+            input.addToOutput = false;
+            input.addRequiredModifierID(0);
+            inputIDs[index] = addModifier(mc, input);
+        }
+       
+        ModifiedInput window = new MultipleInputWindowedOperation("window", op, windowSize, 0, indexes.length);
+        
+        for(int id : inputIDs)
+        {
+            window.addRequiredModifierID(id);
+        }
+        
+        int windowID = addModifier(mc, window);
+
+        setOutputModifierID(windowID);
     }
 }
