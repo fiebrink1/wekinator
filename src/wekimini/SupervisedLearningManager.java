@@ -1163,7 +1163,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
      * @param ableToRun new value of ableToRun
      */
     public void setAbleToRun(boolean ableToRun) {
-        System.out.println("setting is able to run to " + ableToRun);
+        //System.out.println("setting is able to run to " + ableToRun);
         boolean oldAbleToRun = this.ableToRun;
         this.ableToRun = ableToRun;
         propertyChangeSupport.firePropertyChange(PROP_ABLE_TO_RUN, oldAbleToRun, ableToRun);

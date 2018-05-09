@@ -18,6 +18,8 @@ import java.util.LinkedList;
 import javax.swing.BorderFactory;
 import javax.swing.Timer;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.jdesktop.swingworker.SwingWorker;
 import weka.core.Instance;
 import wekimini.DataManager;
@@ -28,6 +30,8 @@ import wekimini.TrainingRunner;
 import wekimini.Wekinator;
 import wekimini.WekinatorSupervisedLearningController;
 import wekimini.gui.ModelEvaluationFrame.EvaluationMode;
+import wekimini.kadenze.FeaturnatorLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.ModelEvaluator;
 import wekimini.modifiers.Feature;
 import wekimini.osc.OSCClassificationOutput;
@@ -54,6 +58,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private boolean updatingMDS = false;
     private boolean runAfterTraining = false;
     private Timer timer;
+    ChangeListener panelListener;
     
     public EvaluateFeaturesPanel() {
         initComponents();
@@ -118,6 +123,18 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         mdsPlotHolder.setLayout(new BorderLayout());
         mdsPlotHolder.add(mdsPlot, BorderLayout.CENTER);
         //startTimer();
+        panelListener = (new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int panel = tabbedPanel.getSelectedIndex();
+                System.out.println("Tab: " + panel);
+                if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+                {
+                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logEvaluatePanelChanged(w, panel);
+                }
+            }
+        });
+        tabbedPanel.addChangeListener(panelListener);
     }
     
      public void startTimer()
@@ -226,6 +243,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     {
         w.getTrainingRunner().removePropertyChangeListener(trainingListener);
         w.getSupervisedLearningManager().removePropertyChangeListener(learningStateListener);
+        tabbedPanel.removeChangeListener(panelListener);
     }
     
     private void trainerUpdated(TrainingRunner.TrainingStatus newStatus) {

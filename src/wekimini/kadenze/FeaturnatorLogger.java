@@ -145,6 +145,11 @@ public class FeaturnatorLogger implements KadenzeLogger  {
         pw.println(ts() + "," + w.getID() + ",FEATURE_TAG_SEARCH," + stringListToString(tags) + "," + featureListToString(results));
     }
     
+    public void logEvaluatePanelChanged(Wekinator w, int panel)
+    {
+        pw.println(ts() + "," + w.getID() + ",EVALUATE_PANEL," + panel);
+    }
+    
     private String featureListToString(Feature[] features)
     {
         String str = "[";
