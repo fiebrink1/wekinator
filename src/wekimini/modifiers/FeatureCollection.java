@@ -171,8 +171,8 @@ public final class FeatureCollection
             while(it.hasNext())
             {
                 Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-                library.add(new FFTSingleBinFeature("FFT" + pair.getKey() + "("+bins[i]+"/128)", pair.getValue(), 128, bins[i]));
-                library.add(new FFTFODSingleBinFeature("FFTFOD" + pair.getKey() + "("+bins[i]+"/128)", pair.getValue(), 128, bins[i]));
+                library.add(new FFTSingleBinFeature("FFT" + pair.getKey() + "("+bins[i]+"/64)", pair.getValue(), 128, bins[i]));
+                library.add(new FFTFODSingleBinFeature("FFTFOD" + pair.getKey() + "("+bins[i]+"/64)", pair.getValue(), 128, bins[i]));
             }
         }
         

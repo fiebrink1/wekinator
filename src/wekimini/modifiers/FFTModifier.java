@@ -68,12 +68,15 @@ public class FFTModifier extends ModifiedInputVectorOutput {
             DoubleFFT_1D fftDo = new DoubleFFT_1D(orderedBuffer.length);
             double[] fft = new double[orderedBuffer.length * 2];
             System.arraycopy(orderedBuffer, 0, fft, 0, orderedBuffer.length);
-            fftDo.realForwardFull(fft);
+            fftDo.complexForward(fft);
             
             for(int i = 0; i < outputBins.length; i++)
             {
                 int binNum  = outputBins[i];
-                values[i] = fft[binNum];
+                double real = fft[binNum * 2];
+                double im = fft[(binNum * 2) + 1];
+                double mag = Math.sqrt((real * real) + (im * im));
+                values[i] = mag;
             }
             dirty = false;
             
