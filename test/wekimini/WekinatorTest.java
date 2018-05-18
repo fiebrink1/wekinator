@@ -93,7 +93,7 @@ public class WekinatorTest {
     public void testInputsPassThroughForTraining()
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getSupervisedLearningManager().stopRunning();
         w.getSupervisedLearningManager().buildAll();
         addPassThroughForOutput(0);
         addPassThroughForOutput(1);
@@ -124,7 +124,7 @@ public class WekinatorTest {
     public void testMultipleModifiersForOneInput()
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getSupervisedLearningManager().stopRunning();
         w.getDataManager().featureManager.passThroughInputToOutput(false, 0);
         ModifiedInput modifier1 = new PassThroughSingle("input-1a",0,0);
         modifier1.addRequiredModifierID(0);
@@ -194,7 +194,7 @@ public class WekinatorTest {
         assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
         double[] inputs = {1,1,1};
         w.getSupervisedLearningManager().isPlotting = false;
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+        w.getSupervisedLearningManager().startRunning();
         w.getSupervisedLearningManager().updateInputs(inputs);
     }
     
@@ -204,7 +204,7 @@ public class WekinatorTest {
         testInputsPassThroughForTraining();
         Thread.sleep(2000);
         assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+        w.getSupervisedLearningManager().startRunning();
         for(int j = 1; j < 21; j++)
         {
             double[] oscInputs = {j, j + 1, j * j};

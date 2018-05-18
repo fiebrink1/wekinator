@@ -448,7 +448,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             if (w.getLearningManager().getLearningType() == LearningType.SUPERVISED_LEARNING) {
                 if (w.getSupervisedLearningManager().getRunningState() == RunningState.RUNNING) {
                     KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.RUN_STOP);
-                    w.getSupervisedLearningManager().setRunningState(RunningState.NOT_RUNNING);
+                    w.getSupervisedLearningManager().stopRunning();
                     w.getStatusUpdateCenter().update(this, "Running stopped");
                 }
             } else if (w.getLearningManager().getLearningType() == LearningType.TEMPORAL_MODELING) {

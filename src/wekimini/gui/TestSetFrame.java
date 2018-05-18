@@ -5,6 +5,8 @@
  */
 package wekimini.gui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import wekimini.SupervisedLearningManager;
@@ -17,6 +19,7 @@ import wekimini.Wekinator;
 public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
 
     private Wekinator w;
+    private PropertyChangeListener listener;
     private double currentClass = 1;
     private boolean canUndo = false;
     private static final int NUM_CLASSES = 6;
@@ -38,6 +41,7 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
         w.getOutputManager().setTestValues(new double[]{currentClass});
         w.getDataManager().addChangeListener(this);
         w.getSupervisedLearningManager().getSupervisedLearningController().stopRecord();
+        w.getSupervisedLearningManager().setRecordingTarget(SupervisedLearningManager.RecordingState.RECORDING_TEST);
         updateUI();
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -46,11 +50,20 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
                 dispose();
             }
         });
+        listener  = new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                learningManagerPropertyChanged(evt);
+            }
+        };
+        w.getSupervisedLearningManager().addPropertyChangeListener(listener);
     }
     
     public void prepareToDie()
     {
-         w.getDataManager().removeChangeListener(this);
+        w.getSupervisedLearningManager().removePropertyChangeListener(listener);
+        w.getDataManager().removeChangeListener(this);
+        w.getSupervisedLearningManager().setRecordingTarget(SupervisedLearningManager.RecordingState.RECORDING_TRAIN);
         w.getSupervisedLearningManager().getSupervisedLearningController().stopRecord();
         w.save();
     }
@@ -76,6 +89,16 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
         redoButton.setEnabled(!isDone && hasStartedGesture);
         prevButton.setEnabled(!isDone && currentClass > 1);
         doneButton.setVisible(isDone);
+        if(w.getSupervisedLearningManager().getRecordingState() != SupervisedLearningManager.RecordingState.NOT_RECORDING)
+        {
+           canUndo = true;
+           recordButton.setText("Stop Recording Test Set");
+           w.getDataManager().setDeleteTestSetUntilIndex();
+        }
+        else
+        {
+           recordButton.setText("Start Recording Test Set");
+        }
     }
 
     private void updateFromModel()
@@ -90,6 +113,20 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
             }
         }
     }
+    
+   private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
+        if (evt.getPropertyName() == SupervisedLearningManager.PROP_RECORDINGROUND) {
+        }else if (evt.getPropertyName() == SupervisedLearningManager.PROP_RECORDINGSTATE) {
+            System.out.println("recording state changed");
+            updateUI();
+        } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_LEARNINGSTATE) {
+        } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_RUNNINGSTATE) {
+        } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_NUMEXAMPLESTHISROUND) {
+        } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_ABLE_TO_RECORD) {
+        } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_ABLE_TO_RUN) {
+        }
+    }
+   
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -226,18 +263,15 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
 
     private void recordButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordButtonActionPerformed
         // TODO add your handling code here:
-        if(w.getSupervisedLearningManager().getRecordingState() != SupervisedLearningManager.RecordingState.RECORDING_TEST)
-       {
-           canUndo = true;
-           recordButton.setText("Stop Recording Test Set");
-           w.getDataManager().setDeleteTestSetUntilIndex();
-           w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
-       }
-       else
-       {
-           recordButton.setText("Start Recording Test Set");
+        if(w.getSupervisedLearningManager().getRecordingState() == SupervisedLearningManager.RecordingState.NOT_RECORDING)
+        {
+           w.getSupervisedLearningManager().getSupervisedLearningController().startRecord();
+        }
+        else
+        {
            w.getSupervisedLearningManager().getSupervisedLearningController().stopRecord();
-       }
+        }
+        updateUI();
     }//GEN-LAST:event_recordButtonActionPerformed
 
     private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed

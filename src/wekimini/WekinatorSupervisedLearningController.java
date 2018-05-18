@@ -50,7 +50,7 @@ public class WekinatorSupervisedLearningController {
     }
     
     public boolean isRecording() {
-        return (m.getRecordingState() == SupervisedLearningManager.RecordingState.RECORDING_TRAIN);
+        return (m.getRecordingState() != SupervisedLearningManager.RecordingState.NOT_RECORDING);
     }
     
     public void train() {
@@ -77,7 +77,7 @@ public class WekinatorSupervisedLearningController {
             m.stopRecording();
         }
         if (m.getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING) {
-           m.setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+           m.startRunning();
            KadenzeLogging.getLogger().logStartSupervisedRun(w);
            if (WekiMiniRunner.isKadenze()) {
                startRunTimer();
@@ -87,7 +87,7 @@ public class WekinatorSupervisedLearningController {
     }
 
     public void stopRun() {
-        m.setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        m.stopRunning();
         KadenzeLogging.getLogger().logEvent(w, KadenzeLogger.KEvent.RUN_STOP);
         if (WekiMiniRunner.isKadenze()) {
             String s = "Running stopped (Run time = " + getRunTime() + "s)";

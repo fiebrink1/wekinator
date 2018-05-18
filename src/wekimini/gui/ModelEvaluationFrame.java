@@ -622,7 +622,8 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
        {
            recordingButton.setText("Stop Recording Test Set");
            w.getDataManager().setDeleteTestSetUntilIndex();
-           w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
+           w.getSupervisedLearningManager().setRecordingTarget(SupervisedLearningManager.RecordingState.RECORDING_TEST);
+           w.getSupervisedLearningManager().startRecording();
        }
        else
        {

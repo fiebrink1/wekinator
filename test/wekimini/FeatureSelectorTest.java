@@ -142,18 +142,18 @@ public class FeatureSelectorTest {
     public void testAutomaticSelect() throws InterruptedException
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getSupervisedLearningManager().stopRunning();
         w.getSupervisedLearningManager().buildAll();
         Thread.sleep(50);
         w.getDataManager().selectFeaturesAutomatically(AutoSelect.RANDOM, 4);
         //When we are running on the 4 selected automatic features the computed output for running should be 4 + 1
         w.getDataManager().setUseAutomatic(true);
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getSupervisedLearningManager().stopRunning();
         w.getSupervisedLearningManager().buildAll();
         Thread.sleep(2000);
         assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+        w.getSupervisedLearningManager().startRunning();
         for(int instanceIndex = 0; instanceIndex < 50; instanceIndex++)
         {
             double[] oscInputs = {instanceIndex + 1, 1.0, instanceIndex % 10 == 9 ? 0.9 : 0.1, 0, 0, 0};
@@ -170,11 +170,11 @@ public class FeatureSelectorTest {
         
         w.getDataManager().setUseAutomatic(false);
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getSupervisedLearningManager().stopRunning();
         w.getSupervisedLearningManager().buildAll();
         Thread.sleep(2000);
         assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+        w.getSupervisedLearningManager().startRunning();
         for(int instanceIndex = 0; instanceIndex < 50; instanceIndex++)
         {
             double[] oscInputs = {instanceIndex + 1, 1.0, instanceIndex % 10 == 9 ? 0.9 : 0.1, 0, 0, 0};
@@ -217,7 +217,7 @@ public class FeatureSelectorTest {
     public void testWrapperSelection() throws InterruptedException
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getSupervisedLearningManager().stopRunning();
         w.getSupervisedLearningManager().buildAll();
         Thread.sleep(50);
         List<Instances> featureInstances = w.getDataManager().getFeatureInstances(false);

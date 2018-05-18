@@ -25,11 +25,13 @@ public class TestSetTest {
     
     public Wekinator w;
     
+    @Before
     public void setUp() {
         String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj");
         try{
             w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
             w.getDataManager().doNormalise = false;
+            w.getSupervisedLearningManager().setRecordingTarget(SupervisedLearningManager.RecordingState.RECORDING_TEST);
         } 
         catch (Exception e)
         {
@@ -42,7 +44,7 @@ public class TestSetTest {
     {
         setUp();
         w.getDataManager().deleteTestSet();
-        w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
+        w.getSupervisedLearningManager().startRecording();
         double[] inputs = {1,2,3};
         w.getOutputManager().setTestValues(inputs);
         w.getSupervisedLearningManager().updateInputs(inputs);
@@ -64,7 +66,7 @@ public class TestSetTest {
     {
         setUp();
         w.getDataManager().deleteTestSet();
-        w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
+        w.getSupervisedLearningManager().startRecording();
         double[] inputs = {1,1,1};
         w.getOutputManager().setTestValues(new double[]{1,1,1});
         for(int i = 0; i < 20; i++)
@@ -99,7 +101,7 @@ public class TestSetTest {
     {
         setUp();
         w.getDataManager().deleteTestSet();
-        w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
+        w.getSupervisedLearningManager().startRecording();
         Path p1 = w.getSupervisedLearningManager().getPaths().get(0);
         w.getSupervisedLearningManager().setOutputValueForPath(1, p1);
         Path p2 = w.getSupervisedLearningManager().getPaths().get(1);
@@ -163,7 +165,7 @@ public class TestSetTest {
             
         }
         w.getDataManager().deleteTestSet();
-        w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
+        w.getSupervisedLearningManager().startRecording();
         for(int i = 0; i < 100; i++)
         {
             double[] inputs = {i + 1, 2, 3, 4, 5, 6};
@@ -171,7 +173,7 @@ public class TestSetTest {
         }
         
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getSupervisedLearningManager().stopRunning();
         w.getSupervisedLearningManager().buildAll();
         
         Thread.sleep(50);
@@ -191,7 +193,7 @@ public class TestSetTest {
     {
         setUp();
         w.getDataManager().deleteTestSet();
-        w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
+        w.getSupervisedLearningManager().startRecording();
         for(int i = 0; i < 100; i++)
         {
             double[] inputs = {i + 1, 2, 3};
@@ -304,7 +306,7 @@ public class TestSetTest {
         
         w.getDataManager().deleteTestSet();
         
-        w.getSupervisedLearningManager().setRecordingState(SupervisedLearningManager.RecordingState.RECORDING_TEST);
+        w.getSupervisedLearningManager().startRecording();
         for(int i = 0; i < 200; i++)
         {
             double[] inputs = {i + 1, 2, 3};

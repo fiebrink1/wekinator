@@ -61,6 +61,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public static final String PROP_RUNNINGSTATE = "runningState";
 
     private RecordingState recordingState = RecordingState.NOT_RECORDING;
+    private RecordingState recordingTarget = RecordingState.RECORDING_TRAIN;
     public static final String PROP_RECORDINGSTATE = "recordingState";
 
     public static final String PROP_RECORDINGROUND = "recordingRound";
@@ -331,7 +332,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         return recordingRound;
     }
 
-    public void setRecordingState(RecordingState recordingState) {
+    private void setRecordingState(RecordingState recordingState) {
         RecordingState oldRecordingState = this.recordingState;
         this.recordingState = recordingState;
         if(recordingState == RecordingState.NOT_RECORDING)
@@ -341,7 +342,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         propertyChangeSupport.firePropertyChange(PROP_RECORDINGSTATE, oldRecordingState, recordingState);
     }
 
-    public void setRecordingRound(int newRound) {
+    private void setRecordingRound(int newRound) {
         int oldRecordingRound = this.recordingRound;
         this.recordingRound = newRound;
         propertyChangeSupport.firePropertyChange(PROP_RECORDINGROUND, oldRecordingRound, this.recordingRound);
@@ -353,13 +354,18 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         propertyChangeSupport.firePropertyChange(PROP_RECORDINGROUND, oldRecordingRound, this.recordingRound);
     
     }
+    
+    public void setRecordingTarget(RecordingState target)
+    {
+        this.recordingTarget = target;
+    }
 
     public void startRecording() {
         numExamplesThisRound = 0;
         // KadenzeLogging.getLogger().logEvent(w, Assignment12Logger.KEvent.SUPERVISED_RECORD_START);
         KadenzeLogging.getLogger().supervisedLearningRecordStarted(w);
         setRecordingRound(recordingRound + 1);
-        setRecordingState(RecordingState.RECORDING_TRAIN);
+        setRecordingState(recordingTarget);
     }
 
     public void stopRecording() {
@@ -370,8 +376,18 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public RunningState getRunningState() {
         return runningState;
     }
+    
+    public void startRunning()
+    {
+        setRunningState(RunningState.RUNNING);
+    }
+    
+    public void stopRunning()
+    {
+        setRunningState(RunningState.NOT_RUNNING);
+    }
 
-    public void setRunningState(RunningState runningState) {
+    private void setRunningState(RunningState runningState) {
         RunningState oldRunningState = this.runningState;
         this.runningState = runningState;
         if(runningState == RunningState.NOT_RUNNING)

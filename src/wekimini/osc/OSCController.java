@@ -93,6 +93,7 @@ public class OSCController {
     }
 
     public void stopRecord() {
+        System.out.println("received stop record OSC command");
         if (checkEnabled() && isSupervised) {
             if (supervisedController.isRecording()) {
                 supervisedController.stopRecord();

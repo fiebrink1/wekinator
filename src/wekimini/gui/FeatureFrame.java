@@ -507,7 +507,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     {
         if(isRunning)
         {
-            w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+            w.getSupervisedLearningManager().stopRunning();
         }
         if(isPlotting)
         {
@@ -519,7 +519,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     {
         if(isRunning)
         {
-            w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+            w.getSupervisedLearningManager().startRunning();
         }
         if(isPlotting)
         {

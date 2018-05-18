@@ -86,7 +86,7 @@ public class MagnitudeTest extends ModifierTest {
     public void testForTraining(int windowSize)
     {
         w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.NOT_RUNNING);
+        w.getSupervisedLearningManager().stopRunning();
         w.getSupervisedLearningManager().buildAll();
         List<Instances> featureInstances = w.getDataManager().getFeatureInstances(false);
         for(int outputIndex = 0; outputIndex < featureInstances.size(); outputIndex++)
@@ -109,7 +109,7 @@ public class MagnitudeTest extends ModifierTest {
         testForTraining(windowSize);
         Thread.sleep(2000);
         assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
-        w.getSupervisedLearningManager().setRunningState(SupervisedLearningManager.RunningState.RUNNING);
+        w.getSupervisedLearningManager().startRunning();
         for(int instanceIndex = 0; instanceIndex < 101; instanceIndex++)
         {
             double[] oscInputs = {instanceIndex * 2, instanceIndex * 10, instanceIndex * 11};
