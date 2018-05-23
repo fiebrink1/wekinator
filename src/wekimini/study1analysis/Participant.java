@@ -22,16 +22,12 @@ public class Participant {
     public String[] allFeatures;
     public String[] infoGainFeatures;
     public String[] randomFeatures;
+    public String[] rawFeatures;
+    public String[] meanFeatures;
     
-    public Participant()
+    public Participant(int numFeatureSets)
     {
-        testSetResults = new double[6];
-        trainingSetResults = new double[6];
-        userFeatures = new String[6];
-        backwardsFeatures = new String[6];
-        forwardsFeatures = new String[6];
-        allFeatures = new String[6];
-        infoGainFeatures = new String[6];
-        randomFeatures = new String[6];
+        testSetResults = new double[numFeatureSets];
+        trainingSetResults = new double[numFeatureSets];
     }
 }

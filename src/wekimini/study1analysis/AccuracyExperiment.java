@@ -27,6 +27,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import wekimini.learning.SVMModelBuilder;
 
 /**
  *
@@ -45,7 +46,7 @@ public class AccuracyExperiment {
     private Iterator it;
     private ArrayList<Participant> participants;
     private boolean testSet = true;
-    private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot"};
+    private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot"};
     
     public static void main(String[] args)
     {
@@ -94,7 +95,7 @@ public class AccuracyExperiment {
     {
         featuresPtr = 0;
         testSet = true;
-        participant = new Participant();
+        participant = new Participant(NUM_FEATURE_SETS);
     }
     
     private boolean isBlackListed(String pID)
@@ -122,6 +123,7 @@ public class AccuracyExperiment {
                 System.out.println("Skipping " + (String)pair.getKey() + "(blacklisted)");
                 if(!it.hasNext())
                 {
+                    logAll();
                     return;
                 }
                 pair = (Map.Entry)it.next();
@@ -137,10 +139,14 @@ public class AccuracyExperiment {
             } catch (Exception ex) {
                 Logger.getLogger(AccuracyExperiment.class.getName()).log(Level.SEVERE, null, ex);
             }
+            //w.getSupervisedLearningManager().setModelBuilderForPath(new SVMModelBuilder(), 0);
             participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
             participant.userFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames();
             participant.allFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getNames();
-
+            participant.rawFeatures = new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"};
+            participant.meanFeatures = new String[]{"MeanAccX", "MeanAccY", "MeanAccZ", "MeanGyroX", "MeanGyroY", "MeanGyroZ"};
+            /*
+            
             //Select features with backwards select, log time taken
             participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
             //participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
@@ -150,7 +156,12 @@ public class AccuracyExperiment {
             //participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
             participant.forwardsFeatures = w.getDataManager().selectedFeatureNames[0];
 
+            
             int mean = (participant.forwardsFeatures.length + participant.backwardsFeatures.length) / 2;
+
+            */
+            
+            int mean = participant.userFeatures.length;
 
             //Select features with info gain, log time taken 
             w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
@@ -172,10 +183,12 @@ public class AccuracyExperiment {
         {
             case 0 : return participant.userFeatures; 
             case 1 : return participant.allFeatures;
-            case 2 : return participant.backwardsFeatures;
-            case 3 : return participant.forwardsFeatures;
-            case 4 : return participant.infoGainFeatures;
-            case 5 : return participant.randomFeatures;
+            case 2 : return participant.infoGainFeatures;
+            case 3 : return participant.randomFeatures;
+            case 4 : return participant.rawFeatures;
+            case 5 : return participant.meanFeatures;
+            case 6 : return participant.backwardsFeatures;
+            case 7 : return participant.forwardsFeatures;
             default: return participant.allFeatures;
         }
     }

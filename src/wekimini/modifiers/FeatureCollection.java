@@ -176,6 +176,7 @@ public final class FeatureCollection
             }
         }
         
+        
         it = inputs.entrySet().iterator();
         while(it.hasNext())
         {
