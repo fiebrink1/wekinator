@@ -40,6 +40,7 @@ public class AccuracyExperiment {
     private final String STUDY_DIR = "featurnator_study_1";
     private final String PROJECT_NAME = "Study1.wekproj";
     private final String ROOT_DIR = "../../studyData/Study1_logs";
+    //private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
     private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
     private Participant participant;
     private int featuresPtr;
