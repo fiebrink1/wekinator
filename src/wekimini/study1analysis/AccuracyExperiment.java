@@ -36,7 +36,7 @@ import wekimini.learning.SVMModelBuilder;
 public class AccuracyExperiment {
     
     private Wekinator w;
-    private final int NUM_FEATURE_SETS = 6;
+    private final int NUM_FEATURE_SETS = 1;
     private final String STUDY_DIR = "featurnator_study_1";
     private final String PROJECT_NAME = "Study1.wekproj";
     private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
@@ -144,24 +144,19 @@ public class AccuracyExperiment {
             participant.userFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames();
             participant.allFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getNames();
             participant.rawFeatures = new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"};
-            participant.meanFeatures = new String[]{"MeanAccX", "MeanAccY", "MeanAccZ", "MeanGyroX", "MeanGyroY", "MeanGyroZ"};
-            /*
+            participant.bufferFeatures = new String[]{"BufferAccX", "BufferAccY", "BufferAccZ", "BufferGyroX", "BufferGyroY", "BufferGyroZ"};
+           
             
-            //Select features with backwards select, log time taken
-            participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
-            //participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
-            participant.backwardsFeatures = w.getDataManager().selectedFeatureNames[0];
+//            //Select features with backwards select, log time taken
+//            participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
+//            participant.backwardsFeatures = w.getDataManager().selectedFeatureNames[0];
 
-            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
-            //participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN,10);
-            participant.forwardsFeatures = w.getDataManager().selectedFeatureNames[0];
+//            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
+//            participant.forwardsFeatures = w.getDataManager().selectedFeatureNames[0];
 
-            
-            int mean = (participant.forwardsFeatures.length + participant.backwardsFeatures.length) / 2;
-
-            */
-            
-            int mean = participant.userFeatures.length;
+            //int mean = (participant.forwardsFeatures.length + participant.backwardsFeatures.length) / 2;
+              int mean = participant.backwardsFeatures.length;
+            //int mean = participant.userFeatures.length;
 
             //Select features with info gain, log time taken 
             w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
@@ -186,9 +181,9 @@ public class AccuracyExperiment {
             case 2 : return participant.infoGainFeatures;
             case 3 : return participant.randomFeatures;
             case 4 : return participant.rawFeatures;
-            case 5 : return participant.meanFeatures;
+            case 5 : return participant.forwardsFeatures;
             case 6 : return participant.backwardsFeatures;
-            case 7 : return participant.forwardsFeatures;
+            case 7 : return participant.backwardsFeatures;
             default: return participant.allFeatures;
         }
     }

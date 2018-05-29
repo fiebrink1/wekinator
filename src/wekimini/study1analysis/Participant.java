@@ -23,7 +23,9 @@ public class Participant {
     public String[] infoGainFeatures;
     public String[] randomFeatures;
     public String[] rawFeatures;
-    public String[] meanFeatures;
+    public String[] bufferFeatures;
+    public int trainingSetSize;
+    public int testSetSize;
     
     public Participant(int numFeatureSets)
     {

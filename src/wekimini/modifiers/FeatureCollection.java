@@ -184,6 +184,13 @@ public final class FeatureCollection
             library.add(new MaxFFT("MaxBinFFT" + pair.getKey(), pair.getValue(), 128));
         }
         
+//        it = inputs.entrySet().iterator();
+//        while(it.hasNext())
+//        {
+//            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+//            library.add(new BufferFeature("Buffer" + pair.getKey(), pair.getValue(), windowSize));
+//        }
+        
         it = inputs.entrySet().iterator();
         while(it.hasNext())
         {

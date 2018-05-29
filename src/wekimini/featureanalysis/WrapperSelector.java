@@ -36,17 +36,19 @@ public class WrapperSelector extends FeatureSelector {
     {
         try {
             
-            //instances = FeatureSelector.sequentialDownSample(instances, 0.5);
+            //instances = FeatureSelector.sequentialDownSample(instances, 0.01);
             
             int classIndex = instances.numAttributes() - 1;
 
             AttributeSelection attsel = new AttributeSelection();
+            String[] evalOptions = {"-D"};
             WrapperSubsetEval eval = new WrapperSubsetEval();
+            eval.setOptions(evalOptions);
             BestFirst search = new BestFirst();
             String dir = forwards ? "1":"0"; 
-            String[] options = {"-D", dir};
-            search.setOptions(options);
-            search.setSearchTermination(6);
+            String[] searchOptions = {"-D", dir};
+            search.setOptions(searchOptions);
+            search.setSearchTermination(3);
             eval.setClassifier(classifier);
             attsel.setEvaluator(eval);
             attsel.setSearch(search);
