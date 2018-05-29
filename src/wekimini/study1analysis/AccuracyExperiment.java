@@ -36,11 +36,11 @@ import wekimini.learning.SVMModelBuilder;
 public class AccuracyExperiment {
     
     private Wekinator w;
-    private final int NUM_FEATURE_SETS = 1;
+    private final int NUM_FEATURE_SETS = 23;
     private final String STUDY_DIR = "featurnator_study_1";
     private final String PROJECT_NAME = "Study1.wekproj";
-    private final String ROOT_DIR = "../../studyData/Study1_logs";
-    //private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
+    //private final String ROOT_DIR = "../../studyData/Study1_logs";
+    private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
     private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
     private Participant participant;
     private int featuresPtr;
@@ -142,31 +142,30 @@ public class AccuracyExperiment {
             }
             //w.getSupervisedLearningManager().setModelBuilderForPath(new SVMModelBuilder(), 0);
             participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
-            participant.userFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames();
-            participant.allFeatures = w.getDataManager().featureManager.getFeatureGroups().get(0).getNames();
-            participant.rawFeatures = new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"};
-            participant.bufferFeatures = new String[]{"BufferAccX", "BufferAccY", "BufferAccZ", "BufferGyroX", "BufferGyroY", "BufferGyroZ"};
-           
+            participant.features.add(w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
+            participant.features.add(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames());
             
+            int mean = 5;
+            for(int i = 0; i < 10; i++)
+            {
+                w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
+                participant.features.add(w.getDataManager().selectedFeatureNames[0]);
+                w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.RANDOM, mean);
+                participant.features.add(w.getDataManager().selectedFeatureNames[0]);
+                mean +=20;
+            }
+            
+            participant.features.add(new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
+
 //            //Select features with backwards select, log time taken
-            participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
-            participant.backwardsFeatures = w.getDataManager().selectedFeatureNames[0];
+//            participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
+//            participant.features.add(w.getDataManager().selectedFeatureNames[0]);
 
 //            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
-//            participant.forwardsFeatures = w.getDataManager().selectedFeatureNames[0];
+//            participant.features.add(w.getDataManager().selectedFeatureNames[0]);
 
             //int mean = (participant.forwardsFeatures.length + participant.backwardsFeatures.length) / 2;
-              int mean = participant.backwardsFeatures.length;
-            //int mean = participant.userFeatures.length;
-
-            //Select features with info gain, log time taken 
-            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
-            participant.infoGainFeatures = w.getDataManager().selectedFeatureNames[0];
-
-            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.RANDOM, mean);
-            participant.randomFeatures = w.getDataManager().selectedFeatureNames[0];
-
-            //Get test set accuracy with user selected features (these should be automatically loaded?)
+            
             setFeatures(featuresForPtr(featuresPtr));
             evaluate();
             it.remove(); 
@@ -175,18 +174,7 @@ public class AccuracyExperiment {
     
     private String[] featuresForPtr(int ptr)
     {
-        switch(ptr)
-        {
-            case 0 : return participant.userFeatures; 
-            case 1 : return participant.allFeatures;
-            case 2 : return participant.infoGainFeatures;
-            case 3 : return participant.randomFeatures;
-            case 4 : return participant.rawFeatures;
-            case 5 : return participant.forwardsFeatures;
-            case 6 : return participant.backwardsFeatures;
-            case 7 : return participant.backwardsFeatures;
-            default: return participant.allFeatures;
-        }
+        return participant.features.get(ptr);
     }
             
     private void setFeatures(String[] ft)

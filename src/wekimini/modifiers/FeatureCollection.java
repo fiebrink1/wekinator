@@ -281,10 +281,16 @@ public final class FeatureCollection
         return f;
     }
     
-    public Feature[] getFeaturesForKeyword(String search)
+    public Feature[] getFeaturesForKeyword(String search, boolean searchCurrent)
     {
         ArrayList<Feature> features = new ArrayList();
-        for(Feature f:library)
+        Feature[] toSearch = getCurrentFeatures();
+        if(!searchCurrent)
+        {
+            toSearch = new Feature[library.size()];
+            toSearch = features.toArray(toSearch);
+        }
+        for(Feature f:toSearch)
         {
             if(!features.contains(f))
             {
@@ -310,14 +316,20 @@ public final class FeatureCollection
         return f;
     }
     
-    public Feature[] getFeaturesForTags(String[] searchTags)
+    public Feature[] getFeaturesForTags(String[] searchTags, boolean searchCurrent)
     {
         if(searchTags.length < 1)
         {
             return new Feature[0];
         }
         ArrayList<Feature> features = new ArrayList();
-        for(Feature f:library)
+        Feature[] toSearch = getCurrentFeatures();
+        if(!searchCurrent)
+        {
+            toSearch = new Feature[library.size()];
+            toSearch = features.toArray(toSearch);
+        }
+        for(Feature f:toSearch)
         {
             if(!features.contains(f))
             {

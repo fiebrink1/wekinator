@@ -310,7 +310,7 @@ public class WekinatorSaver {
             List<Path> tempPaths, 
             String projectDir) 
             throws IOException {
-        Wekinator w = new Wekinator(1);
+        Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
         KadenzeLogging.getLogger().loadedFromFile(w, wfd.getProjectName());
         w.setProjectLocation(projectDir);
         w.setHasSaveLocation(true);

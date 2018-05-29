@@ -45,6 +45,11 @@ public class FeatureManager
             {
                 fc.addFeatureForKey(keys.get(j));
             }
+            //String[] keys = fc.getNames();
+//            for(int j = 0; j < keys.length; j++)
+//            {
+//                fc.addFeatureForKey(keys[j]);
+//            }
         }
     }
     

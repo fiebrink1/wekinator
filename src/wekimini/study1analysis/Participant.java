@@ -5,6 +5,8 @@
  */
 package wekimini.study1analysis;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author louismccallum
@@ -16,19 +18,13 @@ public class Participant {
     public String participantID;
     public double[] testSetResults;
     public double[] trainingSetResults;
-    public String[] userFeatures;
-    public String[] backwardsFeatures;
-    public String[] forwardsFeatures;
-    public String[] allFeatures;
-    public String[] infoGainFeatures;
-    public String[] randomFeatures;
-    public String[] rawFeatures;
-    public String[] bufferFeatures;
+    public ArrayList<String[]> features;
     public int trainingSetSize;
     public int testSetSize;
     
     public Participant(int numFeatureSets)
     {
+        features = new ArrayList();
         testSetResults = new double[numFeatureSets];
         trainingSetResults = new double[numFeatureSets];
     }

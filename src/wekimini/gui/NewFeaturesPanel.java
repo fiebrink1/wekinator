@@ -35,11 +35,12 @@ import wekimini.modifiers.Feature;
 public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFieldDelegate {
     
     private Wekinator w;
-    ArrayList<String> selectedFilters = new ArrayList();
-    private Feature[] currentResults = new Feature[0];
+    private ArrayList<String> selectedFilters = new ArrayList();
+    protected Feature[] currentResults = new Feature[0];
     public FeatureEditorDelegate delegate;
     private int selectedRow = -1;
     private int outputIndex = 0;
+    public boolean searchCurrent = false;
 
     public NewFeaturesPanel() {
         initComponents();
@@ -201,7 +202,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                 @Override
                 public Feature[]  doInBackground()
                 {
-                    f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForKeyword(searchTerm);
+                    f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForKeyword(searchTerm, searchCurrent);
                     return f;
                 }
 
@@ -219,6 +220,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         }
     }
     
+
     public void updateFilters()
     {
         selectedFiltersTokenField.setTokens(selectedFilters);
@@ -235,7 +237,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                 sf = selectedFilters.toArray(sf);
                 if(sf.length > 0)
                 {
-                    f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForTags(sf);
+                    f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForTags(sf, searchCurrent);
                 }
                 else
                 {
