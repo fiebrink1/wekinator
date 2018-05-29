@@ -39,7 +39,7 @@ public class AccuracyExperiment {
     private final int NUM_FEATURE_SETS = 1;
     private final String STUDY_DIR = "featurnator_study_1";
     private final String PROJECT_NAME = "Study1.wekproj";
-    private final String ROOT_DIR = "../studyData/Study1_logs";
+    private final String ROOT_DIR = "../../studyData/Study1_logs";
     private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
     private Participant participant;
     private int featuresPtr;
@@ -281,6 +281,7 @@ public class AccuracyExperiment {
     {
         HashMap<String, String> projects = new HashMap();
         File folder = new File(ROOT_DIR);
+        System.out.println(ROOT_DIR);
         File[] listOfFiles = folder.listFiles();
         for(File file : listOfFiles)
         {

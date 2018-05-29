@@ -25,7 +25,7 @@ public class Feature
     public ArrayList<String> tags = new ArrayList();
     public String description;
     private ArrayList <Integer> outputIndexes = new ArrayList();
-//    
+    
 //    public enum InputDiagram {
 //        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
 //    }
