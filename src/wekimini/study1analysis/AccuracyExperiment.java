@@ -39,7 +39,7 @@ public class AccuracyExperiment {
     private final int NUM_FEATURE_SETS = 1;
     private final String STUDY_DIR = "featurnator_study_1";
     private final String PROJECT_NAME = "Study1.wekproj";
-    private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
+    private final String ROOT_DIR = "../studyData/Study1_logs";
     private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
     private Participant participant;
     private int featuresPtr;
@@ -148,8 +148,8 @@ public class AccuracyExperiment {
            
             
 //            //Select features with backwards select, log time taken
-//            participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
-//            participant.backwardsFeatures = w.getDataManager().selectedFeatureNames[0];
+            participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
+            participant.backwardsFeatures = w.getDataManager().selectedFeatureNames[0];
 
 //            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
 //            participant.forwardsFeatures = w.getDataManager().selectedFeatureNames[0];
