@@ -220,14 +220,14 @@ public class FeatureCollectionTest {
     @Test
     public void testSearch()
     {
-        ArrayList<Feature> results = new ArrayList<>(Arrays.asList(fc.getFeaturesForKeyword("AccelerometerX")));
+        ArrayList<Feature> results = new ArrayList<>(Arrays.asList(fc.getFeaturesForKeyword("AccelerometerX", false)));
         testResultsForAccX(results);
         
-        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForKeyword("MeanAccX")));
+        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForKeyword("MeanAccX", false)));
         assertEquals(1, results.size());
         assertTrue(results.contains(fc.getFeatureForKey("MeanAccX")));
         
-        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForKeyword("acc")));
+        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForKeyword("acc", false)));
         testResultsForAccX(results);
         
     }
@@ -235,22 +235,22 @@ public class FeatureCollectionTest {
     @Test
     public void testTagSearch()
     {
-        ArrayList<Feature> results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"AccelerometerX"})));
+        ArrayList<Feature> results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"AccelerometerX"}, false)));
         testResultsForAccX(results);
         
-        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"AccelerometerX","NotATag"})));
+        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"AccelerometerX","NotATag"}, false)));
         assertEquals(results.size(),0);
         
-        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"AccelerometerX","Mean"})));
+        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"AccelerometerX","Mean"}, false)));
         assertEquals(3, results.size());
         assertTrue(results.contains(fc.getFeatureForKey("MeanAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("MeanFODAccX")));
         assertTrue(results.contains(fc.getFeatureForKey("MeanMagAcc")));
         
-        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[0])));
+        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[0], false)));
         assertEquals(0, results.size());
         
-        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"Accelerometer"})));
+        results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"Accelerometer"}, false)));
         assertTrue(results.size() > 0);
     }
     

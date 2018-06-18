@@ -6,6 +6,7 @@
 package wekimini.study1analysis;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -16,16 +17,16 @@ public class Participant {
     public double timeTakenBackwards;
     public int numExamples;
     public String participantID;
-    public double[] testSetResults;
-    public double[] trainingSetResults;
-    public ArrayList<String[]> features;
+    public HashMap<String,Double> testSetResults;
+    public HashMap<String,Double> trainingSetResults;
+    public HashMap<String, String[]> features;
     public int trainingSetSize;
     public int testSetSize;
     
-    public Participant(int numFeatureSets)
+    public Participant()
     {
-        features = new ArrayList();
-        testSetResults = new double[numFeatureSets];
-        trainingSetResults = new double[numFeatureSets];
+        features = new HashMap();
+        testSetResults = new HashMap();
+        trainingSetResults = new HashMap();
     }
 }

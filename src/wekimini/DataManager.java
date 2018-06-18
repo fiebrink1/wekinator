@@ -1067,7 +1067,7 @@ public class DataManager {
         }
     }
     
-    protected List<Instances> getFeatureInstances(boolean testSet)
+    public List<Instances> getFeatureInstances(boolean testSet)
     {
         if(testSet)
         {
@@ -1168,8 +1168,16 @@ public class DataManager {
         }
     }
     
-    protected Instances getAllFeaturesInstances(int outputIndex, boolean testSet)
+    public Instances getAllFeaturesInstances(int outputIndex, boolean testSet)
     {
+        if(featureManager.isAllFeaturesDirty(testSet))
+        {
+            for(int i = 0; i < numOutputs; i++)
+            {
+                updateFeatureInstances(i, testSet, true);
+            }
+            featureManager.didRecalculateAllFeatures(testSet);
+        }
         Instances formatted =  featureManager.getAllFeaturesNewInstances(numClasses[outputIndex]);
         Instances in = testSet ? allFeaturesTestInstances.get(outputIndex) : allFeaturesInstances.get(outputIndex);
         for(int i = 0; i < in.numInstances(); i++)

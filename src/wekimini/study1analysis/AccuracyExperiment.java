@@ -23,10 +23,13 @@ import wekimini.gui.ModelEvaluationFrame;
 import wekimini.learning.ModelEvaluator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import weka.core.Instances;
+import weka.core.converters.ArffSaver;
 import wekimini.learning.SVMModelBuilder;
 
 /**
@@ -36,18 +39,18 @@ import wekimini.learning.SVMModelBuilder;
 public class AccuracyExperiment {
     
     private Wekinator w;
-    private final int NUM_FEATURE_SETS = 23;
     private final String STUDY_DIR = "featurnator_study_1";
     private final String PROJECT_NAME = "Study1.wekproj";
     //private final String ROOT_DIR = "../../studyData/Study1_logs";
     private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
     private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
     private Participant participant;
-    private int featuresPtr;
-    private Iterator it;
+    private Iterator featureIterator;
+    private Iterator participantIterator;
     private ArrayList<Participant> participants;
     private boolean testSet = true;
     private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot"};
+    private Map.Entry currentFeatures;
     
     public static void main(String[] args)
     {
@@ -58,9 +61,9 @@ public class AccuracyExperiment {
     private void runTests()
     {
         HashMap<String, String> projects = getProjectLocations();
-        it = projects.entrySet().iterator();
+        participantIterator = projects.entrySet().iterator();
         participants = new ArrayList();
-        if(it.hasNext())
+        if(participantIterator.hasNext())
         {
             runForNextParticipant();
         }
@@ -71,9 +74,10 @@ public class AccuracyExperiment {
         System.out.println(participant.participantID);
         System.out.println(participant.timeTakenForwards);
         System.out.println(participant.timeTakenBackwards);
-        System.out.println(Arrays.toString(participant.testSetResults));
-        System.out.println(Arrays.toString(participant.trainingSetResults));
+        System.out.println(participant.testSetResults);
+        System.out.println(participant.trainingSetResults);
         participants.add(participant);
+        exportAllFeatures();
     }
     
     private void logAll()
@@ -94,9 +98,8 @@ public class AccuracyExperiment {
     
     private void reset()
     {
-        featuresPtr = 0;
         testSet = true;
-        participant = new Participant(NUM_FEATURE_SETS);
+        participant = new Participant();
     }
     
     private boolean isBlackListed(String pID)
@@ -115,26 +118,26 @@ public class AccuracyExperiment {
     {
         reset();
                 
-        if(it.hasNext())
+        if(participantIterator.hasNext())
         {
-            Map.Entry pair = (Map.Entry)it.next();
+            Map.Entry pair = (Map.Entry)participantIterator.next();
        
             while(isBlackListed((String)pair.getKey()))
             {
                 System.out.println("Skipping " + (String)pair.getKey() + "(blacklisted)");
-                if(!it.hasNext())
+                if(!participantIterator.hasNext())
                 {
                     logAll();
                     return;
                 }
-                pair = (Map.Entry)it.next();
+                pair = (Map.Entry)participantIterator.next();
             }
 
             System.out.println(pair.getKey() + " = " + pair.getValue());
             String location = (String) pair.getValue();
             String pID = (String) pair.getKey();
             participant.participantID = pID;
-
+            
             try {
                 w = WekinatorSaver.loadWekinatorFromFile(location);
             } catch (Exception ex) {
@@ -142,20 +145,18 @@ public class AccuracyExperiment {
             }
             //w.getSupervisedLearningManager().setModelBuilderForPath(new SVMModelBuilder(), 0);
             participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
-            participant.features.add(w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
-            participant.features.add(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames());
+            participant.features.put("user",w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
+//            participant.features.put("all",(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames()));
             
-            int mean = 5;
-            for(int i = 0; i < 10; i++)
-            {
-                w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
-                participant.features.add(w.getDataManager().selectedFeatureNames[0]);
-                w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.RANDOM, mean);
-                participant.features.add(w.getDataManager().selectedFeatureNames[0]);
-                mean +=20;
-            }
-            
-            participant.features.add(new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
+//            int mean = 5;
+//            for(int i = 0; i < 10; i++)
+//            {
+//                w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
+//                participant.features.put("info"+i,w.getDataManager().selectedFeatureNames[0]);
+//                mean +=20;
+//            }
+//            
+//            participant.features.put("raw",new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
 
 //            //Select features with backwards select, log time taken
 //            participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
@@ -166,24 +167,35 @@ public class AccuracyExperiment {
 
             //int mean = (participant.forwardsFeatures.length + participant.backwardsFeatures.length) / 2;
             
-            setFeatures(featuresForPtr(featuresPtr));
+            featureIterator = participant.features.entrySet().iterator();
+            
+            setNextFeatures();
             evaluate();
-            it.remove(); 
+            participantIterator.remove(); 
         }
     }
-    
-    private String[] featuresForPtr(int ptr)
-    {
-        return participant.features.get(ptr);
-    }
             
-    private void setFeatures(String[] ft)
+    private void setNextFeatures()
     {
         w.getDataManager().featureManager.getFeatureGroups().get(0).removeAll();
-        for(String f:ft)
+        currentFeatures = (Map.Entry)featureIterator.next();
+        for(String f:(String[])currentFeatures.getValue())
         {
             f = f.replaceAll(":0", "");
             w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey(f);
+        }
+    }
+    
+    private void exportAllFeatures()
+    {
+        Instances dataSet = w.getDataManager().getAllFeaturesInstances(0,true);
+        ArffSaver saver = new ArffSaver();
+        saver.setInstances(dataSet);
+        try {
+            saver.setFile(new File(RESULTS_DIR + "/" + participant.participantID +"_allFeatures_data.arff"));
+            saver.writeBatch();
+        } catch (IOException ex) {
+            Logger.getLogger(AccuracyExperiment.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -238,22 +250,21 @@ public class AccuracyExperiment {
     {
         if(testSet)
         {
-            participant.testSetResults[featuresPtr] = Double.parseDouble((results[0].replaceAll("%", "")));
+            participant.testSetResults.put((String)currentFeatures.getKey(), Double.parseDouble((results[0].replaceAll("%", ""))));
             testSet = false;
             evaluate();
         }
         else
         {
-            participant.trainingSetResults[featuresPtr] = Double.parseDouble((results[0].replaceAll("%", "")));
+            participant.trainingSetResults.put((String)currentFeatures.getKey(), Double.parseDouble((results[0].replaceAll("%", ""))));
             testSet = true;
-            featuresPtr++;
             
-            if(featuresPtr < NUM_FEATURE_SETS)
+            if(featureIterator.hasNext())
             {
-                setFeatures(featuresForPtr(featuresPtr));
+                setNextFeatures();
                 evaluate();
             }
-            else if(it.hasNext())
+            else if(participantIterator.hasNext())
             {
                 logParticipant();
                 runForNextParticipant();
