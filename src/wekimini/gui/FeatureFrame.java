@@ -436,6 +436,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     private void addRemoveToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addRemoveToggleActionPerformed
         // TODO add your handling code here:
         newFeaturesPanel.searchCurrent = !addRemoveToggle.isSelected();
+        applyAllButton.setText(addRemoveToggle.isSelected() ? "Add all":"Remove all");
         newFeaturesPanel.updateFilters();
         
     }//GEN-LAST:event_addRemoveToggleActionPerformed

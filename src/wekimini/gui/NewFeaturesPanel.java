@@ -237,7 +237,15 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                 sf = selectedFilters.toArray(sf);
                 if(sf.length > 0)
                 {
-                    f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForTags(sf, searchCurrent);
+                    if(searchCurrent)
+                    {
+                        f = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getFeaturesForTags(sf, searchCurrent);  
+                    }
+                    else
+                    {
+                        f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForTags(sf, searchCurrent);
+                    }
+                    
                 }
                 else
                 {
@@ -308,7 +316,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
         }
         
         currentResults = results.clone();
-        results = removeAddedFeatures(results);
+        if(!searchCurrent)
+        {
+            results = removeAddedFeatures(results);
+        }
         resultsTable.setModel(new FeatureTableModel(results));
         setUpResultsTable();
         deselectRows();
