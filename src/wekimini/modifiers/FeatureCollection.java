@@ -288,7 +288,7 @@ public final class FeatureCollection
         if(!searchCurrent)
         {
             toSearch = new Feature[library.size()];
-            toSearch = features.toArray(toSearch);
+            toSearch = library.toArray(toSearch);
         }
         for(Feature f:toSearch)
         {

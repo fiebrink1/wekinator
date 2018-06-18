@@ -202,7 +202,14 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                 @Override
                 public Feature[]  doInBackground()
                 {
-                    f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForKeyword(searchTerm, searchCurrent);
+                    if(searchCurrent)
+                    {
+                        f = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getFeaturesForKeyword(searchTerm, searchCurrent);  
+                    }
+                    else
+                    {
+                        f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForKeyword(searchTerm, searchCurrent);
+                    } 
                     return f;
                 }
 
@@ -244,8 +251,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel implements WekiTokenFie
                     else
                     {
                         f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForTags(sf, searchCurrent);
-                    }
-                    
+                    } 
                 }
                 else
                 {
