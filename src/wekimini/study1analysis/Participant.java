@@ -18,15 +18,21 @@ public class Participant {
     public int numExamples;
     public String participantID;
     public HashMap<String,Double> testSetResults;
+    public HashMap<String,Double> testSetTimes;
     public HashMap<String,Double> trainingSetResults;
     public HashMap<String, String[]> features;
     public int trainingSetSize;
     public int testSetSize;
+    public long timeSpentRunning = 0;
+    public long timeSpentRecording = 0;
+    public int cvCount = 0;
+    public int runCount = 0;
     
     public Participant()
     {
         features = new HashMap();
         testSetResults = new HashMap();
+        testSetTimes = new HashMap();
         trainingSetResults = new HashMap();
     }
 }

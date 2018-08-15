@@ -48,13 +48,12 @@ public class WrapperSelector extends FeatureSelector {
             String dir = forwards ? "1":"0"; 
             String[] searchOptions = {"-D", dir};
             search.setOptions(searchOptions);
-            search.setSearchTermination(3);
+            search.setSearchTermination(10);
             eval.setClassifier(classifier);
             attsel.setEvaluator(eval);
             attsel.setSearch(search);
             instances.setClassIndex(classIndex);
             double start = System.currentTimeMillis();
-            System.out.println("starting selection");
             attsel.SelectAttributes(instances);
             timeTaken = System.currentTimeMillis() - start;
             System.out.println("DONE: " + timeTaken / 1000.0 + "s : ");  

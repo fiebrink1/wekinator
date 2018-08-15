@@ -49,8 +49,10 @@ public class AccuracyExperiment {
     private Iterator participantIterator;
     private ArrayList<Participant> participants;
     private boolean testSet = true;
-    private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot"};
+    //"P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12","P13","P15","P16","P17",
+    private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot", "1"};
     private Map.Entry currentFeatures;
+    private double evalStartTime = 0; 
     
     public static void main(String[] args)
     {
@@ -145,27 +147,29 @@ public class AccuracyExperiment {
             }
             //w.getSupervisedLearningManager().setModelBuilderForPath(new SVMModelBuilder(), 0);
             participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
-            participant.features.put("user",w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
-//            participant.features.put("all",(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames()));
+            //participant.features.put("user",w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
+            participant.features.put("all",(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames()));
             
-//            int mean = 5;
-//            for(int i = 0; i < 10; i++)
-//            {
-//                w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
-//                participant.features.put("info"+i,w.getDataManager().selectedFeatureNames[0]);
-//                mean +=20;
-//            }
+            int mean = 165;
+            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
+            String[] ranked = w.getDataManager().selectedFeatureNames[0];
+            mean = 5;
+            for(int i = 0; i < 9; i++)
+            {
+                String[] split = new String[mean];
+                System.arraycopy(ranked, 0, split, 0, mean);
+                participant.features.put("info"+i,split);
+                mean +=20;
+            }
 //            
-//            participant.features.put("raw",new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
+            //participant.features.put("raw",new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
 
 //            //Select features with backwards select, log time taken
 //            participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
 //            participant.features.add(w.getDataManager().selectedFeatureNames[0]);
 
 //            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
-//            participant.features.add(w.getDataManager().selectedFeatureNames[0]);
-
-            //int mean = (participant.forwardsFeatures.length + participant.backwardsFeatures.length) / 2;
+//            participant.features.put("forwards", w.getDataManager().selectedFeatureNames[0]);
             
             featureIterator = participant.features.entrySet().iterator();
             
@@ -188,7 +192,7 @@ public class AccuracyExperiment {
     
     private void exportAllFeatures()
     {
-        Instances dataSet = w.getDataManager().getAllFeaturesInstances(0,true);
+        Instances dataSet = w.getDataManager().getAllFeaturesInstances(0,false);
         ArffSaver saver = new ArffSaver();
         saver.setInstances(dataSet);
         try {
@@ -201,7 +205,7 @@ public class AccuracyExperiment {
     
     private void evaluate()
     {
-        
+        evalStartTime = System.currentTimeMillis();
         ModelEvaluator evaluator = new ModelEvaluator(w, new ModelEvaluator.EvaluationResultsReceiver() {
 
             @Override
@@ -250,12 +254,16 @@ public class AccuracyExperiment {
     {
         if(testSet)
         {
+            System.out.println("Done test set");
+            double timeTaken = System.currentTimeMillis() - evalStartTime;
+            participant.testSetTimes.put((String)currentFeatures.getKey(), timeTaken);
             participant.testSetResults.put((String)currentFeatures.getKey(), Double.parseDouble((results[0].replaceAll("%", ""))));
             testSet = false;
             evaluate();
         }
         else
         {
+            System.out.println("Done training set");
             participant.trainingSetResults.put((String)currentFeatures.getKey(), Double.parseDouble((results[0].replaceAll("%", ""))));
             testSet = true;
             

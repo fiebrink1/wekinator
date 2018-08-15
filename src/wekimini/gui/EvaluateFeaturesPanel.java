@@ -491,7 +491,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 cvCancelled();
             }
         });
-        EvaluationMode eval = ModelEvaluationFrame.EvaluationMode.TESTING_SET;
+        EvaluationMode eval = ModelEvaluationFrame.EvaluationMode.CROSS_VALIDATION;
         Path p = w.getSupervisedLearningManager().getPaths().get(outputIndex);
         LinkedList<Path> paths = new LinkedList<>();
         paths.add(p);

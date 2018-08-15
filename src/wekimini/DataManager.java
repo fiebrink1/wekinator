@@ -959,9 +959,7 @@ public class DataManager {
                 ((RankedFeatureSelector)sel).useThreshold = targetSize < 0;
                 ((RankedFeatureSelector)sel).featuresToPick = targetSize;
             }
-            System.out.println("selecting attributes for output " + outputIndex);
             int[] indices =  sel.getAttributeIndicesForInstances(formatted);
-            System.out.println("DONE selecting attributes for output " + outputIndex);
             selectedFeatureNames[outputIndex] = new String[indices.length];
             selectedFeatureIndices[outputIndex] = indices;
             

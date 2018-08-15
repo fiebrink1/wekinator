@@ -8,8 +8,9 @@ package wekimini.featureanalysis;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.attributeSelection.AttributeSelection;
-import weka.attributeSelection.Ranker;
 import weka.attributeSelection.InfoGainAttributeEval;
+import weka.attributeSelection.Ranker;
+import weka.classifiers.Classifier;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Discretize;
@@ -19,7 +20,9 @@ import weka.filters.unsupervised.attribute.NumericToNominal;
  *
  * @author louismccallum
  */
-public class InfoGainSelector extends RankedFeatureSelector {
+public class BestInfoSelector extends RankedFeatureSelector {
+    
+    public Classifier classifier;
     
     @Override
     public int[] getAttributeIndicesForInstances(Instances instances)
@@ -47,6 +50,9 @@ public class InfoGainSelector extends RankedFeatureSelector {
             
             //Return best results from ranked array
             int[] ranked =  attsel.selectedAttributes();
+            
+            
+            
             if(useThreshold)
             {
                 featuresToPick = (int)(((double)ranked.length)*threshold);

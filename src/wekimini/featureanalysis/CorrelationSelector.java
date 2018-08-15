@@ -48,7 +48,7 @@
 //            return attsel.selectedAttributes();
 //            
 //        } catch (Exception ex) {
-//            Logger.getLogger(CFSelector.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(CorrelationAttributeEval.class.getName()).log(Level.SEVERE, null, ex);
 //        }
 //        return new int[0];
 //    }

@@ -43,13 +43,9 @@ public class FeatureManager
             ArrayList<String> keys = dataFromFile.added.get(i);
             for(int j = 0; j < keys.size(); j++)
             {
+                System.out.print(","+keys.get(j));
                 fc.addFeatureForKey(keys.get(j));
             }
-            //String[] keys = fc.getNames();
-//            for(int j = 0; j < keys.length; j++)
-//            {
-//                fc.addFeatureForKey(keys[j]);
-//            }
         }
     }
     
