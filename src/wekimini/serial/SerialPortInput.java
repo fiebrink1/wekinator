@@ -44,7 +44,8 @@ public class SerialPortInput {
                         if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
                             return;
                         byte[] newData = new byte[p.bytesAvailable()];
-                        int numRead = p.readBytes(newData, newData.length);
+                        p.readBytes(newData, newData.length);
+                        processBytes(newData);
                    }
                 });
             }
