@@ -127,8 +127,13 @@ public class LogsExperiment {
             long prevStart = 0;
             int cvCtr = 0;
             int runCtr = 0;
+            int newFeatureRunCtr = 0;
+            int newDataRunCtr = 0;
             boolean running = false;
             boolean recording = false;
+            boolean didChangeFeatures = false;
+            boolean didChangeData = false;
+            ArrayList<String> exploredFeatures = new ArrayList();
             
             for(String line : lines)
             {
@@ -144,11 +149,16 @@ public class LogsExperiment {
                     cumSumRunning += (endTime - prevStart);
                     runCtr++;
                     running = false;
+                    newFeatureRunCtr += didChangeFeatures ? 1 : 0;
+                    newDataRunCtr += didChangeData ? 1 : 0;
+                    didChangeFeatures = false;
+                    didChangeData = false;
                 }
                 if(split[2].equals("SUPERVISED_RECORD_START"))
                 {
                     prevStart = Long.parseUnsignedLong(split[0]);
                     recording = true;
+                    didChangeData = true;
                 }
                 if(recording && split[2].equals("SUPERVISED_RECORD_STOP"))
                 {
@@ -160,14 +170,38 @@ public class LogsExperiment {
                 {
                     cvCtr++;
                 }
+                if(split[2].equals("FEATURE_REMOVED") || split[2].equals("FEATURE_ADDED"))
+                {
+                    didChangeFeatures = true;
+                    if(split[2].equals("FEATURE_ADDED"))
+                    {
+                        if(split[3].length() > 3)
+                        {
+                            String featuresAdded = split[3].substring(1, split[3].length()-2);
+                            String[] sepFt = featuresAdded.split(",");
+                            for(String ft : sepFt)
+                            {
+                                if(!exploredFeatures.contains(ft))
+                                {
+                                    exploredFeatures.add(ft);
+                                }
+                            } 
+                        } 
+                    }
+                }
             }
             System.out.println(cumSumRunning);
             System.out.println(cumSumRecording);
             System.out.println(cvCtr);
+            String[] f = new String[exploredFeatures.size()];
+            f = exploredFeatures.toArray(f);
+            participant.features.put("explored", f);
             participant.timeSpentRunning = cumSumRunning;
             participant.timeSpentRecording = cumSumRecording;
             participant.cvCount = cvCtr;
             participant.runCount = runCtr;
+            participant.newDataRunCount = newDataRunCtr;
+            participant.newFeatureRunCount = newFeatureRunCtr;
             participantIterator.remove(); 
             logParticipant();
             runForNextParticipant();

@@ -90,7 +90,7 @@ public class UserPicksExperiment {
         ObjectMapper json = new ObjectMapper();
         DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
         Date date = new Date();
-        String path = RESULTS_DIR + File.separator + "rankExperiment" + dateFormat.format(date) + ".json";
+        String path = RESULTS_DIR + File.separator + "userPicksExperiment" + dateFormat.format(date) + ".json";
         try{
             json.writeValue(new FileOutputStream(path), ranks);
         }

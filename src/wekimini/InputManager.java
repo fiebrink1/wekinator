@@ -25,15 +25,18 @@ import javax.swing.event.EventListenerList;
 import wekimini.osc.OSCInputGroup;
 import wekimini.util.WeakListenerSupport;
 import wekimini.osc.OSCReceiver;
+import wekimini.serial.SerialPortDelegate;
 import wekimini.util.Util;
+import wekimini.serial.SerialPortInput;
 
 /**
  *
  * @author rebecca
  */
-public class InputManager {
+public class InputManager implements SerialPortDelegate {
 
     private OSCInputGroup inputGroup = null;
+    private SerialPortInput serialInput = null;
     private final Wekinator w;
     private final WeakListenerSupport wls = new WeakListenerSupport();
     private final PropertyChangeListener oscReceiverListener;
@@ -72,6 +75,13 @@ public class InputManager {
         return (inputGroup != null);
     }
 
+    @Override
+    public void update(double[] newVals)
+    {
+        currentValues = newVals;
+        notifyListeners(currentValues);
+    }
+        
     /**
      * Add PropertyChangeListener.
      *
@@ -108,6 +118,9 @@ public class InputManager {
          String[] names1 = {"a"};
          g = new OSCInputGroup("group1", "/m1", 1, names1);
          addOSCInputGroup(g, true); */
+        
+        serialInput = new SerialPortInput();
+        serialInput.delegate = this;
     }
 
     private void oscReceiverPropertyChanged(PropertyChangeEvent e) {

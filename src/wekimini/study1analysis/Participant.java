@@ -27,6 +27,8 @@ public class Participant {
     public long timeSpentRecording = 0;
     public int cvCount = 0;
     public int runCount = 0;
+    public int newFeatureRunCount = 0;
+    public int newDataRunCount = 0;
     
     public Participant()
     {
