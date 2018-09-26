@@ -248,11 +248,11 @@ public class FeatureManager
         bufferSize = bSize;
         int output = 0;
         allFeatures.setFeatureWindowSize(windowSize, bufferSize);
-        for(FeatureCollection mc:featureCollections)
+        for(FeatureCollection fc:featureCollections)
         {
             setTestSetDirty(output);
+            fc.setFeatureWindowSize(windowSize, bufferSize);
             output++;
-            mc.setFeatureWindowSize(windowSize, bufferSize);
         }
     }
     

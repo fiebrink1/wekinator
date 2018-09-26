@@ -5,11 +5,6 @@
  */
 package wekimini.serial;
 import com.fazecast.jSerialComm.*;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 /**
  *
@@ -19,28 +14,42 @@ import java.util.Arrays;
 public class SerialPortInput {
     
     public SerialPortDelegate delegate = null;
-    private static final int NUM_VALS = 6;
+    private static final int PACKET_SIZE = 6;
     private static final int BAUD_RATE = 38400;
     private static final boolean PRINT_PACKETS = false;
+    private static final String EMAKE_PREFIX = "tty.wchusbserial";
     String leftOver = "";
     int sendPtr = 0;
-    double[] toSend =  new double[NUM_VALS];
+    double[] toSend =  new double[PACKET_SIZE];
+    SerialPort port;
+    
     
     public SerialPortInput() {
+        connect();
+    }
+    
+    public void connect()
+    {
+        if(port != null) {
+            cleanUp();
+        }
         SerialPort[] ports = SerialPort.getCommPorts();
         for(SerialPort p : ports)
         {
             System.out.println(p.getSystemPortName());
-            if(p.getSystemPortName().contains("tty.wchusbserial"))
+            if(p.getSystemPortName().contains(EMAKE_PREFIX))
             {
+                this.port = p;
                 p.setBaudRate(BAUD_RATE);
                 p.openPort();
+                System.out.println("opening port....");
                 p.addDataListener(new SerialPortDataListener() {
                    @Override
                    public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
                    @Override
                    public void serialEvent(SerialPortEvent event)
                    {
+                       //System.out.println("serialEvent"); 
                         if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
                             return;
                         byte[] newData = new byte[p.bytesAvailable()];
@@ -52,6 +61,16 @@ public class SerialPortInput {
         }
     }
     
+    public void cleanUp()
+    {
+        System.out.println("closing port....");
+        sendPtr = 0;
+        toSend =  new double[PACKET_SIZE];
+        port.removeDataListener();
+        port.closePort();
+        port = null;
+    }
+    
     private void processBytes(byte[] newData)
     {
         String str = leftOver;
@@ -60,9 +79,16 @@ public class SerialPortInput {
             char c = (char)b;
             if(c == ',' || c == '\n')
             {
-                toSend[sendPtr] = Double.parseDouble(str);
-                sendPtr++;
-                if(sendPtr == NUM_VALS)
+                Double val;
+                try {
+                   val = Double.parseDouble(str); 
+                   toSend[sendPtr] = val;
+                   sendPtr++;
+                } catch (NumberFormatException e) {
+                    
+                }
+                
+                if(sendPtr == PACKET_SIZE)
                 {
                     sendPacket();
                 }

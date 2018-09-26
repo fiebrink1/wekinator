@@ -580,7 +580,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             w.getSupervisedLearningManager().isPlotting = isPlotting;
         }
         newFeaturesPanel.refreshResultsTable();
-        w.getDataManager().featureListUpdated();
+        //w.getDataManager().featureListUpdated();
         featureLibraryUpdated(buffers);
     }
 

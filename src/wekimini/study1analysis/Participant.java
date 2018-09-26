@@ -19,6 +19,7 @@ public class Participant {
     public String participantID;
     public HashMap<String,Double> testSetResults;
     public HashMap<String,Double> testSetTimes;
+    public HashMap<String,Double> trainingSetTimes;
     public HashMap<String,Double> trainingSetResults;
     public HashMap<String, String[]> features;
     public int trainingSetSize;
@@ -35,6 +36,7 @@ public class Participant {
         features = new HashMap();
         testSetResults = new HashMap();
         testSetTimes = new HashMap();
+        trainingSetTimes = new HashMap();
         trainingSetResults = new HashMap();
     }
 }

@@ -419,6 +419,7 @@ public class Wekinator {
 
     public void prepareToDie() {
         logger.log(Level.INFO, "Preparing to die");
+        inputManager.cleanUp();
         oscReceiver.stopListening();
         loggingManager.prepareToDie(); //Problem: getting here with X but not with close handler
     }

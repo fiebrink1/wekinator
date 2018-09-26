@@ -47,6 +47,22 @@ public class InputManager implements SerialPortDelegate {
     private double[] currentValues = new double[0];
     private static final Logger logger = Logger.getLogger(InputManager.class.getName());
 
+    public void reconnectSerial()
+    {
+       if(serialInput != null)
+       {
+           serialInput.connect();
+       }
+    }
+    
+    public void cleanUp()
+    {
+       if(serialInput != null)
+       {
+           serialInput.cleanUp();
+       }
+    }
+    
     public double[] getInputValues() {
         if (inputGroup == null) {
             return new double[0];
@@ -78,8 +94,8 @@ public class InputManager implements SerialPortDelegate {
     @Override
     public void update(double[] newVals)
     {
-        currentValues = newVals;
-        notifyListeners(currentValues);
+        notifyListeners(newVals);
+        System.arraycopy(newVals, 0, currentValues, 0, newVals.length);
     }
         
     /**

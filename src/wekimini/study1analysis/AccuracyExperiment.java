@@ -48,7 +48,7 @@ public class AccuracyExperiment {
     private Iterator featureIterator;
     private Iterator participantIterator;
     private ArrayList<Participant> participants;
-    private boolean testSet = true;
+    private boolean testSet = false;
     //"P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12","P13","P15","P16","P17",
     private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot", "1"};
     private Map.Entry currentFeatures;
@@ -100,7 +100,7 @@ public class AccuracyExperiment {
     
     private void reset()
     {
-        testSet = true;
+        //testSet = true;
         participant = new Participant();
     }
     
@@ -264,8 +264,10 @@ public class AccuracyExperiment {
         else
         {
             System.out.println("Done training set");
+            double timeTaken = System.currentTimeMillis() - evalStartTime;
+            participant.trainingSetTimes.put((String)currentFeatures.getKey(), timeTaken);
             participant.trainingSetResults.put((String)currentFeatures.getKey(), Double.parseDouble((results[0].replaceAll("%", ""))));
-            testSet = true;
+            //testSet = true;
             
             if(featureIterator.hasNext())
             {

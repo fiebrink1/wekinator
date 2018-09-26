@@ -77,7 +77,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         if (type == LearningManager.LearningType.INITIALIZATION) {
             throw new IllegalStateException("GUI can only be created for Wekinator whose learning type is known");
         }
-        //setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         this.w = w;
         setGUIForWekinator(type);
         this.addWindowListener(new WindowAdapter() {

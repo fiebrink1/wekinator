@@ -79,7 +79,7 @@ public final class FeatureCollection
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
             library.add(new RawFeature(pair.getKey(),new int[]{pair.getValue()}));
         }
-        
+        //6
         it = inputs.entrySet().iterator();
         while(it.hasNext())
         {
@@ -128,7 +128,7 @@ public final class FeatureCollection
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
             library.add(new RawFODFeature("FOD" + pair.getKey(), pair.getValue()));
         }
-        
+        //12
         it = inputs.entrySet().iterator();
         while(it.hasNext())
         {
@@ -175,7 +175,7 @@ public final class FeatureCollection
                 library.add(new FFTFODSingleBinFeature("FFTFOD" + pair.getKey() + "("+bins[i]+"/128)", pair.getValue(), 128, bins[i]));
             }
         }
-        
+        //54
         
         it = inputs.entrySet().iterator();
         while(it.hasNext())
@@ -183,13 +183,13 @@ public final class FeatureCollection
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
             library.add(new MaxFFT("MaxBinFFT" + pair.getKey(), pair.getValue(), 128));
         }
-        
-//        it = inputs.entrySet().iterator();
-//        while(it.hasNext())
-//        {
-//            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-//            library.add(new BufferFeature("Buffer" + pair.getKey(), pair.getValue(), windowSize));
-//        }
+        //60
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            library.add(new BufferFeature("Buffer" + pair.getKey(), pair.getValue(), windowSize));
+        }
         
         it = inputs.entrySet().iterator();
         while(it.hasNext())
@@ -197,6 +197,7 @@ public final class FeatureCollection
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
             library.add(new MinFFT("MinBinFFT" + pair.getKey(), pair.getValue(), 128));
         }
+        //66
         
         it = inputGroupings.entrySet().iterator();
         while(it.hasNext())
