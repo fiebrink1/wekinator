@@ -55,10 +55,11 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private PlotPanel outputPlot;
     private PlotRowModel outputPlotModel;
     private MDSPlotPanel mdsPlot;
-    private boolean updatingMDS = false;
+    public boolean updatingMDS = false;
     private boolean runAfterTraining = false;
     private Timer timer;
     ChangeListener panelListener;
+    SwingWorker mdsWorker;
     
     public EvaluateFeaturesPanel() {
         initComponents();
@@ -212,13 +213,22 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         }
     }
     
+    public void cancelWorkers()
+    {
+        if(updatingMDS)
+        {
+            mdsWorker.cancel(true);
+        }
+    }
+    
     public void featuresListUpdated()
     {
         trainBtn.setEnabled(w.getDataManager().canRun(outputIndex));
         evaluateBtn.setEnabled(w.getDataManager().canRun(outputIndex));
         if(w.getDataManager().canRun(outputIndex) && !updatingMDS)
         {
-            SwingWorker worker = new SwingWorker<String,Void>()
+            System.out.println("----Feature list updated (EVALUATE PANEL), updating MDS");
+            mdsWorker = new SwingWorker<String,Void>()
             {            
                 @Override
                 public String doInBackground()
@@ -232,10 +242,11 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 public void done()
                 {
                     //Done
+                    System.out.println("----Finished updating MDS");
                     updatingMDS = false;
                 }
             };
-            worker.execute();
+            mdsWorker.execute();
         }
     }
     

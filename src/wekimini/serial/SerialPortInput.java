@@ -25,7 +25,7 @@ public class SerialPortInput {
     
     
     public SerialPortInput() {
-        connect();
+        //connect();
     }
     
     public void connect()
@@ -66,9 +66,13 @@ public class SerialPortInput {
         System.out.println("closing port....");
         sendPtr = 0;
         toSend =  new double[PACKET_SIZE];
-        port.removeDataListener();
-        port.closePort();
-        port = null;
+        if(port != null)
+        {
+            port.removeDataListener();
+            port.closePort();
+            port = null;
+        }
+        
     }
     
     private void processBytes(byte[] newData)

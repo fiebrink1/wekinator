@@ -40,7 +40,8 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     private Feature selectedFeature;
     private PlotTableCellRenderer plotCellRenderer;
     private PlottedFeatureTableModel currentFeaturesTableModel;
-    private Timer timer;
+    private Timer plotTimer;
+    private Timer sliderTimer;
     private Feature[] currentFeatures;
     private boolean ignoreSliderUpdate = true;
 
@@ -58,7 +59,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     public FeatureFrame(Wekinator w) {
         initComponents();
         this.w = w;
-        timer = new Timer(1,new ActionListener() {public void actionPerformed(ActionEvent evt) {}});
+        plotTimer = new Timer(1,new ActionListener() {public void actionPerformed(ActionEvent evt) {}});
         newFeaturesPanel.update(w, 0);
         featureDetailPanel.update(w);
         evaluateFeaturesPanel.update(w, 0);
@@ -151,14 +152,14 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
                    
     }
     
-    public void startTimer()
+    public void startPlotTimer()
     {
-        if(timer.isRunning())
+        if(plotTimer.isRunning())
         {
-            timer.stop();
+            plotTimer.stop();
         }
         
-        timer = new Timer(PLOT_ROW_REFRESH_RATE, (ActionEvent evt) -> {
+        plotTimer = new Timer(PLOT_ROW_REFRESH_RATE, (ActionEvent evt) -> {
             Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
             if(in != null)
             {
@@ -172,7 +173,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             currentFeaturesTable.repaint();    
         });  
         
-        timer.start();
+        plotTimer.start();
     }
     
     public void updateCurrentFeaturesTable()
@@ -219,7 +220,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         
         deselectRows(false);
         
-        startTimer();
+        startPlotTimer();
     }
    
     /**
@@ -422,17 +423,43 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             }
             return;
         }
-
         
+        debounceSliderAction();
+        
+    }//GEN-LAST:event_windowSliderStateChanged
+
+    private void debounceSliderAction()
+    {
+        if(sliderTimer != null)
+        {
+            if(sliderTimer.isRunning())
+            {
+                sliderTimer.stop();
+                sliderTimer = null;
+            }
+        }
+
+        sliderTimer = new Timer(250, (ActionEvent arg0) -> {
+            if(!evaluateFeaturesPanel.updatingMDS)
+            {
+                sliderTimer.stop();
+                updateWindowSize();
+            }
+        });
+        sliderTimer.setRepeats(true); 
+        sliderTimer.start(); 
+    }
+    
+    private void updateWindowSize()
+    {
         windowLabel.setText("Window Size:" + windowSlider.getValue());
         boolean isRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
         boolean isPlotting = w.getSupervisedLearningManager().isPlotting;
         prepareForLibraryUpdate(isRunning, isPlotting);
         w.getDataManager().featureManager.setFeatureWindowSize(windowSlider.getValue(), 100);
         resetFollowingLibraryUpdate(isRunning, isPlotting, false);
-
-    }//GEN-LAST:event_windowSliderStateChanged
-
+    }
+    
     private void addRemoveToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addRemoveToggleActionPerformed
         // TODO add your handling code here:
         newFeaturesPanel.searchCurrent = !addRemoveToggle.isSelected();
@@ -559,12 +586,14 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
 
     private void prepareForLibraryUpdate(boolean isRunning, boolean isPlotting)
     {
+        evaluateFeaturesPanel.cancelWorkers();
         if(isRunning)
         {
             w.getSupervisedLearningManager().stopRunning();
         }
         if(isPlotting)
         {
+            System.out.println("setting is plotting to false");
             w.getSupervisedLearningManager().isPlotting = false;
         }
     }
@@ -580,7 +609,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             w.getSupervisedLearningManager().isPlotting = isPlotting;
         }
         newFeaturesPanel.refreshResultsTable();
-        //w.getDataManager().featureListUpdated();
+        w.getDataManager().featureListUpdated();
         featureLibraryUpdated(buffers);
     }
 

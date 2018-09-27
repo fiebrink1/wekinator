@@ -551,7 +551,9 @@ public final class FeatureCollection
     
     public void setFeatureWindowSize(int windowSize, int bufferSize)
     {
+        System.out.println("----Rebuilding feature library for new window size");
         initLibrary(windowSize, bufferSize);
+        System.out.println("----Done rebuilding feature library");
         setDirty(true);
         setDirty(false);
     }
