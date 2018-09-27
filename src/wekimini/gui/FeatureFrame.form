@@ -48,9 +48,7 @@
                           <Component id="jScrollPane1" pref="0" max="32767" attributes="0"/>
                           <Component id="jPanel1" alignment="1" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
-                              <Component id="autoCVButton" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="autoTestButton" min="-2" max="-2" attributes="0"/>
+                              <Component id="autoButton" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
@@ -92,8 +90,7 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="addRemoveToggle" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="applyAllButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="autoCVButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="autoTestButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="autoButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   </Group>
@@ -272,20 +269,12 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="applyAllButtonActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="autoCVButton">
+    <Component class="javax.swing.JButton" name="autoButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="AutoCV"/>
+        <Property name="text" type="java.lang.String" value="Auto"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="autoCVButtonActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="autoTestButton">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="AutoTest"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="autoTestButtonActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="autoButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

@@ -913,24 +913,10 @@ public class DataManager {
     {
         return selectFeaturesAutomatically(autoSelect, -1);
     }
+   
     
     public double selectFeaturesAutomatically(AutoSelect autoSelect, int targetSize)
     {
-        return selectFeaturesAutomatically(autoSelect, targetSize, false);
-    }
-    
-    public double selectFeaturesAutomatically(AutoSelect autoSelect, int targetSize, boolean useTestSet)
-    {
-        System.out.println("selectFeaturesAutomatically, testSet:" + useTestSet);
-        if(featureManager.isAllFeaturesDirty(useTestSet))
-        {
-            for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
-            {
-                updateFeatureInstances(outputIndex, useTestSet, true);
-            }
-            featureManager.didRecalculateAllFeatures(useTestSet);
-        }
-       
         FeatureSelector sel;
         switch(autoSelect)
         {
@@ -951,7 +937,7 @@ public class DataManager {
         
         for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
         {
-            Instances formatted = getAllFeaturesInstances(outputIndex, useTestSet);
+            Instances formatted = getAllFeaturesInstances(outputIndex, false);
             
             if(autoSelect == AutoSelect.WRAPPER_FORWARDS || autoSelect == AutoSelect.WRAPPER_BACKWARDS)
             {
