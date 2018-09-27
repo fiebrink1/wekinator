@@ -51,8 +51,6 @@ public class BestInfoSelector extends RankedFeatureSelector {
             //Return best results from ranked array
             int[] ranked =  attsel.selectedAttributes();
             
-            
-            
             if(useThreshold)
             {
                 featuresToPick = (int)(((double)ranked.length)*threshold);

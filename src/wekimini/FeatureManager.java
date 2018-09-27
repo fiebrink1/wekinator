@@ -70,8 +70,6 @@ public class FeatureManager
       return fmd;
     }
     
-    
-        
     protected boolean isDirty(int output)
     {
         return featureCollections.get(output).isDirty(false);

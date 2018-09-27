@@ -20,6 +20,7 @@ import javax.swing.Timer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import weka.core.Instance;
+import wekimini.DataManager;
 import wekimini.SupervisedLearningManager;
 import wekimini.SupervisedLearningManager.RunningState;
 import wekimini.Wekinator;
@@ -90,8 +91,6 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         currentFeaturesTable.addMouseListener(featuresMouseListener);
         currentFeaturesTable.addComponentListener(new ResizeListener());
         getContentPane().setBackground(Color.WHITE);
-//        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-//        setAlwaysOnTop(true);
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -246,6 +245,8 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         windowSlider = new javax.swing.JSlider();
         addRemoveToggle = new javax.swing.JCheckBox();
         applyAllButton = new javax.swing.JButton();
+        autoCVButton = new javax.swing.JButton();
+        autoTestButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -340,6 +341,20 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             }
         });
 
+        autoCVButton.setText("AutoCV");
+        autoCVButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                autoCVButtonActionPerformed(evt);
+            }
+        });
+
+        autoTestButton.setText("AutoTest");
+        autoTestButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                autoTestButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -361,7 +376,12 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(currentFeaturesLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(autoCVButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(autoTestButton)
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
@@ -390,7 +410,9 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(addRemoveToggle)
-                            .addComponent(applyAllButton))
+                            .addComponent(applyAllButton)
+                            .addComponent(autoCVButton)
+                            .addComponent(autoTestButton))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
                 .addComponent(featureDetailPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -439,7 +461,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             }
         }
 
-        sliderTimer = new Timer(250, (ActionEvent arg0) -> {
+        sliderTimer = new Timer(500, (ActionEvent arg0) -> {
             if(!evaluateFeaturesPanel.updatingMDS)
             {
                 sliderTimer.stop();
@@ -483,6 +505,18 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         }
         featureListUpdated();
     }//GEN-LAST:event_applyAllButtonActionPerformed
+
+    private void autoCVButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoCVButtonActionPerformed
+        // TODO add your handling code here:
+        w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, 100, false);
+        w.getDataManager().setUseAutomatic(true);
+    }//GEN-LAST:event_autoCVButtonActionPerformed
+
+    private void autoTestButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoTestButtonActionPerformed
+        // TODO add your handling code here:
+        w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, 100, true);
+        w.getDataManager().setUseAutomatic(true);
+    }//GEN-LAST:event_autoTestButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -616,6 +650,8 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox addRemoveToggle;
     private javax.swing.JButton applyAllButton;
+    private javax.swing.JButton autoCVButton;
+    private javax.swing.JButton autoTestButton;
     private javax.swing.JLabel currentFeaturesLabel;
     private javax.swing.JTable currentFeaturesTable;
     private wekimini.gui.EvaluateFeaturesPanel evaluateFeaturesPanel;

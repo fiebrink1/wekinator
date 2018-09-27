@@ -911,12 +911,17 @@ public class DataManager {
     }
     public double selectFeaturesAutomatically(AutoSelect autoSelect)
     {
-        return selectFeaturesAutomatically(autoSelect,-1);
+        return selectFeaturesAutomatically(autoSelect, -1);
     }
     
     public double selectFeaturesAutomatically(AutoSelect autoSelect, int targetSize)
     {
-        boolean useTestSet = true;
+        return selectFeaturesAutomatically(autoSelect, targetSize, false);
+    }
+    
+    public double selectFeaturesAutomatically(AutoSelect autoSelect, int targetSize, boolean useTestSet)
+    {
+        System.out.println("selectFeaturesAutomatically, testSet:" + useTestSet);
         if(featureManager.isAllFeaturesDirty(useTestSet))
         {
             for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
@@ -964,9 +969,12 @@ public class DataManager {
             selectedFeatureIndices[outputIndex] = indices;
             
             int ptr = 0;
+            System.out.println("Got Features Automatically, applying");
             for(int attributeIndex:indices)
             {
+                
                 selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeaturesGroup().getModifiers().nameForIndex(attributeIndex);
+                System.out.println(selectedFeatureNames[outputIndex][ptr]);
                 ptr++;
             }
         }

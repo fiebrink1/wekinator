@@ -151,7 +151,7 @@ public class AccuracyExperiment {
             participant.features.put("all",(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames()));
             
             int mean = 165;
-            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
+            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean, false);
             String[] ranked = w.getDataManager().selectedFeatureNames[0];
             mean = 5;
             for(int i = 0; i < 9; i++)
