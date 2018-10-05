@@ -48,7 +48,7 @@ public class AccuracyExperiment {
     private Iterator featureIterator;
     private Iterator participantIterator;
     private ArrayList<Participant> participants;
-    private boolean testSet = false;
+    private boolean testSet = true;
     //"P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12","P13","P15","P16","P17",
     private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot", "1"};
     private Map.Entry currentFeatures;
@@ -79,6 +79,17 @@ public class AccuracyExperiment {
         System.out.println(participant.testSetResults);
         System.out.println(participant.trainingSetResults);
         participants.add(participant);
+        ObjectMapper json = new ObjectMapper();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+        Date date = new Date();
+        String path = RESULTS_DIR + File.separator + "accuracyExperiment_temp_" + dateFormat.format(date) + ".json";
+        try{
+            json.writeValue(new FileOutputStream(path), participants);
+        }
+        catch(Exception e)
+        {
+            System.out.println("ERROR: writing file");
+        }
         exportAllFeatures();
     }
     
@@ -100,7 +111,7 @@ public class AccuracyExperiment {
     
     private void reset()
     {
-        //testSet = true;
+        testSet = true;
         participant = new Participant();
     }
     
@@ -147,7 +158,7 @@ public class AccuracyExperiment {
             }
             //w.getSupervisedLearningManager().setModelBuilderForPath(new SVMModelBuilder(), 0);
             participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
-            //participant.features.put("user",w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
+            participant.features.put("user",w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
             participant.features.put("all",(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames()));
             
             int mean = 165;
@@ -161,15 +172,13 @@ public class AccuracyExperiment {
                 participant.features.put("info"+i,split);
                 mean +=20;
             }
-//            
-            //participant.features.put("raw",new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
+            
+            participant.features.put("raw",new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
 
-//            //Select features with backwards select, log time taken
-//            participant.timeTakenBackwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_BACKWARDS);
-//            participant.features.add(w.getDataManager().selectedFeatureNames[0]);
-
-//            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
-//            participant.features.put("forwards", w.getDataManager().selectedFeatureNames[0]);
+            System.out.println("starting forwards search");
+            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
+            System.out.println("completed forwards search in " + participant.timeTakenForwards);
+            participant.features.put("forwards", w.getDataManager().selectedFeatureNames[0]);
             
             featureIterator = participant.features.entrySet().iterator();
             
@@ -183,6 +192,7 @@ public class AccuracyExperiment {
     {
         w.getDataManager().featureManager.getFeatureGroups().get(0).removeAll();
         currentFeatures = (Map.Entry)featureIterator.next();
+        System.out.println("setting features for " + currentFeatures.getKey());
         for(String f:(String[])currentFeatures.getValue())
         {
             f = f.replaceAll(":0", "");
@@ -267,7 +277,7 @@ public class AccuracyExperiment {
             double timeTaken = System.currentTimeMillis() - evalStartTime;
             participant.trainingSetTimes.put((String)currentFeatures.getKey(), timeTaken);
             participant.trainingSetResults.put((String)currentFeatures.getKey(), Double.parseDouble((results[0].replaceAll("%", ""))));
-            //testSet = true;
+            testSet = true;
             
             if(featureIterator.hasNext())
             {

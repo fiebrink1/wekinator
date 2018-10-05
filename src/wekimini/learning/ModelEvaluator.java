@@ -203,7 +203,7 @@ public class ModelEvaluator {
                     Path p = paths.get(i);
                     if (p.canBuild()) {
                         try {
-                           System.out.println("Evaluating with " + numFolds);
+                           //System.out.println("Evaluating with " + numFolds);
                             //EVALUATE HERE: TODO 
                             Instances instances = w.getSupervisedLearningManager().getTrainingDataForPath(p, false);
                             Evaluation eval = new Evaluation(instances);

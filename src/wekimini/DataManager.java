@@ -96,6 +96,8 @@ public class DataManager {
     public FeatureManager featureManager;
     public String[][] selectedFeatureNames = new String[0][0];
     public int[][] selectedFeatureIndices = new int[0][0];
+    public String[][] infoRankNames = new String[0][0];
+    public int[][] infoRankIndices = new int[0][0];
     private boolean useAutomaticFeatures = false;
     private int nextTrainingID = 1;
     private int nextTestingID = 1;
@@ -914,6 +916,27 @@ public class DataManager {
         return selectFeaturesAutomatically(autoSelect, -1);
     }
    
+    public void updateInfoGainRankings()
+    {
+        infoRankNames = new String[numOutputs][];
+        infoRankIndices = new int[numOutputs][];
+        RankedFeatureSelector sel = new InfoGainSelector();
+        for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
+        {
+            Instances formatted = getAllFeaturesInstances(outputIndex, false);
+            sel.useThreshold = false;
+            int[] indices =  sel.getAttributeIndicesForInstances(formatted);
+            infoRankNames[outputIndex] = new String[indices.length];
+            infoRankIndices[outputIndex] = indices;
+            
+            int ptr = 0;
+            for(int attributeIndex:indices)
+            {
+                infoRankNames[outputIndex][ptr] = featureManager.getAllFeaturesGroup().getModifiers().nameForIndex(attributeIndex);
+                ptr++;
+            }
+        }
+    }
     
     public double selectFeaturesAutomatically(AutoSelect autoSelect, int targetSize)
     {
@@ -955,12 +978,9 @@ public class DataManager {
             selectedFeatureIndices[outputIndex] = indices;
             
             int ptr = 0;
-            System.out.println("Got Features Automatically, applying");
             for(int attributeIndex:indices)
             {
-                
                 selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeaturesGroup().getModifiers().nameForIndex(attributeIndex);
-                System.out.println(selectedFeatureNames[outputIndex][ptr]);
                 ptr++;
             }
         }

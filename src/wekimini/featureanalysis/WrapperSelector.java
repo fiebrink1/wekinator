@@ -56,7 +56,7 @@ public class WrapperSelector extends FeatureSelector {
             double start = System.currentTimeMillis();
             attsel.SelectAttributes(instances);
             timeTaken = System.currentTimeMillis() - start;
-            System.out.println("DONE: " + timeTaken / 1000.0 + "s : ");  
+            //System.out.println("DONE: " + timeTaken / 1000.0 + "s : ");  
             int [] selected = attsel.selectedAttributes();
             //Remove classIndex if it picked it
             for(int s:selected)
