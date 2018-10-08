@@ -965,7 +965,7 @@ class MultipleInputWindowedFeature extends FeatureSingleModifierOutput
         {
             multi.addRequiredModifierID(id);
         }
-        
+        multi.addToOutput = false;
         int multiID = addModifier(mc, multi);
         
         ModifiedInput window = new WindowedOperation("window",windowOp, 0, windowSize, 0);

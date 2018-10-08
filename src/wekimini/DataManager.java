@@ -937,7 +937,7 @@ public class DataManager {
             updateInfoGainRankings(outputIndex);
         }
         int maxRank = (int)Math.ceil(((double)infoRankNames[outputIndex].size() * threshold));
-        Feature[] thresholded = new Feature[maxRank];
+        ArrayList<Feature> thresholded = new ArrayList();
         HashMap<String, Integer> rankings = infoRankNames[outputIndex];
         Iterator it = rankings.entrySet().iterator();
         int ptr = 0;
@@ -948,11 +948,13 @@ public class DataManager {
             {
                 String[] split = pair.getKey().split(":");
                 System.out.println("adding feature:" + split[0]);
-                thresholded[ptr] = featureManager.featureCollections.get(outputIndex).getFeatureForKey(split[0]);
+                thresholded.add(featureManager.featureCollections.get(outputIndex).getFeatureForKey(split[0]));
                 ptr++;
             }
         }
-        return thresholded;
+        Feature[] t = new Feature[thresholded.size()];
+        t = thresholded.toArray(t);
+        return t;
     }
    
     private void updateInfoGainRankings(int outputIndex)

@@ -237,10 +237,15 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             Boolean matched = false;
             for(FeatureSetPlotItem item:items)
             {
+                try {
                 if(result.name.equals(item.feature.name))
                 {
                     matched = true;
                     break;
+                }
+                } catch(NullPointerException e)
+                {
+                    System.out.println(e);
                 }
             }
             if(!matched)
