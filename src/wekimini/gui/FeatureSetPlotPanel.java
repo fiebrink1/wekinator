@@ -11,6 +11,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import wekimini.modifiers.Feature;
 
 /**
@@ -75,42 +76,74 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         }
         return y;
     }
-    
-    public Color colorForFeature(Feature ft)
+
+    public static Color colorForTag(String tag, Boolean faded)
     {
-        if(ft.tags.contains("Mean"))
-        {
-            return Color.BLUE;
+        int alpha = faded ? 140 : 255;
+        switch (tag) {
+            case "Mean":
+                return new Color(208, 2, 27, alpha);
+            case "Standard Deviation":
+                return new Color(254, 168, 35, alpha);
+            case "Energy":
+                return new Color(248, 231, 28, alpha);
+            case "Max":
+                return new Color(126, 211, 35, alpha);
+            case "Min":
+                return new Color(65, 117, 5, alpha);
+            case "FFT":
+                return new Color(189, 16, 224, alpha);
+            case "1st Order Diff":
+                return new Color(144, 19, 254, alpha);
+            case "IQR":
+                return new Color(74, 144, 26, alpha);
+            case "Raw":
+                return new Color(80, 227, 194, alpha);
+            default:
+                break;
         }
-        else if(ft.tags.contains("Standard Deviation"))
+        return new Color(80, 227, 194, alpha);
+    }
+    
+    public static Color colorForTags(ArrayList<String> tags, Boolean faded)
+    {
+        if(tags.contains("Mean"))
         {
-            return Color.RED;
+            return colorForTag("Mean", faded);
         }
-        else if(ft.tags.contains("Energy"))
+        else if(tags.contains("Standard Deviation"))
         {
-            return Color.ORANGE;
+            return colorForTag("Standard Deviation", faded);
         }
-        else if(ft.tags.contains("Max"))
+        else if(tags.contains("Energy"))
         {
-            return Color.GREEN;
+            return colorForTag("Energy", faded);
         }
-        else if(ft.tags.contains("Min"))
+        else if(tags.contains("Max"))
         {
-            return Color.BLACK;
+            return colorForTag("Max", faded);
         }
-        else if(ft.tags.contains("FFT"))
+        else if(tags.contains("Min"))
         {
-            return Color.MAGENTA;
+            return colorForTag("Min", faded);
         }
-        else if(ft.tags.contains("1st Order Diff"))
+        else if(tags.contains("FFT"))
         {
-            return Color.PINK;
+            return colorForTag("FFT", faded);
         }
-        else if(ft.tags.contains("IQR"))
+        else if(tags.contains("1st Order Diff"))
         {
-            return Color.CYAN;
+            return colorForTag("1st Order Diff", faded);
         }
-        return Color.BLUE;
+        else if(tags.contains("IQR"))
+        {
+            return colorForTag("IQR", faded);
+        }
+        else if(tags.contains("Raw"))
+        {
+            return colorForTag("Raw", faded);
+        }
+        return colorForTag("Raw", faded);
     }
 
     @Override
@@ -124,10 +157,24 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         Graphics2D g2d = (Graphics2D)g;
         for(FeatureSetPlotItem f:features)
         {
-            double x = (f.ranking/librarySize) * w;
+            double x = ((librarySize-f.ranking)/librarySize) * w;
+            x += (2 * RADIUS);
             double y = yForFeature(f.feature);
-            g2d.setColor(colorForFeature(f.feature));
-            g2d.fill(new Ellipse2D.Double(x, y, RADIUS, RADIUS));
+            Color c = colorForTags(f.feature.tags, false);
+            g2d.setColor(c);
+            double r = RADIUS;
+            if(f.isSelected)
+            {
+                r += 5;
+            }
+            if(f.isInSet)
+            {
+                g2d.fill(new Ellipse2D.Double(x, y, r, r));
+            }
+            else
+            {
+                g2d.draw(new Ellipse2D.Double(x, y, r, r));
+            }
         }
     }
     

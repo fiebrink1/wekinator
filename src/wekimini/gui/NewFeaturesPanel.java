@@ -37,11 +37,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     
     private Wekinator w;
     private ArrayList<String> selectedFilters = new ArrayList();
-    protected Feature[] currentResults = new Feature[0];
+    protected Feature[] selected = new Feature[0];
     public FeatureEditorDelegate delegate;
-    private int selectedRow = -1;
     private int outputIndex = 0;
-    public boolean searchCurrent = false;
 
     public NewFeaturesPanel() {
         initComponents();
@@ -61,12 +59,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 String tag = (String)availableFiltersTable.getModel().getValueAt(row, col);
                 if(selectedFilters.contains(tag))
                 {
-                    //System.out.println("Deselected " + tag);
                     selectedFilters.remove(tag);
                 }
                 else
                 {
-                    //System.out.println("Selected " + tag);
                     selectedFilters.add(tag);
                 }
                 updateFilters();
@@ -84,9 +80,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         List<Feature> features = w.getDataManager().featureManager.getAllFeaturesGroup().getLibrary();
         Feature[] f = new Feature[features.size()];
         f = features.toArray(f);
-        updateFeaturePlot(f);
-        
-        
+        selected = f;
+        updateFeaturePlot();
     }
 
     public void newFeatureSelected(Feature ft)
@@ -105,7 +100,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             w.getDataManager().featureListUpdated();
             w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(ft.name);
             delegate.featureListUpdated();
-            updateFeaturePlot(currentResults);
+            updateFeaturePlot();
         }
         else
         {
@@ -127,7 +122,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     
     public void featureListUpdated()
     {
-        updateFeaturePlot(currentResults);
+        updateFeaturePlot();
     }
     
     public void updateFilters()
@@ -145,14 +140,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 sf = selectedFilters.toArray(sf);
                 if(sf.length > 0)
                 {
-                    if(searchCurrent)
-                    {
-                        f = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getFeaturesForTags(sf, searchCurrent);  
-                    }
-                    else
-                    {
-                        f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForTags(sf, searchCurrent);
-                    } 
+                    f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForTags(sf, false);
                 }
                 else
                 {
@@ -173,7 +161,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                         ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureTagSearch(w, sf, f);
                     }
                 }
-                updateFeaturePlot(f);
+                selected = f;
+                updateFeaturePlot();
             }
         };
         worker.execute();
@@ -205,17 +194,18 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     
     public void refreshResultsTable()
     {
-        updateFeaturePlot(w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForFeatures(currentResults));
+        selected = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForFeatures(selected);
+        updateFeaturePlot();
     }
     
-    private void updateFeaturePlot(Feature[] results)
+    private void updateFeaturePlot()
     {
         ArrayList<FeatureSetPlotItem> items = new ArrayList();
         Feature[] currentSet = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
         for(Feature inSet:currentSet)
         {
             Boolean matched = false;
-            for(Feature result:results)
+            for(Feature result:selected)
             {
                 if(result.name.equals(inSet.name))
                 {
@@ -234,7 +224,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             items.add(item);
         }
         
-        for(Feature result:results)
+        for(Feature result:selected)
         {
             Boolean matched = false;
             for(FeatureSetPlotItem item:items)
@@ -250,7 +240,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 FeatureSetPlotItem item = new FeatureSetPlotItem();
                 item.feature = result;
                 item.isInSet = false;
-                item.isSelected = false;
+                item.isSelected = true;
                 item.ranking = w.getDataManager().getInfoGainRankings(outputIndex).get(result.name+":0:0");
                 items.add(item);
             }
@@ -258,6 +248,51 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         FeatureSetPlotItem[] f = new FeatureSetPlotItem[items.size()];
         f = items.toArray(f);
         featureSetPlotPanel.update(f);
+    }
+    
+    private void handleSetChange(Boolean remove)
+    {
+        if(w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING)
+        {
+            for(Feature f : selected)
+            {
+                if(remove)
+                {
+                    w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).removeFeatureForKey(f.name);
+                    if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+                    {
+                        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureRemoved(w);
+                    }
+                }
+                else
+                {
+                    w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(f.name);
+                    if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+                    {
+                        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureAdded(w);
+                    }
+                }
+            }
+            w.getDataManager().featureListUpdated();
+            delegate.featureListUpdated();
+            updateFeaturePlot();
+        }
+        else
+        {
+            Object[] options = {"Stop Running","OK"};
+            int n = JOptionPane.showOptionDialog(null,
+                "Cannot edit features whilst Running",
+                "Warning",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,     
+                options,  
+                options[0]); 
+            if(n ==0)
+            {
+                new WekinatorSupervisedLearningController(w.getSupervisedLearningManager(),w).stopRun();
+            }
+        }
     }
     
     class FiltersTableModel extends AbstractTableModel
@@ -283,7 +318,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         public String getValueAt(int rowIndex, int columnIndex) {
             int r = rowIndex * getColumnCount();
             int c = columnIndex % getColumnCount();
-            //System.out.println("rowIndex:"+rowIndex+" columnIndex:" + columnIndex + " r:" + r + " c:" + c + " index:" + (r+c));
             int index = c + r;
             return index < tags.length ? tags[index] : "";
         }
@@ -308,8 +342,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                         int row, int column) {
             String tag = (String)value;
             FiltersTableModel model = (FiltersTableModel)table.getModel();
-            setBackground(selectedFilters.contains(tag) ? Color.DARK_GRAY  :Color.WHITE);
-            setForeground(selectedFilters.contains(tag) ? Color.WHITE : Color.DARK_GRAY);
+            Color c = FeatureSetPlotPanel.colorForTag(tag, false);
+            setBackground(selectedFilters.contains(tag) ? Color.DARK_GRAY : c);
+            setForeground(selectedFilters.contains(tag) ? c : Color.DARK_GRAY);
             setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
             setText(tag);
             return this;
@@ -334,6 +369,11 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         featureSetPlotPanel = new wekimini.gui.FeatureSetPlotPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         availableFiltersTable = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        addSelectedButton = new javax.swing.JButton();
+        removeSelectedButton = new javax.swing.JButton();
+        selectAllButton = new javax.swing.JButton();
+        clearSelectButton = new javax.swing.JButton();
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -372,7 +412,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         );
         featureSetPlotPanelLayout.setVerticalGroup(
             featureSetPlotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 257, Short.MAX_VALUE)
+            .addGap(0, 201, Short.MAX_VALUE)
         );
 
         availableFiltersTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -388,6 +428,36 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         ));
         jScrollPane2.setViewportView(availableFiltersTable);
 
+        jLabel1.setText("Select Filters");
+
+        addSelectedButton.setText("Add Selected Features");
+        addSelectedButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addSelectedButtonActionPerformed(evt);
+            }
+        });
+
+        removeSelectedButton.setText("Remove Selected Features");
+        removeSelectedButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeSelectedButtonActionPerformed(evt);
+            }
+        });
+
+        selectAllButton.setText("Select All Features");
+        selectAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectAllButtonActionPerformed(evt);
+            }
+        });
+
+        clearSelectButton.setText("Clear Selection");
+        clearSelectButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearSelectButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -396,7 +466,16 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
+                    .addComponent(jScrollPane2)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(addSelectedButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(selectAllButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(removeSelectedButton, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
+                            .addComponent(clearSelectButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(61, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -404,21 +483,59 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addGap(28, 28, 28)
+                .addComponent(jLabel1)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addSelectedButton)
+                    .addComponent(removeSelectedButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(selectAllButton)
+                    .addComponent(clearSelectButton))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void removeSelectedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSelectedButtonActionPerformed
+        // TODO add your handling code here:
+        handleSetChange(true);
+       
+    }//GEN-LAST:event_removeSelectedButtonActionPerformed
+
+    private void addSelectedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSelectedButtonActionPerformed
+        // TODO add your handling code here:
+        handleSetChange(false);
+    }//GEN-LAST:event_addSelectedButtonActionPerformed
+
+    private void selectAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllButtonActionPerformed
+        // TODO add your handling code here:
+        selected = w.getDataManager().featureManager.getAllFeaturesGroup().getCurrentFeatures();
+        updateFeaturePlot();
+    }//GEN-LAST:event_selectAllButtonActionPerformed
+
+    private void clearSelectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSelectButtonActionPerformed
+        // TODO add your handling code here:
+        selected = new Feature[0];
+        updateFeaturePlot();
+    }//GEN-LAST:event_clearSelectButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addSelectedButton;
     private javax.swing.JTable availableFiltersTable;
+    private javax.swing.JButton clearSelectButton;
     private wekimini.gui.FeatureSetPlotPanel featureSetPlotPanel;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
+    private javax.swing.JButton removeSelectedButton;
+    private javax.swing.JButton selectAllButton;
     private wekimini.gui.TestSetFrame testSetFrame1;
     // End of variables declaration//GEN-END:variables
 }
