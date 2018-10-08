@@ -69,6 +69,18 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         };
         availableFiltersTable.addMouseListener(tableMouseListener);
+        
+        MouseListener plotMouseListener = new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Feature f = featureSetPlotPanel.getNearest(e.getX(), e.getY());
+                if(f != null)
+                {
+                    delegate.newFeatureSelected(f);
+                }
+            }
+        };
+        featureSetPlotPanel.addMouseListener(plotMouseListener);
 
     }
     

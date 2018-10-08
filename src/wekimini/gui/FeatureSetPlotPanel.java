@@ -26,6 +26,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     FeatureSetPlotItem[] features;
     double librarySize = 202;
     private static final double RADIUS = 15;
+    private static final double MAX_MANHATTAN = 25;
     
     public FeatureSetPlotPanel(){
         initComponents();
@@ -45,6 +46,25 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     {
         this.features = features;
         repaint();
+    }
+    
+    public Feature getNearest(double x, double y)
+    {
+        double min = Double.POSITIVE_INFINITY;
+        Feature nearest = null;
+        System.out.println("getting nearest to " + x + "," + y);
+        for(FeatureSetPlotItem f : features)
+        {
+           double dist = Math.abs(x - f.x) + Math.abs(y - f.y);
+           System.out.println(dist);
+           if(dist < min)
+           {
+               min = dist;
+               nearest = f.feature;
+           }
+        }
+        System.out.println(min);
+        return min < MAX_MANHATTAN ? nearest : null;
     }
     
     private double yForFeature(Feature ft)
@@ -157,9 +177,9 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         Graphics2D g2d = (Graphics2D)g;
         for(FeatureSetPlotItem f:features)
         {
-            double x = ((librarySize-f.ranking)/librarySize) * w;
-            x += (2 * RADIUS);
-            double y = yForFeature(f.feature);
+            f.x = ((librarySize-f.ranking)/librarySize) * w;
+            f.x += (2 * RADIUS);
+            f.y = yForFeature(f.feature);
             Color c = colorForTags(f.feature.tags, false);
             g2d.setColor(c);
             double r = RADIUS;
@@ -169,11 +189,11 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             }
             if(f.isInSet)
             {
-                g2d.fill(new Ellipse2D.Double(x, y, r, r));
+                g2d.fill(new Ellipse2D.Double(f.x, f.y, r, r));
             }
             else
             {
-                g2d.draw(new Ellipse2D.Double(x, y, r, r));
+                g2d.draw(new Ellipse2D.Double(f.x, f.y, r, r));
             }
         }
     }

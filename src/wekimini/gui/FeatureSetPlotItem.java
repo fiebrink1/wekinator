@@ -17,5 +17,6 @@ public class FeatureSetPlotItem {
     Boolean isSelected;
     Boolean isInSet;
     int ranking;
-    
+    double x;
+    double y; 
 }
