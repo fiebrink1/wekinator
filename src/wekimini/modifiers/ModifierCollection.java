@@ -48,12 +48,16 @@ public class ModifierCollection {
     private void refreshState()
     {
         int s = 0;
-        boolean d = false;
         for (ModifiedInput output : modifiers) {
             if(output.addToOutput)
             {
                 s += output.getSize();
+                if(output.getSize() > 1)
+                {
+                    System.out.println("Multiple out:" + s);
+                }
             }
+            
         }
         dimensionality = s;
         currentValues = new double[s];

@@ -22,6 +22,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -52,6 +54,7 @@ import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
 import mdsj.MDSJ;
 import wekimini.featureanalysis.RankedFeatureSelector;
+import wekimini.modifiers.Feature;
 
 
 /**
@@ -926,11 +929,35 @@ public class DataManager {
         }
         return infoRankNames[outputIndex];
     }
+    
+    public Feature[] getInfoGainRankings(int outputIndex, double threshold, Boolean above) 
+    {
+        if(infoGainRankingsDirty)
+        {
+            updateInfoGainRankings(outputIndex);
+        }
+        int maxRank = (int)Math.ceil(((double)infoRankNames[outputIndex].size() * threshold));
+        Feature[] thresholded = new Feature[maxRank];
+        HashMap<String, Integer> rankings = infoRankNames[outputIndex];
+        Iterator it = rankings.entrySet().iterator();
+        int ptr = 0;
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            if((pair.getValue() < maxRank && above) || (pair.getValue() > maxRank && !above))
+            {
+                String[] split = pair.getKey().split(":");
+                System.out.println("adding feature:" + split[0]);
+                thresholded[ptr] = featureManager.featureCollections.get(outputIndex).getFeatureForKey(split[0]);
+                ptr++;
+            }
+        }
+        return thresholded;
+    }
    
     private void updateInfoGainRankings(int outputIndex)
     {
-        System.out.println("update InfoGain Rankings");
-        RankedFeatureSelector sel = new InfoGainSelector();
+        InfoGainSelector sel = new InfoGainSelector();
         Instances formatted = getAllFeaturesInstances(outputIndex, false);
         sel.useThreshold = false;
         int[] indices =  sel.getAttributeIndicesForInstances(formatted);
@@ -940,7 +967,7 @@ public class DataManager {
         for(int attributeIndex:indices)
         {
             String name = featureManager.getAllFeaturesGroup().getModifiers().nameForIndex(attributeIndex);
-            System.out.println("feature ranking : " + name);
+            System.out.println(name + ":" + ptr + ":" + attributeIndex);
             infoRankNames[outputIndex].put(name, ptr); 
             ptr++;
         }
