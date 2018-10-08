@@ -45,12 +45,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
     public NewFeaturesPanel() {
         initComponents();
-        availableFiltersTable.setTableHeader(null);
-        featureSetPlotPanel.setDimensions(500,200);
     }
 
-    private void setUpFeatureSetPlot() 
+    private void setUpPlots() 
     {
+        availableFiltersTable.setTableHeader(null);
+        featureSetPlotPanel.setDimensions(500,200);
         availableFiltersTable.setModel(new FiltersTableModel(w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getTags()));
         availableFiltersTable.setDefaultRenderer(String.class, new FiltersTableRenderer());
         MouseListener tableMouseListener = new MouseAdapter() {
@@ -80,11 +80,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     {
         this.w = w;
         this.outputIndex = output;
-
+        setUpPlots();
         List<Feature> features = w.getDataManager().featureManager.getAllFeaturesGroup().getLibrary();
         Feature[] f = new Feature[features.size()];
         f = features.toArray(f);
         updateFeaturePlot(f);
+        
         
     }
 
