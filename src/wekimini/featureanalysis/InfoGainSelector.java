@@ -51,6 +51,10 @@ public class InfoGainSelector extends RankedFeatureSelector {
             {
                 featuresToPick = (int)(((double)ranked.length)*threshold);
             }
+            else
+            {
+                featuresToPick = ranked.length;
+            }
             int[] thresholded = new int[featuresToPick];
             System.arraycopy(ranked, 0, thresholded, 0, featuresToPick);
             for(int s:thresholded)

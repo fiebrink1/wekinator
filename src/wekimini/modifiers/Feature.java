@@ -15,18 +15,18 @@ import java.util.Objects;
 
 public class Feature 
 {
-    public enum InputDiagram {
+    public enum InputSensor {
         ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
     }
     
     public final String name;
     public final ArrayList<Integer> modifierIds = new ArrayList();
-    public InputDiagram diagram = InputDiagram.UNKNOWN;
+    public InputSensor sensor = InputSensor.UNKNOWN;
     public ArrayList<String> tags = new ArrayList();
     public String description;
     private ArrayList <Integer> outputIndexes = new ArrayList();
     
-//    public enum InputDiagram {
+//    public enum InputSensor {
 //        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
 //    }
     

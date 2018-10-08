@@ -14,7 +14,7 @@ import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import javax.swing.Timer;
 import weka.core.Instance;
 import wekimini.Wekinator;
-import wekimini.modifiers.Feature.InputDiagram;
+import wekimini.modifiers.Feature.InputSensor;
 import wekimini.modifiers.FeatureMultipleModifierOutput;
 import wekimini.modifiers.FeatureSingleModifierOutput;
 import wekimini.modifiers.ModifiedInput;
@@ -83,7 +83,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         timer.start();
     }
     
-    public URL urlForDiagram(InputDiagram diagram) throws NoSuchElementException
+    public URL urlForDiagram(InputSensor diagram) throws NoSuchElementException
     {
         switch(diagram)
         {
@@ -122,7 +122,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         try
         {
             diagramView.setVisible(true);
-            diagramView.loadImage(urlForDiagram(model.feature.diagram));
+            diagramView.loadImage(urlForDiagram(model.feature.sensor));
         } 
         catch (NoSuchElementException e)
         {

@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import wekimini.modifiers.Feature.InputDiagram;
+import wekimini.modifiers.Feature.InputSensor;
 import wekimini.modifiers.WindowedOperation.Operation;
 /**
  *
@@ -561,18 +561,18 @@ public final class FeatureCollection
 
 class FeatureMetadata
 {
-    static InputDiagram diagramForInput(int index)
+    static InputSensor diagramForInput(int index)
     {
         switch(index)
         {
-            case FeatureCollection.ACCX: return InputDiagram.ACCX;
-            case FeatureCollection.ACCY: return InputDiagram.ACCY;
-            case FeatureCollection.ACCZ: return InputDiagram.ACCZ;
-            case FeatureCollection.GYROX: return InputDiagram.GYROX;
-            case FeatureCollection.GYROY: return InputDiagram.GYROY;
-            case FeatureCollection.GYROZ: return InputDiagram.GYROZ;
+            case FeatureCollection.ACCX: return InputSensor.ACCX;
+            case FeatureCollection.ACCY: return InputSensor.ACCY;
+            case FeatureCollection.ACCZ: return InputSensor.ACCZ;
+            case FeatureCollection.GYROX: return InputSensor.GYROX;
+            case FeatureCollection.GYROY: return InputSensor.GYROY;
+            case FeatureCollection.GYROZ: return InputSensor.GYROZ;
         }
-        return InputDiagram.UNKNOWN;
+        return InputSensor.UNKNOWN;
     }
     
     static String[] tagsForInput(int index)
@@ -683,10 +683,10 @@ class RawFeature extends FeatureMultipleModifierOutput
     public RawFeature(String name, int[] inputs) {
         super(name);
         this.indexes = inputs;
-        this.diagram = InputDiagram.MULTIPLE;
+        this.sensor = InputSensor.MULTIPLE;
         if(inputs.length == 1)
         {
-            this.diagram = FeatureMetadata.diagramForInput(inputs[0]);
+            this.sensor = FeatureMetadata.diagramForInput(inputs[0]);
         }
         tags.add("Raw");
         this.description = FeatureCollection.RAW_DESCRIPTION;
@@ -720,7 +720,7 @@ class PassThroughAll extends FeatureSingleModifierOutput
 {    
     public PassThroughAll(String name) {
         super(name);
-        this.diagram = InputDiagram.MULTIPLE;
+        this.sensor = InputSensor.MULTIPLE;
         tags.add("Gyroscope");
         tags.add("GyroscopeX");
         tags.add("GyroscopeY");
@@ -753,7 +753,7 @@ class WindowedFeature extends FeatureSingleModifierOutput
         super(name);
         this.window = new WindowedOperation("input-1",op,index,windowSize,0);
         window.addRequiredModifierID(0);
-        this.diagram = FeatureMetadata.diagramForInput(index);
+        this.sensor = FeatureMetadata.diagramForInput(index);
         tags.add(FeatureMetadata.tagForOperation(op));
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
         this.description = FeatureMetadata.descriptionForOperation(op);
@@ -777,7 +777,7 @@ class BufferFeature extends FeatureSingleModifierOutput
         super(name);
         this.index = index;
         this.windowSize = windowSize;
-        this.diagram = FeatureMetadata.diagramForInput(index);
+        this.sensor = FeatureMetadata.diagramForInput(index);
         tags.add("Buffer");
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
     }
@@ -803,7 +803,7 @@ class RawFODFeature extends FeatureSingleModifierOutput
     {
         super(name);
         this.index = index;
-        this.diagram = FeatureMetadata.diagramForInput(index);
+        this.sensor = FeatureMetadata.diagramForInput(index);
         tags.add("1st Order Diff");
         tags.add("Raw");
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
@@ -831,7 +831,7 @@ class WindowedFODFeature extends FeatureSingleModifierOutput
         this.op = op;
         this.index = index;
         this.windowSize = windowSize;
-        this.diagram = FeatureMetadata.diagramForInput(index);
+        this.sensor = FeatureMetadata.diagramForInput(index);
         tags.add("1st Order Diff");
         tags.add(FeatureMetadata.tagForOperation(op));
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
@@ -869,7 +869,7 @@ class MultipleInputFeature extends FeatureSingleModifierOutput
         this.op = op;
         this.inputs = inputs;
         this.windowSize = windowSize;
-        this.diagram = InputDiagram.MULTIPLE;
+        this.sensor = InputSensor.MULTIPLE;
         tags.add(FeatureMetadata.tagForMultiOperation(op));
         this.description = FeatureMetadata.descriptionForMultiOperation(op);
         for(int input:inputs)
@@ -927,7 +927,7 @@ class MultipleInputWindowedFeature extends FeatureSingleModifierOutput
         this.windowOp = windowOp;
         this.inputs = inputs;
         this.windowSize = windowSize;
-        this.diagram = InputDiagram.MULTIPLE;
+        this.sensor = InputSensor.MULTIPLE;
         tags.add(FeatureMetadata.tagForMultiOperation(op));
         tags.add(FeatureMetadata.tagForOperation(windowOp));
         this.description = FeatureMetadata.descriptionForMultiOperation(op);
@@ -986,7 +986,7 @@ class MultipleInputFODFeature extends FeatureSingleModifierOutput
         super(name);
         this.inputs = inputs;
         this.windowSize = windowSize;
-        this.diagram = InputDiagram.MULTIPLE;
+        this.sensor = InputSensor.MULTIPLE;
         this.op = op;
         tags.add("1st Order Diff");
         tags.add(FeatureMetadata.tagForMultiOperation(op));
@@ -1045,7 +1045,7 @@ class FFTSingleBinFeature extends FeatureSingleModifierOutput
         this.bin = selectedBin;
         this.totalBins = totalBins;
         this.index = index;
-        this.diagram = FeatureMetadata.diagramForInput(index);
+        this.sensor = FeatureMetadata.diagramForInput(index);
         tags.add("FFT");
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
         this.description = FeatureCollection.FFT_DESCRIPTION;
@@ -1086,7 +1086,7 @@ class FFTFODSingleBinFeature extends FeatureSingleModifierOutput
         this.bin = selectedBin;
         this.totalBins = totalBins;
         this.index = index;
-        this.diagram = FeatureMetadata.diagramForInput(index);
+        this.sensor = FeatureMetadata.diagramForInput(index);
         tags.add("FFT");
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
         this.description = FeatureCollection.FFT_DESCRIPTION;
@@ -1136,7 +1136,7 @@ class FFTFeature extends FeatureSingleModifierOutput
         this.bins = selectedBins;
         this.totalBins = totalBins;
         this.index = index;
-        this.diagram = FeatureMetadata.diagramForInput(index);
+        this.sensor = FeatureMetadata.diagramForInput(index);
         tags.add("FFT");
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
         this.description = FeatureCollection.FFT_DESCRIPTION;
@@ -1165,7 +1165,7 @@ class MaxFFT extends FeatureSingleModifierOutput
         super(name);
         this.totalBins = totalBins;
         this.index = index;
-        this.diagram = FeatureMetadata.diagramForInput(index);
+        this.sensor = FeatureMetadata.diagramForInput(index);
         tags.add("FFT");
         tags.add("Max");
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
@@ -1202,7 +1202,7 @@ class MinFFT extends FeatureSingleModifierOutput
         super(name);
         this.totalBins = totalBins;
         this.index = index;
-        this.diagram = FeatureMetadata.diagramForInput(index);
+        this.sensor = FeatureMetadata.diagramForInput(index);
         tags.add("FFT");
         tags.add("Min");
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));

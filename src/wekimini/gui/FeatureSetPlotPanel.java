@@ -8,7 +8,10 @@ package wekimini.gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import wekimini.modifiers.Feature;
 
 /**
  *
@@ -20,6 +23,8 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     private double imageHeight = 1;
     private double plotHeight = 1;
     FeatureSetPlotItem[] features;
+    double librarySize = 202;
+    private static final double RADIUS = 15;
     
     public FeatureSetPlotPanel(){
         initComponents();
@@ -31,7 +36,8 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         imageHeight = h;
         plotHeight = (h * 0.875) - 10.0;
         image = new BufferedImage(w, (int)imageHeight, BufferedImage.TYPE_INT_ARGB);
-        setUp();
+        setBackground(Color.white);
+        clear();
     }
     
     public void update(FeatureSetPlotItem[] features)
@@ -40,10 +46,71 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         repaint();
     }
     
-    private void setUp()
+    private double yForFeature(Feature ft)
     {
-        setBackground(Color.white);
-        clear();
+        double y = 0;
+        double totalSensors = 7;
+        switch(ft.sensor) {
+            case ACCX:
+                y = plotHeight * (0 / totalSensors);
+                break;
+            case ACCY:
+                y = plotHeight * (1 / totalSensors);
+                break;
+            case ACCZ:
+                y = plotHeight * (2 / totalSensors);
+                break;
+            case GYROX:
+                y = plotHeight * (3 / totalSensors);
+                break;
+            case GYROY:
+                y = plotHeight * (4 / totalSensors);
+                break;
+            case GYROZ:
+                y = plotHeight * (5 / totalSensors);
+                break;
+            case MULTIPLE:
+                y = plotHeight * (6 / totalSensors);
+                break;
+        }
+        return y;
+    }
+    
+    public Color colorForFeature(Feature ft)
+    {
+        if(ft.tags.contains("Mean"))
+        {
+            return Color.BLUE;
+        }
+        else if(ft.tags.contains("Standard Deviation"))
+        {
+            return Color.RED;
+        }
+        else if(ft.tags.contains("Energy"))
+        {
+            return Color.ORANGE;
+        }
+        else if(ft.tags.contains("Max"))
+        {
+            return Color.GREEN;
+        }
+        else if(ft.tags.contains("Min"))
+        {
+            return Color.BLACK;
+        }
+        else if(ft.tags.contains("FFT"))
+        {
+            return Color.MAGENTA;
+        }
+        else if(ft.tags.contains("1st Order Diff"))
+        {
+            return Color.PINK;
+        }
+        else if(ft.tags.contains("IQR"))
+        {
+            return Color.CYAN;
+        }
+        return Color.BLUE;
     }
 
     @Override
@@ -54,11 +121,19 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         {
             g.drawImage(image, 0, 0, null);
         }
+        Graphics2D g2d = (Graphics2D)g;
+        for(FeatureSetPlotItem f:features)
+        {
+            double x = (f.ranking/librarySize) * w;
+            double y = yForFeature(f.feature);
+            g2d.setColor(colorForFeature(f.feature));
+            g2d.fill(new Ellipse2D.Double(x, y, RADIUS, RADIUS));
+        }
     }
     
     public void clear()
     {
-        createEmptyImage(getWidth());
+        createEmptyImage((int)w);
         repaint();
     }
 

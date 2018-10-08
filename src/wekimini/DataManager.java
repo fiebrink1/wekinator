@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Enumeration;
+import java.util.HashMap;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -96,8 +97,8 @@ public class DataManager {
     public FeatureManager featureManager;
     public String[][] selectedFeatureNames = new String[0][0];
     public int[][] selectedFeatureIndices = new int[0][0];
-    public String[][] infoRankNames = new String[0][0];
-    public int[][] infoRankIndices = new int[0][0];
+    private HashMap<String, Integer>[] infoRankNames = new HashMap[0];
+    private Boolean infoGainRankingsDirty = true;
     private boolean useAutomaticFeatures = false;
     private int nextTrainingID = 1;
     private int nextTestingID = 1;
@@ -581,6 +582,7 @@ public class DataManager {
 
     public void initialize(String[] inputNames, OSCOutputGroup outputGroup) {
         numOutputs = outputGroup.getNumOutputs();
+        infoRankNames = new HashMap[numOutputs];
         numExamplesPerOutput = new int[numOutputs];
         this.inputNames = new String[inputNames.length];
         System.arraycopy(inputNames, 0, this.inputNames, 0, inputNames.length);
@@ -915,27 +917,34 @@ public class DataManager {
     {
         return selectFeaturesAutomatically(autoSelect, -1);
     }
-   
-    public void updateInfoGainRankings()
+    
+    public HashMap<String, Integer> getInfoGainRankings(int outputIndex) 
     {
-        infoRankNames = new String[numOutputs][];
-        infoRankIndices = new int[numOutputs][];
-        RankedFeatureSelector sel = new InfoGainSelector();
-        for(int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
+        if(infoGainRankingsDirty)
         {
-            Instances formatted = getAllFeaturesInstances(outputIndex, false);
-            sel.useThreshold = false;
-            int[] indices =  sel.getAttributeIndicesForInstances(formatted);
-            infoRankNames[outputIndex] = new String[indices.length];
-            infoRankIndices[outputIndex] = indices;
-            
-            int ptr = 0;
-            for(int attributeIndex:indices)
-            {
-                infoRankNames[outputIndex][ptr] = featureManager.getAllFeaturesGroup().getModifiers().nameForIndex(attributeIndex);
-                ptr++;
-            }
+            updateInfoGainRankings(outputIndex);
         }
+        return infoRankNames[outputIndex];
+    }
+   
+    private void updateInfoGainRankings(int outputIndex)
+    {
+        System.out.println("update InfoGain Rankings");
+        RankedFeatureSelector sel = new InfoGainSelector();
+        Instances formatted = getAllFeaturesInstances(outputIndex, false);
+        sel.useThreshold = false;
+        int[] indices =  sel.getAttributeIndicesForInstances(formatted);
+        infoRankNames[outputIndex] = new HashMap();
+
+        int ptr = 0;
+        for(int attributeIndex:indices)
+        {
+            String name = featureManager.getAllFeaturesGroup().getModifiers().nameForIndex(attributeIndex);
+            System.out.println("feature ranking : " + name);
+            infoRankNames[outputIndex].put(name, ptr); 
+            ptr++;
+        }
+        infoGainRankingsDirty = false;
     }
     
     public double selectFeaturesAutomatically(AutoSelect autoSelect, int targetSize)
@@ -1189,6 +1198,7 @@ public class DataManager {
                 updateFeatureInstances(i, testSet, true);
             }
             featureManager.didRecalculateAllFeatures(testSet);
+            updateInfoGainRankings(outputIndex);
         }
         Instances formatted =  featureManager.getAllFeaturesNewInstances(numClasses[outputIndex]);
         Instances in = testSet ? allFeaturesTestInstances.get(outputIndex) : allFeaturesInstances.get(outputIndex);
@@ -1831,6 +1841,7 @@ public class DataManager {
         numExamplesPerOutput = insertIntoArray(0, numExamplesPerOutput, which);
         outputNames = outputGroup.getOutputNames();
         numOutputs = outputGroup.getNumOutputs();
+        infoRankNames = new HashMap[numOutputs];
         updateOutputDataForNewOutput(which);
         updateInputListsForNewOutput(which);
         updateInstancesForNewOutput(which);
