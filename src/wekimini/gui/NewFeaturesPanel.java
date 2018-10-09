@@ -50,6 +50,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private void setUpPlots() 
     {
         featureSetPlotPanel.setDimensions(500, 200);
+        availableFiltersTable.setRowHeight(144/4);
         availableFiltersTable.setModel(new FiltersTableModel(w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getTags()));
         availableFiltersTable.setDefaultRenderer(String.class, new FiltersTableRenderer());
         MouseListener tableMouseListener = new MouseAdapter() {
@@ -514,7 +515,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         );
         featureSetPlotPanelLayout.setVerticalGroup(
             featureSetPlotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 239, Short.MAX_VALUE)
+            .addGap(0, 200, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -554,7 +555,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 .addGap(5, 5, 5)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addSelectedButton)
@@ -566,7 +567,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(selectAllAboveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(selectAllBelowButton, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -590,6 +591,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private void clearSelectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSelectButtonActionPerformed
         // TODO add your handling code here:
         selected = new Feature[0];
+        selectedFilters.clear();
         updateFeaturePlot();
     }//GEN-LAST:event_clearSelectButtonActionPerformed
 
@@ -615,7 +617,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private void infoFilterSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_infoFilterSliderStateChanged
         // TODO add your handling code here:
         threshold = 1.0f - ((double)infoFilterSlider.getValue() / 100.0f);
-        System.out.println("threshold:"+threshold + " value:" + infoFilterSlider.getValue());
     }//GEN-LAST:event_infoFilterSliderStateChanged
 
 

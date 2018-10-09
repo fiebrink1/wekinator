@@ -68,18 +68,15 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     {
         double min = Double.POSITIVE_INFINITY;
         Feature nearest = null;
-        System.out.println("getting nearest to " + x + "," + y);
         for(FeatureSetPlotItem f : features)
         {
            double dist = Math.abs(x - f.x) + Math.abs(y - f.y);
-           System.out.println(dist);
            if(dist < min)
            {
                min = dist;
                nearest = f.feature;
            }
         }
-        System.out.println(min);
         return min < MAX_MANHATTAN ? nearest : null;
     }
     
@@ -135,10 +132,14 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
                 return new Color(74, 144, 26, alpha);
             case "Raw":
                 return new Color(80, 227, 194, alpha);
+            case "Magnitude":
+                return new Color(18, 33, 219, alpha);
+            case "Correlation":
+                return new Color(139, 119, 120, alpha);
             default:
                 break;
         }
-        return new Color(80, 227, 194, alpha);
+        return new Color(255, 255, 255, alpha);
     }
     
     public static Color colorForTags(ArrayList<String> tags, Boolean faded)
