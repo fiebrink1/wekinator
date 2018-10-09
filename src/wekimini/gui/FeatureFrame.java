@@ -66,23 +66,6 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         evaluateFeaturesPanel.update(w, 0);
         newFeaturesPanel.delegate = this;
         selectedFeature = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey("AccX");
-       // updateCurrentFeaturesTable();
-                
-//        MouseListener featuresMouseListener = new MouseAdapter() {
-//            @Override
-//            public void mousePressed(MouseEvent e) {
-//                int row = currentFeaturesTable.rowAtPoint(e.getPoint());
-//                int column = currentFeaturesTable.columnAtPoint(e.getPoint());
-//                Feature ft = (Feature)currentFeaturesTable.getModel().getValueAt(row, outputIndex);
-//                switch(column)
-//                {
-//                    case 0: updateSelectedFeature(ft); selectRow(row); break;
-//                    case 1: updateSelectedFeature(ft); selectRow(row); break;
-//                    case 2: removeFeature(ft); deselectRows(true); break;
-//                }
-//            }
-//        };
-//        currentFeaturesTable.addMouseListener(featuresMouseListener);
 //        currentFeaturesTable.addComponentListener(new ResizeListener());
 //        getContentPane().setBackground(Color.WHITE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -246,10 +229,10 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(featureDetailPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 833, Short.MAX_VALUE)
+                    .addComponent(featureDetailPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 880, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(newFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 577, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(newFeaturesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
                             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
@@ -390,15 +373,11 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     public void selectRow(int row)
     {
         selectedRow = row;
-//        ((FeatureTableModel)currentFeaturesTable.getModel()).selectedRow = selectedRow;
-//        currentFeaturesTable.repaint();
     }
     
     public void deselectRows(boolean deselectPlot)
     {
         selectedRow = -1;
-//        ((FeatureTableModel)currentFeaturesTable.getModel()).selectedRow = selectedRow;
-//        currentFeaturesTable.repaint();
         if(deselectPlot)
         {
             featureDetailPanel.showNoFeature();

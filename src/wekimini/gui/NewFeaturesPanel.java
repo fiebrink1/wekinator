@@ -212,55 +212,73 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     {
         ArrayList<FeatureSetPlotItem> items = new ArrayList();
         Feature[] currentSet = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
-        for(Feature inSet:currentSet)
-        {
-            Boolean matched = false;
-            for(Feature result:selected)
+        SwingWorker worker = new SwingWorker<HashMap<String, Integer> ,Void>()
+        {  
+            HashMap<String, Integer> rankingSet;
+
+            @Override
+            public HashMap<String, Integer>  doInBackground()
             {
-                if(result.name.equals(inSet.name))
-                {
-                    matched = true;
-                    break;
-                }
+                featureSetPlotPanel.showLoading();
+                rankingSet = w.getDataManager().getInfoGainRankings(outputIndex);
+                return rankingSet;
             }
-            FeatureSetPlotItem item = new FeatureSetPlotItem();
-            item.feature = inSet;
-            item.isInSet = true;
-            item.isSelected = matched;
-            HashMap<String, Integer> rankingSet = w.getDataManager().getInfoGainRankings(outputIndex);
-            item.ranking = rankingSet.get(inSet.name+":0:0");
-            items.add(item);
-        }
-        
-        for(Feature result:selected)
-        {
-            Boolean matched = false;
-            for(FeatureSetPlotItem item:items)
+            
+            @Override
+            public void done()
             {
-                try {
-                if(result.name.equals(item.feature.name))
+                for(Feature inSet:currentSet)
                 {
-                    matched = true;
-                    break;
+                    Boolean matched = false;
+                    for(Feature result:selected)
+                    {
+                        if(result.name.equals(inSet.name))
+                        {
+                            matched = true;
+                            break;
+                        }
+                    }
+                    FeatureSetPlotItem item = new FeatureSetPlotItem();
+                    item.feature = inSet;
+                    item.isInSet = true;
+                    item.isSelected = matched;
+                    item.ranking = rankingSet.get(inSet.name+":0:0");
+                    items.add(item);
                 }
-                } catch(NullPointerException e)
+
+                for(Feature result:selected)
                 {
-                    System.out.println(e);
+                    Boolean matched = false;
+                    for(FeatureSetPlotItem item:items)
+                    {
+                        try {
+                        if(result.name.equals(item.feature.name))
+                        {
+                            matched = true;
+                            break;
+                        }
+                        } catch(NullPointerException e)
+                        {
+                            System.out.println(e);
+                        }
+                    }
+                    if(!matched)
+                    {
+                        FeatureSetPlotItem item = new FeatureSetPlotItem();
+                        item.feature = result;
+                        item.isInSet = false;
+                        item.isSelected = true;
+                        item.ranking = rankingSet.get(result.name+":0:0");
+                        items.add(item);
+                    }
                 }
+                FeatureSetPlotItem[] f = new FeatureSetPlotItem[items.size()];
+                f = items.toArray(f);
+                featureSetPlotPanel.hideLoading();
+                featureSetPlotPanel.update(f);
             }
-            if(!matched)
-            {
-                FeatureSetPlotItem item = new FeatureSetPlotItem();
-                item.feature = result;
-                item.isInSet = false;
-                item.isSelected = true;
-                item.ranking = w.getDataManager().getInfoGainRankings(outputIndex).get(result.name+":0:0");
-                items.add(item);
-            }
-        }
-        FeatureSetPlotItem[] f = new FeatureSetPlotItem[items.size()];
-        f = items.toArray(f);
-        featureSetPlotPanel.update(f);
+        };
+        worker.execute();
     }
     
     private void handleSetChange(Boolean remove)
@@ -379,7 +397,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         testSetFrame1 = new wekimini.gui.TestSetFrame();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        featureSetPlotPanel = new wekimini.gui.FeatureSetPlotPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         availableFiltersTable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
@@ -390,6 +407,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         infoFilterSlider = new javax.swing.JSlider();
         javax.swing.JButton selectAllAboveButton = new javax.swing.JButton();
         selectAllBelowButton = new javax.swing.JButton();
+        featureSetPlotPanel = new wekimini.gui.FeatureSetPlotPanel();
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -419,17 +437,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(204, 204, 204), null, new java.awt.Color(204, 204, 204)));
-
-        javax.swing.GroupLayout featureSetPlotPanelLayout = new javax.swing.GroupLayout(featureSetPlotPanel);
-        featureSetPlotPanel.setLayout(featureSetPlotPanelLayout);
-        featureSetPlotPanelLayout.setHorizontalGroup(
-            featureSetPlotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        featureSetPlotPanelLayout.setVerticalGroup(
-            featureSetPlotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 233, Short.MAX_VALUE)
-        );
 
         availableFiltersTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -474,6 +481,11 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         });
 
+        infoFilterSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                infoFilterSliderStateChanged(evt);
+            }
+        });
         infoFilterSlider.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 infoFilterSliderPropertyChange(evt);
@@ -494,12 +506,23 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         });
 
+        javax.swing.GroupLayout featureSetPlotPanelLayout = new javax.swing.GroupLayout(featureSetPlotPanel);
+        featureSetPlotPanel.setLayout(featureSetPlotPanelLayout);
+        featureSetPlotPanelLayout.setHorizontalGroup(
+            featureSetPlotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        featureSetPlotPanelLayout.setVerticalGroup(
+            featureSetPlotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 239, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -517,16 +540,14 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(clearSelectButton))))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 596, Short.MAX_VALUE)
                         .addComponent(infoFilterSlider, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(0, 0, Short.MAX_VALUE))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(infoFilterSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -574,7 +595,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
     private void infoFilterSliderPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_infoFilterSliderPropertyChange
         // TODO add your handling code here:
-        threshold = 1.0f - ((double)infoFilterSlider.getValue() / 100.0f);
+        
+    
         
     }//GEN-LAST:event_infoFilterSliderPropertyChange
 
@@ -589,6 +611,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         selected = w.getDataManager().getInfoGainRankings(outputIndex, threshold, false);
         updateFeaturePlot();
     }//GEN-LAST:event_selectAllBelowButtonActionPerformed
+
+    private void infoFilterSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_infoFilterSliderStateChanged
+        // TODO add your handling code here:
+        threshold = 1.0f - ((double)infoFilterSlider.getValue() / 100.0f);
+        System.out.println("threshold:"+threshold + " value:" + infoFilterSlider.getValue());
+    }//GEN-LAST:event_infoFilterSliderStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

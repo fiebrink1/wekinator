@@ -921,6 +921,11 @@ public class DataManager {
         return selectFeaturesAutomatically(autoSelect, -1);
     }
     
+    public void setInfoGainRankingsDirty()
+    {
+        infoGainRankingsDirty = true;
+    }
+    
     public HashMap<String, Integer> getInfoGainRankings(int outputIndex) 
     {
         if(infoGainRankingsDirty)

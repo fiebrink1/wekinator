@@ -29,10 +29,10 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="featureDetailPanel" alignment="1" pref="833" max="32767" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="newFeaturesPanel" min="-2" pref="577" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                  <Component id="featureDetailPanel" pref="880" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="newFeaturesPanel" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="evaluateFeaturesPanel" pref="250" max="32767" attributes="0"/>
                           <Component id="jLabel2" max="32767" attributes="0"/>

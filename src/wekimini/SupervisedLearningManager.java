@@ -371,6 +371,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public void stopRecording() {
         KadenzeLogging.getLogger().supervisedLearningRecordStopped(w);
         setRecordingState(RecordingState.NOT_RECORDING);
+        w.getDataManager().setInfoGainRankingsDirty();
     }
 
     public RunningState getRunningState() {
