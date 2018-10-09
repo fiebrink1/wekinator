@@ -35,18 +35,17 @@ public class InfoGainSelector extends RankedFeatureSelector {
             AttributeSelection attsel = new AttributeSelection();
             InfoGainAttributeEval eval = new InfoGainAttributeEval();
             Ranker search = new Ranker();
-            search.setOptions(new String[]{"-T","0.05"});
+            //search.setOptions(new String[]{"-T","0.05"});
             attsel.setEvaluator(eval);
             attsel.setSearch(search);
             int classIndex = discreted.numAttributes() - 1;
             discreted.setClassIndex(classIndex);
             
-            //System.out.println("starting selection");
             attsel.SelectAttributes(discreted);
-            //System.out.println("DONE");  
             
             //Return best results from ranked array
             int[] ranked =  attsel.selectedAttributes();
+            System.out.println("returned " + ranked.length + " features");
             if(useThreshold)
             {
                 featuresToPick = (int)(((double)ranked.length)*threshold);
@@ -57,6 +56,7 @@ public class InfoGainSelector extends RankedFeatureSelector {
             }
             int[] thresholded = new int[featuresToPick];
             System.arraycopy(ranked, 0, thresholded, 0, featuresToPick);
+            System.out.println("featuresToPick = " + featuresToPick);
             for(int s:thresholded)
             {
                 if(s == classIndex)

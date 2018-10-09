@@ -969,14 +969,24 @@ public class DataManager {
         InfoGainSelector sel = new InfoGainSelector();
         Instances formatted = getAllFeaturesInstances(outputIndex, false);
         sel.useThreshold = false;
+        System.out.println("Giving " + formatted.numAttributes() + " attributes to selector");
         int[] indices =  sel.getAttributeIndicesForInstances(formatted);
         infoRankNames[outputIndex] = new HashMap();
-
+        System.out.println("Received " + indices.length + " indices from selector");
         int ptr = 0;
+        String[] o = featureManager.getAllFeaturesGroup().getModifiers().getOutputNames().clone();
         for(int attributeIndex:indices)
         {
-            String name = featureManager.getAllFeaturesGroup().getModifiers().nameForIndex(attributeIndex);
-            //System.out.println(name + ":" + ptr + ":" + attributeIndex);
+            String name = o[attributeIndex];
+            if(name == null)
+            {
+                System.out.println("not found " + o[attributeIndex]);
+                for(int i = 0; i< o.length; i++)
+                {
+                    System.out.println(o[i]);
+                }
+            }
+            System.out.println(name + ":" + ptr + ":" + attributeIndex);
             infoRankNames[outputIndex].put(name, ptr); 
             ptr++;
         }
@@ -1037,7 +1047,6 @@ public class DataManager {
     
     private void updateFeatureInstances(int index, boolean testSet, boolean allFeatures)
     { 
-        synchronized(this) {
         if(useAutomaticFeatures && !allFeatures)
         {
             setFeaturesInstancesFromAutomatic(index, testSet);
@@ -1058,7 +1067,7 @@ public class DataManager {
             }
             try{
                 Instances in = testSet ? testInstances : inputInstances;
-                Instances filteredInputs = Filter.useFilter(in, trainingFilters[index]);
+                Instances filteredInputs = allFeatures? in : Filter.useFilter(in, trainingFilters[index]);
                 for (int i = 0; i < filteredInputs.numInstances(); i++)
                 {
                     Instance inputInstance = filteredInputs.instance(i);
@@ -1122,7 +1131,6 @@ public class DataManager {
                 e.printStackTrace();
             }
         }
-        }
     }
     
     public List<Instances> getFeatureInstances(boolean testSet)
@@ -1153,6 +1161,7 @@ public class DataManager {
     
     public void featureListUpdated()
     {
+        setInfoGainRankingsDirty();
         mdsDirty = true;
     }
     
@@ -1237,11 +1246,14 @@ public class DataManager {
             featureManager.didRecalculateAllFeatures(testSet);
         }
         Instances formatted =  featureManager.getAllFeaturesNewInstances(numClasses[outputIndex]);
+        System.out.println("got new instance " + formatted.numAttributes());
         Instances in = testSet ? allFeaturesTestInstances.get(outputIndex) : allFeaturesInstances.get(outputIndex);
+        System.out.println("getAllFeaturesInstances " + in.numAttributes());
         for(int i = 0; i < in.numInstances(); i++)
         {
             formatted.add(in.instance(i));
         }
+        formatted.setClassIndex(in.numAttributes() - 1);
         return formatted;
     }
     

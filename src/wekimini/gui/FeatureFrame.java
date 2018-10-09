@@ -150,7 +150,6 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         prepareForLibraryUpdate(isRunning, isPlotting);
         int ws = (int)(5 + (newVal * 60));
         w.getDataManager().featureManager.setFeatureWindowSize(ws, 100);
-        w.getDataManager().setInfoGainRankingsDirty();
         resetFollowingLibraryUpdate(isRunning, isPlotting, false);
     }
     
@@ -286,8 +285,6 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         {
             w.getSupervisedLearningManager().isPlotting = isPlotting;
         }
-        newFeaturesPanel.refreshResultsTable();
-        w.getDataManager().featureListUpdated();
         featureLibraryUpdated(buffers);
     }
 

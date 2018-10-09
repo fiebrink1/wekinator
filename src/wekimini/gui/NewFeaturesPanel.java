@@ -266,7 +266,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     } 
                     catch(NullPointerException e)
                     {
-                        System.out.println("cannot find name " + inSet.name);
+                        System.out.println("cannot find name (currentSet) " + inSet.name);
                     }
                     items.add(item);
                 }
@@ -298,7 +298,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                         } 
                         catch(NullPointerException e)
                         {
-                            System.out.println("cannot find name " + result.name);
+                            System.out.println("cannot find name (selected) " + result.name);
                         }
                         items.add(item);
                     }

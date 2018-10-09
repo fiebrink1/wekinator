@@ -248,14 +248,13 @@ public class FeatureManager
         allFeatures.setFeatureWindowSize(windowSize, bufferSize);
         for(FeatureCollection fc:featureCollections)
         {
-            setTestSetDirty(output);
             fc.setFeatureWindowSize(windowSize, bufferSize);
             output++;
         }
     }
     
     //All Features
-    protected synchronized double[] modifyInputsForAllFeatures(double[] newInputs)
+    protected double[] modifyInputsForAllFeatures(double[] newInputs)
     {    
         return allFeatures.computeAndGetValuesForNewInputs(newInputs);
     }
@@ -268,6 +267,7 @@ public class FeatureManager
     protected Instances getAllFeaturesNewInstances()
     {
         int length = allFeatures.getModifiers().getOutputDimensionality();
+        System.out.println("getting new instances " + length);
         return getNewInstancesOfLength(length, 0);
     }
     
