@@ -5,27 +5,13 @@
  */
 package wekimini.gui;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import weka.core.Instance;
-import wekimini.DataManager;
 import wekimini.SupervisedLearningManager;
-import wekimini.SupervisedLearningManager.RunningState;
 import wekimini.Wekinator;
-import wekimini.WekinatorSupervisedLearningController;
 import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.modifiers.Feature;
@@ -55,19 +41,16 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         evaluateFeaturesPanel.update(w, 0);
         featureDetailPanel.delegate = this;
         newFeaturesPanel.delegate = this;
+        evaluateFeaturesPanel.delegate = this;
         selectedFeature = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey("AccX");
-//        currentFeaturesTable.addComponentListener(new ResizeListener());
-//        getContentPane().setBackground(Color.WHITE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                 w.getSupervisedLearningManager().isPlotting = false;
                 evaluateFeaturesPanel.onClose();
+                newFeaturesPanel.onClose();
             }
-        });
-
-        
-        
+        }); 
     }
     
     class ResizeListener extends ComponentAdapter {
@@ -139,7 +122,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
 
     private void debounceSliderAction(double newVal)
     {
-        featureDetailPanel.canUpdateWindowSize(false);
+        featureDetailPanel.blockInteraction(true);
         if(sliderTimer != null)
         {
             if(sliderTimer.isRunning())
@@ -169,7 +152,6 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         w.getDataManager().featureManager.setFeatureWindowSize(ws, 100);
         w.getDataManager().setInfoGainRankingsDirty();
         resetFollowingLibraryUpdate(isRunning, isPlotting, false);
-        featureDetailPanel.canUpdateWindowSize(true);
     }
     
     /**
@@ -255,6 +237,14 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         debounceSliderAction(newVal);
     }
     
+    @Override
+    public void hasFreedResources()
+    {
+        if(!evaluateFeaturesPanel.updatingMDS && !newFeaturesPanel.updatingRankings)
+        {
+            featureDetailPanel.blockInteraction(false);
+        }
+    }
     
     public void selectRow(int row)
     {

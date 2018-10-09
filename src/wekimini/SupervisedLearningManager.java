@@ -951,10 +951,6 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         {
             for (int i = 0; i < computeMask.length; i++) {
                 Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, i);
-//                if(isPlotting)
-//                {
-//                    w.getDataManager().updateMDSInstances(i, instance);
-//                }
                 if (computeMask[i] && paths.get(i).canCompute()) {
 
                     try {

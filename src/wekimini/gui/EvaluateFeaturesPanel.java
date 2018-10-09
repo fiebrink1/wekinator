@@ -57,9 +57,9 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private MDSPlotPanel mdsPlot;
     public boolean updatingMDS = false;
     private boolean runAfterTraining = false;
-    private Timer timer;
     ChangeListener panelListener;
     SwingWorker mdsWorker;
+    public FeatureEditorDelegate delegate;
     
     public EvaluateFeaturesPanel() {
         initComponents();
@@ -76,7 +76,6 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     {
         this.w = w;
         this.outputIndex = output;
-        timer = new Timer(1,new ActionListener() {public void actionPerformed(ActionEvent evt) {}});
         System.out.println("making output plot:" + plotHolderPanel.getWidth() + ":" + plotHolderPanel.getHeight());
         
         outputPlot = new PlotPanel(plotHolderPanel.getWidth() - 1, plotHolderPanel.getHeight() - 1);
@@ -226,6 +225,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                     //Done
                     System.out.println("----Finished updating MDS");
                     updatingMDS = false;
+                    delegate.hasFreedResources();
                 }
             };
             mdsWorker.execute();

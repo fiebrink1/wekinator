@@ -951,8 +951,9 @@ public class DataManager {
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
             if((pair.getValue() < maxRank && above) || (pair.getValue() > maxRank && !above))
             {
-                String[] split = pair.getKey().split(":");
-                //System.out.println("adding feature:" + split[0]);
+                String key = pair.getKey();
+                System.out.println("adding feature:" + key);
+                String[] split = key.split(":");
                 thresholded.add(featureManager.featureCollections.get(outputIndex).getFeatureForKey(split[0]));
                 ptr++;
             }

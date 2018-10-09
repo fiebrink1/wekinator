@@ -40,7 +40,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     private Timer timer;
     public FeatureEditorDelegate delegate = null;
     private Boolean isDragging = false;
-    private Boolean updateWindowSize = true;
+    private Boolean allowWindowSizeUpdate = true;
     
     public FeatureDetailPanel() 
     {
@@ -88,9 +88,10 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         
     }
     
-    public void canUpdateWindowSize(Boolean update)
+    public void blockInteraction(Boolean doBlock)
     {
-        updateWindowSize = update;
+        allowWindowSizeUpdate = !doBlock;
+        plotPanel.showLoading(doBlock);
     }
     
     class ResizeListener extends ComponentAdapter {
@@ -122,7 +123,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
             {
                 double val = w.getSupervisedLearningManager().getCurrentValueforFeature(model.feature, featureOutputIndex);
                 model.addPoint(val);
-                if(!isDragging && updateWindowSize)
+                if(!isDragging && allowWindowSizeUpdate)
                 {
                     model.windowSize = w.getDataManager().featureManager.getFeatureWindowSize();
                 }

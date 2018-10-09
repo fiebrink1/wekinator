@@ -13,6 +13,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 /**
@@ -35,6 +36,8 @@ public class PlotPanel extends JPanel {
     private double plotY = 0;
     private final static BasicStroke THIN_STROKE = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
     private final static BasicStroke THICK_STROKE = new BasicStroke(5, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
+    private boolean showLoadingSpinner = false;
+    ImageIcon loadingIcon;
     
     private PlotPanel(){}
     
@@ -47,6 +50,8 @@ public class PlotPanel extends JPanel {
         image = new BufferedImage(w, (int)imageHeight, BufferedImage.TYPE_INT_ARGB);
         model = new PlotRowModel(20);
         setUp();
+        java.net.URL imgUrl = getClass().getResource("/wekimini/icons/ajax-loader.gif");
+        loadingIcon = new ImageIcon(imgUrl);
     }
     
     private void setUp()
@@ -57,15 +62,24 @@ public class PlotPanel extends JPanel {
         reset();
     }
     
+    public void showLoading(boolean show)
+    {
+        showLoadingSpinner = show;
+        repaint();
+    }
+    
     public void updateModel(PlotRowModel model)
     {
-        //System.out.println("ppr:" + model.pointsPerRow + " points:" + model.points.size());
-        this.model = model;
-        rescale();
-        if(model.points.size() > 0)
+        if(!showLoadingSpinner)
         {
-            repaint();
+            this.model = model;
+            rescale();
+            if(model.points.size() > 0)
+            {
+                repaint();
+            }
         }
+        
     }
     
     public void updateWidth(int newW)
@@ -109,6 +123,12 @@ public class PlotPanel extends JPanel {
         if (image != null)
         {
             g.drawImage(image, 0, 0, null);
+        }
+        
+        if(showLoadingSpinner)
+        {
+            loadingIcon.paintIcon(this, g, (int)w/2, (int)plotHeight/2);
+            return;
         }
 
         Graphics2D g2d = (Graphics2D)g;

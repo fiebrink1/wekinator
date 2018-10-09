@@ -9,6 +9,8 @@ import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +25,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import org.jdesktop.swingworker.SwingWorker;
 import wekimini.SupervisedLearningManager;
+import wekimini.SupervisedLearningManager.RecordingState;
 import wekimini.Wekinator;
 import wekimini.WekinatorSupervisedLearningController;
 import wekimini.kadenze.FeaturnatorLogger;
@@ -42,6 +45,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private int outputIndex = 0;
     private double threshold = 0.5;
     public Boolean updatingRankings = false;
+    private PropertyChangeListener learningStateListener;
 
     public NewFeaturesPanel() {
         initComponents();
@@ -84,6 +88,41 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         };
         featureSetPlotPanel.addMouseListener(plotMouseListener);
+        
+        learningStateListener = new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                learningManagerPropertyChanged(evt);
+            }
+        };
+        w.getSupervisedLearningManager().addPropertyChangeListener(learningStateListener);
+    }
+    
+    private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
+        
+        switch (evt.getPropertyName()) {
+            case SupervisedLearningManager.PROP_RECORDINGROUND:
+                break;
+            case SupervisedLearningManager.PROP_RECORDINGSTATE:
+                if(w.getSupervisedLearningManager().getRecordingState() == RecordingState.NOT_RECORDING)
+                {
+                    System.out.println("recording stopped, updating plot");
+                    updateFeaturePlot();
+                }
+                break;
+            case SupervisedLearningManager.PROP_LEARNINGSTATE:
+                break;
+            case SupervisedLearningManager.PROP_RUNNINGSTATE:
+                break;
+            case SupervisedLearningManager.PROP_NUMEXAMPLESTHISROUND:
+                break;
+            case SupervisedLearningManager.PROP_ABLE_TO_RECORD:
+                break;
+            case SupervisedLearningManager.PROP_ABLE_TO_RUN:
+                break;
+            default:
+                break;
+        }
     }
     
     public void update(Wekinator w, int output)
@@ -92,6 +131,11 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         this.outputIndex = output;
         setUpPlots();
         updateFeaturePlot();
+    }
+    
+    public void onClose()
+    {
+        w.getSupervisedLearningManager().removePropertyChangeListener(learningStateListener);
     }
 
     public void newFeatureSelected(Feature ft)
@@ -249,7 +293,13 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                         item.feature = result;
                         item.isInSet = false;
                         item.isSelected = true;
-                        item.ranking = rankingSet.get(result.name+":0:0");
+                        try {
+                            item.ranking = rankingSet.get(result.name+":0:0");
+                        } 
+                        catch(NullPointerException e)
+                        {
+                            System.out.println("cannot find name " + result.name);
+                        }
                         items.add(item);
                     }
                 }
@@ -258,6 +308,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 featureSetPlotPanel.hideLoading();
                 featureSetPlotPanel.update(f);
                 updatingRankings = false;
+                delegate.hasFreedResources();
             }
         };
         if(!updatingRankings)
@@ -284,6 +335,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     {
                         ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureRemoved(w);
                     }
+                    selected = new Feature[0];
+                       selectedFilters.clear();
                 }
                 else
                 {
@@ -563,7 +616,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private void removeSelectedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSelectedButtonActionPerformed
         // TODO add your handling code here:
         handleSetChange(true);
-       
+        
     }//GEN-LAST:event_removeSelectedButtonActionPerformed
 
     private void addSelectedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSelectedButtonActionPerformed

@@ -16,5 +16,6 @@ public interface FeatureEditorDelegate {
     public void featureListUpdated();
     public void featureLibraryUpdated(boolean sizeDidChange);
     public void windowSliderChanged(double newVal);
+    public void hasFreedResources();
     
 }
