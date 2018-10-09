@@ -8,8 +8,13 @@ package wekimini.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.net.URL;
 import java.util.NoSuchElementException;
+import javax.swing.JScrollPane;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import javax.swing.Timer;
 import weka.core.Instance;
@@ -33,6 +38,9 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     private final static int PLOT_H = 75;
     private int featureOutputIndex = 0;
     private Timer timer;
+    public FeatureEditorDelegate delegate = null;
+    private Boolean isDragging = false;
+    private Boolean updateWindowSize = true;
     
     public FeatureDetailPanel() 
     {
@@ -43,7 +51,46 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         outputComboBox.setVisible(false);
         outputLabel.setVisible(false);
         plotScrollPane.addComponentListener(new ResizeListener());
+        MouseMotionListener plotMouseListener = new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                isDragging = true;
+                if(delegate != null)
+                {
+                    JScrollPane src = (JScrollPane)e.getSource();
+                    double newWin = 1 - ((double)e.getX() / (double)src.getWidth());
+                    model.windowSize = (int)(5 + (60 * newWin));
+                    plotPanel.renderWindowOverlay = true;
+                    plotPanel.isDraggingWindowOverlay = true;
+                    plotPanel.updateModel(model);
+                }
+            }
+        };
+        MouseListener pressListener = new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                System.out.println(e.getX());
+                if(delegate != null && isDragging)
+                {
+                    JScrollPane src = (JScrollPane)e.getSource();
+                    double newWin = 1 - ((double)e.getX() / (double)src.getWidth());
+                    delegate.windowSliderChanged(newWin);
+                    model.windowSize = (int)(5 + (60 * newWin));
+                    plotPanel.renderWindowOverlay = true;
+                    plotPanel.isDraggingWindowOverlay = false;
+                    plotPanel.updateModel(model);
+                }
+                isDragging = false;
+            }
+        };
+        plotScrollPane.addMouseListener(pressListener);
+        plotScrollPane.addMouseMotionListener(plotMouseListener);
         
+    }
+    
+    public void canUpdateWindowSize(Boolean update)
+    {
+        updateWindowSize = update;
     }
     
     class ResizeListener extends ComponentAdapter {
@@ -75,7 +122,10 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
             {
                 double val = w.getSupervisedLearningManager().getCurrentValueforFeature(model.feature, featureOutputIndex);
                 model.addPoint(val);
-                model.windowSize = w.getDataManager().featureManager.getFeatureWindowSize();
+                if(!isDragging && updateWindowSize)
+                {
+                    model.windowSize = w.getDataManager().featureManager.getFeatureWindowSize();
+                }
                 plotPanel.renderWindowOverlay = true;
                 plotPanel.updateModel(model);
             }    

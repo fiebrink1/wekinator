@@ -41,6 +41,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     public FeatureEditorDelegate delegate;
     private int outputIndex = 0;
     private double threshold = 0.5;
+    public Boolean updatingRankings = false;
 
     public NewFeaturesPanel() {
         initComponents();
@@ -50,7 +51,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private void setUpPlots() 
     {
         featureSetPlotPanel.setDimensions(596, 200);
-        availableFiltersTable.setRowHeight(144/4);
+        availableFiltersTable.setRowHeight(140/4);
         availableFiltersTable.setModel(new FiltersTableModel(w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getTags()));
         availableFiltersTable.setDefaultRenderer(String.class, new FiltersTableRenderer());
         MouseListener tableMouseListener = new MouseAdapter() {
@@ -90,10 +91,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         this.w = w;
         this.outputIndex = output;
         setUpPlots();
-        List<Feature> features = w.getDataManager().featureManager.getAllFeaturesGroup().getLibrary();
-        Feature[] f = new Feature[features.size()];
-        f = features.toArray(f);
-        selected = f;
         updateFeaturePlot();
     }
 
@@ -179,30 +176,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         worker.execute();
     }
     
-    private Feature[] removeAddedFeatures(Feature[] results)
-    {
-        Feature[] added = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
-        ArrayList<Feature> filteredList = new ArrayList<>();
-        for(Feature toShow:results)
-        {
-            boolean remove = false;
-            for(Feature match:added)
-            {
-                if(match.equals(toShow))
-                {
-                    remove = true;
-                    break;
-                }
-            }
-            if(!remove)
-            {
-                filteredList.add(toShow);
-            }
-        }
-        Feature[] newResults = new Feature[filteredList.size()];
-        return filteredList.toArray(newResults);
-    }
-    
     public void refreshResultsTable()
     {
         selected = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForFeatures(selected);
@@ -213,6 +186,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     {
         ArrayList<FeatureSetPlotItem> items = new ArrayList();
         Feature[] currentSet = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
+        System.out.println("update feature plot :" +updatingRankings);
         SwingWorker worker = new SwingWorker<HashMap<String, Integer> ,Void>()
         {  
             HashMap<String, Integer> rankingSet;
@@ -243,7 +217,13 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     item.feature = inSet;
                     item.isInSet = true;
                     item.isSelected = matched;
-                    item.ranking = rankingSet.get(inSet.name+":0:0");
+                    try {
+                        item.ranking = rankingSet.get(inSet.name+":0:0");
+                    } 
+                    catch(NullPointerException e)
+                    {
+                        System.out.println("cannot find name " + inSet.name);
+                    }
                     items.add(item);
                 }
 
@@ -277,9 +257,18 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 f = items.toArray(f);
                 featureSetPlotPanel.hideLoading();
                 featureSetPlotPanel.update(f);
+                updatingRankings = false;
             }
         };
-        worker.execute();
+        if(!updatingRankings)
+        {
+            updatingRankings = true;
+            worker.execute();
+        }
+        else
+        {
+            System.out.println("BLOCKED from updating rankings");
+        }
     }
     
     private void handleSetChange(Boolean remove)

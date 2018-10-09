@@ -952,7 +952,7 @@ public class DataManager {
             if((pair.getValue() < maxRank && above) || (pair.getValue() > maxRank && !above))
             {
                 String[] split = pair.getKey().split(":");
-                System.out.println("adding feature:" + split[0]);
+                //System.out.println("adding feature:" + split[0]);
                 thresholded.add(featureManager.featureCollections.get(outputIndex).getFeatureForKey(split[0]));
                 ptr++;
             }
@@ -964,6 +964,7 @@ public class DataManager {
    
     private void updateInfoGainRankings(int outputIndex)
     {
+        System.out.println("---STARTING TO UPDATE INFO GAIN RANKINGS");
         InfoGainSelector sel = new InfoGainSelector();
         Instances formatted = getAllFeaturesInstances(outputIndex, false);
         sel.useThreshold = false;
@@ -974,10 +975,11 @@ public class DataManager {
         for(int attributeIndex:indices)
         {
             String name = featureManager.getAllFeaturesGroup().getModifiers().nameForIndex(attributeIndex);
-            System.out.println(name + ":" + ptr + ":" + attributeIndex);
+            //System.out.println(name + ":" + ptr + ":" + attributeIndex);
             infoRankNames[outputIndex].put(name, ptr); 
             ptr++;
         }
+        System.out.println("---DONE UPDATING INFO GAIN RANKINGS");
         infoGainRankingsDirty = false;
     }
     
@@ -1232,7 +1234,6 @@ public class DataManager {
                 updateFeatureInstances(i, testSet, true);
             }
             featureManager.didRecalculateAllFeatures(testSet);
-            updateInfoGainRankings(outputIndex);
         }
         Instances formatted =  featureManager.getAllFeaturesNewInstances(numClasses[outputIndex]);
         Instances in = testSet ? allFeaturesTestInstances.get(outputIndex) : allFeaturesInstances.get(outputIndex);

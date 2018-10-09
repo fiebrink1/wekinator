@@ -10,6 +10,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 /**
@@ -326,7 +327,12 @@ public class ModifierCollection {
     }
 
     public double[] computeAndGetValuesForNewInputs(double[] newInputs, HashMap<String, Feature> features) {
-        computeValuesForNewInputs(newInputs, features);
+        try {
+            computeValuesForNewInputs(newInputs, features);
+        } catch (ConcurrentModificationException ex)
+        {
+            System.out.println("Caught concurrent mod exception");
+        }
         return currentValues;
     }
     

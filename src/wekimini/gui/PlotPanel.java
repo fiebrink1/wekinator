@@ -30,6 +30,7 @@ public class PlotPanel extends JPanel {
     protected double horizontalScale = 1;
     private PlotRowModel model;
     public boolean renderWindowOverlay = false;
+    public boolean isDraggingWindowOverlay = false;
     public boolean interpolatePoints = true;
     private double plotY = 0;
     private final static BasicStroke THIN_STROKE = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
@@ -148,9 +149,16 @@ public class PlotPanel extends JPanel {
         }
         if(renderWindowOverlay)
         {
-            g2d.setColor(new Color(1.0f,1.0f,0.0f,0.2f));
             double rectWidth = (double) (model.windowSize * horizontalScale);
             double rectX =  (w - rectWidth);
+            if(isDraggingWindowOverlay)
+            {
+                g2d.setColor(new Color(1.0f,0.8f,0.0f,0.5f));
+            }
+            else
+            {
+                g2d.setColor(new Color(1.0f,1.0f,0.0f,0.2f));
+            }
             g2d.fill(new Rectangle2D.Double(rectX, 0, rectWidth, imageHeight));
             g2d.setPaint(new Color(0.0f,0.0f,1.0f,1.0f));
             g2d.drawString("Window:"+model.windowSize, (float)rectX + 5, 10.0f);

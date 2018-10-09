@@ -15,5 +15,6 @@ public interface FeatureEditorDelegate {
     public void newFeatureSelected(Feature ft);
     public void featureListUpdated();
     public void featureLibraryUpdated(boolean sizeDidChange);
+    public void windowSliderChanged(double newVal);
     
 }

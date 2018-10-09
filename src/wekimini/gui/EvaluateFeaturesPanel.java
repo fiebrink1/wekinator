@@ -123,7 +123,6 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         mdsPlot = new MDSPlotPanel(mdsPlotHolder.getWidth(), mdsPlotHolder.getHeight());
         mdsPlotHolder.setLayout(new BorderLayout());
         mdsPlotHolder.add(mdsPlot, BorderLayout.CENTER);
-        //startTimer();
         panelListener = (new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -136,23 +135,6 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             }
         });
         tabbedPanel.addChangeListener(panelListener);
-    }
-    
-     public void startTimer()
-    {
-        if(timer.isRunning())
-        {
-            timer.stop();
-        }
-        
-        timer = new Timer(10, (ActionEvent evt) -> {
-            if(w.getDataManager().canRun(outputIndex) && !updatingMDS)
-            { 
-                mdsPlot.updateWithInstances(w.getDataManager().getMDSInstances(outputIndex));
-            }
-        });  
-        
-        timer.start();
     }
     
     private void outputUpdated(double vals[])

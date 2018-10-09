@@ -256,7 +256,7 @@ public class FeatureManager
     
     //All Features
     protected synchronized double[] modifyInputsForAllFeatures(double[] newInputs)
-    {        
+    {    
         return allFeatures.computeAndGetValuesForNewInputs(newInputs);
     }
     

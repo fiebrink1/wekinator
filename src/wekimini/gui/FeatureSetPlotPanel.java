@@ -39,7 +39,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     private double threshold = 0.5;
     private Boolean highlightThreshold = false;
     private Timer thresholdTimer = null;
-    private static final int THRESHOLD_HEIGHLIGHT_DECAY = 800;
+    private static final int THRESHOLD_HEIGHLIGHT_DECAY = 500;
     private final static BasicStroke DOTTED_STROKE = new BasicStroke(5, 
             BasicStroke.CAP_BUTT, 
             BasicStroke.JOIN_ROUND,
@@ -82,10 +82,10 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         repaint();
         
         thresholdTimer = new Timer(THRESHOLD_HEIGHLIGHT_DECAY, (ActionEvent evt) -> {
-            System.out.println("timer done");
             highlightThreshold = false;
             repaint();
         });
+        thresholdTimer.setRepeats(false);
         thresholdTimer.start();
     }
     

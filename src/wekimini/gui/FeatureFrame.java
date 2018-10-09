@@ -13,6 +13,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -39,19 +40,8 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     private int selectedRow = -1;
     private int outputIndex = 0;
     private Feature selectedFeature;
-    private PlotTableCellRenderer plotCellRenderer;
-    private PlottedFeatureTableModel currentFeaturesTableModel;
-    private Timer plotTimer;
     private Timer sliderTimer;
-    private Feature[] currentFeatures;
-    private boolean ignoreSliderUpdate = true;
 
-    private static final int BUTTON_CELL_WIDTH = 30;
-    private static final int TITLE_CELL_WIDTH = 135;
-    private static final int PLOT_CELL_WIDTH_MIN = 50;
-    private static final int ROW_HEIGHT = 35;
-    private static final int PLOT_ROW_REFRESH_RATE = 60;
-    private static final int PLOT_ROW_POINTS_PER_ROW = 10;
 
     public FeatureFrame() {
         initComponents();
@@ -60,10 +50,10 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     public FeatureFrame(Wekinator w) {
         initComponents();
         this.w = w;
-        plotTimer = new Timer(1,new ActionListener() {public void actionPerformed(ActionEvent evt) {}});
         newFeaturesPanel.update(w, 0);
         featureDetailPanel.update(w);
         evaluateFeaturesPanel.update(w, 0);
+        featureDetailPanel.delegate = this;
         newFeaturesPanel.delegate = this;
         selectedFeature = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey("AccX");
 //        currentFeaturesTable.addComponentListener(new ResizeListener());
@@ -76,127 +66,16 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
             }
         });
 
-        boolean showSliders = true;
-//        windowLabel.setVisible(showSliders);
-//        windowSlider.setVisible(showSliders);
         
-        ignoreSliderUpdate = true;
         
-//        windowSlider.setValue(w.getDataManager().featureManager.getFeatureWindowSize());
-//        windowLabel.setText("Window:" + windowSlider.getValue());
-//        
-        ignoreSliderUpdate = false;
     }
     
     class ResizeListener extends ComponentAdapter {
         @Override
         public void componentResized(ComponentEvent e) {
-            //updateCurrentFeaturesTable();
         }       
     }
-    
-    private void removeFeature(Feature ft)
-    {
-        if(w.getSupervisedLearningManager().getRunningState() == RunningState.NOT_RUNNING)
-        {
-            if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
-            {
-                ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureRemoved(w);
-            }
-            w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).removeFeatureForKey(ft.name);
-            w.getDataManager().featureListUpdated();
-            newFeaturesPanel.featureListUpdated();
-            evaluateFeaturesPanel.featuresListUpdated();
-            //updateCurrentFeaturesTable();
-        }
-        else
-        {
-            Object[] options = {"Stop Running","OK"};
-            int n = JOptionPane.showOptionDialog(null,
-                "Cannot edit features whilst Running",
-                "Warning",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,     
-                options,  
-                options[0]); 
-            if(n ==0)
-            {
-                new WekinatorSupervisedLearningController(w.getSupervisedLearningManager(),w).stopRun();
-            }
-        }
-                   
-    }
-    
-    public void startPlotTimer()
-    {
-        if(plotTimer.isRunning())
-        {
-            plotTimer.stop();
-        }
-        
-        plotTimer = new Timer(PLOT_ROW_REFRESH_RATE, (ActionEvent evt) -> {
-            Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
-            if(in != null)
-            {
-                for(int i = 0; i < currentFeatures.length; i++)
-                {
-                    Feature ft  = currentFeatures[i];
-                    double val = w.getSupervisedLearningManager().getCurrentValueforFeature(ft, 0);
-                    currentFeaturesTableModel.getModel(i).addPoint(val);
-                }
-            }
-        });  
-        
-        plotTimer.start();
-    }
-    
-//    public void updateCurrentFeaturesTable()
-//    {
-//        int tblWidth = currentFeaturesTable.getWidth();
-//        int titleCellWidth = TITLE_CELL_WIDTH;
-//        int plotCellWidth = tblWidth- titleCellWidth - BUTTON_CELL_WIDTH;
-//        if(plotCellWidth < PLOT_CELL_WIDTH_MIN)
-//        {
-//            plotCellWidth = PLOT_CELL_WIDTH_MIN;
-//            titleCellWidth = tblWidth - plotCellWidth - BUTTON_CELL_WIDTH;
-//        }
-//        
-//        int pointsPerRow = (int)(PLOT_ROW_POINTS_PER_ROW * ((double)plotCellWidth / 50.0f));
-//        
-//        currentFeatures = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
-//        currentFeaturesTableModel = new PlottedFeatureTableModel(currentFeatures, pointsPerRow);
-//        currentFeaturesTable.setModel(currentFeaturesTableModel);
-//        
-//        plotCellRenderer = new PlotTableCellRenderer(plotCellWidth, ROW_HEIGHT);
-//        plotCellRenderer.reset();
-//        
-//        TableColumn column;
-//        TableColumnModel jTableColumnModel = currentFeaturesTable.getColumnModel();
-//        int cantCols = jTableColumnModel.getColumnCount();
-//        for (int i = 0; i < cantCols; i++) {
-//            column = jTableColumnModel.getColumn(i);
-//            switch(i)
-//            {
-//                case 0:
-//                    int pWidth = Math.round(titleCellWidth - BUTTON_CELL_WIDTH);
-//                    column.setPreferredWidth(pWidth);
-//                    break;
-//                case 1:
-//                    column.setPreferredWidth(plotCellWidth);
-//                    column.setCellRenderer(plotCellRenderer);
-//                    break;
-//                case 2:
-//                    column.setPreferredWidth(BUTTON_CELL_WIDTH);
-//                    column.setCellRenderer(new ImageTableCellRenderer("delete.png"));
-//                    break;
-//            }
-//        }
-//        
-//        deselectRows(false);
-//        
-//        startPlotTimer();
-//    }
+   
    
     /**
      * This method is called from within the constructor to initialize the form.
@@ -258,8 +137,9 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void debounceSliderAction()
+    private void debounceSliderAction(double newVal)
     {
+        featureDetailPanel.canUpdateWindowSize(false);
         if(sliderTimer != null)
         {
             if(sliderTimer.isRunning())
@@ -270,26 +150,28 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         }
 
         sliderTimer = new Timer(500, (ActionEvent arg0) -> {
-            if(!evaluateFeaturesPanel.updatingMDS)
+            if(!evaluateFeaturesPanel.updatingMDS && !newFeaturesPanel.updatingRankings)
             {
                 sliderTimer.stop();
-                //updateWindowSize();
+                updateWindowSize(newVal);
             }
         });
         sliderTimer.setRepeats(true); 
         sliderTimer.start(); 
     }
-//    
-//    private void updateWindowSize()
-//    {
-//        windowLabel.setText("Window Size:" + windowSlider.getValue());
-//        boolean isRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
-//        boolean isPlotting = w.getSupervisedLearningManager().isPlotting;
-//        prepareForLibraryUpdate(isRunning, isPlotting);
-//        w.getDataManager().featureManager.setFeatureWindowSize(windowSlider.getValue(), 100);
-//        resetFollowingLibraryUpdate(isRunning, isPlotting, false);
-//    }
-//    
+    
+    private void updateWindowSize(double newVal)
+    {
+        boolean isRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
+        boolean isPlotting = w.getSupervisedLearningManager().isPlotting;
+        prepareForLibraryUpdate(isRunning, isPlotting);
+        int ws = (int)(5 + (newVal * 60));
+        w.getDataManager().featureManager.setFeatureWindowSize(ws, 100);
+        w.getDataManager().setInfoGainRankingsDirty();
+        resetFollowingLibraryUpdate(isRunning, isPlotting, false);
+        featureDetailPanel.canUpdateWindowSize(true);
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -352,7 +234,6 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         w.getDataManager().featureListUpdated();
         newFeaturesPanel.featureListUpdated();
         evaluateFeaturesPanel.featuresListUpdated();
-        //updateCurrentFeaturesTable();
         updateSelectedFeature(selectedFeature);
     }
     
@@ -362,11 +243,16 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         w.getDataManager().featureListUpdated();
         newFeaturesPanel.featureListUpdated();
         evaluateFeaturesPanel.featuresListUpdated();
-        //updateCurrentFeaturesTable();
         if(sizeDidChange)
         {
             deselectRows(true);
         }
+    }
+    
+    @Override
+    public void windowSliderChanged(double newVal)
+    {
+        debounceSliderAction(newVal);
     }
     
     
@@ -386,6 +272,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
 
     private void prepareForLibraryUpdate(boolean isRunning, boolean isPlotting)
     {
+        System.out.println("----prepareForLibraryUpdate");
         evaluateFeaturesPanel.cancelWorkers();
         if(isRunning)
         {
@@ -400,6 +287,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
     
     private void resetFollowingLibraryUpdate(boolean isRunning, boolean isPlotting, boolean buffers)
     {
+        System.out.println("----resetFollowingLibraryUpdate");
         if(isRunning)
         {
             w.getSupervisedLearningManager().startRunning();
