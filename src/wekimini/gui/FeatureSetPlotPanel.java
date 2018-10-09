@@ -6,14 +6,19 @@
 
 package wekimini.gui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
+import javax.swing.Timer;
 import wekimini.modifiers.Feature;
 
 /**
@@ -31,6 +36,19 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     private static final double MAX_MANHATTAN = 25;
     private Boolean loading = true;
     ImageIcon loadingIcon;
+    private double threshold = 0.5;
+    private Boolean highlightThreshold = false;
+    private Timer thresholdTimer = null;
+    private static final int THRESHOLD_HEIGHLIGHT_DECAY = 800;
+    private final static BasicStroke DOTTED_STROKE = new BasicStroke(5, 
+            BasicStroke.CAP_BUTT, 
+            BasicStroke.JOIN_ROUND,
+            0, 
+            new float[]{9}, 
+            0);
+    private final static BasicStroke CIRCLE_STROKE = new BasicStroke(2, 
+            BasicStroke.CAP_BUTT, 
+            BasicStroke.JOIN_ROUND);
     
     public FeatureSetPlotPanel()
     {
@@ -46,6 +64,29 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     public void hideLoading()
     {
         loading = false;
+    }
+    
+    public void updateThreshold(double threshold)
+    {
+        if(thresholdTimer != null)
+        {
+            if(thresholdTimer.isRunning())
+            {
+                thresholdTimer.stop();
+                thresholdTimer = null;
+            }
+        }
+        
+        this.threshold = threshold;
+        highlightThreshold = true;
+        repaint();
+        
+        thresholdTimer = new Timer(THRESHOLD_HEIGHLIGHT_DECAY, (ActionEvent evt) -> {
+            System.out.println("timer done");
+            highlightThreshold = false;
+            repaint();
+        });
+        thresholdTimer.start();
     }
     
     public void setDimensions(int w, int h)
@@ -199,13 +240,26 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         }
         
         Graphics2D g2d = (Graphics2D)g;
+        double thresholdX = ((1-threshold) * w);
+        if(highlightThreshold)
+        {
+            g2d.setColor(Color.LIGHT_GRAY);
+            double thresholdW = w - thresholdX;
+            g2d.fill(new Rectangle2D.Double(thresholdX, 0, thresholdW, plotHeight));
+        }
+        else
+        {
+            g2d.setColor(Color.BLACK);
+            g2d.setStroke(DOTTED_STROKE);
+            g2d.draw(new Line2D.Double(thresholdX, 0, thresholdX, plotHeight));
+        }
         for(FeatureSetPlotItem f:features)
         {
             f.x = ((librarySize-f.ranking)/librarySize) * w;
-            f.x += (2 * RADIUS);
             f.y = yForFeature(f.feature);
             Color c = colorForTags(f.feature.tags, false);
             g2d.setColor(c);
+            g2d.setStroke(CIRCLE_STROKE);
             double r = RADIUS;
             if(f.isSelected)
             {
