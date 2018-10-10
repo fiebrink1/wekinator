@@ -60,7 +60,6 @@ public class ModifierCollection {
             }
             
         }
-        System.out.println("Refreshed state:" + s);
         dimensionality = s;
         currentValues = new double[s];
     }
@@ -269,7 +268,12 @@ public class ModifierCollection {
         
         int modifierOutputIndex = 0;
         int completedIndex = 0;
-        ArrayList<String> names = new ArrayList();
+        double[] newVals = new double[currentValues.length];
+        for(int i = 0; i < newVals.length; i++)
+        {
+            newVals[i] = 0;
+        }
+        String[] names = new String[dimensionality];
         ArrayList<ModifiedInput> completedModifiers = new ArrayList();
 
         for (ModifiedInput modifier : modifiers) 
@@ -283,16 +287,14 @@ public class ModifierCollection {
         completedModifiers.add(modifiers.get(0));
         if(completedModifier.addToOutput)
         {
-            System.arraycopy(((ModifiedInputVectorOutput)completedModifier).getValues(), 0, currentValues, modifierOutputIndex, completedModifier.getSize());
+            System.arraycopy(((ModifiedInputVectorOutput)completedModifier).getValues(), 0, newVals, modifierOutputIndex, completedModifier.getSize());
             modifierOutputIndex += completedModifier.getSize();
         }
 
         while(completedIndex < completedModifiers.size())
         {
             completedModifier = completedModifiers.get(completedIndex);
-            for (Iterator<ModifiedInput> iterator = modifiers.iterator(); iterator.hasNext();)
-            {
-                ModifiedInput toComplete = iterator.next();
+            for (ModifiedInput toComplete : modifiers) {
                 if(!toComplete.hasAllInputs()) 
                 {
                     toComplete.updateRequiredInputs(completedModifier);
@@ -308,19 +310,19 @@ public class ModifierCollection {
                             
                             if (toComplete instanceof ModifiedInputSingleOutput) 
                             {
-                                currentValues[modifierOutputIndex] = ((ModifiedInputSingleOutput)toComplete).getValue();
+                                newVals[modifierOutputIndex] = ((ModifiedInputSingleOutput)toComplete).getValue();
                                 String name = featureName + ":0";
                                 //System.out.println("added feature name " + name + " - " + toComplete.inputID);
-                                names.add(name);
-                            } 
+                                names[modifierOutputIndex] = name;
+                            }
                             else 
                             {
-                                System.arraycopy(((ModifiedInputVectorOutput)toComplete).getValues(), 0, currentValues, modifierOutputIndex, toComplete.getSize());
+                                System.arraycopy(((ModifiedInputVectorOutput)toComplete).getValues(), 0, newVals, modifierOutputIndex, toComplete.getSize());
                                 for(int i = 0; i < toComplete.getSize(); i++)
                                 {
                                     String name = featureName + ":" + i;
                                     //System.out.println("added feature name " + name + " - " + toComplete.inputID);
-                                    names.add(name);
+                                    names[modifierOutputIndex] = name;
                                 }
                             }
                             modifierOutputIndex += toComplete.getSize();
@@ -330,16 +332,17 @@ public class ModifierCollection {
             }
             completedIndex++;
         }
-        String[] o = new String[names.size()];
-        outputNames = names.toArray(o);
+        currentValues = newVals;
+        outputNames = names;
     }
 
     public double[] computeAndGetValuesForNewInputs(double[] newInputs, HashMap<String, Feature> features) {
         try {
             computeValuesForNewInputs(newInputs, features);
-        } catch (ConcurrentModificationException ex)
+        } 
+        catch (ConcurrentModificationException ex)
         {
-            System.out.println("Caught concurrent mod exception");
+            System.out.println("-------EXCEPTION---------- Caught concurrent mod exception");
         }
         return currentValues;
     }

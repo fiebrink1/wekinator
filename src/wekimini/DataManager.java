@@ -952,7 +952,6 @@ public class DataManager {
             if((pair.getValue() < maxRank && above) || (pair.getValue() > maxRank && !above))
             {
                 String key = pair.getKey();
-                System.out.println("adding feature:" + key);
                 String[] split = key.split(":");
                 thresholded.add(featureManager.featureCollections.get(outputIndex).getFeatureForKey(split[0]));
                 ptr++;
@@ -986,7 +985,6 @@ public class DataManager {
                     System.out.println(o[i]);
                 }
             }
-            System.out.println(name + ":" + ptr + ":" + attributeIndex);
             infoRankNames[outputIndex].put(name, ptr); 
             ptr++;
         }
@@ -1057,6 +1055,7 @@ public class DataManager {
             if(allFeatures)
             {
                 newInstances = featureManager.getAllFeaturesNewInstances();
+                System.out.println("got all features instance " + newInstances.numAttributes());
                 featureManager.resetAllFeaturesModifiers();
             }
             else
@@ -1070,15 +1069,19 @@ public class DataManager {
                 Instances filteredInputs = allFeatures? in : Filter.useFilter(in, trainingFilters[index]);
                 for (int i = 0; i < filteredInputs.numInstances(); i++)
                 {
+                    double[] input;
+                    double[] justInput;
+                    double[] features;
+                    double[] withOutput;
                     Instance inputInstance = filteredInputs.instance(i);
                     if(!isOutputMissing(i,index, testSet))
                     {
-                        double[] input = inputInstance.toDoubleArray();
+                        input = inputInstance.toDoubleArray();
                         double output = input[input.length-1];
-                        double[] justInput = new double[input.length-1];
+                        justInput = new double[input.length-1];
                         System.arraycopy(input, 0, justInput, 0, justInput.length);
-                        double[] features = allFeatures ? featureManager.modifyInputsForAllFeatures(justInput): featureManager.modifyInputsForOutput(justInput, index);
-                        double[] withOutput = new double[features.length + 1];
+                        features = allFeatures ? featureManager.modifyInputsForAllFeatures(justInput): featureManager.modifyInputsForOutput(justInput, index);
+                        withOutput = new double[features.length + 1];
                         withOutput[withOutput.length-1] = output;
                         System.arraycopy(features, 0, withOutput, 0, features.length);
                         Instance featureInstance = new Instance(1.0,withOutput);
@@ -1161,12 +1164,12 @@ public class DataManager {
     
     public void featureListUpdated()
     {
-        setInfoGainRankingsDirty();
         mdsDirty = true;
     }
     
-    public synchronized Instances getMDSInstances(int outputIndex)
+    public Instances getMDSInstances(int outputIndex)
     {
+        System.out.println("getting MDS instance");
         if(mdsDirty)
         {
             for(int i = 0; i < numOutputs; i++)
@@ -1187,6 +1190,7 @@ public class DataManager {
     
     public void updateMDSInstances(int i)
     {
+        System.out.println("updating MDS instance");
         Instances featureInstances = getTrainingDataForOutput(i);
         updateMDSInstances(i, featureInstances);
     }
@@ -1239,6 +1243,7 @@ public class DataManager {
     {
         if(featureManager.isAllFeaturesDirty(testSet))
         {
+            System.out.print("updating feature instances");
             for(int i = 0; i < numOutputs; i++)
             {
                 updateFeatureInstances(i, testSet, true);
@@ -1298,6 +1303,7 @@ public class DataManager {
         try {
             if(featureManager.isDirty(index))
             {
+                System.out.println("updating training data");
                 updateFeatureInstances(index, false, false);
             }
             Instances in = trainingFeatureInstances.get(index);

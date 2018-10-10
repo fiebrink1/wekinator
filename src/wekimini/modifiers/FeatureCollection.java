@@ -68,7 +68,7 @@ public final class FeatureCollection
         modifiers = new ModifierCollection(inputNames);
     }
     
-    public synchronized void initLibrary(int windowSize, int bufferSize)
+    public void initLibrary(int windowSize, int bufferSize)
     {
         
         library.clear();
@@ -363,11 +363,9 @@ public final class FeatureCollection
         return tags;
     }
     
-    public synchronized void updateFeatureIndexes()
+    public void updateFeatureIndexes()
     {
-        for(Iterator<Feature> iterator = added.values().iterator(); iterator.hasNext();)
-        {
-             Feature f = iterator.next();
+        for (Feature f : added.values()) {
             f.setOutputIndexes(modifiers.indexesForName(f.name));
         }
     }

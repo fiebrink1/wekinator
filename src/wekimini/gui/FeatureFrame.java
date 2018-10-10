@@ -215,19 +215,16 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         w.getDataManager().featureListUpdated();
         newFeaturesPanel.featureListUpdated();
         evaluateFeaturesPanel.featuresListUpdated();
-        updateSelectedFeature(selectedFeature);
+        featureDetailPanel.showNoFeature();
     }
     
     @Override
     public void featureLibraryUpdated(boolean sizeDidChange)
     {
+        w.getDataManager().setInfoGainRankingsDirty();
         w.getDataManager().featureListUpdated();
         newFeaturesPanel.featureListUpdated();
         evaluateFeaturesPanel.featuresListUpdated();
-        if(sizeDidChange)
-        {
-            deselectRows(true);
-        }
     }
     
     @Override

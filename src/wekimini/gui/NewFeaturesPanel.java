@@ -151,10 +151,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             {
                 ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureAdded(w);
             }
-            w.getDataManager().featureListUpdated();
             w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(ft.name);
             delegate.featureListUpdated();
-            updateFeaturePlot();
         }
         else
         {
@@ -336,7 +334,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                         ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureRemoved(w);
                     }
                     selected = new Feature[0];
-                       selectedFilters.clear();
+                    selectedFilters.clear();
                 }
                 else
                 {
@@ -347,9 +345,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     }
                 }
             }
-            w.getDataManager().featureListUpdated();
             delegate.featureListUpdated();
-            updateFeaturePlot();
         }
         else
         {
@@ -652,8 +648,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
     private void selectAllBelowButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllBelowButtonActionPerformed
         // TODO add your handling code here:
-        selected = w.getDataManager().getInfoGainRankings(outputIndex, threshold, false);
-        updateFeaturePlot();
+//        selected = w.getDataManager().getInfoGainRankings(outputIndex, threshold, false);
+//        updateFeaturePlot();
+        delegate.windowSliderChanged((int )(Math.random() * 50 + 20));
     }//GEN-LAST:event_selectAllBelowButtonActionPerformed
 
     private void infoFilterSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_infoFilterSliderStateChanged
