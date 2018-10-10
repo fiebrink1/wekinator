@@ -37,7 +37,7 @@ public class MDSPlotPanel extends JPanel {
     private Instances points;
     private ArrayList<Integer> keyClasses = new ArrayList();
     private boolean needsUpdating = true;
-    private Boolean loading = true;
+    private Boolean loading = false;
     ImageIcon loadingIcon;
     
     private MDSPlotPanel(){}
@@ -94,11 +94,8 @@ public class MDSPlotPanel extends JPanel {
             g2d.setPaint(new Color(0.0f,0.0f,1.0f,1.0f));
             g2d.drawString("Needs Updating", (int)w/2, (int)plotHeight/2);
         }
-        else
+        else if(points != null)
         {
-            if(points != null)
-            {
-            
             double delta = maxVal - minVal;
             for(int i = 0; i < points.numInstances(); i++)
             {
@@ -122,23 +119,25 @@ public class MDSPlotPanel extends JPanel {
                 g2d.setPaint(colorForClass(keyClasses.get(i)));
                 g2d.drawString( ""+(i+1), 2, startY + ((i+1)*keyH));
             }
-            }
         }  
     }
     
     public void showLoading()
     {
         loading = true;
+        repaint();
     }
     
     public void hideLoading()
     {
         loading = false;
+        repaint();
     }
     
     public void setOutOfDate()
     {
         needsUpdating = true;
+        repaint();
     }
        
     public void updateWithInstances(Instances scaled)

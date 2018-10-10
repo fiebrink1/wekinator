@@ -60,6 +60,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     ChangeListener panelListener;
     SwingWorker mdsWorker;
     public FeatureEditorDelegate delegate;
+    private int panelState;
     
     public EvaluateFeaturesPanel() {
         initComponents();
@@ -125,12 +126,13 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         panelListener = (new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                int panel = tabbedPanel.getSelectedIndex();
-                System.out.println("Tab: " + panel);
+                panelState = tabbedPanel.getSelectedIndex();
+                System.out.println("Tab: " + panelState);
                 if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
                 {
-                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logEvaluatePanelChanged(w, panel);
+                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logEvaluatePanelChanged(w, panelState);
                 }
+                evaluateBtn.setText(panelState == 0 ? "Re-evaluate" : "Update MDS");
             }
         });
         tabbedPanel.addChangeListener(panelListener);
@@ -231,12 +233,49 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                     System.out.println("----Finished updating MDS");
                     updatingMDS = false;
                     delegate.hasFreedResources();
+                    evaluateBtn.setEnabled(true);
                     mdsPlot.hideLoading();
                 }
             };
+            evaluateBtn.setEnabled(false);
             mdsPlot.showLoading();
             mdsWorker.execute();
         }
+    }
+    
+    private void evaluate()
+    {
+        evaluateBtn.setText("Working...");
+        evaluateBtn.setEnabled(false);
+        e = new ModelEvaluator(w, new ModelEvaluator.EvaluationResultsReceiver() {
+
+            @Override
+            public void finishedModel(int modelNum, String results, String confusion) {
+                cvModelFinished(modelNum, results, confusion);
+            }
+
+            @Override
+            public void finished(String[] results) {
+                cvFinished(results);
+            }
+
+            @Override
+            public void cancelled() {
+                cvCancelled();
+            }
+        });
+        EvaluationMode eval = ModelEvaluationFrame.EvaluationMode.TESTING_SET;
+        Path p = w.getSupervisedLearningManager().getPaths().get(outputIndex);
+        LinkedList<Path> paths = new LinkedList<>();
+        paths.add(p);
+        e.evaluateAll(paths, eval, 10, new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                cvPropertyChanged(evt);
+            }
+
+        });
     }
     
     public void onClose()
@@ -281,7 +320,6 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         mdsPlotHolder = new javax.swing.JPanel();
         outputLabel = new javax.swing.JLabel();
         plotHolderPanel = new javax.swing.JPanel();
-        updateMDSButton = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(204, 204, 204), null, new java.awt.Color(204, 204, 204)));
@@ -397,16 +435,8 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         );
         plotHolderPanelLayout.setVerticalGroup(
             plotHolderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 28, Short.MAX_VALUE)
+            .addGap(0, 36, Short.MAX_VALUE)
         );
-
-        updateMDSButton.setText("Update MDS");
-        updateMDSButton.setToolTipText("");
-        updateMDSButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                updateMDSButtonActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -415,12 +445,10 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(updateMDSButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(plotHolderPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())
                     .addComponent(evaluateBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(plotHolderPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(tabbedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
@@ -448,8 +476,6 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 .addComponent(accuracyLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tabbedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(updateMDSButton)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -487,37 +513,14 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     
     private void evaluateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_evaluateBtnActionPerformed
         // TODO add your handling code here:
-        evaluateBtn.setText("Working...");
-        evaluateBtn.setEnabled(false);
-        e = new ModelEvaluator(w, new ModelEvaluator.EvaluationResultsReceiver() {
-
-            @Override
-            public void finishedModel(int modelNum, String results, String confusion) {
-                cvModelFinished(modelNum, results, confusion);
-            }
-
-            @Override
-            public void finished(String[] results) {
-                cvFinished(results);
-            }
-
-            @Override
-            public void cancelled() {
-                cvCancelled();
-            }
-        });
-        EvaluationMode eval = ModelEvaluationFrame.EvaluationMode.TESTING_SET;
-        Path p = w.getSupervisedLearningManager().getPaths().get(outputIndex);
-        LinkedList<Path> paths = new LinkedList<>();
-        paths.add(p);
-        e.evaluateAll(paths, eval, 10, new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                cvPropertyChanged(evt);
-            }
-
-        });
+       if(panelState == 0)
+       {
+           evaluate();
+       } 
+       else 
+       {
+           updateMDS();
+       }
     }//GEN-LAST:event_evaluateBtnActionPerformed
 
     private void trainBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainBtnActionPerformed
@@ -541,11 +544,6 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         System.out.println("Button isRunning:" + isRunning);
     }//GEN-LAST:event_trainBtnActionPerformed
 
-    private void updateMDSButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateMDSButtonActionPerformed
-        // TODO add your handling code here:
-        updateMDS();
-    }//GEN-LAST:event_updateMDSButtonActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel accuracyLabel;
@@ -559,6 +557,5 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private javax.swing.JPanel plotHolderPanel;
     private javax.swing.JTabbedPane tabbedPanel;
     private javax.swing.JButton trainBtn;
-    private javax.swing.JButton updateMDSButton;
     // End of variables declaration//GEN-END:variables
 }
