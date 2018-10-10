@@ -159,7 +159,7 @@ public class FeatureSelectorTest {
             double[] oscInputs = {instanceIndex + 1, 1.0, instanceIndex % 10 == 9 ? 0.9 : 0.1, 0, 0, 0};
             Instance instance = w.getDataManager().getClassifiableInstanceForOutput(oscInputs, 0);
             double [] computed = w.getSupervisedLearningManager().computeValues(oscInputs, new boolean[]{true});
-            assertEquals(5.0, instance.numAttributes() + 1, 0);
+            assertEquals(5.0, instance.numAttributes(), 0);
             assertEquals(1.0, computed.length, 0);
         } 
         //When we switch back to the manual the computed values for running should be the original 6 + 1

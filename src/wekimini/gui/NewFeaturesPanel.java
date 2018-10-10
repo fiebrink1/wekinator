@@ -648,9 +648,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
     private void selectAllBelowButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllBelowButtonActionPerformed
         // TODO add your handling code here:
-//        selected = w.getDataManager().getInfoGainRankings(outputIndex, threshold, false);
-//        updateFeaturePlot();
-        delegate.windowSliderChanged((int )(Math.random() * 50 + 20));
+        selected = w.getDataManager().getInfoGainRankings(outputIndex, threshold, false);
+        updateFeaturePlot();
+        //delegate.windowSliderChanged((int )(Math.random() * 50 + 20));
     }//GEN-LAST:event_selectAllBelowButtonActionPerformed
 
     private void infoFilterSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_infoFilterSliderStateChanged

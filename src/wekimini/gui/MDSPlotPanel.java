@@ -14,6 +14,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -35,6 +36,9 @@ public class MDSPlotPanel extends JPanel {
     private final static BasicStroke STROKE = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
     private Instances points;
     private ArrayList<Integer> keyClasses = new ArrayList();
+    private boolean needsUpdating = true;
+    private Boolean loading = true;
+    ImageIcon loadingIcon;
     
     private MDSPlotPanel(){}
     
@@ -47,7 +51,11 @@ public class MDSPlotPanel extends JPanel {
         plotHeight = (h * 0.875) - plotY;
         image = new BufferedImage(w, (int)imageHeight, BufferedImage.TYPE_INT_ARGB);
         setBackground(Color.white);
+        java.net.URL imgUrl = getClass().getResource("/wekimini/icons/ajax-loader.gif");
+        loadingIcon = new ImageIcon(imgUrl);
     }
+    
+    
     
     public Color colorForClass(double classVal)
     {
@@ -74,11 +82,23 @@ public class MDSPlotPanel extends JPanel {
         {
             g.drawImage(image, 0, 0, null);
         }
-                
-        if(points != null)
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.setStroke(STROKE);
+        
+        if(loading)
         {
-            Graphics2D g2d = (Graphics2D)g;
-            g2d.setStroke(STROKE);
+            loadingIcon.paintIcon(this, g, (int)w/2, (int)plotHeight/2);
+        }
+        else if(needsUpdating)
+        {
+            g2d.setPaint(new Color(0.0f,0.0f,1.0f,1.0f));
+            g2d.drawString("Needs Updating", (int)w/2, (int)plotHeight/2);
+        }
+        else
+        {
+            if(points != null)
+            {
+            
             double delta = maxVal - minVal;
             for(int i = 0; i < points.numInstances(); i++)
             {
@@ -102,11 +122,28 @@ public class MDSPlotPanel extends JPanel {
                 g2d.setPaint(colorForClass(keyClasses.get(i)));
                 g2d.drawString( ""+(i+1), 2, startY + ((i+1)*keyH));
             }
-        }
+            }
+        }  
+    }
+    
+    public void showLoading()
+    {
+        loading = true;
+    }
+    
+    public void hideLoading()
+    {
+        loading = false;
+    }
+    
+    public void setOutOfDate()
+    {
+        needsUpdating = true;
     }
        
     public void updateWithInstances(Instances scaled)
     {
+        needsUpdating = false;
         points = scaled;
         maxVal = Double.NEGATIVE_INFINITY;
         minVal = Double.POSITIVE_INFINITY;

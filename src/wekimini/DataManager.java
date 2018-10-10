@@ -94,6 +94,7 @@ public class DataManager {
     private List<Instances> allFeaturesTestInstances = null;
     
     BatchNormaliseFilter batchFilter = new BatchNormaliseFilter();
+    BatchNormaliseFilter batchAllFilter = new BatchNormaliseFilter();
     StreamNormaliseFilter streamFilter = new StreamNormaliseFilter();
     public Boolean doNormalise = true;
     
@@ -1045,6 +1046,7 @@ public class DataManager {
     
     private void updateFeatureInstances(int index, boolean testSet, boolean allFeatures)
     { 
+        System.out.println("updating features, all = " + allFeatures);
         if(useAutomaticFeatures && !allFeatures)
         {
             setFeaturesInstancesFromAutomatic(index, testSet);
@@ -1066,21 +1068,19 @@ public class DataManager {
             }
             try{
                 Instances in = testSet ? testInstances : inputInstances;
-                Instances filteredInputs = allFeatures? in : Filter.useFilter(in, trainingFilters[index]);
+                Instances filteredInputs = allFeatures ? in : Filter.useFilter(in, trainingFilters[index]);
+                double[] input;
+                double[] features;
+                double[] withOutput;
+                double start = System.currentTimeMillis();
                 for (int i = 0; i < filteredInputs.numInstances(); i++)
                 {
-                    double[] input;
-                    double[] justInput;
-                    double[] features;
-                    double[] withOutput;
                     Instance inputInstance = filteredInputs.instance(i);
                     if(!isOutputMissing(i,index, testSet))
                     {
                         input = inputInstance.toDoubleArray();
                         double output = input[input.length-1];
-                        justInput = new double[input.length-1];
-                        System.arraycopy(input, 0, justInput, 0, justInput.length);
-                        features = allFeatures ? featureManager.modifyInputsForAllFeatures(justInput): featureManager.modifyInputsForOutput(justInput, index);
+                        features = allFeatures ? featureManager.modifyInputsForAllFeatures(input): featureManager.modifyInputsForOutput(input, index);
                         withOutput = new double[features.length + 1];
                         withOutput[withOutput.length-1] = output;
                         System.arraycopy(features, 0, withOutput, 0, features.length);
@@ -1089,10 +1089,19 @@ public class DataManager {
                         newInstances.setClassIndex(withOutput.length - 1);
                     }
                 }
+                System.out.println("time taken, all = " + allFeatures + " : " + (System.currentTimeMillis() - start) / 1000);
                 if(doNormalise)
                 {
-                    batchFilter.setInputFormat(newInstances);
-                    newInstances = Filter.useFilter(newInstances, batchFilter);
+                    if(allFeatures)
+                    {
+                        batchAllFilter.setInputFormat(newInstances);
+                        newInstances = Filter.useFilter(newInstances, batchAllFilter);
+                    }
+                    else
+                    {
+                        batchFilter.setInputFormat(newInstances);
+                        newInstances = Filter.useFilter(newInstances, batchFilter);
+                    }
                 }
                 List<Instances> featureInstances = testSet ? testingFeatureInstances : trainingFeatureInstances;
                 if(index < featureInstances.size())

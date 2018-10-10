@@ -206,6 +206,11 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     {
         trainBtn.setEnabled(w.getDataManager().canRun(outputIndex));
         evaluateBtn.setEnabled(w.getDataManager().canRun(outputIndex));
+        mdsPlot.setOutOfDate();
+    }
+    
+    private void updateMDS()
+    {
         if(w.getDataManager().canRun(outputIndex) && !updatingMDS)
         {
             System.out.println("----Feature list updated (EVALUATE PANEL), updating MDS");
@@ -226,8 +231,10 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                     System.out.println("----Finished updating MDS");
                     updatingMDS = false;
                     delegate.hasFreedResources();
+                    mdsPlot.hideLoading();
                 }
             };
+            mdsPlot.showLoading();
             mdsWorker.execute();
         }
     }
@@ -274,6 +281,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         mdsPlotHolder = new javax.swing.JPanel();
         outputLabel = new javax.swing.JLabel();
         plotHolderPanel = new javax.swing.JPanel();
+        updateMDSButton = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(204, 204, 204), null, new java.awt.Color(204, 204, 204)));
@@ -389,25 +397,37 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         );
         plotHolderPanelLayout.setVerticalGroup(
             plotHolderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 36, Short.MAX_VALUE)
+            .addGap(0, 28, Short.MAX_VALUE)
         );
+
+        updateMDSButton.setText("Update MDS");
+        updateMDSButton.setToolTipText("");
+        updateMDSButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateMDSButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(evaluateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(plotHolderPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(updateMDSButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addComponent(evaluateBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(plotHolderPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(tabbedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(outputTitle, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(trainBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(outputLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
+                    .addComponent(outputTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(trainBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(outputLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(accuracyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
@@ -428,6 +448,8 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 .addComponent(accuracyLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tabbedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(updateMDSButton)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -519,6 +541,11 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         System.out.println("Button isRunning:" + isRunning);
     }//GEN-LAST:event_trainBtnActionPerformed
 
+    private void updateMDSButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateMDSButtonActionPerformed
+        // TODO add your handling code here:
+        updateMDS();
+    }//GEN-LAST:event_updateMDSButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel accuracyLabel;
@@ -532,5 +559,6 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private javax.swing.JPanel plotHolderPanel;
     private javax.swing.JTabbedPane tabbedPanel;
     private javax.swing.JButton trainBtn;
+    private javax.swing.JButton updateMDSButton;
     // End of variables declaration//GEN-END:variables
 }
