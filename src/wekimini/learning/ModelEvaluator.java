@@ -49,6 +49,7 @@ public class ModelEvaluator {
     private String[] results;
     private final EvaluationResultsReceiver receiver;
     private static final DecimalFormat dFormat = new DecimalFormat(" #.##;-#.##");
+    public int[] givenIndices = new int[0];
 
     public static final String PROP_RESULTS = "results";
 
@@ -169,11 +170,6 @@ public class ModelEvaluator {
     }
     
     public void evaluateAll(final List<Path> paths, final EvaluationMode mode, final int numFolds, PropertyChangeListener listener) {
-        final List<Instances> data = new LinkedList<>();
-        for (Path p : paths) {
-            Instances i = w.getSupervisedLearningManager().getTrainingDataForPath(p, false);
-            data.add(i);
-        }
 
         setResults(new String[paths.size()]);
         if (evalWorker != null && evalWorker.getState() != SwingWorker.StateValue.DONE) {
@@ -205,7 +201,15 @@ public class ModelEvaluator {
                         try {
                            //System.out.println("Evaluating with " + numFolds);
                             //EVALUATE HERE: TODO 
-                            Instances instances = w.getSupervisedLearningManager().getTrainingDataForPath(p, false);
+                            Instances instances;
+                            if(givenIndices.length == 0)
+                            {
+                                instances = w.getSupervisedLearningManager().getTrainingDataForPath(p, false);
+                            }
+                            else
+                            {
+                                instances = w.getDataManager().getFeaturesInstancesFromIndices(givenIndices, i, false);
+                            }
                             Evaluation eval = new Evaluation(instances);
                             Classifier c = ((LearningModelBuilder)p.getModelBuilder()).getClassifier();
                             Classifier c2;
@@ -221,7 +225,15 @@ public class ModelEvaluator {
                                     eval.evaluateModel(c2, instances);
                                     break;
                                 case TESTING_SET:
-                                    Instances testingInstances = w.getSupervisedLearningManager().getTestingDataForPath(p, false);
+                                    Instances testingInstances;
+                                    if(givenIndices.length == 0)
+                                    {
+                                        testingInstances = w.getSupervisedLearningManager().getTestingDataForPath(p, false);
+                                    }
+                                    else
+                                    {
+                                        testingInstances = w.getDataManager().getFeaturesInstancesFromIndices(givenIndices, i, true);
+                                    }
                                     eval = new Evaluation(testingInstances);
                                     c2 = Classifier.makeCopy(c);
                                     c2.buildClassifier(instances);

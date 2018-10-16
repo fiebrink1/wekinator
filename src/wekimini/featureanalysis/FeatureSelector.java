@@ -138,6 +138,7 @@ public class FeatureSelector {
     
     public static Instances filterAttributes(Instances instances, int[] indices)
     {
+        System.out.println("--------FILTERING ATTRIBUTES");
         try
         {
             int classIndex = instances.classAttribute().index();

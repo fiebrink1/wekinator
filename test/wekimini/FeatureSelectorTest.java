@@ -138,54 +138,6 @@ public class FeatureSelectorTest {
         }
     }
     
-    @Test
-    public void testAutomaticSelect() throws InterruptedException
-    {
-        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().stopRunning();
-        w.getSupervisedLearningManager().buildAll();
-        Thread.sleep(50);
-        w.getDataManager().selectFeaturesAutomatically(AutoSelect.RANDOM, 4);
-        //When we are running on the 4 selected automatic features the computed output for running should be 4 + 1
-        w.getDataManager().setUseAutomatic(true);
-        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().stopRunning();
-        w.getSupervisedLearningManager().buildAll();
-        Thread.sleep(2000);
-        assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
-        w.getSupervisedLearningManager().startRunning();
-        for(int instanceIndex = 0; instanceIndex < 50; instanceIndex++)
-        {
-            double[] oscInputs = {instanceIndex + 1, 1.0, instanceIndex % 10 == 9 ? 0.9 : 0.1, 0, 0, 0};
-            Instance instance = w.getDataManager().getClassifiableInstanceForOutput(oscInputs, 0);
-            double [] computed = w.getSupervisedLearningManager().computeValues(oscInputs, new boolean[]{true});
-            assertEquals(5.0, instance.numAttributes(), 0);
-            assertEquals(1.0, computed.length, 0);
-        } 
-        //When we switch back to the manual the computed values for running should be the original 6 + 1
-        
-        PassThroughVector passThrough = new PassThroughVector(new String[] {"input1","input2","input3","input4","input5","input6"}, 1);
-        passThrough.addRequiredModifierID(0);
-        w.getDataManager().featureManager.addModifierToOutput(passThrough, 0);
-        
-        w.getDataManager().setUseAutomatic(false);
-        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().stopRunning();
-        w.getSupervisedLearningManager().buildAll();
-        Thread.sleep(2000);
-        assertEquals(SupervisedLearningManager.LearningState.DONE_TRAINING,w.getSupervisedLearningManager().getLearningState());
-        w.getSupervisedLearningManager().startRunning();
-        for(int instanceIndex = 0; instanceIndex < 50; instanceIndex++)
-        {
-            double[] oscInputs = {instanceIndex + 1, 1.0, instanceIndex % 10 == 9 ? 0.9 : 0.1, 0, 0, 0};
-            Instance instance = w.getDataManager().getClassifiableInstanceForOutput(oscInputs, 0);
-            double [] computed = w.getSupervisedLearningManager().computeValues(oscInputs, new boolean[]{true});
-            assertEquals(7.0, instance.numAttributes(),0);
-            assertEquals(1.0, computed.length,0);
-        } 
-        
-    }
-    
     @Ignore
     @Test
     public void testWrapperKnn() throws IOException

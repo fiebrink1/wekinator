@@ -76,35 +76,35 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <EmptySpace max="32767" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="1" attributes="0">
                   <Group type="102" attributes="0">
+                      <EmptySpace max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Group type="102" attributes="0">
+                          <Component id="jScrollPane2" alignment="0" max="32767" attributes="0"/>
+                          <Component id="infoFilterSlider" alignment="0" max="32767" attributes="0"/>
+                          <Component id="featureSetPlotPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="jLabel1" alignment="0" min="-2" pref="269" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
                               <Component id="selectAllButton" min="-2" pref="147" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="selectAllAboveButton" min="-2" pref="150" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="addSelectedButton" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="removeSelectedButton" min="-2" pref="302" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
-                              <Component id="selectAllBelowButton" min="-2" pref="150" max="-2" attributes="0"/>
+                              <Component id="selectAllAboveButton" min="-2" pref="158" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="clearSelectButton" min="-2" max="-2" attributes="0"/>
+                              <Component id="selectAllBelowButton" min="-2" pref="151" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="clearSelectionButton" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
-                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                      <Component id="jScrollPane2" alignment="0" pref="596" max="32767" attributes="0"/>
-                      <Component id="infoFilterSlider" alignment="0" max="32767" attributes="0"/>
-                      <Component id="jLabel1" alignment="0" min="-2" pref="269" max="-2" attributes="0"/>
-                      <Component id="featureSetPlotPanel" alignment="0" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                      <Component id="addSelectedButton" min="-2" pref="222" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="removeSelectedButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="bestInfoButton" max="32767" attributes="0"/>
                   </Group>
               </Group>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -118,19 +118,22 @@
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jScrollPane2" min="-2" pref="144" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="addSelectedButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="removeSelectedButton" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="selectAllButton" min="-2" pref="44" max="-2" attributes="0"/>
-                  <Component id="clearSelectButton" alignment="0" min="-2" pref="43" max="-2" attributes="0"/>
-                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                      <Component id="selectAllAboveButton" alignment="3" min="-2" pref="43" max="-2" attributes="0"/>
-                      <Component id="selectAllBelowButton" alignment="3" min="-2" pref="43" max="-2" attributes="0"/>
+                  <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                      <Component id="clearSelectionButton" alignment="1" min="-2" pref="40" max="-2" attributes="0"/>
+                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                          <Component id="selectAllAboveButton" alignment="3" min="-2" pref="43" max="-2" attributes="0"/>
+                          <Component id="selectAllBelowButton" alignment="3" min="-2" pref="43" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="removeSelectedButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="addSelectedButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="bestInfoButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -166,7 +169,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="addSelectedButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Add Selected Features"/>
+        <Property name="text" type="java.lang.String" value="Select Highlighted Features"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addSelectedButtonActionPerformed"/>
@@ -174,7 +177,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="removeSelectedButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Remove Selected Features"/>
+        <Property name="text" type="java.lang.String" value="Deselect Highlighted Features"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="removeSelectedButtonActionPerformed"/>
@@ -182,18 +185,10 @@
     </Component>
     <Component class="javax.swing.JButton" name="selectAllButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Select All Features"/>
+        <Property name="text" type="java.lang.String" value="Highlight All Features"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectAllButtonActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="clearSelectButton">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Clear Selection"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clearSelectButtonActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JSlider" name="infoFilterSlider">
@@ -204,7 +199,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="selectAllAboveButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;Select All Above Threshold&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Highlight All Above Threshold&lt;/html&gt;"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectAllAboveButtonActionPerformed"/>
@@ -216,7 +211,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="selectAllBelowButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;Select All Below Threshold&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Highlight All Below Threshold&lt;/html&gt;"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectAllBelowButtonActionPerformed"/>
@@ -237,5 +232,21 @@
         </DimensionLayout>
       </Layout>
     </Container>
+    <Component class="javax.swing.JButton" name="clearSelectionButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Highlight None"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clearSelectionButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="bestInfoButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Auto Select"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bestInfoButtonActionPerformed"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>

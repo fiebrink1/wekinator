@@ -154,41 +154,6 @@ public class TestSetTest {
     }
     
     @Test
-    public void testAutoSelectingTestData() throws InterruptedException
-    {
-        String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/Circles_2/multimodel/multimodel.wekproj");
-        try{
-            w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
-        } 
-        catch (Exception e)
-        {
-            
-        }
-        w.getDataManager().deleteTestSet();
-        w.getSupervisedLearningManager().startRecording();
-        for(int i = 0; i < 100; i++)
-        {
-            double[] inputs = {i + 1, 2, 3, 4, 5, 6};
-            w.getSupervisedLearningManager().updateInputs(inputs);
-        }
-        
-        w.getSupervisedLearningManager().setLearningState(SupervisedLearningManager.LearningState.READY_TO_TRAIN);
-        w.getSupervisedLearningManager().stopRunning();
-        w.getSupervisedLearningManager().buildAll();
-        
-        Thread.sleep(50);
-        
-        w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.RANDOM,4);
-        w.getDataManager().setUseAutomatic(true);
-        Instances testSet = w.getDataManager().getTestingDataForOutput(0);
-        assertEquals(5, testSet.numAttributes(), 0);
-        testSet = w.getDataManager().getTestingDataForOutput(1);
-        assertEquals(5, testSet.numAttributes(), 0);
-        testSet = w.getDataManager().getTestingDataForOutput(2);
-        assertEquals(5, testSet.numAttributes(), 0);
-    }
-    
-    @Test
     public void testModifyingTestData()
     {
         setUp();
