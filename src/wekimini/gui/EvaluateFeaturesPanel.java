@@ -232,13 +232,14 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                     //Done
                     System.out.println("----Finished updating MDS");
                     updatingMDS = false;
-                    delegate.hasFreedResources();
+                    delegate.blockInteraction(false);
                     evaluateBtn.setEnabled(true);
                     mdsPlot.hideLoading();
                 }
             };
             evaluateBtn.setEnabled(false);
             mdsPlot.showLoading();
+            delegate.blockInteraction(true);
             mdsWorker.execute();
         }
     }

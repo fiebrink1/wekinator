@@ -88,10 +88,14 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         
     }
     
-    public void blockInteraction(Boolean doBlock)
+    public void blockInteraction(boolean doBlock, boolean fromDelegate)
     {
         allowWindowSizeUpdate = !doBlock;
         plotPanel.showLoading(doBlock);
+        if(!fromDelegate)
+        {
+            delegate.blockInteraction(doBlock);
+        }
     }
     
     class ResizeListener extends ComponentAdapter {

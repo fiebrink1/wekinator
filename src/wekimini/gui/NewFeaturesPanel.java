@@ -173,6 +173,29 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         }
     }
     
+    public void blockInteraction(boolean block, boolean fromDelegate)
+    {
+        if(block)
+        {
+            featureSetPlotPanel.showLoading();
+        }
+        else
+        {
+            featureSetPlotPanel.hideLoading();
+        }
+        addSelectedButton.setEnabled(!block);
+        bestInfoButton.setEnabled(!block);
+        removeSelectedButton.setEnabled(!block);
+        selectAllBelowButton.setEnabled(!block);
+        selectAllButton.setEnabled(!block);
+        clearSelectionButton.setEnabled(!block);
+        selectAllAboveButton.setEnabled(!block);
+        if(!fromDelegate)
+        {
+            delegate.blockInteraction(block);
+        }
+    }
+    
     public void featureListUpdated()
     {
         updateFeaturePlot();
@@ -229,7 +252,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     {
         ArrayList<FeatureSetPlotItem> items = new ArrayList();
         Feature[] currentSet = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
-        System.out.println("update feature plot :" +updatingRankings);
+        System.out.println("update feature plot :" + updatingRankings);
         SwingWorker worker = new SwingWorker<HashMap<String, Integer> ,Void>()
         {  
             HashMap<String, Integer> rankingSet;
@@ -237,7 +260,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             @Override
             public HashMap<String, Integer>  doInBackground()
             {
-                featureSetPlotPanel.showLoading();
+                System.out.println("update feature plot worker begin");
                 rankingSet = w.getDataManager().getInfoGainRankings(outputIndex);
                 return rankingSet;
             }
@@ -245,6 +268,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             @Override
             public void done()
             {
+                System.out.println("thread done isCancelled? " + isCancelled());
                 for(Feature inSet:currentSet)
                 {
                     Boolean matched = false;
@@ -304,21 +328,48 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 }
                 FeatureSetPlotItem[] f = new FeatureSetPlotItem[items.size()];
                 f = items.toArray(f);
-                featureSetPlotPanel.hideLoading();
+                delegate.blockInteraction(false);
                 featureSetPlotPanel.update(f);
                 updatingRankings = false;
-                delegate.hasFreedResources();
             }
         };
         if(!updatingRankings)
         {
             updatingRankings = true;
-            worker.execute();
+            try {
+                worker.execute();
+            } 
+            catch (Exception e)
+            {
+                System.out.println("EXCEPTION " + e);
+            }
+            
         }
         else
         {
             System.out.println("BLOCKED from updating rankings");
         }
+    }
+    
+    private void clearSelection()
+    {
+        selected = new Feature[0];
+        selectedFilters.clear();
+        updateFeaturePlot();
+    }
+    
+    private void autoSelect()
+    {
+        
+        delegate.blockInteraction(true);
+        w.getDataManager().setFeaturesForBestInfo(outputIndex, false,  new BestInfoSelector.BestInfoResultsReceiver() {
+            @Override
+             public void finished(int[] features)
+             {
+                updateFeaturePlot();
+                clearSelection();
+             }
+        });
     }
     
     private void handleSetChange(Boolean remove)
@@ -444,7 +495,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         removeSelectedButton = new javax.swing.JButton();
         selectAllButton = new javax.swing.JButton();
         infoFilterSlider = new javax.swing.JSlider();
-        javax.swing.JButton selectAllAboveButton = new javax.swing.JButton();
+        selectAllAboveButton = new javax.swing.JButton();
         selectAllBelowButton = new javax.swing.JButton();
         featureSetPlotPanel = new wekimini.gui.FeatureSetPlotPanel();
         clearSelectionButton = new javax.swing.JButton();
@@ -635,6 +686,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
     private void selectAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllButtonActionPerformed
         // TODO add your handling code here:
+        delegate.blockInteraction(true);
         selected = w.getDataManager().featureManager.getAllFeaturesGroup().getCurrentFeatures();
         updateFeaturePlot();
     }//GEN-LAST:event_selectAllButtonActionPerformed
@@ -648,13 +700,17 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
     private void selectAllAboveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllAboveButtonActionPerformed
         // TODO add your handling code here:
+        delegate.blockInteraction(true);
         selected = w.getDataManager().getInfoGainRankings(outputIndex, threshold, true);
+        delegate.blockInteraction(false);
         updateFeaturePlot();
     }//GEN-LAST:event_selectAllAboveButtonActionPerformed
 
     private void selectAllBelowButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllBelowButtonActionPerformed
         // TODO add your handling code here:
+        delegate.blockInteraction(true);
         selected = w.getDataManager().getInfoGainRankings(outputIndex, threshold, false);
+        delegate.blockInteraction(false);
         updateFeaturePlot();
         //delegate.windowSliderChanged((int )(Math.random() * 50 + 20));
     }//GEN-LAST:event_selectAllBelowButtonActionPerformed
@@ -667,20 +723,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
     private void bestInfoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bestInfoButtonActionPerformed
         // TODO add your handling code here:
-        w.getDataManager().setFeaturesForBestInfo(outputIndex, false,  new BestInfoSelector.BestInfoResultsReceiver() {
-            @Override
-             public void finished(int[] features)
-             {
-                updateFeaturePlot();
-             }
-        });
+        autoSelect();
     }//GEN-LAST:event_bestInfoButtonActionPerformed
 
     private void clearSelectionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSelectionButtonActionPerformed
         // TODO add your handling code here:
-        selected = new Feature[0];
-        selectedFilters.clear();
-        updateFeaturePlot();
+        clearSelection();
 
     }//GEN-LAST:event_clearSelectionButtonActionPerformed
 
@@ -699,6 +747,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JButton removeSelectedButton;
+    private javax.swing.JButton selectAllAboveButton;
     private javax.swing.JButton selectAllBelowButton;
     private javax.swing.JButton selectAllButton;
     private wekimini.gui.TestSetFrame testSetFrame1;

@@ -35,7 +35,6 @@ public class InfoGainSelector extends RankedFeatureSelector {
             AttributeSelection attsel = new AttributeSelection();
             InfoGainAttributeEval eval = new InfoGainAttributeEval();
             Ranker search = new Ranker();
-            //search.setOptions(new String[]{"-T","0.05"});
             attsel.setEvaluator(eval);
             attsel.setSearch(search);
             int classIndex = discreted.numAttributes() - 1;

@@ -13,6 +13,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import org.jdesktop.swingworker.SwingWorker;
+import wekimini.kadenze.FeaturnatorLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.modifiers.Feature.InputSensor;
 import wekimini.modifiers.WindowedOperation.Operation;
 /**
@@ -48,6 +51,7 @@ public final class FeatureCollection
     protected static final String STDDEV_DESCRIPTION = "Standard Deviation \nUse this feature if you want to model how much variation there is in the signal";
     protected static final String CORRELATION_DESCRIPTION = "Correlation \nThis is a measure of how similar two signals are";
     protected static final String MAG_DESCRIPTION = "Magnitude \nThis feature tells you the amount of movement over all three axes";
+    private double[] vals;
     
     private FeatureCollection(){}
     
@@ -401,8 +405,26 @@ public final class FeatureCollection
     
     public double[] computeAndGetValuesForNewInputs(double[] newInputs)
     {
-        double[] vals = modifiers.computeAndGetValuesForNewInputs(newInputs, added);
-        updateFeatureIndexes();
+        SwingWorker worker = new SwingWorker<double[], Void>()
+        {   
+            double[] newVals;
+
+            @Override
+            public double[]  doInBackground()
+            {
+                newVals = modifiers.computeAndGetValuesForNewInputs(newInputs, added);
+                updateFeatureIndexes();
+                return newVals;
+            }
+
+            @Override
+            public void done()
+            {
+                
+            }
+        };
+        worker.execute();
+        
         return vals;
     }
     

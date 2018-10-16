@@ -906,6 +906,7 @@ public class DataManager {
     
     public HashMap<String, Integer> getInfoGainRankings(int outputIndex) 
     {
+        System.out.println("getInfoGainRankings isDirty = " + infoGainRankingsDirty);
         if(infoGainRankingsDirty)
         {
             updateInfoGainRankings(outputIndex);
@@ -1247,7 +1248,7 @@ public class DataManager {
     {
         if(featureManager.isAllFeaturesDirty(testSet))
         {
-            System.out.print("updating feature instances");
+            System.out.println("updating feature instances");
             for(int i = 0; i < numOutputs; i++)
             {
                 updateFeatureInstances(i, testSet, true);

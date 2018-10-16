@@ -20,7 +20,7 @@ import wekimini.modifiers.Feature;
  *
  * @author louismccallum
  */
-public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
+public class FeatureFrame extends JFrame {
     
     private Wekinator w;
     private int selectedRow = -1;
@@ -39,9 +39,55 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         newFeaturesPanel.update(w, 0);
         featureDetailPanel.update(w);
         evaluateFeaturesPanel.update(w, 0);
-        featureDetailPanel.delegate = this;
-        newFeaturesPanel.delegate = this;
-        evaluateFeaturesPanel.delegate = this;
+        FeatureEditorDelegate delegate = new FeatureEditorDelegate() {
+            //FeatureEditorDelegate methods
+    
+            @Override
+            public void newFeatureSelected(Feature ft)
+            {
+                updateSelectedFeature(ft);
+                deselectRows(false);
+            }
+
+            @Override
+            public void featureListUpdated()
+            {
+                System.out.println("FeatureEditorDelegate featureListUpdated()");
+                w.getDataManager().featureListUpdated();
+                newFeaturesPanel.featureListUpdated();
+                evaluateFeaturesPanel.featuresListUpdated();
+                featureDetailPanel.showNoFeature();
+            }
+
+            @Override
+            public void featureLibraryUpdated(boolean sizeDidChange)
+            {
+                featureLibraryUpdate();
+            }
+
+            @Override
+            public void windowSliderChanged(double newVal)
+            {
+                debounceSliderAction(newVal);
+            }
+
+            @Override
+            public void blockInteraction(boolean doBlock)
+            {
+                if(doBlock)
+                {
+                    blockAll();
+                }
+                else
+                {
+                    unblockAll();
+                }
+            }
+    
+        };
+        featureDetailPanel.delegate = delegate;
+        newFeaturesPanel.delegate = delegate;
+        evaluateFeaturesPanel.delegate = delegate;
         selectedFeature = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey("AccX");
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -51,6 +97,26 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
                 newFeaturesPanel.onClose();
             }
         }); 
+    }
+    
+    private void blockAll()
+    {
+        featureDetailPanel.blockInteraction(true, true);
+        newFeaturesPanel.blockInteraction(true, true);
+    }
+    
+    private void unblockAll()
+    {
+        featureDetailPanel.blockInteraction(false, true);
+        newFeaturesPanel.blockInteraction(false, true);
+    }
+    
+    private void featureLibraryUpdate()
+    {
+        w.getDataManager().setInfoGainRankingsDirty();
+        w.getDataManager().featureListUpdated();
+        newFeaturesPanel.featureListUpdated();
+        evaluateFeaturesPanel.featuresListUpdated();
     }
     
     class ResizeListener extends ComponentAdapter {
@@ -122,7 +188,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
 
     private void debounceSliderAction(double newVal)
     {
-        featureDetailPanel.blockInteraction(true);
+        blockAll();
         if(sliderTimer != null)
         {
             if(sliderTimer.isRunning())
@@ -200,47 +266,6 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         featureDetailPanel.setModel(model);
     }
     
-    //FeatureEditorDelegate methods
-    
-    @Override
-    public void newFeatureSelected(Feature ft)
-    {
-        updateSelectedFeature(ft);
-        deselectRows(false);
-    }
-   
-    @Override
-    public void featureListUpdated()
-    {
-        w.getDataManager().featureListUpdated();
-        newFeaturesPanel.featureListUpdated();
-        evaluateFeaturesPanel.featuresListUpdated();
-        featureDetailPanel.showNoFeature();
-    }
-    
-    @Override
-    public void featureLibraryUpdated(boolean sizeDidChange)
-    {
-        w.getDataManager().setInfoGainRankingsDirty();
-        w.getDataManager().featureListUpdated();
-        newFeaturesPanel.featureListUpdated();
-        evaluateFeaturesPanel.featuresListUpdated();
-    }
-    
-    @Override
-    public void windowSliderChanged(double newVal)
-    {
-        debounceSliderAction(newVal);
-    }
-    
-    @Override
-    public void hasFreedResources()
-    {
-        if(!evaluateFeaturesPanel.updatingMDS && !newFeaturesPanel.updatingRankings)
-        {
-            featureDetailPanel.blockInteraction(false);
-        }
-    }
     
     public void selectRow(int row)
     {
@@ -282,7 +307,7 @@ public class FeatureFrame extends JFrame implements FeatureEditorDelegate {
         {
             w.getSupervisedLearningManager().isPlotting = isPlotting;
         }
-        featureLibraryUpdated(buffers);
+        featureLibraryUpdate();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -235,7 +235,11 @@ public class ModifierCollection {
         for(String match:outputNames)
         {
             String[] split = match.split(":");
-            if(split[0].equals(name))
+            if(split.length == 0)
+            {
+                System.out.println("----------NO COLONS IN NAME");
+            }
+            else if(split[0].equals(name))
             {
                 indexes.add(i);
             }
