@@ -9,6 +9,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import wekimini.InputManager;
 import wekimini.Wekinator;
 import wekimini.osc.OSCReceiver;
 import wekimini.util.Util;
@@ -22,10 +23,10 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
 
     private final Wekinator w;
     // private final PropertyChangeListener oscReceiverListener = this::oscReceiverPropertyChanged;
-    private final PropertyChangeListener oscReceiverListener = new PropertyChangeListener() {
+    private final PropertyChangeListener inputManagerListener = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            oscReceiverPropertyChanged(evt);
+            inputReceiverPropertyChanged(evt);
         }
     };
 
@@ -42,13 +43,13 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
     public OSCInputStatusFrame(final Wekinator w) {
         initComponents();
         this.w = w;
-        updateGUIForConnectionState(w.getOSCReceiver().getConnectionState());
-        w.getOSCReceiver().addPropertyChangeListener(wls.propertyChange(oscReceiverListener));
+        updateGUIForConnectionState(w.getInputManager().getConnectionState());
+        w.getInputManager().addPropertyChangeListener(wls.propertyChange(inputManagerListener));
 
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                w.getOSCReceiver().removePropertyChangeListener(oscReceiverListener);
+                w.getInputManager().removePropertyChangeListener(inputManagerListener);
             }
         });
 
@@ -56,26 +57,26 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
         fieldOscPort.setText(Integer.toString(p));
     }
 
-    private void oscReceiverPropertyChanged(PropertyChangeEvent evt) {
-        if (evt.getPropertyName() == OSCReceiver.PROP_CONNECTIONSTATE) {
-            updateGUIForConnectionState((OSCReceiver.ConnectionState) evt.getNewValue());
+    private void inputReceiverPropertyChanged(PropertyChangeEvent evt) {
+        if (evt.getPropertyName() == InputManager.PROP_CONNECTIONSTATE) {
+            updateGUIForConnectionState((InputManager.InputConnectionState) evt.getNewValue());
         }
     }
 
-    private void updateGUIForConnectionState(OSCReceiver.ConnectionState cs) {
-        if (cs == OSCReceiver.ConnectionState.CONNECTED) {
+    private void updateGUIForConnectionState(InputManager.InputConnectionState cs) {
+        if (cs == InputManager.InputConnectionState.CONNECTED) {
             labelOscStatus.setText("Listening on port " + w.getOSCReceiver().getReceivePort());
             buttonOscListen.setText("Stop listening");
             //  buttonNext.setEnabled(true);
-        } else if (cs == OSCReceiver.ConnectionState.FAIL) {
+        } else if (cs == InputManager.InputConnectionState.FAIL) {
             labelOscStatus.setText("Failed to set up listener");
             buttonOscListen.setText("Start listening");
             //  buttonNext.setEnabled(false);
-        } else if (cs == OSCReceiver.ConnectionState.NOT_CONNECTED) {
+        } else if (cs == InputManager.InputConnectionState.NOT_CONNECTED) {
             labelOscStatus.setText("Not listening");
             buttonOscListen.setText("Start listening");
             //  buttonNext.setEnabled(false);
-        } else if (cs == OSCReceiver.ConnectionState.CONNECTING) {
+        } else if (cs == InputManager.InputConnectionState.CONNECTING) {
             labelOscStatus.setText("Connecting...");
             buttonOscListen.setText("Stop listening");
             //  buttonNext.setEnabled(false);
@@ -97,7 +98,6 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         buttonOscListen = new javax.swing.JButton();
         labelOscStatus = new javax.swing.JLabel();
-        connectSerial = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("OSC Input Status");
@@ -129,13 +129,6 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
 
         labelOscStatus.setText("Not connected");
 
-        connectSerial.setText("Connect Serial");
-        connectSerial.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                connectSerialActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -149,10 +142,7 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
                         .addComponent(fieldOscPort))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(buttonOscListen)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(connectSerial))
+                            .addComponent(buttonOscListen)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -172,10 +162,8 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(fieldOscPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonOscListen)
-                    .addComponent(connectSerial))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(buttonOscListen)
+                .addContainerGap(8, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -208,9 +196,9 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_fieldOscPortKeyTyped
 
     private void buttonOscListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOscListenActionPerformed
-        if (w.getOSCReceiver().getConnectionState()
-                == OSCReceiver.ConnectionState.CONNECTED) {
-            w.getOSCReceiver().stopListening();
+        if (w.getInputManager().getConnectionState()
+                == InputManager.InputConnectionState.CONNECTED) {
+            w.getInputManager().stopListening();
         } else {
             int port;
             try {
@@ -225,18 +213,11 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
             }
 
             w.getOSCReceiver().setReceivePort(port);
-            w.getOSCReceiver().startListening();
+            w.getInputManager().startListening();
         }
         this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)); //Necessary to be handled correctly by main gui!
         this.dispose();
     }//GEN-LAST:event_buttonOscListenActionPerformed
-
-    private void connectSerialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectSerialActionPerformed
-        // TODO add your handling code here:
-        w.getInputManager().reconnectSerial();
-        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)); //Necessary to be handled correctly by main gui!
-        this.dispose();
-    }//GEN-LAST:event_connectSerialActionPerformed
 
     /**
      * @param args the command line arguments
@@ -275,7 +256,6 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonOscListen;
-    private javax.swing.JButton connectSerial;
     private javax.swing.JTextField fieldOscPort;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

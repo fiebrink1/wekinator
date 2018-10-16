@@ -54,7 +54,7 @@ public class Study1Prompt extends javax.swing.JFrame implements Closeable {
     
     private void tryToStartListening(int port) {
         if (w.getOSCReceiver().getConnectionState()
-                == OSCReceiver.ConnectionState.CONNECTED) {
+                == OSCReceiver.OSCConnectionState.CONNECTED) {
             w.getOSCReceiver().stopListening();
         } else {
             if (port <= 0) {

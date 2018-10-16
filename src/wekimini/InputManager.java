@@ -40,13 +40,84 @@ public class InputManager implements SerialPortDelegate {
     private final Wekinator w;
     private final WeakListenerSupport wls = new WeakListenerSupport();
     private final PropertyChangeListener oscReceiverListener;
+    private final PropertyChangeListener serialListener;
     private final List<InputListener> inputValueListeners;
     private final EventListenerList inputGroupChangeListeners = new EventListenerList();
     public static final String PROP_INPUTGROUP = "inputGroup";
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private double[] currentValues = new double[0];
     private static final Logger logger = Logger.getLogger(InputManager.class.getName());
+    private final OSCReceiver oscReceiver;
+    public static final String PROP_CONNECTIONSTATE = "inputConnectionState";
+    private InputConnectionState connectionState = InputConnectionState.NOT_CONNECTED;
+    
+    public enum InputConnectionState {
+        NOT_CONNECTED, CONNECTING, CONNECTED, FAIL
+    };
+    
+    public InputManager(Wekinator w) {
+        //Make sure Wekinator initialises this after OSCReceiver 
+        this.w = w;
+        oscReceiverListener = new PropertyChangeListener() {
 
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                oscReceiverPropertyChanged(evt);
+            }
+        };
+        oscReceiver = new OSCReceiver();
+        //oscReceiverListener = this::oscReceiverPropertyChanged;
+        oscReceiver.addPropertyChangeListener(wls.propertyChange(oscReceiverListener));
+        
+        serialListener = new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                serialPropertyChanged(evt);
+            }
+        };
+        serialInput = new SerialPortInput();
+        serialInput.addPropertyChangeListener(serialListener);
+        
+        inputValueListeners = new LinkedList<>();
+        //For testing:
+        /*OSCInputGroup g;
+         String[] names1 = {"a"};
+         g = new OSCInputGroup("group1", "/m1", 1, names1);
+         addOSCInputGroup(g, true); */
+        
+        serialInput.delegate = this;
+    }
+    
+    public InputConnectionState getConnectionState() {
+        return connectionState;
+    }
+   
+    private void setConnectionState(InputConnectionState connectionState) {
+        InputConnectionState oldConnectionState = this.connectionState;
+        this.connectionState = connectionState;
+        propertyChangeSupport.firePropertyChange(PROP_CONNECTIONSTATE, oldConnectionState, connectionState);
+    }
+    
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
+    }
+    
+    public void startListening()
+    {
+        reconnectSerial();
+        oscReceiver.startListening();
+    }
+    
+    public void stopListening()
+    {
+        cleanUp();
+    }
+    
     public void reconnectSerial()
     {
        if(serialInput != null)
@@ -55,12 +126,13 @@ public class InputManager implements SerialPortDelegate {
        }
     }
     
-    public void cleanUp()
+    private void cleanUp()
     {
        if(serialInput != null)
        {
            serialInput.cleanUp();
        }
+       oscReceiver.stopListening();
     }
     
     public double[] getInputValues() {
@@ -91,58 +163,57 @@ public class InputManager implements SerialPortDelegate {
         return (inputGroup != null);
     }
 
+    /////Serial Port Delegate
+    
     @Override
     public void update(double[] newVals)
     {
         notifyListeners(newVals);
         System.arraycopy(newVals, 0, currentValues, 0, newVals.length);
     }
-        
-    /**
-     * Add PropertyChangeListener.
-     *
-     * @param listener
-     */
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-
-    /**
-     * Remove PropertyChangeListener.
-     *
-     * @param listener
-     */
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
-    }
-
-    public InputManager(Wekinator w) {
-        //Make sure Wekinator initialises this after OSCReceiver 
-        this.w = w;
-        oscReceiverListener = new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                oscReceiverPropertyChanged(evt);
-            }
-        };
-        //oscReceiverListener = this::oscReceiverPropertyChanged;
-        w.getOSCReceiver().addPropertyChangeListener(wls.propertyChange(oscReceiverListener));
-        inputValueListeners = new LinkedList<>();
-        //For testing:
-        /*OSCInputGroup g;
-         String[] names1 = {"a"};
-         g = new OSCInputGroup("group1", "/m1", 1, names1);
-         addOSCInputGroup(g, true); */
-        
-        serialInput = new SerialPortInput();
-        serialInput.delegate = this;
+    
+    public OSCReceiver getOSCReceiver() {
+        return oscReceiver;
     }
 
     private void oscReceiverPropertyChanged(PropertyChangeEvent e) {
         if (e.getPropertyName() == OSCReceiver.PROP_CONNECTIONSTATE) {
-            if (e.getNewValue() == OSCReceiver.ConnectionState.CONNECTED) {
+            if (e.getNewValue() == OSCReceiver.OSCConnectionState.CONNECTED) {
                 addOSCInputListener();
+                setConnectionState(InputConnectionState.CONNECTED);
+            } 
+            else if (e.getNewValue() == OSCReceiver.OSCConnectionState.NOT_CONNECTED)
+            {
+                setConnectionState(InputConnectionState.NOT_CONNECTED);
+            }
+            else if (e.getNewValue() == OSCReceiver.OSCConnectionState.FAIL)
+            {
+                setConnectionState(InputConnectionState.FAIL);
+            }
+            else if (e.getNewValue() == OSCReceiver.OSCConnectionState.CONNECTING)
+            {
+                setConnectionState(InputConnectionState.CONNECTING);
+            }
+        }
+    }
+    
+    private void serialPropertyChanged(PropertyChangeEvent e) {
+        if (e.getPropertyName() == SerialPortInput.PROP_CONNECTIONSTATE) {
+            if (e.getNewValue() == SerialPortInput.SerialConnectionState.CONNECTED) {
+                addOSCInputListener();
+                setConnectionState(InputConnectionState.CONNECTED);
+            } 
+            else if (e.getNewValue() == SerialPortInput.SerialConnectionState.NOT_CONNECTED)
+            {
+                setConnectionState(InputConnectionState.NOT_CONNECTED);
+            }
+            else if (e.getNewValue() == SerialPortInput.SerialConnectionState.FAIL)
+            {
+                setConnectionState(InputConnectionState.FAIL);
+            }
+            else if (e.getNewValue() == SerialPortInput.SerialConnectionState.CONNECTING)
+            {
+                setConnectionState(InputConnectionState.CONNECTING);
             }
         }
     }

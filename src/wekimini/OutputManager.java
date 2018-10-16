@@ -142,7 +142,7 @@ public class OutputManager {
     
     private void oscReceiverPropertyChanged(PropertyChangeEvent e) {
         if (e.getPropertyName() == OSCReceiver.PROP_CONNECTIONSTATE) {
-            if (e.getNewValue() == OSCReceiver.ConnectionState.CONNECTED) {
+            if (e.getNewValue() == OSCReceiver.OSCConnectionState.CONNECTED) {
                 //Re-add listeners for new output values from Max/etc. if OSC is re-connected
                 addOSCOutputValueListener();
             }

@@ -87,7 +87,7 @@ public class OSCMonitor {
             }
         });
 
-        if (recv.getConnectionState() == OSCReceiver.ConnectionState.CONNECTED) {
+        if (recv.getConnectionState() == OSCReceiver.OSCConnectionState.CONNECTED) {
             setReceiveState(OSCReceiveState.CONNECTED_NODATA);
         } else {
            setReceiveState(OSCReceiveState.NOT_CONNECTED);
@@ -152,7 +152,7 @@ public class OSCMonitor {
 
     private void receiverPropertyChanged(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == OSCReceiver.PROP_CONNECTIONSTATE) {
-            if ((OSCReceiver.ConnectionState)evt.getNewValue() != OSCReceiver.ConnectionState.CONNECTED) {
+            if ((OSCReceiver.OSCConnectionState)evt.getNewValue() != OSCReceiver.OSCConnectionState.CONNECTED) {
                 setReceiveState(OSCReceiveState.NOT_CONNECTED);
             } else if (hasReceivedRecently) {
                 setReceiveState(OSCReceiveState.RECEIVING);

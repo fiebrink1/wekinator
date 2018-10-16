@@ -23,11 +23,11 @@ public class OSCReceiver {
     public OSCReceiver() {
     }
     
-    public enum ConnectionState {
+    public enum OSCConnectionState {
         NOT_CONNECTED, CONNECTING, CONNECTED, FAIL
     };
-    public static final String PROP_CONNECTIONSTATE = "connectionState";
-    private ConnectionState connectionState = ConnectionState.NOT_CONNECTED;
+    public static final String PROP_CONNECTIONSTATE = "oscConnectionState";
+    private OSCConnectionState connectionState = OSCConnectionState.NOT_CONNECTED;
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 
@@ -35,12 +35,12 @@ public class OSCReceiver {
         return receivePort;
     }
 
-    public ConnectionState getConnectionState() {
+    public OSCConnectionState getConnectionState() {
         return connectionState;
     }
    
-    private void setConnectionState(ConnectionState connectionState) {
-        ConnectionState oldConnectionState = this.connectionState;
+    private void setConnectionState(OSCConnectionState connectionState) {
+        OSCConnectionState oldConnectionState = this.connectionState;
         this.connectionState = connectionState;
         propertyChangeSupport.firePropertyChange(PROP_CONNECTIONSTATE, oldConnectionState, connectionState);
     }
@@ -61,7 +61,7 @@ public class OSCReceiver {
         try {
             receiver = new OSCPortIn(receivePort);
             receiver.startListening();
-            setConnectionState(ConnectionState.CONNECTED);   
+            setConnectionState(OSCConnectionState.CONNECTED);   
         } catch (Exception ex) {
             Util.showPrettyErrorPane(null, 
                     "Could not bind to port " + receivePort 
@@ -86,7 +86,7 @@ public class OSCReceiver {
             receiver.stopListening();
             receiver.close(); //this line causes errors!! No way to get rid of them, nothing to worry about.
         }
-        setConnectionState(ConnectionState.NOT_CONNECTED);
+        setConnectionState(OSCConnectionState.NOT_CONNECTED);
     }
 
     public void addOSCListener(String message, OSCListener listener) {

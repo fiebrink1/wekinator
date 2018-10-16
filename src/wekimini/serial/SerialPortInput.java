@@ -5,6 +5,9 @@
  */
 package wekimini.serial;
 import com.fazecast.jSerialComm.*;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import wekimini.osc.OSCReceiver;
 
 /**
  *
@@ -22,12 +25,35 @@ public class SerialPortInput {
     int sendPtr = 0;
     double[] toSend =  new double[PACKET_SIZE];
     SerialPort port;
-    
+    public static final String PROP_CONNECTIONSTATE = "serialConnectionState";
+    private SerialConnectionState connectionState = SerialConnectionState.NOT_CONNECTED;
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    public enum SerialConnectionState {
+        NOT_CONNECTED, CONNECTING, CONNECTED, FAIL
+    };
     
     public SerialPortInput() {
         //connect();
     }
     
+    public SerialConnectionState getConnectionState() {
+        return connectionState;
+    }
+   
+    private void setConnectionState(SerialConnectionState connectionState) {
+        SerialConnectionState oldConnectionState = this.connectionState;
+        this.connectionState = connectionState;
+        propertyChangeSupport.firePropertyChange(PROP_CONNECTIONSTATE, oldConnectionState, connectionState);
+    }
+    
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
+    }
+   
     public void connect()
     {
         if(port != null) {
@@ -40,6 +66,7 @@ public class SerialPortInput {
             if(p.getSystemPortName().contains(EMAKE_PREFIX))
             {
                 this.port = p;
+                setConnectionState(SerialConnectionState.CONNECTED);
                 p.setBaudRate(BAUD_RATE);
                 p.openPort();
                 System.out.println("opening port....");
@@ -71,6 +98,7 @@ public class SerialPortInput {
             port.removeDataListener();
             port.closePort();
             port = null;
+            setConnectionState(SerialConnectionState.NOT_CONNECTED);
         }
         
     }

@@ -73,12 +73,12 @@ public final class WekiMiniRunner {
         if (options == NewProjectOptions.STOPCURRENTLISTENING ||
                 options == NewProjectOptions.CLOSECURRENT) {
             if (oldWekinator != null) {
-                oldWekinator.getOSCReceiver().stopListening();
+                oldWekinator.getInputManager().stopListening();
             }
         }
         
         //Start OSC listening for newest one
-        w.getOSCReceiver().startListening();
+        w.getInputManager().startListening();
         
         //Start running newest one
         if (w.getLearningManager().getLearningType() == LearningManager.LearningType.SUPERVISED_LEARNING) {

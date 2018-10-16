@@ -71,7 +71,7 @@ public class OSCControlReceiver {
 
     private void oscReceiverPropertyChanged(PropertyChangeEvent e) {
         if (e.getPropertyName() == OSCReceiver.PROP_CONNECTIONSTATE) {
-            if (e.getNewValue() == OSCReceiver.ConnectionState.CONNECTED) {
+            if (e.getNewValue() == OSCReceiver.OSCConnectionState.CONNECTED) {
                 addOSCControlListeners();
             }
         }

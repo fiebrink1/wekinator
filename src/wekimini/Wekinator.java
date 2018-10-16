@@ -37,7 +37,6 @@ public class Wekinator {
 //TODO: Can make more efficient by initializing some of these on demand (e.g. gui, OSC Monitor)
    // private final Settings settings;
     //  private File projectLocation;
-    private final OSCReceiver oscReceiver;
     private final OSCSender oscSender;
     private final InputManager inputManager;
     private final OutputManager outputManager;
@@ -183,7 +182,7 @@ public class Wekinator {
      this.oscReceiver = new OSCReceiver(); 
      }  */
     public OSCReceiver getOSCReceiver() {
-        return oscReceiver;
+        return inputManager.getOSCReceiver();
     }
 
     public OSCSender getOSCSender() {
@@ -234,7 +233,7 @@ public class Wekinator {
 
         statusUpdateCenter = new StatusUpdateCenter(this);
 
-        oscReceiver = new OSCReceiver();
+        
         oscSender = new OSCSender();
         oscSender.setDefaultHostAndPort();
         //mainSupervisedGUI = new MainGUI(this);
@@ -246,7 +245,7 @@ public class Wekinator {
         learningManager = new LearningManager(this);
         //supervisedLearningManager = new SupervisedLearningManager(this);
         wekinatorController = new WekinatorController(this);
-        oscMonitor = new OSCMonitor(oscReceiver, inputManager, oscSender);
+        oscMonitor = new OSCMonitor(inputManager.getOSCReceiver(), inputManager, oscSender);
         //oscController = new OSCController(this);
 
         //scheduler = new Scheduler(this);
@@ -419,8 +418,7 @@ public class Wekinator {
 
     public void prepareToDie() {
         logger.log(Level.INFO, "Preparing to die");
-        inputManager.cleanUp();
-        oscReceiver.stopListening();
+        inputManager.stopListening();
         loggingManager.prepareToDie(); //Problem: getting here with X but not with close handler
     }
 

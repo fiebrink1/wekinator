@@ -24,6 +24,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextField;
 import wekimini.GlobalSettings;
+import wekimini.InputManager;
 import wekimini.LearningModelBuilder;
 import wekimini.WekiMiniRunner;
 import wekimini.WekiMiniRunner.Closeable;
@@ -53,7 +54,7 @@ import wekimini.util.WeakListenerSupport;
 public class InitInputOutputFrame extends javax.swing.JFrame implements Closeable {
 
     private Wekinator w = null;
-    private PropertyChangeListener oscReceiverListener = null;
+    private PropertyChangeListener inputManagerListener = null;
     private final WeakListenerSupport wls = new WeakListenerSupport();
     private String[] currentInputNames = new String[0];
     private String[] currentOutputNames = new String[0];
@@ -235,42 +236,42 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
     public void setWekinator(Wekinator w) {
         this.w = w;
-        updateGUIForConnectionState(w.getOSCReceiver().getConnectionState());
+        updateGUIForConnectionState(w.getInputManager().getConnectionState());
         //oscReceiverListener = this::oscReceiverPropertyChanged;
-        oscReceiverListener = new PropertyChangeListener() {
+        inputManagerListener = new PropertyChangeListener() {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                oscReceiverPropertyChanged(evt);
+                inputManagerPropertyChanged(evt);
             }
         };
 
-        w.getOSCReceiver().addPropertyChangeListener(wls.propertyChange(oscReceiverListener));
+        w.getInputManager().addPropertyChangeListener(wls.propertyChange(inputManagerListener));
     }
 
-    private void updateGUIForConnectionState(OSCReceiver.ConnectionState cs) {
-        if (cs == OSCReceiver.ConnectionState.CONNECTED) {
+    private void updateGUIForConnectionState(InputManager.InputConnectionState  cs) {
+        if (cs == InputManager.InputConnectionState.CONNECTED) {
             labelOscStatus.setText("Listening on port " + w.getOSCReceiver().getReceivePort());
             buttonOscListen.setText("Stop listening");
             //  buttonNext.setEnabled(true);
-        } else if (cs == OSCReceiver.ConnectionState.FAIL) {
+        } else if (cs == InputManager.InputConnectionState.FAIL) {
             labelOscStatus.setText("Failed to start listener");
             buttonOscListen.setText("Start listening");
             //  buttonNext.setEnabled(false);
-        } else if (cs == OSCReceiver.ConnectionState.NOT_CONNECTED) {
+        } else if (cs == InputManager.InputConnectionState.NOT_CONNECTED) {
             labelOscStatus.setText("Not listening");
             buttonOscListen.setText("Start listening");
             //  buttonNext.setEnabled(false);
-        } else if (cs == OSCReceiver.ConnectionState.CONNECTING) {
+        } else if (cs == InputManager.InputConnectionState.CONNECTING) {
             labelOscStatus.setText("Connecting...");
             buttonOscListen.setText("Stop listening");
             //  buttonNext.setEnabled(false);
         }
     }
 
-    private void oscReceiverPropertyChanged(PropertyChangeEvent evt) {
-        if (evt.getPropertyName() == OSCReceiver.PROP_CONNECTIONSTATE) {
-            updateGUIForConnectionState((OSCReceiver.ConnectionState) evt.getNewValue());
+    private void inputManagerPropertyChanged(PropertyChangeEvent evt) {
+        if (evt.getPropertyName() == InputManager.PROP_CONNECTIONSTATE) {
+            updateGUIForConnectionState((InputManager.InputConnectionState) evt.getNewValue());
         }
     }
 
@@ -869,9 +870,9 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     }//GEN-LAST:event_fieldOscPortKeyTyped
 
     private void tryToStartListening() {
-        if (w.getOSCReceiver().getConnectionState()
-                == OSCReceiver.ConnectionState.CONNECTED) {
-            w.getOSCReceiver().stopListening();
+        if (w.getInputManager().getConnectionState()
+                == InputManager.InputConnectionState.CONNECTED) {
+            w.getInputManager().stopListening();
         } else {
             int port = 0;
             try {
@@ -886,7 +887,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
             }
 
             w.getOSCReceiver().setReceivePort(port);
-            w.getOSCReceiver().startListening();
+            w.getInputManager().startListening();
         }
     }
     
@@ -1295,7 +1296,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                         initCustomNonTemporalModelBuilders();
                     }
                     finalizeSetup();
-                    if (w.getOSCReceiver().getConnectionState() != OSCReceiver.ConnectionState.CONNECTED) {
+                    if (w.getInputManager().getConnectionState() != InputManager.InputConnectionState.CONNECTED) {
                         tryToStartListening();
                     } 
                 } else {
@@ -1311,7 +1312,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
                         initForCustomDtw();
                     }
                     finalizeSetup();
-                    if (w.getOSCReceiver().getConnectionState() != OSCReceiver.ConnectionState.CONNECTED) {
+                    if (w.getInputManager().getConnectionState() != InputManager.InputConnectionState.CONNECTED) {
                         tryToStartListening();
                     }   
                 }
@@ -1506,8 +1507,8 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // if (isCloseable) {
-        if (w.getOSCReceiver().getConnectionState() == OSCReceiver.ConnectionState.CONNECTED) {
-            w.getOSCReceiver().stopListening();
+        if (w.getInputManager().getConnectionState() != InputManager.InputConnectionState.CONNECTED) {
+            w.getInputManager().stopListening();
         }
         w.close();
         removeListeners();
@@ -1640,14 +1641,6 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     private void receivedNewOutputNames(String[] names) {
         currentOutputNames = new String[names.length];
         System.arraycopy(names, 0, currentOutputNames, 0, names.length);
-    }
-
-    private boolean checkOSCReady() {
-        boolean ready = (w != null && w.getOSCReceiver().getConnectionState() == OSCReceiver.ConnectionState.CONNECTED);
-        if (!ready) {
-            Util.showPrettyErrorPane(this, "Please start OSC listener above in order to proceed");
-        }
-        return ready;
     }
 
     private boolean checkInputReady() {

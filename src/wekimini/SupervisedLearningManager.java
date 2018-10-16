@@ -453,7 +453,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                inputGroupChanged(evt);
+                inputManagerChanged(evt);
             }
         });
 
@@ -475,12 +475,6 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             }
         });
 
-        w.getOSCReceiver().addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                oscReceiverPropertyChanged(evt);
-            }
-        });
         //updateAbleToRecord();
         initializeInputsAndOutputsWithExisting(data, testData, paths);
         updateAbleToRecord();
@@ -508,7 +502,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                inputGroupChanged(evt);
+                inputManagerChanged(evt);
             }
         });
 
@@ -530,12 +524,6 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             }
         });
 
-        w.getOSCReceiver().addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                oscReceiverPropertyChanged(evt);
-            }
-        });
         //updateAbleToRecord();
         initializeInputsAndOutputs();
         updateAbleToRecord();
@@ -547,12 +535,6 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         return controller;
     }
 
-    private void oscReceiverPropertyChanged(PropertyChangeEvent evt) {
-        if (evt.getPropertyName() == OSCReceiver.PROP_CONNECTIONSTATE) {
-            updateAbleToRun();
-            updateAbleToRecord();
-        }
-    }
 
     private void dataManagerPropertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName() == DataManager.PROP_NUMEXAMPLESPEROUTPUT) {
@@ -738,7 +720,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     }
 
     private void updateAbleToRecord() {
-        if (w.getOSCReceiver().getConnectionState() != OSCReceiver.ConnectionState.CONNECTED) {
+        if (w.getInputManager().getConnectionState() != InputManager.InputConnectionState.CONNECTED) {
             setAbleToRecord(false);
         } else {
             setAbleToRecord(true);
@@ -747,7 +729,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     private void updateAbleToRun() {
         //Requires models in runnable state (at least some)
-        if (w.getOSCReceiver().getConnectionState() != OSCReceiver.ConnectionState.CONNECTED) {
+        if (w.getInputManager().getConnectionState() != InputManager.InputConnectionState.CONNECTED) {
             setAbleToRun(false);
             return;
         }
@@ -1086,8 +1068,16 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         logger.log(Level.WARNING, "LearningManager doesn't know how to handle this output group change");
     }
 
-    private void inputGroupChanged(PropertyChangeEvent evt) {
-        logger.log(Level.WARNING, "LearningManager doesn't know how to handle this input group change");
+    private void inputManagerChanged(PropertyChangeEvent evt) {
+        if (evt.getPropertyName() == InputManager.PROP_CONNECTIONSTATE) 
+        {    
+            updateAbleToRun();
+            updateAbleToRecord();
+        }
+        else
+        {
+            logger.log(Level.WARNING, "LearningManager doesn't know how to handle this input group change");
+        }
     }
 
     public void deleteExamplesForPath(Path myPath) {
