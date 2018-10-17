@@ -8,6 +8,7 @@ package wekimini.gui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -53,10 +54,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             BasicStroke.JOIN_ROUND);
     private final static BasicStroke SELECTED_STROKE = new BasicStroke(3, 
             BasicStroke.CAP_BUTT, 
-            BasicStroke.JOIN_ROUND,
-            0, 
-            new float[]{3}, 
-            0);
+            BasicStroke.JOIN_ROUND);
     public FeatureSetPlotItem selectedFeature;
     private FeatureSetPlotItem hoveredFeature;
     
@@ -328,8 +326,13 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             int y =  (int)hoveredFeature.y;
             g2d.draw(new Ellipse2D.Double(x, y, r, r));
             g2d.setPaint(new Color(0.0f,0.0f,1.0f,1.0f));
+            //g.setFont(new Font("Helvetica", Font.PLAIN, 14)); 
             g2d.drawString(hoveredFeature.feature.name, x, y);
         }
+//        g2d.setPaint(new Color(0.0f,0.0f,0.0f,1.0f));
+//        g.setFont(new Font("Helvetica", Font.PLAIN, 25)); 
+//        g2d.drawString("LOW INFO", 10, (int)plotHeight-20);
+//        g2d.drawString("HIGH INFO", (int)w-120, (int)plotHeight-20);
     }
     
     public void clear()

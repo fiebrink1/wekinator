@@ -48,6 +48,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private double threshold = 0.5;
     public Boolean updatingRankings = false;
     private PropertyChangeListener learningStateListener;
+    private String highlightedTag = "";
 
     public NewFeaturesPanel() {
         initComponents();
@@ -58,13 +59,27 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     {
         featureSetPlotPanel.setDimensions(596, 200);
         availableFiltersTable.setRowHeight(140/4);
-        String[] tags = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getTags();
-        String[] extraFilters = new String[] {"All", "Above Thresh", "Below Thresh", "None"};
-        String[] combined = new String[tags.length + extraFilters.length];
-        System.arraycopy(tags, 0, combined, 0, tags.length);
-        System.arraycopy(extraFilters, 0, combined, tags.length, extraFilters.length);
+        
+        String[] combined = new String[] {"All", "Above Thresh", "Below Thresh", "None", "Accelerometer", "Gyroscope",
+                "AccelerometerX", "AccelerometerY", "AccelerometerZ", "GyroscopeX", "GyroscopeY", "GyroscopeZ", 
+                "Raw", "Mean", "1st Order Diff", "FFT", "Max", "Min",
+                "Energy", "IQR", "Correlation", "Standard Deviation", "Magnitude"
+        };
         availableFiltersTable.setModel(new FiltersTableModel(combined));
         availableFiltersTable.setDefaultRenderer(String.class, new FiltersTableRenderer());
+        
+        MouseMotionListener tableMouseMotionListener = new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int row = availableFiltersTable.rowAtPoint(e.getPoint());
+                int col = availableFiltersTable.columnAtPoint(e.getPoint());
+                highlightedTag = (String)availableFiltersTable.getModel().getValueAt(row, col);
+                //System.out.println("hover on " + highlightedTag);
+                availableFiltersTable.repaint();
+            }
+        };
+        availableFiltersTable.addMouseMotionListener(tableMouseMotionListener);
+        
         MouseListener tableMouseListener = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -210,10 +225,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         addSelectedButton.setEnabled(!block);
         bestInfoButton.setEnabled(!block);
         removeSelectedButton.setEnabled(!block);
-        selectAllBelowButton.setEnabled(!block);
-        selectAllButton.setEnabled(!block);
-        clearSelectionButton.setEnabled(!block);
-        selectAllAboveButton.setEnabled(!block);
+//        selectAllBelowButton.setEnabled(!block);
+//        selectAllButton.setEnabled(!block);
+//        clearSelectionButton.setEnabled(!block);
+//        selectAllAboveButton.setEnabled(!block);
         if(!fromDelegate)
         {
             delegate.blockInteraction(block);
@@ -528,7 +543,11 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             Color c = FeatureSetPlotPanel.colorForTag(tag, false);
             setBackground(selectedFilters.contains(tag) ? Color.DARK_GRAY : c);
             setForeground(selectedFilters.contains(tag) ? c : Color.DARK_GRAY);
-            setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+            setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+            if(tag.equals(highlightedTag))
+            {
+                setBorder(BorderFactory.createLineBorder(Color.black));
+            }
             setText(tag);
             return this;
         }
@@ -554,13 +573,13 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         addSelectedButton = new javax.swing.JButton();
         removeSelectedButton = new javax.swing.JButton();
-        selectAllButton = new javax.swing.JButton();
         infoFilterSlider = new javax.swing.JSlider();
-        selectAllAboveButton = new javax.swing.JButton();
-        selectAllBelowButton = new javax.swing.JButton();
         featureSetPlotPanel = new wekimini.gui.FeatureSetPlotPanel();
-        clearSelectionButton = new javax.swing.JButton();
         bestInfoButton = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -604,26 +623,21 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         ));
         jScrollPane2.setViewportView(availableFiltersTable);
 
-        jLabel1.setText("Select Filters");
+        jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Use These Filters to Highlight Features");
 
-        addSelectedButton.setText("Select Highlighted Features");
+        addSelectedButton.setText("Use Highlighted Features");
         addSelectedButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addSelectedButtonActionPerformed(evt);
             }
         });
 
-        removeSelectedButton.setText("Deselect Highlighted Features");
+        removeSelectedButton.setText("Remove Highlighted Features");
         removeSelectedButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeSelectedButtonActionPerformed(evt);
-            }
-        });
-
-        selectAllButton.setText("Highlight All Features");
-        selectAllButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                selectAllButtonActionPerformed(evt);
             }
         });
 
@@ -638,20 +652,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         });
 
-        selectAllAboveButton.setText("<html>Highlight All Above Threshold</html>");
-        selectAllAboveButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                selectAllAboveButtonActionPerformed(evt);
-            }
-        });
-
-        selectAllBelowButton.setText("<html>Highlight All Below Threshold</html>");
-        selectAllBelowButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                selectAllBelowButtonActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout featureSetPlotPanelLayout = new javax.swing.GroupLayout(featureSetPlotPanel);
         featureSetPlotPanel.setLayout(featureSetPlotPanelLayout);
         featureSetPlotPanelLayout.setHorizontalGroup(
@@ -660,15 +660,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         );
         featureSetPlotPanelLayout.setVerticalGroup(
             featureSetPlotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 200, Short.MAX_VALUE)
+            .addGap(0, 197, Short.MAX_VALUE)
         );
-
-        clearSelectionButton.setText("Highlight None");
-        clearSelectionButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clearSelectionButtonActionPerformed(evt);
-            }
-        });
 
         bestInfoButton.setText("Auto Select");
         bestInfoButton.addActionListener(new java.awt.event.ActionListener() {
@@ -677,40 +670,61 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         });
 
+        jLabel2.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabel2.setText("Low Info");
+
+        jLabel3.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabel3.setText("High Info");
+
+        jLabel4.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel4.setText("Your  Features");
+
+        jLabel5.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel5.setText("Then Update Your Chosen Features");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane2)
-                            .addComponent(infoFilterSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(selectAllButton, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(selectAllAboveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(selectAllBelowButton, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(clearSelectionButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel3))
+                            .addComponent(infoFilterSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(1, 1, 1)
                         .addComponent(addSelectedButton, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(removeSelectedButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(bestInfoButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(bestInfoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(infoFilterSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
@@ -718,19 +732,13 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(selectAllButton, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(clearSelectionButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(selectAllAboveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(selectAllBelowButton, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(removeSelectedButton)
-                    .addComponent(addSelectedButton)
-                    .addComponent(bestInfoButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(addSelectedButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(removeSelectedButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bestInfoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -745,28 +753,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         handleSetChange(false);
     }//GEN-LAST:event_addSelectedButtonActionPerformed
 
-    private void selectAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllButtonActionPerformed
-        // TODO add your handling code here:
-        selectAll();
-    }//GEN-LAST:event_selectAllButtonActionPerformed
-
     private void infoFilterSliderPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_infoFilterSliderPropertyChange
         // TODO add your handling code here:
         
     
         
     }//GEN-LAST:event_infoFilterSliderPropertyChange
-
-    private void selectAllAboveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllAboveButtonActionPerformed
-        // TODO add your handling code here:
-        selectThresh(true);
-    }//GEN-LAST:event_selectAllAboveButtonActionPerformed
-
-    private void selectAllBelowButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllBelowButtonActionPerformed
-        // TODO add your handling code here:
-        selectThresh(false);
-        //delegate.windowSliderChanged((int )(Math.random() * 50 + 20));
-    }//GEN-LAST:event_selectAllBelowButtonActionPerformed
 
     private void infoFilterSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_infoFilterSliderStateChanged
         // TODO add your handling code here:
@@ -779,30 +771,24 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         autoSelect();
     }//GEN-LAST:event_bestInfoButtonActionPerformed
 
-    private void clearSelectionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSelectionButtonActionPerformed
-        // TODO add your handling code here:
-        clearSelection();
-
-    }//GEN-LAST:event_clearSelectionButtonActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addSelectedButton;
     private javax.swing.JTable availableFiltersTable;
     private javax.swing.JButton bestInfoButton;
-    private javax.swing.JButton clearSelectionButton;
     private wekimini.gui.FeatureSetPlotPanel featureSetPlotPanel;
     private javax.swing.JSlider infoFilterSlider;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JButton removeSelectedButton;
-    private javax.swing.JButton selectAllAboveButton;
-    private javax.swing.JButton selectAllBelowButton;
-    private javax.swing.JButton selectAllButton;
     private wekimini.gui.TestSetFrame testSetFrame1;
     // End of variables declaration//GEN-END:variables
 }
