@@ -414,6 +414,14 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         updateFeaturePlot();
     }
     
+    private void updateThreshold(double features)
+    {
+        double max = w.getDataManager().featureManager.getFeatureNames().length;
+        threshold = features / max;
+        int sliderVal = (int)((1.0d - threshold) * 100.0d);
+        infoFilterSlider.setValue(sliderVal);
+    }
+    
     private void autoSelect()
     {
         if(w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING)
@@ -421,11 +429,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             delegate.blockInteraction(true);
             w.getDataManager().setFeaturesForBestInfo(outputIndex, false,  new BestInfoSelector.BestInfoResultsReceiver() {
                 @Override
-                 public void finished(int[] features)
-                 {
-                    updateFeaturePlot();
-                    clearSelection();
-                 }
+                public void finished(int[] features)
+                {
+                   updateThreshold(features.length);
+                   updateFeaturePlot();
+                   clearSelection();
+                }
             });
         }
         else
