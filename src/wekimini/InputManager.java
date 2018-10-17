@@ -33,7 +33,7 @@ import wekimini.serial.SerialPortInput;
  *
  * @author rebecca
  */
-public class InputManager implements SerialPortDelegate {
+public class InputManager {
 
     private OSCInputGroup inputGroup = null;
     private SerialPortInput serialInput = null;
@@ -76,7 +76,15 @@ public class InputManager implements SerialPortDelegate {
                 serialPropertyChanged(evt);
             }
         };
-        serialInput = new SerialPortInput();
+        serialInput = new SerialPortInput( new SerialPortDelegate() {
+            /////Serial Port Delegate
+            @Override
+            public void update(double[] newVals)
+            {
+                notifyListeners(newVals);
+                System.arraycopy(newVals, 0, currentValues, 0, newVals.length);
+            }
+        });
         serialInput.addPropertyChangeListener(serialListener);
         
         inputValueListeners = new LinkedList<>();
@@ -86,7 +94,6 @@ public class InputManager implements SerialPortDelegate {
          g = new OSCInputGroup("group1", "/m1", 1, names1);
          addOSCInputGroup(g, true); */
         
-        serialInput.delegate = this;
     }
     
     public InputConnectionState getConnectionState() {
@@ -163,14 +170,7 @@ public class InputManager implements SerialPortDelegate {
         return (inputGroup != null);
     }
 
-    /////Serial Port Delegate
     
-    @Override
-    public void update(double[] newVals)
-    {
-        notifyListeners(newVals);
-        System.arraycopy(newVals, 0, currentValues, 0, newVals.length);
-    }
     
     public OSCReceiver getOSCReceiver() {
         return oscReceiver;

@@ -32,8 +32,11 @@ public class SerialPortInput {
         NOT_CONNECTED, CONNECTING, CONNECTED, FAIL
     };
     
-    public SerialPortInput() {
-        //connect();
+    private SerialPortInput() {}
+    
+    public SerialPortInput(SerialPortDelegate delegate)
+    {
+        this.delegate = delegate;
     }
     
     public SerialConnectionState getConnectionState() {

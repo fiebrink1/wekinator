@@ -10,8 +10,10 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
@@ -49,11 +51,28 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     private final static BasicStroke CIRCLE_STROKE = new BasicStroke(2, 
             BasicStroke.CAP_BUTT, 
             BasicStroke.JOIN_ROUND);
+    private final static BasicStroke SELECTED_STROKE = new BasicStroke(5, 
+            BasicStroke.CAP_BUTT, 
+            BasicStroke.JOIN_ROUND);
+    public FeatureSetPlotItem selectedFeature;
+    private FeatureSetPlotItem hoveredFeature;
     
     public FeatureSetPlotPanel()
     {
         java.net.URL imgUrl = getClass().getResource("/wekimini/icons/ajax-loader.gif");
         loadingIcon = new ImageIcon(imgUrl);
+        MouseMotionListener plotMouseMotionListener = new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                FeatureSetPlotItem newItem = getNearest(e.getX(), e.getY());
+                if(hoveredFeature  != newItem)
+                {
+                    hoveredFeature = newItem;
+                    repaint();
+                }
+            }
+        };
+        addMouseMotionListener(plotMouseMotionListener);
     }
     
     public void showLoading()
@@ -102,20 +121,21 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     public void update(FeatureSetPlotItem[] features)
     {
         this.features = features;
+        
         repaint();
     }
     
-    public Feature getNearest(double x, double y)
+    public FeatureSetPlotItem getNearest(double x, double y)
     {
         double min = Double.POSITIVE_INFINITY;
-        Feature nearest = null;
+        FeatureSetPlotItem nearest = null;
         for(FeatureSetPlotItem f : features)
         {
            double dist = Math.abs(x - f.x) + Math.abs(y - f.y);
            if(dist < min)
            {
                min = dist;
-               nearest = f.feature;
+               nearest = f;
            }
         }
         return min < MAX_MANHATTAN ? nearest : null;
@@ -259,20 +279,52 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             f.y = yForFeature(f.feature);
             Color c = colorForTags(f.feature.tags, false);
             g2d.setColor(c);
-            g2d.setStroke(CIRCLE_STROKE);
+            double r = RADIUS;
+            if(!f.isSelected)
+            {
+                if(f.isInSet)
+                {
+                    g2d.setStroke(CIRCLE_STROKE);
+                    g2d.fill(new Ellipse2D.Double(f.x, f.y, r, r));
+                }
+                else
+                {
+                    g2d.setStroke(CIRCLE_STROKE);
+                    g2d.draw(new Ellipse2D.Double(f.x, f.y, r, r));
+                }
+            }
+        }
+        for(FeatureSetPlotItem f:features)
+        {
+            Color c = colorForTags(f.feature.tags, false);
+            g2d.setColor(c);
             double r = RADIUS;
             if(f.isSelected)
             {
-                r += 5;
+                if(f.isInSet)
+                {
+                    g2d.setStroke(CIRCLE_STROKE);
+                    g2d.fill(new Ellipse2D.Double(f.x, f.y, r, r));
+                }
+                else
+                {
+                    g2d.setStroke(CIRCLE_STROKE);
+                    g2d.draw(new Ellipse2D.Double(f.x, f.y, r, r));
+                }
+                r = RADIUS + 4;
+                g2d.setStroke(SELECTED_STROKE);
+                g2d.setColor(Color.MAGENTA);
+                g2d.draw(new Ellipse2D.Double(f.x - 2, f.y - 2, r, r));
             }
-            if(f.isInSet)
-            {
-                g2d.fill(new Ellipse2D.Double(f.x, f.y, r, r));
-            }
-            else
-            {
-                g2d.draw(new Ellipse2D.Double(f.x, f.y, r, r));
-            }
+        }
+        if(hoveredFeature != null)
+        {
+            double r = RADIUS;
+            int x = (int)hoveredFeature.x;
+            int y =  (int)hoveredFeature.y;
+            g2d.draw(new Ellipse2D.Double(x, y, r, r));
+            g2d.setPaint(new Color(0.0f,0.0f,1.0f,1.0f));
+            g2d.drawString(hoveredFeature.feature.name, x, y);
         }
     }
     

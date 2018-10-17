@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -81,10 +82,11 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         MouseListener plotMouseListener = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                Feature f = featureSetPlotPanel.getNearest(e.getX(), e.getY());
+                FeatureSetPlotItem f = featureSetPlotPanel.getNearest(e.getX(), e.getY());
                 if(f != null)
                 {
-                    delegate.newFeatureSelected(f);
+                    delegate.newFeatureSelected(f.feature);
+                    featureSetPlotPanel.selectedFeature = f;
                 }
             }
         };
@@ -362,16 +364,34 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     
     private void autoSelect()
     {
-        
-        delegate.blockInteraction(true);
-        w.getDataManager().setFeaturesForBestInfo(outputIndex, false,  new BestInfoSelector.BestInfoResultsReceiver() {
-            @Override
-             public void finished(int[] features)
-             {
-                updateFeaturePlot();
-                clearSelection();
-             }
-        });
+        if(w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING)
+        {
+            delegate.blockInteraction(true);
+            w.getDataManager().setFeaturesForBestInfo(outputIndex, false,  new BestInfoSelector.BestInfoResultsReceiver() {
+                @Override
+                 public void finished(int[] features)
+                 {
+                    updateFeaturePlot();
+                    clearSelection();
+                 }
+            });
+        }
+        else
+        {
+            Object[] options = {"Stop Running","OK"};
+            int n = JOptionPane.showOptionDialog(null,
+                "Cannot edit features whilst Running",
+                "Warning",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,     
+                options,  
+                options[0]); 
+            if(n ==0)
+            {
+                new WekinatorSupervisedLearningController(w.getSupervisedLearningManager(),w).stopRun();
+            }
+        }
     }
     
     private void handleSetChange(Boolean remove)
