@@ -57,7 +57,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
     private void setUpPlots() 
     {
-        featureSetPlotPanel.setDimensions(596, 200);
+        featureSetPlotPanel.setDimensions(664 - 10, 200);
         availableFiltersTable.setRowHeight(140/4);
         
         String[] combined = new String[] {"All", "Above Thresh", "Below Thresh", "None", "Accelerometer", "Gyroscope",
@@ -549,14 +549,32 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                         int row, int column) {
             String tag = (String)value;
             FiltersTableModel model = (FiltersTableModel)table.getModel();
-            Color c = FeatureSetPlotPanel.colorForTag(tag, false);
-            setBackground(selectedFilters.contains(tag) ? Color.DARK_GRAY : c);
-            setForeground(selectedFilters.contains(tag) ? c : Color.DARK_GRAY);
-            setBorder(BorderFactory.createEmptyBorder(4, 3, 4, 1));
+            Color textColor = FeatureSetPlotPanel.colorForTag(tag, false);
+            Color borderColor = textColor;
+            Color selectedTextColor = Color.DARK_GRAY;
+            if(textColor == null)
+            {
+                textColor = Color.DARK_GRAY;
+                borderColor = new Color(245, 245, 245, 255);
+                selectedTextColor = borderColor;
+            }
+            if(selectedFilters.contains(tag))
+            {
+                setBackground(textColor);
+                setBorder(BorderFactory.createEmptyBorder(4, 3, 4, 1));
+                setForeground(selectedTextColor);
+            }
+            else
+            {
+                setBackground(Color.WHITE);
+                setBorder(BorderFactory.createLineBorder(borderColor, 4));
+                setForeground(textColor);
+            }
             if(tag.equals(highlightedTag))
             {
                 setBorder(BorderFactory.createLineBorder(Color.black));
             }
+            setHorizontalAlignment(CENTER);
             setText(tag);
             return this;
         }
@@ -702,22 +720,22 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 664, Short.MAX_VALUE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel3))
                             .addComponent(infoFilterSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(1, 1, 1)
                         .addComponent(addSelectedButton, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(removeSelectedButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(bestInfoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE))
+                        .addComponent(bestInfoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))

@@ -202,7 +202,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             default:
                 break;
         }
-        return new Color(255, 255, 255, alpha);
+        return null;
     }
     
     public static Color colorForTags(ArrayList<String> tags, Boolean faded)
