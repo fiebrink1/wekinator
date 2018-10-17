@@ -10,6 +10,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -31,6 +35,7 @@ public class PlotPanel extends JPanel {
     protected double horizontalScale = 1;
     private PlotRowModel model;
     public boolean renderWindowOverlay = false;
+    private boolean highlightWindowOverlay = false;
     public boolean isDraggingWindowOverlay = false;
     public boolean interpolatePoints = true;
     private double plotY = 0;
@@ -80,6 +85,18 @@ public class PlotPanel extends JPanel {
             }
         }
         
+    }
+    
+    public void mouseMoved(int x)
+    {
+        double rectWidth = (double) (model.windowSize * horizontalScale);
+        double rectX =  (w - rectWidth);
+        boolean newVal = x > rectX;
+        if(!highlightWindowOverlay == newVal)
+        {
+            repaint();
+        }
+        highlightWindowOverlay = newVal;
     }
     
     public void updateWidth(int newW)
@@ -171,17 +188,51 @@ public class PlotPanel extends JPanel {
         {
             double rectWidth = (double) (model.windowSize * horizontalScale);
             double rectX =  (w - rectWidth);
+            Color wColor;
             if(isDraggingWindowOverlay)
             {
-                g2d.setColor(new Color(1.0f,0.8f,0.0f,0.5f));
+                wColor = new Color(1.0f,0.8f,0.0f,0.5f);
+            }
+            else if (highlightWindowOverlay)
+            {
+                wColor = new Color(1.0f,1.0f,0.0f,0.2f).darker();
             }
             else
             {
-                g2d.setColor(new Color(1.0f,1.0f,0.0f,0.2f));
+                wColor = new Color(1.0f,1.0f,0.0f,0.2f);
             }
+            
+            int x1Points[] = {(int)rectX, (int)rectX - 10, (int)rectX};
+            int y1Points[] = {(int)(imageHeight * 0.0), (int)(imageHeight * 0.5), (int)(imageHeight * 1.0)};
+            GeneralPath polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD,x1Points.length);
+            polygon.moveTo(x1Points[0], y1Points[0]);
+            for (int index = 1; index < x1Points.length; index++) 
+            {
+                    polygon.lineTo(x1Points[index], y1Points[index]);
+            }
+            polygon.closePath();
+            g2d.setColor(wColor.darker());
+            g2d.fill(polygon);
+            
+            int x2Points[] = {(int)rectX, (int)rectX + 10, (int)rectX};
+            int y2Points[] = {(int)(imageHeight * 0.0), (int)(imageHeight * 0.5), (int)(imageHeight * 1.0)};
+            polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, x1Points.length);
+            polygon.moveTo(x2Points[0], y2Points[0]);
+            for (int index = 1; index < x2Points.length; index++) 
+            {
+                polygon.lineTo(x2Points[index], y2Points[index]);
+            }
+            polygon.closePath();
+            g2d.setColor(wColor.darker());
+            g2d.fill(polygon);
+            
+            g2d.setColor(wColor);
             g2d.fill(new Rectangle2D.Double(rectX, 0, rectWidth, imageHeight));
+            
             g2d.setPaint(new Color(0.0f,0.0f,1.0f,1.0f));
             g2d.drawString("Window:"+model.windowSize, (float)rectX + 5, 10.0f);
+            
+            
         }
     }
    

@@ -45,7 +45,8 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     public FeatureDetailPanel() 
     {
         initComponents();
-        plotPanel = new PlotPanel(PLOT_W, PLOT_H);        
+        plotPanel = new PlotPanel(PLOT_W, PLOT_H); 
+        plotPanel.renderWindowOverlay = true;
         plotScrollPane.setViewportView(plotPanel);
         plotScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
         outputComboBox.setVisible(false);
@@ -60,10 +61,14 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
                     JScrollPane src = (JScrollPane)e.getSource();
                     double newWin = 1 - ((double)e.getX() / (double)src.getWidth());
                     model.windowSize = (int)(5 + (60 * newWin));
-                    plotPanel.renderWindowOverlay = true;
                     plotPanel.isDraggingWindowOverlay = true;
                     plotPanel.updateModel(model);
                 }
+            }
+            
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                plotPanel.mouseMoved(e.getX());
             }
         };
         MouseListener pressListener = new MouseAdapter() {
@@ -128,6 +133,12 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     {
         this.w = w;
         
+        if(!isDragging)
+        {
+            model.windowSize = w.getDataManager().featureManager.getFeatureWindowSize();
+        }
+        plotPanel.updateModel(model);
+        
         timer = new Timer(REFRESH_RATE, (ActionEvent evt) -> {
             Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
             if(in != null && model != null)
@@ -138,7 +149,6 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
                 {
                     model.windowSize = w.getDataManager().featureManager.getFeatureWindowSize();
                 }
-                plotPanel.renderWindowOverlay = true;
                 plotPanel.updateModel(model);
             }    
         });  

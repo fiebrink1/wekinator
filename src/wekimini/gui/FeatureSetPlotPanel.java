@@ -314,7 +314,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
                 }
                 r = RADIUS + 4;
                 g2d.setStroke(SELECTED_STROKE);
-                g2d.setColor(Color.BLACK);
+                g2d.setColor(Color.LIGHT_GRAY);
                 g2d.draw(new Ellipse2D.Double(f.x - 2, f.y - 2, r, r));
             }
         }
@@ -326,13 +326,8 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             int y =  (int)hoveredFeature.y;
             g2d.draw(new Ellipse2D.Double(x, y, r, r));
             g2d.setPaint(new Color(0.0f,0.0f,1.0f,1.0f));
-            //g.setFont(new Font("Helvetica", Font.PLAIN, 14)); 
             g2d.drawString(hoveredFeature.feature.name, x, y);
         }
-//        g2d.setPaint(new Color(0.0f,0.0f,0.0f,1.0f));
-//        g.setFont(new Font("Helvetica", Font.PLAIN, 25)); 
-//        g2d.drawString("LOW INFO", 10, (int)plotHeight-20);
-//        g2d.drawString("HIGH INFO", (int)w-120, (int)plotHeight-20);
     }
     
     public void clear()
