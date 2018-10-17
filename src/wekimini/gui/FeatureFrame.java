@@ -27,6 +27,9 @@ public class FeatureFrame extends JFrame {
     private int outputIndex = 0;
     private Feature selectedFeature;
     private Timer sliderTimer;
+    boolean wasRunning;
+    boolean wasPlotting;
+    boolean resetState = true;
 
 
     public FeatureFrame() {
@@ -36,9 +39,6 @@ public class FeatureFrame extends JFrame {
     public FeatureFrame(Wekinator w) {
         initComponents();
         this.w = w;
-        newFeaturesPanel.update(w, 0);
-        featureDetailPanel.update(w);
-        evaluateFeaturesPanel.update(w, 0);
         FeatureEditorDelegate delegate = new FeatureEditorDelegate() {
             //FeatureEditorDelegate methods
     
@@ -88,6 +88,11 @@ public class FeatureFrame extends JFrame {
         featureDetailPanel.delegate = delegate;
         newFeaturesPanel.delegate = delegate;
         evaluateFeaturesPanel.delegate = delegate;
+        
+        newFeaturesPanel.update(w, 0);
+        featureDetailPanel.update(w);
+        evaluateFeaturesPanel.update(w, 0);
+        
         selectedFeature = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey("AccX");
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -101,12 +106,14 @@ public class FeatureFrame extends JFrame {
     
     private void blockAll()
     {
+        prepareForLibraryUpdate();
         featureDetailPanel.blockInteraction(true, true);
         newFeaturesPanel.blockInteraction(true, true);
     }
     
     private void unblockAll()
     {
+        resetFollowingLibraryUpdate();
         featureDetailPanel.blockInteraction(false, true);
         newFeaturesPanel.blockInteraction(false, true);
     }
@@ -211,12 +218,11 @@ public class FeatureFrame extends JFrame {
     
     private void updateWindowSize(double newVal)
     {
-        boolean isRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
-        boolean isPlotting = w.getSupervisedLearningManager().isPlotting;
-        prepareForLibraryUpdate(isRunning, isPlotting);
+        prepareForLibraryUpdate();
         int ws = (int)(5 + (newVal * 60));
         w.getDataManager().featureManager.setFeatureWindowSize(ws, 100);
-        resetFollowingLibraryUpdate(isRunning, isPlotting, false);
+        resetFollowingLibraryUpdate();
+        featureLibraryUpdate();
     }
     
     /**
@@ -281,33 +287,36 @@ public class FeatureFrame extends JFrame {
         }
     }
 
-    private void prepareForLibraryUpdate(boolean isRunning, boolean isPlotting)
+    private void prepareForLibraryUpdate()
     {
-        System.out.println("----prepareForLibraryUpdate");
-        evaluateFeaturesPanel.cancelWorkers();
-        if(isRunning)
+        System.out.println("----prepareForLibraryUpdate resetting " + resetState);
+        if(resetState)
         {
-            w.getSupervisedLearningManager().stopRunning();
-        }
-        if(isPlotting)
-        {
-            System.out.println("setting is plotting to false");
-            w.getSupervisedLearningManager().isPlotting = false;
+            wasRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
+            wasPlotting = w.getSupervisedLearningManager().isPlotting;
+            evaluateFeaturesPanel.cancelWorkers();
+            if(wasRunning)
+            {
+                w.getSupervisedLearningManager().stopRunning();
+            }
+            if(wasPlotting)
+            {
+                System.out.println("setting is plotting to false");
+                w.getSupervisedLearningManager().isPlotting = false;
+            }
+            resetState = false;
         }
     }
     
-    private void resetFollowingLibraryUpdate(boolean isRunning, boolean isPlotting, boolean buffers)
+    private void resetFollowingLibraryUpdate()
     {
         System.out.println("----resetFollowingLibraryUpdate");
-        if(isRunning)
+        if(wasRunning)
         {
             w.getSupervisedLearningManager().startRunning();
         }
-        if(isPlotting)
-        {
-            w.getSupervisedLearningManager().isPlotting = isPlotting;
-        }
-        featureLibraryUpdate();
+        w.getSupervisedLearningManager().isPlotting = wasPlotting;
+        resetState = true;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -405,26 +405,14 @@ public final class FeatureCollection
     
     public double[] computeAndGetValuesForNewInputs(double[] newInputs)
     {
-        SwingWorker worker = new SwingWorker<double[], Void>()
-        {   
-            double[] newVals;
-
-            @Override
-            public double[]  doInBackground()
-            {
-                newVals = modifiers.computeAndGetValuesForNewInputs(newInputs, added);
-                updateFeatureIndexes();
-                return newVals;
-            }
-
-            @Override
-            public void done()
-            {
-                
-            }
-        };
-        worker.execute();
-        
+        try {
+            vals = modifiers.computeAndGetValuesForNewInputs(newInputs, added);
+            updateFeatureIndexes();
+        } 
+        catch (Exception e)
+        {
+            System.out.println("Exception in computing new inputs");
+        }
         return vals;
     }
     

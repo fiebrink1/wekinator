@@ -37,7 +37,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     private static final int PLOT_W = 416;
     private final static int PLOT_H = 75;
     private int featureOutputIndex = 0;
-    private Timer timer;
+    private Timer timer = null;
     public FeatureEditorDelegate delegate = null;
     private Boolean isDragging = false;
     private Boolean allowWindowSizeUpdate = true;
@@ -91,6 +91,10 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     public void blockInteraction(boolean doBlock, boolean fromDelegate)
     {
         allowWindowSizeUpdate = !doBlock;
+        if(doBlock)
+        {
+            showNoFeature();
+        }
         plotPanel.showLoading(doBlock);
         if(!fromDelegate)
         {
@@ -108,7 +112,10 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     
     protected void showNoFeature()
     {
-        timer.stop();
+        if(timer != null)
+        {
+            timer.stop();
+        }
         titleLabel.setText("Select a Feature to Explore");
         outputComboBox.setVisible(false);
         outputLabel.setVisible(false);

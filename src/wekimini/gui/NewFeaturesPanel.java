@@ -328,19 +328,21 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 }
                 FeatureSetPlotItem[] f = new FeatureSetPlotItem[items.size()];
                 f = items.toArray(f);
-                delegate.blockInteraction(false);
                 featureSetPlotPanel.update(f);
                 updatingRankings = false;
+                delegate.blockInteraction(false);
             }
         };
         if(!updatingRankings)
         {
             updatingRankings = true;
             try {
+                delegate.blockInteraction(true);
                 worker.execute();
             } 
             catch (Exception e)
             {
+                delegate.blockInteraction(false);
                 System.out.println("EXCEPTION " + e);
             }
             
@@ -385,8 +387,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     {
                         ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureRemoved(w);
                     }
-                    selected = new Feature[0];
-                    selectedFilters.clear();
+                    
                 }
                 else
                 {
@@ -397,6 +398,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     }
                 }
             }
+            selected = new Feature[0];
+            selectedFilters.clear();
             delegate.featureListUpdated();
         }
         else

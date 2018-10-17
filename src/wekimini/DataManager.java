@@ -1357,6 +1357,7 @@ public class DataManager {
     
     public Instance getClassifiableInstanceForPlot(double[] vals)
     {
+        //System.out.println("getting classifiable for plot");
         double[] features;
         Instances instances;
         features = featureManager.modifyInputsForAllFeatures(vals);
