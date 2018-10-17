@@ -202,16 +202,19 @@ public class PlotPanel extends JPanel {
                 wColor = new Color(1.0f,1.0f,0.0f,0.2f);
             }
             
+            g2d.setColor(wColor);
+            g2d.fill(new Rectangle2D.Double(rectX, 0, rectWidth, imageHeight));
+            
             int x1Points[] = {(int)rectX, (int)rectX - 10, (int)rectX};
             int y1Points[] = {(int)(imageHeight * 0.0), (int)(imageHeight * 0.5), (int)(imageHeight * 1.0)};
             GeneralPath polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD,x1Points.length);
             polygon.moveTo(x1Points[0], y1Points[0]);
             for (int index = 1; index < x1Points.length; index++) 
             {
-                    polygon.lineTo(x1Points[index], y1Points[index]);
+                polygon.lineTo(x1Points[index], y1Points[index]);
             }
             polygon.closePath();
-            g2d.setColor(wColor.darker());
+            g2d.setColor(wColor);
             g2d.fill(polygon);
             
             int x2Points[] = {(int)rectX, (int)rectX + 10, (int)rectX};
@@ -223,16 +226,27 @@ public class PlotPanel extends JPanel {
                 polygon.lineTo(x2Points[index], y2Points[index]);
             }
             polygon.closePath();
-            g2d.setColor(wColor.darker());
+            g2d.setColor(wColor.brighter());
             g2d.fill(polygon);
             
-            g2d.setColor(wColor);
-            g2d.fill(new Rectangle2D.Double(rectX, 0, rectWidth, imageHeight));
-            
+            if(highlightWindowOverlay)
+            {
+                int x3Points[] = {(int)w, (int)rectX, (int)rectX - 10, (int)rectX, (int)w};
+                int y3Points[] = {0, 0, (int)(imageHeight * 0.5), (int)(imageHeight), (int)(imageHeight)};
+                polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, x1Points.length);
+                polygon.moveTo(x3Points[0], y3Points[0]);
+                for (int index = 1; index < x3Points.length; index++) 
+                {
+                    polygon.lineTo(x3Points[index], y3Points[index]);
+                }
+                polygon.closePath();
+                g2d.setStroke(THICK_STROKE);
+                g2d.setColor(Color.YELLOW);
+                g2d.draw(polygon);
+            }
+
             g2d.setPaint(new Color(0.0f,0.0f,1.0f,1.0f));
             g2d.drawString("Window:"+model.windowSize, (float)rectX + 5, 10.0f);
-            
-            
         }
     }
    

@@ -543,7 +543,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             Color c = FeatureSetPlotPanel.colorForTag(tag, false);
             setBackground(selectedFilters.contains(tag) ? Color.DARK_GRAY : c);
             setForeground(selectedFilters.contains(tag) ? c : Color.DARK_GRAY);
-            setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+            setBorder(BorderFactory.createEmptyBorder(4, 3, 4, 1));
             if(tag.equals(highlightedTag))
             {
                 setBorder(BorderFactory.createLineBorder(Color.black));

@@ -16,6 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -325,8 +326,26 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             int x = (int)hoveredFeature.x;
             int y =  (int)hoveredFeature.y;
             g2d.draw(new Ellipse2D.Double(x, y, r, r));
+            String name = hoveredFeature.feature.name;
+            int padding = 3;
+            int width = g.getFontMetrics().stringWidth(name) + (padding *2);
+            g2d.setColor(new Color(200, 200, 200, 200));
+            int left = (int)(x - (width /2));
+            int right = (int)(x + (width /2));
+            
+            int x1Points[] = {x, x - 10, left , left, right, right, x + 10};
+            int y1Points[] = {y, y - 10, y - 10, y - 30, y - 30, y - 10, y - 10};
+            GeneralPath polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, x1Points.length);
+            polygon.moveTo(x1Points[0], y1Points[0]);
+            for (int index = 1; index < x1Points.length; index++) 
+            {
+                polygon.lineTo(x1Points[index], y1Points[index]);
+            }
+            polygon.closePath();
+            g2d.fill(polygon);
+            
             g2d.setPaint(new Color(0.0f,0.0f,1.0f,1.0f));
-            g2d.drawString(hoveredFeature.feature.name, x, y);
+            g2d.drawString(name, left + padding, y - 14);
         }
     }
     
