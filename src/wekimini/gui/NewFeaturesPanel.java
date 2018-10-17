@@ -58,7 +58,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     {
         featureSetPlotPanel.setDimensions(596, 200);
         availableFiltersTable.setRowHeight(140/4);
-        availableFiltersTable.setModel(new FiltersTableModel(w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getTags()));
+        String[] tags = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getTags();
+        String[] extraFilters = new String[] {"All", "Above Thresh", "Below Thresh", "None"};
+        String[] combined = new String[tags.length + extraFilters.length];
+        System.arraycopy(tags, 0, combined, 0, tags.length);
+        System.arraycopy(extraFilters, 0, combined, tags.length, extraFilters.length);
+        availableFiltersTable.setModel(new FiltersTableModel(combined));
         availableFiltersTable.setDefaultRenderer(String.class, new FiltersTableRenderer());
         MouseListener tableMouseListener = new MouseAdapter() {
             @Override
@@ -66,15 +71,32 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 int row = availableFiltersTable.rowAtPoint(e.getPoint());
                 int col = availableFiltersTable.columnAtPoint(e.getPoint());
                 String tag = (String)availableFiltersTable.getModel().getValueAt(row, col);
-                if(selectedFilters.contains(tag))
+                if(tag.equals("All"))
+                {
+                    selectAll();
+                }
+                else if(tag.equals("Above Thresh"))
+                {
+                    selectThresh(true);
+                }
+                else if(tag.equals("Below Thresh"))
+                {
+                    selectThresh(false);
+                }
+                else if(tag.equals("None"))
+                {
+                    clearSelection();
+                }
+                else if(selectedFilters.contains(tag))
                 {
                     selectedFilters.remove(tag);
+                    updateFilters();
                 }
                 else
                 {
                     selectedFilters.add(tag);
+                    updateFilters();
                 }
-                updateFilters();
             }
         };
         availableFiltersTable.addMouseListener(tableMouseListener);
@@ -355,10 +377,25 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         }
     }
     
+    private void selectThresh(boolean above)
+    {
+        delegate.blockInteraction(true);
+        selected = w.getDataManager().getInfoGainRankings(outputIndex, threshold, above);
+        delegate.blockInteraction(false);
+        updateFeaturePlot();
+    }
+    
     private void clearSelection()
     {
         selected = new Feature[0];
         selectedFilters.clear();
+        updateFeaturePlot();
+    }
+    
+    private void selectAll()
+    {
+        delegate.blockInteraction(true);
+        selected = w.getDataManager().featureManager.getAllFeaturesGroup().getCurrentFeatures();
         updateFeaturePlot();
     }
     
@@ -420,6 +457,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
             selected = new Feature[0];
             selectedFilters.clear();
+            availableFiltersTable.repaint();
             delegate.featureListUpdated();
         }
         else
@@ -709,9 +747,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
     private void selectAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllButtonActionPerformed
         // TODO add your handling code here:
-        delegate.blockInteraction(true);
-        selected = w.getDataManager().featureManager.getAllFeaturesGroup().getCurrentFeatures();
-        updateFeaturePlot();
+        selectAll();
     }//GEN-LAST:event_selectAllButtonActionPerformed
 
     private void infoFilterSliderPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_infoFilterSliderPropertyChange
@@ -723,18 +759,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
     private void selectAllAboveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllAboveButtonActionPerformed
         // TODO add your handling code here:
-        delegate.blockInteraction(true);
-        selected = w.getDataManager().getInfoGainRankings(outputIndex, threshold, true);
-        delegate.blockInteraction(false);
-        updateFeaturePlot();
+        selectThresh(true);
     }//GEN-LAST:event_selectAllAboveButtonActionPerformed
 
     private void selectAllBelowButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllBelowButtonActionPerformed
         // TODO add your handling code here:
-        delegate.blockInteraction(true);
-        selected = w.getDataManager().getInfoGainRankings(outputIndex, threshold, false);
-        delegate.blockInteraction(false);
-        updateFeaturePlot();
+        selectThresh(false);
         //delegate.windowSliderChanged((int )(Math.random() * 50 + 20));
     }//GEN-LAST:event_selectAllBelowButtonActionPerformed
 

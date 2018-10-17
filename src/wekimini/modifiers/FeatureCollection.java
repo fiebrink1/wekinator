@@ -51,7 +51,6 @@ public final class FeatureCollection
     protected static final String STDDEV_DESCRIPTION = "Standard Deviation \nUse this feature if you want to model how much variation there is in the signal";
     protected static final String CORRELATION_DESCRIPTION = "Correlation \nThis is a measure of how similar two signals are";
     protected static final String MAG_DESCRIPTION = "Magnitude \nThis feature tells you the amount of movement over all three axes";
-    private double[] vals;
     
     private FeatureCollection(){}
     
@@ -406,14 +405,16 @@ public final class FeatureCollection
     public double[] computeAndGetValuesForNewInputs(double[] newInputs)
     {
         try {
+            double[] vals;
             vals = modifiers.computeAndGetValuesForNewInputs(newInputs, added);
             updateFeatureIndexes();
+            return vals;
         } 
         catch (Exception e)
         {
             System.out.println("Exception in computing new inputs");
         }
-        return vals;
+        return new double[0];
     }
     
     public void resetAllModifiers()

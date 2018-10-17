@@ -48,12 +48,15 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             0, 
             new float[]{9}, 
             0);
-    private final static BasicStroke CIRCLE_STROKE = new BasicStroke(2, 
+    private final static BasicStroke CIRCLE_STROKE = new BasicStroke(4, 
             BasicStroke.CAP_BUTT, 
             BasicStroke.JOIN_ROUND);
-    private final static BasicStroke SELECTED_STROKE = new BasicStroke(5, 
+    private final static BasicStroke SELECTED_STROKE = new BasicStroke(3, 
             BasicStroke.CAP_BUTT, 
-            BasicStroke.JOIN_ROUND);
+            BasicStroke.JOIN_ROUND,
+            0, 
+            new float[]{3}, 
+            0);
     public FeatureSetPlotItem selectedFeature;
     private FeatureSetPlotItem hoveredFeature;
     
@@ -313,12 +316,13 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
                 }
                 r = RADIUS + 4;
                 g2d.setStroke(SELECTED_STROKE);
-                g2d.setColor(Color.MAGENTA);
+                g2d.setColor(Color.BLACK);
                 g2d.draw(new Ellipse2D.Double(f.x - 2, f.y - 2, r, r));
             }
         }
         if(hoveredFeature != null)
         {
+            g2d.setColor(Color.MAGENTA);
             double r = RADIUS;
             int x = (int)hoveredFeature.x;
             int y =  (int)hoveredFeature.y;
