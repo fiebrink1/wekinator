@@ -1100,7 +1100,16 @@ public class DataManager {
                     newInstances = Filter.useFilter(newInstances, batchFilter);
                 }
             }
-            List<Instances> featureInstances = testSet ? testingFeatureInstances : trainingFeatureInstances;
+           
+            List<Instances> featureInstances;
+            if(allFeatures)
+            {
+                featureInstances = testSet ? allFeaturesTestInstances : allFeaturesInstances;
+            }
+            else
+            {
+                featureInstances = testSet ? testingFeatureInstances : trainingFeatureInstances;
+            }
             if(index < featureInstances.size())
             {
                featureInstances.set(index, newInstances);
@@ -1118,8 +1127,10 @@ public class DataManager {
                 }
                 else
                 {
+                    System.out.println("-------------~~~~~~~~~~~~~~~~~UPDATING allFeaturesInstances " + featureInstances.get(0).numAttributes());
                     allFeaturesInstances = featureInstances; 
                 }
+                featureManager.didRecalculateAllFeatures(testSet);
             }
             else
             {
@@ -1170,11 +1181,12 @@ public class DataManager {
     public void featureListUpdated()
     {
         mdsDirty = true;
+        w.getSupervisedLearningManager().setAbleToRun(false);
     }
     
     public Instances getMDSInstances(int outputIndex)
     {
-        System.out.println("getting MDS instance");
+        System.out.println("getting MDS infstance");
         if(mdsDirty)
         {
             for(int i = 0; i < numOutputs; i++)
@@ -1246,9 +1258,10 @@ public class DataManager {
     
     public Instances getAllFeaturesInstances(int outputIndex, boolean testSet)
     {
+        System.out.println("getAllFeaturesInstances");
         if(featureManager.isAllFeaturesDirty(testSet))
         {
-            System.out.println("updating feature instances");
+            System.out.println("*************All Features is Dirty, updating*************************");
             for(int i = 0; i < numOutputs; i++)
             {
                 updateFeatureInstances(i, testSet, true);
@@ -1610,7 +1623,7 @@ public class DataManager {
         return 0;
     }
     
-    public boolean canRun()
+     public boolean canRun()
     {
         for(int i = 0; i < numOutputs; i++)
         {
