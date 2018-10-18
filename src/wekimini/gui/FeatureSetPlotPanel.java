@@ -31,8 +31,9 @@ import wekimini.modifiers.Feature;
  */
 public class FeatureSetPlotPanel extends javax.swing.JPanel {
     private BufferedImage image;
-    private double w = 1;
+    private double plotWidth = 1;
     private double imageHeight = 1;
+    private double imageWidth = 1;
     private double plotHeight = 1;
     FeatureSetPlotItem[] features = new FeatureSetPlotItem[0];
     double librarySize = 202;
@@ -43,7 +44,8 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     private double threshold = 0.5;
     private Boolean highlightThreshold = false;
     private Timer thresholdTimer = null;
-    private static final int THRESHOLD_HEIGHLIGHT_DECAY = 500;
+    private static final int THRESHOLD_HEIGHLIGHT_DECAY = 200;
+    private static final int PADDING = 20;
     private final static BasicStroke DOTTED_STROKE = new BasicStroke(5, 
             BasicStroke.CAP_BUTT, 
             BasicStroke.JOIN_ROUND,
@@ -112,10 +114,11 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     
     public void setDimensions(int w, int h)
     {
-        this.w = w;
+        imageWidth = w;
         imageHeight = h;
-        plotHeight = (h * 0.875) - 10.0;
-        image = new BufferedImage(w, (int)imageHeight, BufferedImage.TYPE_INT_ARGB);
+        plotHeight = h - (2 * PADDING);
+        plotWidth = w  - (2 * PADDING);
+        image = new BufferedImage((int)imageWidth, (int)imageHeight, BufferedImage.TYPE_INT_ARGB);
         setBackground(Color.white);
         clear();
     }
@@ -170,7 +173,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
                 y = plotHeight * (6 / totalSensors);
                 break;
         }
-        return y;
+        return y + PADDING;
     }
 
     public static Color colorForTag(String tag, Boolean faded)
@@ -252,7 +255,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         super.paintComponent(g);
         if(loading)
         {
-            loadingIcon.paintIcon(this, g, (int)w/2, (int)plotHeight/2);
+            loadingIcon.paintIcon(this, g, (int)plotWidth/2, (int)plotHeight/2);
             return;
         }
         
@@ -262,22 +265,23 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         }
         
         Graphics2D g2d = (Graphics2D)g;
-        double thresholdX = ((1-threshold) * w);
+        double thresholdX = ((1-threshold) * plotWidth) + PADDING;
         if(highlightThreshold)
         {
             g2d.setColor(Color.LIGHT_GRAY);
-            double thresholdW = w - thresholdX;
-            g2d.fill(new Rectangle2D.Double(thresholdX, 0, thresholdW, plotHeight));
+            double thresholdW = plotWidth - thresholdX;
+            g2d.fill(new Rectangle2D.Double(thresholdX, PADDING, thresholdW, plotHeight));
         }
         else
         {
             g2d.setColor(Color.BLACK);
             g2d.setStroke(DOTTED_STROKE);
-            g2d.draw(new Line2D.Double(thresholdX, 0, thresholdX, plotHeight));
+            g2d.draw(new Line2D.Double(thresholdX, PADDING, thresholdX, plotHeight));
         }
         for(FeatureSetPlotItem f:features)
         {
-            f.x = ((librarySize-f.ranking)/librarySize) * w;
+            f.x = ((librarySize-f.ranking)/librarySize) * plotWidth;
+            f.x += PADDING;
             f.y = yForFeature(f.feature);
             Color c = colorForTags(f.feature.tags, false);
             g2d.setColor(c);
@@ -351,13 +355,13 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     
     public void clear()
     {
-        createEmptyImage((int)w);
+        createEmptyImage();
         repaint();
     }
 
-    private void createEmptyImage(int width)
+    private void createEmptyImage()
     {
-        image = new BufferedImage(width, (int)imageHeight, BufferedImage.TYPE_INT_ARGB);
+        image = new BufferedImage((int)imageWidth, (int)imageHeight, BufferedImage.TYPE_INT_ARGB);
     } 
          
 
