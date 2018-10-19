@@ -915,6 +915,7 @@ public class DataManager {
             updateInfoGainRankings(outputIndex);
         }
         int maxRank = (int)Math.ceil(((double)infoRankNames[outputIndex].size() * threshold));
+        System.out.println("threshold:" + threshold + " maxRank:" + maxRank + " out of " + infoRankNames[outputIndex].size());
         ArrayList<Feature> thresholded = new ArrayList();
         HashMap<String, Integer> rankings = infoRankNames[outputIndex];
         Iterator it = rankings.entrySet().iterator();
@@ -932,6 +933,7 @@ public class DataManager {
         }
         Feature[] t = new Feature[thresholded.size()];
         t = thresholded.toArray(t);
+        System.out.println("thresholded set " + thresholded.size());
         return t;
     }
    

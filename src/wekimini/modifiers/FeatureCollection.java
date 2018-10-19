@@ -54,7 +54,7 @@ public final class FeatureCollection
     
     private FeatureCollection(){}
     
-    public FeatureCollection(String[] inputNames)
+    public FeatureCollection(String[] inputNames, int windowSize, int bufferSize)
     {
         inputs.put("AccX", ACCX);
         inputs.put("AccY", ACCY);
@@ -66,7 +66,7 @@ public final class FeatureCollection
         inputGroupings.put("Acc",new int[] {ACCX, ACCY, ACCZ});
         inputGroupings.put("Gyro",new int[] {GYROX, GYROY, GYROZ});
         
-        initLibrary(10, 10);
+        initLibrary(windowSize, bufferSize);
         
         modifiers = new ModifierCollection(inputNames);
     }
@@ -187,12 +187,16 @@ public final class FeatureCollection
             library.add(new MaxFFT("MaxBinFFT" + pair.getKey(), pair.getValue(), 128));
         }
         //60
-//        it = inputs.entrySet().iterator();
-//        while(it.hasNext())
-//        {
-//            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-//            library.add(new BufferFeature("Buffer" + pair.getKey(), pair.getValue(), windowSize));
-//        }
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            for(int i = 0; i < windowSize; i++)
+            {
+                library.add(new BufferFeatureSingleOutput("Buffer" + pair.getKey() + i, pair.getValue(), windowSize, i));
+            }
+            //library.add(new BufferFeature("Buffer" + pair.getKey(), pair.getValue(), windowSize));
+        }
         
         it = inputs.entrySet().iterator();
         while(it.hasNext())
@@ -226,9 +230,11 @@ public final class FeatureCollection
         int ptr = 0;
         for(Feature feature:library)
         {
+            //System.out.println(feature.name);
             names[ptr] = feature.name;
             ptr++;
         }
+        System.out.println("Library size " + library.size());
         
         ArrayList<String> keys = new ArrayList(added.keySet());
         for(String key:keys)
@@ -438,6 +444,7 @@ public final class FeatureCollection
 
     public void addFeatureForKey(String key)
     {
+        //System.out.println("adding feature" + key);
         if(added.containsKey(key))
         {
             return;
@@ -775,6 +782,41 @@ class WindowedFeature extends FeatureSingleModifierOutput
         setOutputModifierID(id1);
     }
 }
+
+class BufferFeatureSingleOutput extends FeatureSingleModifierOutput
+{  
+    
+    private final int index;
+    private final int windowSize;
+    private final int outputIndex;
+    
+    public BufferFeatureSingleOutput(String name, int index, int windowSize, int outputIndex) {
+        super(name);
+        this.index = index;
+        this.outputIndex = outputIndex;
+        this.windowSize = windowSize;
+        this.sensor = FeatureMetadata.diagramForInput(index);
+        tags.add("Buffer");
+        tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
+    }
+
+    @Override
+    public void addFeature(ModifierCollection mc)
+    {
+        BufferedInput bufmodifier = new BufferedInput(name, index, windowSize, 0);
+        bufmodifier.addToOutput = false;
+        bufmodifier.addRequiredModifierID(0);
+        int id1 = addModifier(mc, bufmodifier);
+        
+        PassThroughSingle modifier = new PassThroughSingle("Buffer" + index+":"+ outputIndex, outputIndex, 0);
+        modifier.addRequiredModifierID(id1);
+        modifier.addToOutput = true;
+        int id2 = addModifier(mc, modifier);
+        System.out.println("buffer feature input:" + index + " output:" + outputIndex + " bufID:" + id1 + " outId:" + id2);
+        setOutputModifierID(id2);
+    }
+}
+
 
 class BufferFeature extends FeatureSingleModifierOutput
 {  

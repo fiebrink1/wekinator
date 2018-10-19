@@ -12,6 +12,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import weka.core.Instance;
 import weka.core.Instances;
+import wekimini.modifiers.BufferedInput;
+import wekimini.modifiers.PassThroughSingle;
 import wekimini.modifiers.PassThroughVector;
 
 /**
@@ -153,6 +155,7 @@ import wekimini.modifiers.PassThroughVector;
         testForTraining(getMainWindowSize()*2);
     }
     
+  
 
    
 }

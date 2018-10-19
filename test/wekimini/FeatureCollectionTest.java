@@ -12,9 +12,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+import wekimini.modifiers.BufferedInput;
 import wekimini.modifiers.Feature;
 import wekimini.modifiers.FeatureCollection;
 import wekimini.modifiers.ModifierCollection;
+import wekimini.modifiers.PassThroughSingle;
 /**
  *
  * @author louismccallum
@@ -252,6 +254,69 @@ public class FeatureCollectionTest {
         
         results = new ArrayList<>(Arrays.asList(fc.getFeaturesForTags(new String[]{"Accelerometer"}, false)));
         assertTrue(results.size() > 0);
+    }
+    
+    @Test
+    public void testBufferDimensionality()
+    {
+        int winSize = 10;
+        int inputs = 6;
+        for(int i = 0; i < inputs; i++)
+        {
+            for(int j = 0; j < winSize; j++)
+            {
+                BufferedInput bufmodifier = new BufferedInput("test" + i, i, winSize, 0);
+                bufmodifier.addToOutput = false;
+                bufmodifier.addRequiredModifierID(0);
+                int id1 = fc.getModifiers().addModifier(bufmodifier);
+
+                PassThroughSingle modifier = new PassThroughSingle("Buffertest" + i + j, j, 0);
+                modifier.addRequiredModifierID(id1);
+                modifier.addToOutput = true;
+                int id2 = fc.getModifiers().addModifier(modifier);
+            }
+        }
+        assertEquals(60, fc.getModifiers().getOutputDimensionality());
+    }
+    
+    @Test
+    public void equalityTest()
+    {
+        BufferedInput bufmodifier = new BufferedInput("test-1", 0, 10, 0);
+        bufmodifier.addToOutput = false;
+        bufmodifier.addRequiredModifierID(0);
+        int id1 = fc.getModifiers().addModifier(bufmodifier);
+        
+        PassThroughSingle modifier = new PassThroughSingle("Buffertest1" + 0, 0, 0);
+        modifier.addRequiredModifierID(id1);
+        modifier.addToOutput = true;
+        int id2 = fc.getModifiers().addModifier(modifier);
+        
+        BufferedInput bufmodifier2 = new BufferedInput("test-2", 1, 10, 0);
+        bufmodifier2.addToOutput = false;
+        bufmodifier2.addRequiredModifierID(0);
+        int id3 = fc.getModifiers().addModifier(bufmodifier2);
+        assertTrue(id3 != id1);
+        
+        PassThroughSingle modifier2 = new PassThroughSingle("Buffertest2" + 0, 0, 0);
+        modifier2.addRequiredModifierID(id3);
+        modifier2.addToOutput = true;
+        int id4 = fc.getModifiers().addModifier(modifier2);
+        assertTrue(id2 != id4);
+        
+        BufferedInput bufmodifier3 = new BufferedInput("test-3", 1, 10, 0);
+        bufmodifier3.addToOutput = false;
+        bufmodifier3.addRequiredModifierID(0);
+        int id5 = fc.getModifiers().addModifier(bufmodifier3);
+        assertTrue(id5 != id1);
+        assertTrue(id5 == id3);
+        
+        PassThroughSingle modifier3 = new PassThroughSingle("Buffertest3" + 1, 1, 0);
+        modifier3.addRequiredModifierID(id5);
+        modifier3.addToOutput = true;
+        int id6 = fc.getModifiers().addModifier(modifier3);
+        assertTrue(id2 != id6);
+        assertTrue(id4 != id6);
     }
     
 }

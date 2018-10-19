@@ -33,9 +33,10 @@ public class FeatureManager
     public FeatureManager(FeatureManagerData dataFromFile)
     {
         featureCollections = new ArrayList<>();
-        addOutputs(dataFromFile.numOutputs,dataFromFile.inputNames);
         windowSize = dataFromFile.windowSize;
         bufferSize = dataFromFile.bufferSize;
+        addOutputs(dataFromFile.numOutputs,dataFromFile.inputNames);
+
         for(int i = 0; i < dataFromFile.added.size(); i++)
         {
             FeatureCollection fc = featureCollections.get(i);
@@ -103,7 +104,7 @@ public class FeatureManager
     protected void addOutputs(int numOutputs, String[] in)
     {
         this.inputNames = in;
-        allFeatures = new FeatureCollection(inputNames);
+        allFeatures = new FeatureCollection(inputNames, windowSize, bufferSize);
         
         for(String feature:allFeatures.getNames())
         {
@@ -117,7 +118,7 @@ public class FeatureManager
         
         for(int i = 0; i < numOutputs; i++)
         {   
-            featureCollections.add(new FeatureCollection(inputNames));
+            featureCollections.add(new FeatureCollection(inputNames, windowSize, bufferSize));
         }
     }
     
@@ -246,6 +247,11 @@ public class FeatureManager
         bufferSize = bSize;
         int output = 0;
         allFeatures.setFeatureWindowSize(windowSize, bufferSize);
+        allFeatures.removeAll();
+        for(String feature:allFeatures.getNames())
+        {
+            allFeatures.addFeatureForKey(feature);
+        }
         for(FeatureCollection fc:featureCollections)
         {
             fc.setFeatureWindowSize(windowSize, bufferSize);

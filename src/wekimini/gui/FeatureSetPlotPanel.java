@@ -60,7 +60,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             BasicStroke.JOIN_ROUND);
     public FeatureSetPlotItem selectedFeature;
     private FeatureSetPlotItem hoveredFeature;
-    
+        
     public FeatureSetPlotPanel()
     {
         java.net.URL imgUrl = getClass().getResource("/wekimini/icons/ajax-loader.gif");
@@ -123,9 +123,10 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         clear();
     }
     
-    public void update(FeatureSetPlotItem[] features)
+    public void update(FeatureSetPlotItem[] features, int librarySize)
     {
         this.features = features;
+        this.librarySize = librarySize;
         
         repaint();
     }
@@ -202,6 +203,8 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
                 return new Color(18, 33, 219, alpha);
             case "Correlation":
                 return new Color(139, 119, 120, alpha);
+           case "Buffer":
+                return new Color(139, 250, 120, alpha);
             default:
                 break;
         }
@@ -246,6 +249,10 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         {
             return colorForTag("Raw", faded);
         }
+        else if(tags.contains("Buffer"))
+        {
+            return colorForTag("Buffer", faded);
+        }
         return colorForTag("Raw", faded);
     }
 
@@ -269,7 +276,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         if(highlightThreshold)
         {
             g2d.setColor(Color.LIGHT_GRAY);
-            double thresholdW = plotWidth - thresholdX;
+            double thresholdW = plotWidth - thresholdX + (2 * PADDING);
             g2d.fill(new Rectangle2D.Double(thresholdX, PADDING, thresholdW, plotHeight));
         }
         else

@@ -62,7 +62,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         
         String[] combined = new String[] {"All", "Above Thresh", "Below Thresh", "None", "Accelerometer", "Gyroscope",
                 "AccelerometerX", "AccelerometerY", "AccelerometerZ", "GyroscopeX", "GyroscopeY", "GyroscopeZ", 
-                "Raw", "Mean", "1st Order Diff", "FFT", "Max", "Min",
+                "Raw", "Buffer", "Mean", "1st Order Diff", "FFT", "Max", "Min",
                 "Energy", "IQR", "Correlation", "Standard Deviation", "Magnitude"
         };
         availableFiltersTable.setModel(new FiltersTableModel(combined));
@@ -367,7 +367,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 }
                 FeatureSetPlotItem[] f = new FeatureSetPlotItem[items.size()];
                 f = items.toArray(f);
-                featureSetPlotPanel.update(f);
+                featureSetPlotPanel.update(f, w.getDataManager().featureManager.getFeatureNames().length);
                 updatingRankings = false;
                 delegate.blockInteraction(false);
             }
