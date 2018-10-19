@@ -10,7 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import weka.core.Instance;
 import weka.core.Instances;
 import wekimini.featureanalysis.BestInfoSelector;
 import wekimini.featureanalysis.InfoGainSelector;
@@ -32,7 +34,7 @@ public class BestInfoTest {
     */
     @Before
     public void setUp() {
-        String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet/WekinatorTestSet/WekinatorTestSet.wekproj");
+        String fileLocation = ("/Users/louismccallum/Documents/Goldsmiths/Wekinator_Projects/WekinatorTestSet6Inputs/6Inputs/6Inputs.wekproj");
         try{
             w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
             w.getDataManager().doNormalise = false;
@@ -42,45 +44,54 @@ public class BestInfoTest {
         }
     }
     
-    
-    @Test 
-    public void testGetFeaturesByIndices()
+    @Test
+    public void testMatchingAcrossSets()
     {
-        //JUST THE RAW INPUTS
-        int[] indices = {0,1,2,3,4,5};
-        
-        //TRAINING SET, OUTPUT 0
-        Instances selected = w.getDataManager().getFeaturesInstancesFromIndices(indices, 0, false);
-        assertEquals(indices.length + 1, selected.numAttributes());
-        assertEquals(100, selected.numInstances());
-        
-        //TEST SET, OUTPUT 0
-        selected = w.getDataManager().getFeaturesInstancesFromIndices(indices, 0, true);
-        assertEquals(indices.length + 1, selected.numAttributes());
-        assertEquals(200, selected.numInstances());
-    }
+        int[] attibutes = {0, 10, 20, 30, 40, 50};
+        w.getDataManager().featureManager.getFeatureGroups().get(0).removeAll();
+        int ptr = 0;
+        for(int attributeIndex:attibutes)
+        {
+            String name = w.getDataManager().featureManager.getAllFeaturesGroup().getModifiers().nameForIndex(attributeIndex);
+            String[] split = name.split(":");
+            w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey(split[0]);
+        }
+        Instances user = w.getDataManager().getFeatureInstances(false).get(0);
+        Instances filtered = w.getDataManager().getFeaturesInstancesFromIndices(attibutes, 0, false);
+        for(int i = 0; i < user.numInstances(); i++)
+        {
+            Instance userIn = user.instance(i);
+            Instance filterIn = filtered.instance(i);
+            for(int a = 0; a < userIn.numAttributes(); a++)
+            {
+                System.out.println(userIn.value(a) + ","  + filterIn.value(a));
+                assertEquals(userIn.value(a), filterIn.value(a), 0.0);
+            }
+        }
+    }  
     
-//    @Test
-//    public void testInfoGainSelection() throws InterruptedException
-//    {
-//        BestInfoSelector sel = new BestInfoSelector(w);
-//        sel.outputIndex = 0;
-//        Method method;
-//        try {
-//            method = w.getDataManager().getClass().getDeclaredMethod("updateFeatureInstances", int.class, boolean.class, boolean.class);
-//            method.setAccessible(true);
-//            method.invoke(w.getDataManager(), 0, false, true);
-//        } catch (Exception ex) {
-//            Logger.getLogger(FeatureSelectorTest.class.getName()).log(Level.SEVERE, null, ex);
-//        } 
-//        Instances allFeatures = w.getDataManager().getAllFeaturesInstances(0, false);
-//        sel.getAttributeIndicesForInstances(allFeatures, new BestInfoSelector.BestInfoResultsReceiver() {
-//             @Override
-//             public void finished(int[] features)
-//             {
-//                 assertEquals(true, features.length > 5);
-//                 System.out.println("done");
-//             }
-//        });
-//    } 
+    @Test
+    public void testMatchingAllFeatures()
+    {
+        w.getDataManager().featureManager.getFeatureGroups().get(0).removeAll();
+        int ptr = 0;
+        String[] names = w.getDataManager().featureManager.getFeatureNames();
+        for(String name:names)
+        {
+            w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey(name);
+        }
+        Instances user = w.getDataManager().getFeatureInstances(false).get(0);
+        Instances filtered = w.getDataManager().getAllFeaturesInstances(0, false);
+        for(int i = 0; i < user.numInstances(); i++)
+        {
+            Instance userIn = user.instance(i);
+            Instance filterIn = filtered.instance(i);
+            for(int a = 0; a < userIn.numAttributes(); a++)
+            {
+                System.out.println(userIn.value(a) + ","  + filterIn.value(a));
+                assertEquals(userIn.value(a), filterIn.value(a), 0.0);
+            }
+        }
+    }  
+
 }

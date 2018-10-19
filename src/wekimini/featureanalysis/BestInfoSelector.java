@@ -85,7 +85,18 @@ public class BestInfoSelector {
             System.out.println("finished best info ranking");  
             
             //Return best results from ranked array
-            ranked =  attsel.selectedAttributes();            
+            ranked =  attsel.selectedAttributes(); 
+            for(int s:ranked)
+            {
+                if(s == classIndex)
+                {
+                    System.out.println("removing class index");
+                    int[] noClass = new int[ranked.length-1];
+                    System.arraycopy(ranked, 0, noClass, 0, noClass.length);
+                    ranked = noClass;
+                    break;
+                }
+            }
             setSize = start;
             if(max > ranked.length || max < 0)
             {
@@ -128,13 +139,8 @@ public class BestInfoSelector {
         Path p = w.getSupervisedLearningManager().getPaths().get(outputIndex);
         LinkedList<Path> paths = new LinkedList<>();
         paths.add(p);
-        e.evaluateAll(paths, eval, 10, new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                cvPropertyChanged(evt);
-            }
-
+        e.evaluateAll(paths, eval, 10, (PropertyChangeEvent evt) -> {
+            cvPropertyChanged(evt);
         });
     }
     
@@ -172,17 +178,6 @@ public class BestInfoSelector {
         else
         {
             System.out.println("Done evaluating, returning best");
-            for(int s:bestFeatures)
-            {
-                if(s == classIndex)
-                {
-                    System.out.println("removing class index");
-                    int[] noClass = new int[bestFeatures.length-1];
-                    System.arraycopy(bestFeatures, 0, noClass, 0, noClass.length);
-                    receiver.finished(noClass);
-                    return;
-                }
-            }
             receiver.finished(bestFeatures);
         }
     }

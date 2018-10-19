@@ -884,12 +884,6 @@ public class DataManager {
     public Instances getFeaturesInstancesFromIndices(int[] indices, int outputIndex, boolean testSet)
     {        
         System.out.println("getFeaturesInstancesFromIndices " + indices.length);
-        if(featureManager.isAllFeaturesDirty(testSet))
-        {
-            updateFeatureInstances(outputIndex, testSet, true);
-            featureManager.didRecalculateAllFeatures(testSet);
-        }
-        
         Instances formatted = getAllFeaturesInstances(outputIndex, testSet);
         return FeatureSelector.filterAttributes(formatted, indices);
     }
@@ -1065,7 +1059,7 @@ public class DataManager {
         }
         try{
             Instances in = testSet ? testInstances : inputInstances;
-            Instances filteredInputs = allFeatures ? in : Filter.useFilter(in, trainingFilters[index]);
+            Instances filteredInputs = Filter.useFilter(in, trainingFilters[index]);
             double[] input;
             double[] features;
             double[] withOutput;
@@ -1077,7 +1071,7 @@ public class DataManager {
                 {
                     input = inputInstance.toDoubleArray();
                     double output = input[input.length-1];
-                    features = allFeatures ? featureManager.modifyInputsForAllFeatures(input): featureManager.modifyInputsForOutput(input, index);
+                    features = allFeatures ? featureManager.modifyInputsForAllFeatures(input) : featureManager.modifyInputsForOutput(input, index);
                     withOutput = new double[features.length + 1];
                     withOutput[withOutput.length-1] = output;
                     System.arraycopy(features, 0, withOutput, 0, features.length);
@@ -1163,7 +1157,6 @@ public class DataManager {
                     updateFeatureInstances(i, true, false);
                 }
             }
-
         }
         else
         {
@@ -1350,14 +1343,6 @@ public class DataManager {
 
     public double[][] getTrainingDataForFeature(int outputIndex, int featureIndex)
     {
-        if(featureManager.isAllFeaturesDirty(false))
-        {
-            for(int i = 0; i < numOutputs; i++)
-            {
-                updateFeatureInstances(i, false, true);
-            }
-            featureManager.didRecalculateAllFeatures(false);
-        }
         Instances allFeatures = getAllFeaturesInstances(outputIndex, false);
         double [][] vals = new double[allFeatures.numInstances()][2];
         for(int i = 0; i < allFeatures.numInstances(); i++)

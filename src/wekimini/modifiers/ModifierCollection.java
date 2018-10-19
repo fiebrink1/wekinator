@@ -353,7 +353,7 @@ public class ModifierCollection {
     
     //EACH FEATURE CAN HAVE MULTIPLE MODIFIERS THAT OUTPUT, EACH OUTPUTTING MODIFIER CAN OUTPUT A VECTOR
     //THE NAMING CONVENTION IS {FEATURE_NAME}:{MODIFIER_INDEX}:{OUTPUT_INDEX}
-    public String getFeatureNameForModifierID(int id, HashMap<String, Feature> features)
+    private String getFeatureNameForModifierID(int id, HashMap<String, Feature> features)
     {
         for(Feature feature:features.values())
         {
