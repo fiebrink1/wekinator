@@ -117,7 +117,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             }
         });
         
-        trainBtn.setEnabled(controller.canRun());
+        trainBtn.setEnabled(controller.canTrain());
         evaluateBtn.setEnabled(controller.canRun());
         
         mdsPlot = new MDSPlotPanel(mdsPlotHolder.getWidth(), mdsPlotHolder.getHeight());
@@ -206,7 +206,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     
     public void featuresListUpdated()
     {
-        trainBtn.setEnabled(controller.canRun());
+        trainBtn.setEnabled(controller.canTrain());
         evaluateBtn.setEnabled(controller.canRun());
         mdsPlot.setOutOfDate();
     }
