@@ -5,25 +5,14 @@
  */
 package wekimini.gui;
 
-import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import org.jdesktop.swingworker.SwingWorker;
 import wekimini.SupervisedLearningManager;
 import wekimini.SupervisedLearningManager.RecordingState;
@@ -41,14 +30,12 @@ import wekimini.modifiers.Feature;
 public class NewFeaturesPanel extends javax.swing.JPanel {
     
     private Wekinator w;
-    private ArrayList<String> selectedFilters = new ArrayList();
     protected Feature[] selected = new Feature[0];
     public FeatureEditorDelegate delegate;
     private int outputIndex = 0;
     private double threshold = 0.5;
     public Boolean updatingRankings = false;
     private PropertyChangeListener learningStateListener;
-    private String highlightedTag = "";
     private FeatureSelectMenuPanel mainMenuPanel;
     private FilterFeaturesPanel filterPanel;
     private static final int TOP_LAYER = 1;
@@ -240,6 +227,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             @Override
             public Feature[]  doInBackground()
             {
+                ArrayList<String> selectedFilters = filterPanel.getSelectedFilters();
                 sf = new String[selectedFilters.size()];
                 sf = selectedFilters.toArray(sf);
                 if(sf.length > 0)
@@ -389,13 +377,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         updateFeaturePlot();
     }
     
-    private void clearSelection()
-    {
-        selected = new Feature[0];
-        selectedFilters.clear();
-        updateFeaturePlot();
-    }
-    
     private void selectAll()
     {
         delegate.blockInteraction(true);
@@ -422,7 +403,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 {
                    updateThreshold(features.length);
                    updateFeaturePlot();
-                   clearSelection();
                 }
             });
         }
@@ -469,7 +449,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 }
             }
             selected = new Feature[0];
-            selectedFilters.clear();
             //availableFiltersTable.repaint();
             delegate.featureListUpdated();
         }
@@ -490,84 +469,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         }
     }
-    
-    class FiltersTableModel extends AbstractTableModel
-    {
-        private String[] tags;
-        
-        public FiltersTableModel(String[] tags)
-        {
-            this.tags = tags;
-        }
 
-        @Override
-        public int getRowCount() {
-            return (int)Math.ceil((double)tags.length/(double)getColumnCount());
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 6;
-        }
-
-        @Override
-        public String getValueAt(int rowIndex, int columnIndex) {
-            int r = rowIndex * getColumnCount();
-            int c = columnIndex % getColumnCount();
-            int index = c + r;
-            return index < tags.length ? tags[index] : "";
-        }
-        
-        @Override
-        public Class getColumnClass(int c) {
-            return getValueAt(0, c).getClass();
-        }
-    }
-    
-    public class FiltersTableRenderer extends JLabel implements TableCellRenderer 
-    {
-        FiltersTableRenderer()
-        {
-            setOpaque(true);
-        }
-
-        @Override
-        public JLabel getTableCellRendererComponent(
-                        JTable table, Object value,
-                        boolean isSelected, boolean hasFocus,
-                        int row, int column) {
-            String tag = (String)value;
-            FiltersTableModel model = (FiltersTableModel)table.getModel();
-            Color textColor = FeatureSetPlotPanel.colorForTag(tag, false);
-            Color borderColor = textColor;
-            Color selectedTextColor = Color.DARK_GRAY;
-            if(textColor == null)
-            {
-                textColor = Color.DARK_GRAY;
-                borderColor = new Color(245, 245, 245, 255);
-                selectedTextColor = borderColor;
-            }
-            if(selectedFilters.contains(tag))
-            {
-                setBackground(textColor);
-                setBorder(BorderFactory.createEmptyBorder(4, 3, 4, 1));
-                setForeground(selectedTextColor);
-            }
-            else
-            {
-                setBackground(Color.WHITE);
-                setBorder(BorderFactory.createLineBorder(borderColor, 4));
-                setForeground(textColor);
-            }
-            if(tag.equals(highlightedTag))
-            {
-                setBorder(BorderFactory.createLineBorder(Color.black));
-            }
-            setHorizontalAlignment(CENTER);
-            setText(tag);
-            return this;
-        }
-    }
     
     
     /**

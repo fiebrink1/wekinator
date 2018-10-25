@@ -5,10 +5,19 @@
  */
 package wekimini.gui;
 
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import static javax.swing.SwingConstants.CENTER;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+
 
 /**
  *
@@ -17,73 +26,163 @@ import java.awt.event.MouseMotionListener;
 public class FilterFeaturesPanel extends javax.swing.JPanel {
     
     public FeatureMenuDelegate delegate;
+    private String highlightedTag = "";
+    private ArrayList<String> selectedFilters = new ArrayList();
+    
     /**
      * Creates new form FilterFeaturesPanel
      */
     public FilterFeaturesPanel() {
         initComponents();
-        availableFiltersTable.setTableHeader(null);
+        
+        setUpTables();
     }
     
     public void setUpTables()
     {
-//        availableFiltersTable.setRowHeight(140/4);
-//        
-//        String[] combined = new String[] {"All", "Above Thresh", "Below Thresh", "None", "Accelerometer", "Gyroscope",
-//                "AccelerometerX", "AccelerometerY", "AccelerometerZ", "GyroscopeX", "GyroscopeY", "GyroscopeZ", 
-//                "Raw", "Buffer", "Mean", "1st Order Diff", "FFT", "Max", "Min",
-//                "Energy", "IQR", "Correlation", "Standard Deviation", "Magnitude"
-//        };
-//        availableFiltersTable.setModel(new NewFeaturesPanel.FiltersTableModel(combined));
-//        availableFiltersTable.setDefaultRenderer(String.class, new NewFeaturesPanel.FiltersTableRenderer());
-//        
-//        MouseMotionListener tableMouseMotionListener = new MouseAdapter() {
-//            @Override
-//            public void mouseMoved(MouseEvent e) {
-//                int row = availableFiltersTable.rowAtPoint(e.getPoint());
-//                int col = availableFiltersTable.columnAtPoint(e.getPoint());
-//                highlightedTag = (String)availableFiltersTable.getModel().getValueAt(row, col);
-//                //System.out.println("hover on " + highlightedTag);
-//                availableFiltersTable.repaint();
-//            }
-//        };
-//        availableFiltersTable.addMouseMotionListener(tableMouseMotionListener);
-//        
-//        MouseListener tableMouseListener = new MouseAdapter() {
-//            @Override
-//            public void mousePressed(MouseEvent e) {
-//                int row = availableFiltersTable.rowAtPoint(e.getPoint());
-//                int col = availableFiltersTable.columnAtPoint(e.getPoint());
-//                String tag = (String)availableFiltersTable.getModel().getValueAt(row, col);
-//                if(tag.equals("All"))
-//                {
-//                    selectAll();
-//                }
-//                else if(tag.equals("Above Thresh"))
-//                {
-//                    selectThresh(true);
-//                }
-//                else if(tag.equals("Below Thresh"))
-//                {
-//                    selectThresh(false);
-//                }
-//                else if(tag.equals("None"))
-//                {
-//                    clearSelection();
-//                }
-//                else if(selectedFilters.contains(tag))
-//                {
-//                    selectedFilters.remove(tag);
-//                    updateFilters();
-//                }
-//                else
-//                {
-//                    selectedFilters.add(tag);
-//                    updateFilters();
-//                }
-//            }
-//        };
-//        availableFiltersTable.addMouseListener(tableMouseListener);
+        MouseListener tableMouseListener = new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                JTable source = (JTable)e.getSource();
+                int row = source.rowAtPoint(e.getPoint());
+                int col = source.columnAtPoint(e.getPoint());
+                String tag = (String)source.getModel().getValueAt(row, col);
+                 if(selectedFilters.contains(tag))
+                {
+                    selectedFilters.remove(tag);
+                    delegate.filtersUpdated();
+                }
+                else
+                {
+                    selectedFilters.add(tag);
+                    delegate.filtersUpdated();
+                }
+                source.repaint();
+            }
+        };
+        
+        MouseMotionListener tableMouseMotionListener = new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                JTable source = (JTable)e.getSource();
+                int row = source.rowAtPoint(e.getPoint());
+                int col = source.columnAtPoint(e.getPoint());
+                highlightedTag = (String)source.getModel().getValueAt(row, col);
+                source.repaint();
+            }
+        };
+        
+        inputFiltersTable.setTableHeader(null);
+        operationFiltersTable.setTableHeader(null);
+        
+        inputFiltersTable.setRowHeight(140/4);
+        operationFiltersTable.setRowHeight(140/4);
+        
+        String[] inputs = new String[] {"Accelerometer", "Gyroscope",
+                "AccelerometerX", "AccelerometerY", "AccelerometerZ", "GyroscopeX", "GyroscopeY", "GyroscopeZ"
+
+        };
+        inputFiltersTable.setModel(new FiltersTableModel(inputs));
+        inputFiltersTable.setDefaultRenderer(String.class, new FiltersTableRenderer());
+        inputFiltersTable.addMouseMotionListener(tableMouseMotionListener);
+        inputFiltersTable.addMouseListener(tableMouseListener);
+        inputFiltersTable.repaint();
+        
+        String[] operations = {
+                "Raw", "Buffer", "Mean", "1st Order Diff", "FFT", "Max", "Min",
+                "Energy", "IQR", "Correlation", "Standard Deviation", "Magnitude"
+        };
+        
+        operationFiltersTable.setModel(new FiltersTableModel(operations));
+        operationFiltersTable.setDefaultRenderer(String.class, new FiltersTableRenderer());
+        operationFiltersTable.addMouseMotionListener(tableMouseMotionListener);
+        operationFiltersTable.addMouseListener(tableMouseListener);
+        operationFiltersTable.repaint();
+        
+    }
+    
+    public ArrayList<String> getSelectedFilters()
+    {
+        return selectedFilters;
+    }
+    
+        
+    class FiltersTableModel extends AbstractTableModel
+    {
+        private String[] tags;
+        
+        public FiltersTableModel(String[] tags)
+        {
+            this.tags = tags;
+        }
+
+        @Override
+        public int getRowCount() {
+            return (int)Math.ceil((double)tags.length/(double)getColumnCount());
+        }
+
+        @Override
+        public int getColumnCount() {
+            return 6;
+        }
+
+        @Override
+        public String getValueAt(int rowIndex, int columnIndex) {
+            int r = rowIndex * getColumnCount();
+            int c = columnIndex % getColumnCount();
+            int index = c + r;
+            return index < tags.length ? tags[index] : "";
+        }
+        
+        @Override
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+    }
+    
+    public class FiltersTableRenderer extends JLabel implements TableCellRenderer 
+    {
+        FiltersTableRenderer()
+        {
+            setOpaque(true);
+        }
+
+        @Override
+        public JLabel getTableCellRendererComponent(
+                        JTable table, Object value,
+                        boolean isSelected, boolean hasFocus,
+                        int row, int column) {
+            String tag = (String)value;
+            FiltersTableModel model = (FiltersTableModel)table.getModel();
+            Color textColor = FeatureSetPlotPanel.colorForTag(tag, false);
+            Color borderColor = textColor;
+            Color selectedTextColor = Color.DARK_GRAY;
+            if(textColor == null)
+            {
+                textColor = Color.DARK_GRAY;
+                borderColor = new Color(245, 245, 245, 255);
+                selectedTextColor = borderColor;
+            }
+            if(selectedFilters.contains(tag))
+            {
+                setBackground(textColor);
+                setBorder(BorderFactory.createEmptyBorder(4, 3, 4, 1));
+                setForeground(selectedTextColor);
+            }
+            else
+            {
+                setBackground(Color.WHITE);
+                setBorder(BorderFactory.createLineBorder(borderColor, 4));
+                setForeground(textColor);
+            }
+            if(tag.equals(highlightedTag))
+            {
+                setBorder(BorderFactory.createLineBorder(Color.black));
+            }
+            setHorizontalAlignment(CENTER);
+            setText(tag);
+            return this;
+        }
     }
 
     /**
@@ -96,16 +195,16 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         jScrollPane2 = new javax.swing.JScrollPane();
-        availableFiltersTable = new javax.swing.JTable();
+        inputFiltersTable = new javax.swing.JTable();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        operationFiltersTable = new javax.swing.JTable();
         selectAllButton = new javax.swing.JButton();
         addRemoveButtonPressed = new javax.swing.JButton();
         backButton = new javax.swing.JButton();
 
-        availableFiltersTable.setModel(new javax.swing.table.DefaultTableModel(
+        inputFiltersTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -116,13 +215,13 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane2.setViewportView(availableFiltersTable);
+        jScrollPane2.setViewportView(inputFiltersTable);
 
         jLabel6.setText("Input");
 
         jLabel7.setText("Operation");
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+        operationFiltersTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -133,7 +232,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane4.setViewportView(jTable3);
+        jScrollPane4.setViewportView(operationFiltersTable);
 
         selectAllButton.setText("Select All");
         selectAllButton.addActionListener(new java.awt.event.ActionListener() {
@@ -226,13 +325,13 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addRemoveButtonPressed;
-    private javax.swing.JTable availableFiltersTable;
     private javax.swing.JButton backButton;
+    private javax.swing.JTable inputFiltersTable;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTable jTable3;
+    private javax.swing.JTable operationFiltersTable;
     private javax.swing.JButton selectAllButton;
     // End of variables declaration//GEN-END:variables
 }
