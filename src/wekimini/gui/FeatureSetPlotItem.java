@@ -14,9 +14,12 @@ import wekimini.modifiers.Feature;
 public class FeatureSetPlotItem {
     
     Feature feature;
-    Boolean isSelected;
-    Boolean isInSet;
+    FeaturePlotItemState state = FeaturePlotItemState.NORMAL;
     int ranking;
     double x;
     double y; 
+    
+    public enum FeaturePlotItemState {
+        ADDING, REMOVING, NORMAL, HIDE
+    };
 }

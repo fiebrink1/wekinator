@@ -142,13 +142,22 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
     private void updateDescription()
     {
         String desc;
-        if(!filtersSelected())
+        if(!filtersSelected() && numFeaturesSelected == 0)
         {
             desc = "No Features Selected";
         }
         else
         {
-            desc = "Showing Features with ";
+            desc = "Showing";
+            if(state == FilterPanelState.ADDING)
+            {
+                desc = "Adding";
+            }
+            else if (state == FilterPanelState.REMOVING)
+            {
+                desc = "Removing";
+            }
+            desc = desc + " Features with ";
             if(inputFilterSelected())
             {
                 desc = desc + selectedInputFilter;
@@ -171,9 +180,9 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
         descriptionLabel.setText(desc);
     }
     
-    public void updatedSelectedFeatures(Feature[] f)
+    public void updatedSelectedFeatures(int selected)
     {
-        numFeaturesSelected = f.length;
+        numFeaturesSelected = selected;
         updateDescription();
     }
     

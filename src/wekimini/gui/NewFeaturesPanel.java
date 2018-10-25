@@ -19,6 +19,7 @@ import wekimini.SupervisedLearningManager.RecordingState;
 import wekimini.Wekinator;
 import wekimini.WekinatorSupervisedLearningController;
 import wekimini.featureanalysis.BestInfoSelector;
+import wekimini.gui.FilterFeaturesPanel.FilterPanelState;
 import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.modifiers.Feature;
@@ -40,7 +41,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private FilterFeaturesPanel filterPanel;
     private static final int TOP_LAYER = 1;
     private static final int BOTTOM_LAYER = 0;
-    
+    private int showing = 0;
+    private int toRemove = 0;
+    private int toAdd = 0;
     
     public NewFeaturesPanel() {
         initComponents();
@@ -317,16 +320,31 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         };
         worker.execute();
     }
+    private void updateFilterLabel()
+    {
+        int numSelected = showing;
+        if(filterPanel.getState() == FilterPanelState.ADDING)
+        {
+            numSelected = toAdd;
+        } 
+        else if (filterPanel.getState() == FilterPanelState.REMOVING)
+        {
+            numSelected = toRemove;
+        } 
+        filterPanel.updatedSelectedFeatures(numSelected);
+    }
     
     private void setSelectedFeatures(Feature[] f)
     {
-        filterPanel.updatedSelectedFeatures(f);
+        updateFilterLabel();
         selected = f;
     }
     
     private void updateFeaturePlot()
     {
-        featureSetPlotPanel.filterState = filterPanel.getState();
+        toRemove = 0;
+        toAdd = 0;
+        showing = 0;
         ArrayList<FeatureSetPlotItem> items = new ArrayList();
         Feature[] currentSet = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
         System.out.println("update feature plot :" + updatingRankings);
@@ -359,8 +377,15 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     }
                     FeatureSetPlotItem item = new FeatureSetPlotItem();
                     item.feature = inSet;
-                    item.isInSet = true;
-                    item.isSelected = matched;
+                    if(filterPanel.getState() == FilterPanelState.REMOVING && matched)
+                    {
+                        item.state = FeatureSetPlotItem.FeaturePlotItemState.REMOVING;
+                        toRemove++;
+                    }
+                    else 
+                    {
+                        item.state = FeatureSetPlotItem.FeaturePlotItemState.NORMAL;
+                    }
                     try {
                         item.ranking = rankingSet.get(inSet.name+":0:0");
                     } 
@@ -368,7 +393,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     {
                         System.out.println("cannot find name (currentSet) " + inSet.name);
                     }
-                    items.add(item);
+                    if(filterPanel.getState() != FilterPanelState.EXPLORING)
+                    {
+                        items.add(item);
+                    }
                 }
 
                 for(Feature result:selected)
@@ -391,8 +419,15 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     {
                         FeatureSetPlotItem item = new FeatureSetPlotItem();
                         item.feature = result;
-                        item.isInSet = false;
-                        item.isSelected = true;
+                        if(filterPanel.getState() == FilterPanelState.ADDING)
+                        {
+                            item.state = FeatureSetPlotItem.FeaturePlotItemState.ADDING;
+                            toAdd++;
+                        }
+                        else 
+                        {
+                            item.state = FeatureSetPlotItem.FeaturePlotItemState.NORMAL;
+                        }
                         try {
                             item.ranking = rankingSet.get(result.name+":0:0");
                         } 
@@ -400,9 +435,14 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                         {
                             System.out.println("cannot find name (selected) " + result.name);
                         }
-                        items.add(item);
+                        if(filterPanel.getState() != FilterPanelState.REMOVING)
+                        {
+                            items.add(item);
+                        }
                     }
                 }
+                showing = items.size();
+                updateFilterLabel();
                 FeatureSetPlotItem[] f = new FeatureSetPlotItem[items.size()];
                 f = items.toArray(f);
                 featureSetPlotPanel.update(f, w.getDataManager().featureManager.getFeatureNames().length);
