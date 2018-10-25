@@ -15,5 +15,6 @@ public interface FeatureMenuDelegate {
     public void removeFeaturePressed();
     public void backPressed();
     public void filtersUpdated();
-    public void featuresUpdated();
+    public void updateFeatures();
+    public void selectAllFeatures();
 }

@@ -29,9 +29,9 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="featureDetailPanel" pref="936" max="32767" attributes="0"/>
+                  <Component id="featureDetailPanel" pref="967" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
-                      <Component id="newFeaturesPanel" min="-2" pref="680" max="-2" attributes="0"/>
+                      <Component id="newFeaturesPanel" min="-2" pref="711" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="evaluateFeaturesPanel" pref="250" max="32767" attributes="0"/>
@@ -47,13 +47,16 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
+                  <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabel2" min="-2" pref="32" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="evaluateFeaturesPanel" max="32767" attributes="0"/>
                   </Group>
-                  <Component id="newFeaturesPanel" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="newFeaturesPanel" min="-2" pref="579" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="featureDetailPanel" min="-2" max="-2" attributes="0"/>

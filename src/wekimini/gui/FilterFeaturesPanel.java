@@ -28,13 +28,13 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
     public FeatureMenuDelegate delegate;
     private String highlightedTag = "";
     private ArrayList<String> selectedFilters = new ArrayList();
+    private boolean adding = true;
     
     /**
      * Creates new form FilterFeaturesPanel
      */
     public FilterFeaturesPanel() {
         initComponents();
-        
         setUpTables();
     }
     
@@ -99,6 +99,17 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
         operationFiltersTable.addMouseListener(tableMouseListener);
         operationFiltersTable.repaint();
         
+    }
+    
+    public void setIsAdding(boolean adding)
+    {
+        this.adding = adding;
+        addRemoveButton.setText(adding ? "Add" : "Remove");
+    }
+    
+    public boolean getIsAdding()
+    {
+        return adding;
     }
     
     public ArrayList<String> getSelectedFilters()
@@ -201,7 +212,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
         jScrollPane4 = new javax.swing.JScrollPane();
         operationFiltersTable = new javax.swing.JTable();
         selectAllButton = new javax.swing.JButton();
-        addRemoveButtonPressed = new javax.swing.JButton();
+        addRemoveButton = new javax.swing.JButton();
         backButton = new javax.swing.JButton();
 
         inputFiltersTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -241,10 +252,10 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
             }
         });
 
-        addRemoveButtonPressed.setText("Add");
-        addRemoveButtonPressed.addActionListener(new java.awt.event.ActionListener() {
+        addRemoveButton.setText("Add");
+        addRemoveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addRemoveButtonPressedActionPerformed(evt);
+                addRemoveButtonActionPerformed(evt);
             }
         });
 
@@ -263,27 +274,23 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 601, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                                .addComponent(selectAllButton)
+                                .addGap(279, 279, 279))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(selectAllButton)
-                                        .addGap(279, 279, 279))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(addRemoveButtonPressed)
-                                        .addGap(290, 290, 290))))))
+                                .addComponent(addRemoveButton)
+                                .addGap(290, 290, 290))))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 601, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 646, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane4))
+                        .addContainerGap())))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(backButton)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -294,18 +301,16 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
                 .addComponent(backButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel6)))
-                .addGap(10, 10, 10)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel7)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(selectAllButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(addRemoveButtonPressed))
+                .addComponent(addRemoveButton))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -316,15 +321,17 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
 
     private void selectAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllButtonActionPerformed
         // TODO add your handling code here:
+        delegate.selectAllFeatures();
     }//GEN-LAST:event_selectAllButtonActionPerformed
 
-    private void addRemoveButtonPressedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addRemoveButtonPressedActionPerformed
+    private void addRemoveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addRemoveButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_addRemoveButtonPressedActionPerformed
+        delegate.updateFeatures();
+    }//GEN-LAST:event_addRemoveButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton addRemoveButtonPressed;
+    private javax.swing.JButton addRemoveButton;
     private javax.swing.JButton backButton;
     private javax.swing.JTable inputFiltersTable;
     private javax.swing.JLabel jLabel6;

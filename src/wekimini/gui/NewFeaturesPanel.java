@@ -54,18 +54,20 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             @Override
             public void addFeaturePressed() {
                 menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
+                filterPanel.setIsAdding(true);
                 menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
             }
 
             @Override
             public void autoSelectPressed() {
-                
+                autoSelect();
             }
 
             @Override
             public void removeFeaturePressed() {
                 menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
                 menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
+                filterPanel.setIsAdding(false);
             }
 
             @Override
@@ -76,12 +78,17 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
             @Override
             public void filtersUpdated() {
-                
+                updateFilters();
+            }
+            
+            @Override
+            public void selectAllFeatures() {
+                selectAll();
             }
 
             @Override
-            public void featuresUpdated() {
-                
+            public void updateFeatures() {
+                handleSetChange(!filterPanel.getIsAdding());
             }
             
         };
@@ -218,7 +225,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     
     public void updateFilters()
     {
-        //availableFiltersTable.repaint();
         SwingWorker worker = new SwingWorker<Feature[] ,Void>()
         {   
             Feature[] f;
@@ -256,12 +262,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         };
         worker.execute();
-    }
-    
-    public void refreshResultsTable()
-    {
-        selected = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForFeatures(selected);
-        updateFeaturePlot();
     }
     
     private void updateFeaturePlot()
@@ -562,7 +562,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         );
         menuLayeredPaneLayout.setVerticalGroup(
             menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 238, Short.MAX_VALUE)
+            .addGap(0, 283, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
