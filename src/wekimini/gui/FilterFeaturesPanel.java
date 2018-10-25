@@ -15,7 +15,8 @@ import java.awt.event.MouseMotionListener;
  * @author louismccallum
  */
 public class FilterFeaturesPanel extends javax.swing.JPanel {
-
+    
+    public FeatureMenuDelegate delegate;
     /**
      * Creates new form FilterFeaturesPanel
      */
@@ -211,6 +212,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
         // TODO add your handling code here:
+        delegate.backPressed();
     }//GEN-LAST:event_backButtonActionPerformed
 
     private void selectAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllButtonActionPerformed

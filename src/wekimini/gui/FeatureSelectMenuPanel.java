@@ -10,6 +10,8 @@ package wekimini.gui;
  * @author louismccallum
  */
 public class FeatureSelectMenuPanel extends javax.swing.JPanel {
+    
+    public FeatureMenuDelegate delegate;
 
     /**
      * Creates new form FeatureSelectMenuPanel
@@ -79,10 +81,12 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
         // TODO add your handling code here:
+        delegate.addFeaturePressed();
     }//GEN-LAST:event_addButtonActionPerformed
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
         // TODO add your handling code here:
+        delegate.removeFeaturePressed();
     }//GEN-LAST:event_removeButtonActionPerformed
 
     private void autoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoButtonActionPerformed

@@ -51,7 +51,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private String highlightedTag = "";
     private FeatureSelectMenuPanel mainMenuPanel;
     private FilterFeaturesPanel filterPanel;
-
+    private static final int TOP_LAYER = 1;
+    private static final int BOTTOM_LAYER = 0;
+    
+    
     public NewFeaturesPanel() {
         initComponents();
     }
@@ -60,12 +63,52 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     {
         featureSetPlotPanel.setDimensions(664 - 10, 200);
         
+        FeatureMenuDelegate menuDelegate = new FeatureMenuDelegate() {
+            @Override
+            public void addFeaturePressed() {
+                menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
+                menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
+            }
+
+            @Override
+            public void autoSelectPressed() {
+                
+            }
+
+            @Override
+            public void removeFeaturePressed() {
+                menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
+                menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
+            }
+
+            @Override
+            public void backPressed() {
+                menuLayeredPane.setLayer(filterPanel, BOTTOM_LAYER);
+                menuLayeredPane.setLayer(mainMenuPanel, TOP_LAYER);
+            }
+
+            @Override
+            public void filtersUpdated() {
+                
+            }
+
+            @Override
+            public void featuresUpdated() {
+                
+            }
+            
+        };
+        
         mainMenuPanel = new FeatureSelectMenuPanel();
+        mainMenuPanel.delegate = menuDelegate;
         mainMenuPanel.setPreferredSize(menuLayeredPane.getPreferredSize());
-        mainMenuPanel.setBounds(0,0,664 - 10,menuLayeredPane.getHeight());
+        mainMenuPanel.setBounds(0, 0, menuLayeredPane.getWidth(), menuLayeredPane.getHeight());
+        
         filterPanel = new FilterFeaturesPanel();
+        filterPanel.delegate = menuDelegate;
         filterPanel.setPreferredSize(menuLayeredPane.getPreferredSize());
-        filterPanel.setBounds(0,0,664 - 10,menuLayeredPane.getHeight());
+        filterPanel.setBounds(0, 0, menuLayeredPane.getWidth(), menuLayeredPane.getHeight());
+        
         menuLayeredPane.add(mainMenuPanel, 1, 0);
         menuLayeredPane.add(filterPanel, 0, 0);
         
