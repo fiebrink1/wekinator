@@ -29,6 +29,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
     private String highlightedTag = "";
     private ArrayList<String> selectedFilters = new ArrayList();
     private FilterPanelState state = FilterPanelState.NONE;
+    private boolean blocked = false;
     public enum FilterPanelState {
         ADDING, REMOVING, EXPLORING, NONE
     };
@@ -45,31 +46,37 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
         MouseListener tableMouseListener = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                JTable source = (JTable)e.getSource();
-                int row = source.rowAtPoint(e.getPoint());
-                int col = source.columnAtPoint(e.getPoint());
-                String tag = (String)source.getModel().getValueAt(row, col);
-                 if(selectedFilters.contains(tag))
+                if(!blocked)
                 {
-                    selectedFilters.remove(tag);
+                    JTable source = (JTable)e.getSource();
+                    int row = source.rowAtPoint(e.getPoint());
+                    int col = source.columnAtPoint(e.getPoint());
+                    String tag = (String)source.getModel().getValueAt(row, col);
+                     if(selectedFilters.contains(tag))
+                    {
+                        selectedFilters.remove(tag);
+                    }
+                    else
+                    {
+                        selectedFilters.add(tag);
+                    }
+                    filtersUpdated();
+                    source.repaint();
                 }
-                else
-                {
-                    selectedFilters.add(tag);
-                }
-                filtersUpdated();
-                source.repaint();
             }
         };
         
         MouseMotionListener tableMouseMotionListener = new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                JTable source = (JTable)e.getSource();
-                int row = source.rowAtPoint(e.getPoint());
-                int col = source.columnAtPoint(e.getPoint());
-                highlightedTag = (String)source.getModel().getValueAt(row, col);
-                source.repaint();
+                if(!blocked)
+                {
+                    JTable source = (JTable)e.getSource();
+                    int row = source.rowAtPoint(e.getPoint());
+                    int col = source.columnAtPoint(e.getPoint());
+                    highlightedTag = (String)source.getModel().getValueAt(row, col);
+                    source.repaint();
+                }
             }
         };
         
@@ -134,8 +141,10 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
     
     public void blockInteraction(boolean doBlock)
     {
+        blocked = doBlock;
         selectAllButton.setEnabled(!doBlock);
         addRemoveButton.setEnabled(!doBlock);
+        clearSelectionButton.setEnabled(!doBlock);
     }
     
     private void clearSelection()

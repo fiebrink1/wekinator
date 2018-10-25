@@ -87,12 +87,18 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
                 menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
                 filterPanel.setState(FilterFeaturesPanel.FilterPanelState.ADDING);
+                plotTitleLabel.setText("Your Features");
                 updateFeaturePlot();
             }
 
             @Override
             public void autoSelectPressed() {
                 autoSelect();
+            }
+            
+            @Override
+            public void selectThresholdPressed(boolean above) {
+                selectThresh(above);
             }
 
             @Override
@@ -101,6 +107,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
                 filterPanel.setState(FilterFeaturesPanel.FilterPanelState.REMOVING);
                 updateFeaturePlot();
+                plotTitleLabel.setText("Your Features");
             }
 
             @Override
@@ -110,6 +117,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
                 filterPanel.setState(FilterFeaturesPanel.FilterPanelState.EXPLORING);
                 updateFeaturePlot();
+                plotTitleLabel.setText("Exploring Features");
             }
 
         };
@@ -396,9 +404,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private void selectThresh(boolean above)
     {
         delegate.blockInteraction(true);
+        w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).removeAll();
         selected = w.getDataManager().getInfoGainRankings(outputIndex, threshold, above);
         delegate.blockInteraction(false);
-        updateFeaturePlot();
+        handleSetChange(false);
     }
     
     private void selectAll()
@@ -520,7 +529,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         featureSetPlotPanel = new wekimini.gui.FeatureSetPlotPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        plotTitleLabel = new javax.swing.JLabel();
         menuLayeredPane = new javax.swing.JLayeredPane();
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
@@ -580,9 +589,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         jLabel3.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jLabel3.setText("High Info");
 
-        jLabel4.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Your  Features");
+        plotTitleLabel.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        plotTitleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        plotTitleLabel.setText("Your  Features");
 
         javax.swing.GroupLayout menuLayeredPaneLayout = new javax.swing.GroupLayout(menuLayeredPane);
         menuLayeredPane.setLayout(menuLayeredPaneLayout);
@@ -607,7 +616,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel3))
                     .addComponent(infoFilterSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(plotTitleLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(menuLayeredPane))
                 .addContainerGap())
@@ -618,7 +627,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(menuLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
+                .addComponent(plotTitleLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -649,12 +658,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private javax.swing.JSlider infoFilterSlider;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JLayeredPane menuLayeredPane;
+    private javax.swing.JLabel plotTitleLabel;
     private wekimini.gui.TestSetFrame testSetFrame1;
     // End of variables declaration//GEN-END:variables
 }

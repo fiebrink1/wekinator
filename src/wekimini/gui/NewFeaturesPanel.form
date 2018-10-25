@@ -84,7 +84,7 @@
                       <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="infoFilterSlider" max="32767" attributes="0"/>
-                  <Component id="jLabel4" alignment="1" max="32767" attributes="0"/>
+                  <Component id="plotTitleLabel" alignment="1" max="32767" attributes="0"/>
                   <Component id="featureSetPlotPanel" alignment="0" max="32767" attributes="0"/>
                   <Component id="menuLayeredPane" alignment="0" max="32767" attributes="0"/>
               </Group>
@@ -98,7 +98,7 @@
               <EmptySpace max="32767" attributes="0"/>
               <Component id="menuLayeredPane" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+              <Component id="plotTitleLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="featureSetPlotPanel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -150,7 +150,7 @@
         <Property name="text" type="java.lang.String" value="High Info"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel4">
+    <Component class="javax.swing.JLabel" name="plotTitleLabel">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Lucida Grande" size="18" style="0"/>

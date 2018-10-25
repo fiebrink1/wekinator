@@ -26,6 +26,7 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
         removeButton.setEnabled(!doBlock);
         autoButton.setEnabled(!doBlock);
         exploreButton.setEnabled(!doBlock);
+        aboveThreshButton.setEnabled(!doBlock);
     }
 
     /**
@@ -41,6 +42,7 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
         removeButton = new javax.swing.JButton();
         autoButton = new javax.swing.JButton();
         exploreButton = new javax.swing.JButton();
+        aboveThreshButton = new javax.swing.JButton();
 
         addButton.setText("Add");
         addButton.addActionListener(new java.awt.event.ActionListener() {
@@ -70,31 +72,46 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
             }
         });
 
+        aboveThreshButton.setText("Select Above Threshold");
+        aboveThreshButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboveThreshButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(43, 43, 43)
-                .addComponent(addButton)
-                .addGap(78, 78, 78)
-                .addComponent(removeButton)
-                .addGap(85, 85, 85)
-                .addComponent(autoButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
-                .addComponent(exploreButton)
-                .addGap(38, 38, 38))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(32, 32, 32)
+                        .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(removeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(exploreButton, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(141, 141, 141)
+                        .addComponent(aboveThreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(autoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(93, 93, 93)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(addButton)
-                    .addComponent(removeButton)
-                    .addComponent(autoButton)
-                    .addComponent(exploreButton))
-                .addContainerGap(123, Short.MAX_VALUE))
+                .addGap(58, 58, 58)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(removeButton, javax.swing.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE)
+                    .addComponent(addButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(exploreButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(autoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+                    .addComponent(aboveThreshButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(71, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -118,8 +135,14 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
         delegate.exploreFeaturePressed();
     }//GEN-LAST:event_exploreButtonActionPerformed
 
+    private void aboveThreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboveThreshButtonActionPerformed
+        // TODO add your handling code here:
+        delegate.selectThresholdPressed(true);
+    }//GEN-LAST:event_aboveThreshButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton aboveThreshButton;
     private javax.swing.JButton addButton;
     private javax.swing.JButton autoButton;
     private javax.swing.JButton exploreButton;

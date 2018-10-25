@@ -12,6 +12,7 @@ package wekimini.gui;
 public interface FeatureMenuDelegate {
     public void addFeaturePressed();
     public void autoSelectPressed();
+    public void selectThresholdPressed(boolean above);
     public void removeFeaturePressed();
     public void exploreFeaturePressed();
 }
