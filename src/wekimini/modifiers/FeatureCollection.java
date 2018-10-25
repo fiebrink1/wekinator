@@ -87,7 +87,7 @@ public final class FeatureCollection
         while(it.hasNext())
         {
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-            library.add(new RawFeature(pair.getKey(),new int[]{pair.getValue()}));
+            library.add(new RawFeature(pair.getKey(),pair.getValue()));
         }
         //6
         it = inputs.entrySet().iterator();
@@ -699,29 +699,22 @@ class FeatureMetadata
 
 /////////// Single Input 
 
-class RawFeature extends FeatureMultipleModifierOutput
+class RawFeature extends FeatureSingleModifierOutput
 {
-    int[] indexes;
+    int index;
     
-    public RawFeature(String name, int[] inputs) {
+    public RawFeature(String name, int input) {
         super(name);
-        this.indexes = inputs;
-        this.sensor = InputSensor.MULTIPLE;
-        if(inputs.length == 1)
-        {
-            this.sensor = FeatureMetadata.diagramForInput(inputs[0]);
-        }
+        this.index = input;
+        this.sensor = FeatureMetadata.diagramForInput(index);
         tags.add("Raw");
         this.description = FeatureCollection.RAW_DESCRIPTION;
-        for(int input:inputs)
+        String[] inputTags = FeatureMetadata.tagsForInput(input);
+        for(String tag:inputTags)
         {
-            String[] inputTags = FeatureMetadata.tagsForInput(input);
-            for(String tag:inputTags)
+            if(!tags.contains(tag))
             {
-                if(!tags.contains(tag))
-                {
-                    tags.add(tag);
-                }
+                tags.add(tag);
             }
         }
     }
@@ -729,13 +722,11 @@ class RawFeature extends FeatureMultipleModifierOutput
     @Override
     public void addFeature(ModifierCollection mc)
     {
-        for(int index:indexes)
-        {
-            PassThroughSingle modifier = new PassThroughSingle(Integer.toString(index),index,0);
-            modifier.addRequiredModifierID(0);
-            int id1 = addModifier(mc, modifier);
-        }
-        setOutputModifierIDs(modifierIds.toArray(new Integer[modifierIds.size()]));
+        PassThroughSingle modifier = new PassThroughSingle(Integer.toString(index),index,0);
+        modifier.addToOutput = true;
+        modifier.addRequiredModifierID(0);
+        int id1 = addModifier(mc, modifier);
+        setOutputModifierID(id1);
     }
 }
 
