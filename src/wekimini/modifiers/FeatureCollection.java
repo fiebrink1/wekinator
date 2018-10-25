@@ -191,11 +191,11 @@ public final class FeatureCollection
         while(it.hasNext())
         {
             Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-            for(int i = 0; i < windowSize; i++)
+            for(int i = 0; i < bufferSize; i++)
             {
-                library.add(new BufferFeatureSingleOutput("Buffer" + pair.getKey() + i, pair.getValue(), windowSize, i));
+                library.add(new BufferFeatureSingleOutput("Buffer" + pair.getKey() + i, pair.getValue(), bufferSize, i));
             }
-            //library.add(new BufferFeature("Buffer" + pair.getKey(), pair.getValue(), windowSize));
+            //library.add(new BufferFeature("Buffer" + pair.getKey(), pair.getValue(), bufferSize));
         }
         
         it = inputs.entrySet().iterator();

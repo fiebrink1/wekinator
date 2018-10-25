@@ -218,7 +218,8 @@ public class FeatureFrame extends JFrame {
     {
         prepareForLibraryUpdate();
         int ws = (int)(5 + (newVal * 60));
-        w.getDataManager().featureManager.setFeatureWindowSize(ws, 100);
+        //TODO::WINDOW AND BUFFER SIZE ARE THE SAME HERE
+        w.getDataManager().featureManager.setFeatureWindowSize(ws, ws);
         resetFollowingLibraryUpdate();
         featureLibraryUpdate();
     }
