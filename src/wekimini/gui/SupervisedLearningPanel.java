@@ -11,6 +11,7 @@ import wekimini.Path;
 import wekimini.StatusUpdateCenter;
 import wekimini.TrainingRunner;
 import wekimini.Wekinator;
+import wekimini.WekinatorSupervisedLearningController;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.osc.OSCMonitor;
 
@@ -264,8 +265,9 @@ public class SupervisedLearningPanel extends javax.swing.JPanel {
     }
 
     private void setButtonsForLearningState() {
-        buttonRun.setEnabled(w.getSupervisedLearningManager().isAbleToRun());
-        buttonRecord.setEnabled(w.getSupervisedLearningManager().isAbleToRecord());
+        WekinatorSupervisedLearningController controller = new WekinatorSupervisedLearningController(w.getSupervisedLearningManager(),w);
+        buttonRun.setEnabled(controller.canRun());
+        buttonRecord.setEnabled(controller.canRecord());
 
         SupervisedLearningManager.LearningState ls = w.getSupervisedLearningManager().getLearningState();
         if (ls == SupervisedLearningManager.LearningState.NOT_READY_TO_TRAIN) {

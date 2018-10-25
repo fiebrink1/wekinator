@@ -1656,7 +1656,7 @@ public class DataManager {
     
     public boolean canTrain(int output)
     {
-        return getNumExamples() > 0;
+        return getNumExamples() > 0 && featureManager.getFeatureGroups().get(output).getCurrentFeatures().length > 0;
     }
     
     private void setHasInstances(boolean hasInstances) {

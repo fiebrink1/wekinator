@@ -149,8 +149,8 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
         
-        trainBtn.setEnabled(w.getDataManager().canRun(outputIndex));
-        evaluateBtn.setEnabled(w.getDataManager().canRun(outputIndex));
+        trainBtn.setEnabled(controller.canRun());
+        evaluateBtn.setEnabled(controller.canRun());
         
         switch (evt.getPropertyName()) {
             case SupervisedLearningManager.PROP_RECORDINGROUND:
@@ -206,14 +206,14 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     
     public void featuresListUpdated()
     {
-        trainBtn.setEnabled(w.getDataManager().canRun(outputIndex));
-        evaluateBtn.setEnabled(w.getDataManager().canRun(outputIndex));
+        trainBtn.setEnabled(controller.canRun());
+        evaluateBtn.setEnabled(controller.canRun());
         mdsPlot.setOutOfDate();
     }
     
     private void updateMDS()
     {
-        if(w.getDataManager().canRun(outputIndex) && !updatingMDS)
+        if(controller.canRun() && !updatingMDS)
         {
             System.out.println("----Feature list updated (EVALUATE PANEL), updating MDS");
             mdsWorker = new SwingWorker<String,Void>()
