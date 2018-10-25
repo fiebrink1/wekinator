@@ -812,7 +812,6 @@ class BufferFeatureSingleOutput extends FeatureSingleModifierOutput
         modifier.addRequiredModifierID(id1);
         modifier.addToOutput = true;
         int id2 = addModifier(mc, modifier);
-        System.out.println("buffer feature input:" + index + " output:" + outputIndex + " bufID:" + id1 + " outId:" + id2);
         setOutputModifierID(id2);
     }
 }

@@ -48,7 +48,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
     private void setUpPlots() 
     {
-        featureSetPlotPanel.setDimensions(664 - 10, 200);
+        featureSetPlotPanel.setDimensions(700 - 10, 200);
         
         FeatureFilterDelegate filterDelegate = new FeatureFilterDelegate()
         {
