@@ -25,11 +25,13 @@ import javax.swing.table.TableCellRenderer;
  */
 public class FilterFeaturesPanel extends javax.swing.JPanel {
     
-    public FeatureMenuDelegate delegate;
+    public FeatureFilterDelegate delegate;
     private String highlightedTag = "";
     private ArrayList<String> selectedFilters = new ArrayList();
-    private boolean adding = true;
-    
+    private FilterPanelState state = FilterPanelState.NONE;
+    public enum FilterPanelState {
+        ADDING, REMOVING, EXPLORING, NONE
+    };
     /**
      * Creates new form FilterFeaturesPanel
      */
@@ -50,13 +52,12 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
                  if(selectedFilters.contains(tag))
                 {
                     selectedFilters.remove(tag);
-                    delegate.filtersUpdated();
                 }
                 else
                 {
                     selectedFilters.add(tag);
-                    delegate.filtersUpdated();
                 }
+                filtersUpdated();
                 source.repaint();
             }
         };
@@ -101,15 +102,29 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
         
     }
     
-    public void setIsAdding(boolean adding)
+    private void filtersUpdated()
     {
-        this.adding = adding;
-        addRemoveButton.setText(adding ? "Add" : "Remove");
+        addRemoveButton.setEnabled(selectedFilters.size() > 0);
+        delegate.filtersUpdated();
     }
     
-    public boolean getIsAdding()
+    public void setState(FilterPanelState state)
     {
-        return adding;
+        this.state = state;
+        if(state == FilterPanelState.EXPLORING)
+        {
+            addRemoveButton.setVisible(false);
+        }
+        else
+        {
+            addRemoveButton.setVisible(true);
+            addRemoveButton.setText(state == FilterPanelState.ADDING ? "Add" : "Remove");
+        }
+    }
+    
+    public FilterPanelState getState()
+    {
+        return state;
     }
     
     public ArrayList<String> getSelectedFilters()
@@ -117,6 +132,18 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
         return selectedFilters;
     }
     
+    public void blockInteraction(boolean doBlock)
+    {
+        selectAllButton.setEnabled(!doBlock);
+        addRemoveButton.setEnabled(!doBlock);
+    }
+    
+    private void clearSelection()
+    {
+        selectedFilters.clear();
+        inputFiltersTable.repaint();
+        operationFiltersTable.repaint();
+    }
         
     class FiltersTableModel extends AbstractTableModel
     {
@@ -214,6 +241,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
         selectAllButton = new javax.swing.JButton();
         addRemoveButton = new javax.swing.JButton();
         backButton = new javax.swing.JButton();
+        clearSelectionButton = new javax.swing.JButton();
 
         inputFiltersTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -266,40 +294,50 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
             }
         });
 
+        clearSelectionButton.setText("Clear Selection");
+        clearSelectionButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearSelectionButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(backButton)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 615, Short.MAX_VALUE)
+                            .addComponent(jScrollPane4))
+                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(selectAllButton)
-                                .addGap(279, 279, 279))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(addRemoveButton)
-                                .addGap(290, 290, 290))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel6))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 646, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane4))
-                        .addContainerGap())))
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(backButton)
-                .addGap(0, 0, Short.MAX_VALUE))
+                                .addGap(308, 308, 308))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(selectAllButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(clearSelectionButton)
+                                .addGap(202, 202, 202))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(backButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
@@ -308,31 +346,45 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
                     .addComponent(jLabel7)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(selectAllButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(selectAllButton)
+                    .addComponent(clearSelectionButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(addRemoveButton))
+                .addComponent(addRemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
         // TODO add your handling code here:
+        clearSelection();
+        state = FilterPanelState.NONE;
         delegate.backPressed();
     }//GEN-LAST:event_backButtonActionPerformed
 
     private void selectAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllButtonActionPerformed
         // TODO add your handling code here:
+        clearSelection();
         delegate.selectAllFeatures();
     }//GEN-LAST:event_selectAllButtonActionPerformed
 
     private void addRemoveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addRemoveButtonActionPerformed
         // TODO add your handling code here:
+        clearSelection();
         delegate.updateFeatures();
     }//GEN-LAST:event_addRemoveButtonActionPerformed
+
+    private void clearSelectionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearSelectionButtonActionPerformed
+        // TODO add your handling code here:
+        clearSelection();
+        delegate.selectNoFeatures();
+    }//GEN-LAST:event_clearSelectionButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addRemoveButton;
     private javax.swing.JButton backButton;
+    private javax.swing.JButton clearSelectionButton;
     private javax.swing.JTable inputFiltersTable;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;

@@ -9,9 +9,10 @@ package wekimini.gui;
  *
  * @author louismccallum
  */
-public interface FeatureMenuDelegate {
-    public void addFeaturePressed();
-    public void autoSelectPressed();
-    public void removeFeaturePressed();
-    public void exploreFeaturePressed();
+public interface FeatureFilterDelegate {
+    public void backPressed();
+    public void filtersUpdated();
+    public void updateFeatures();
+    public void selectAllFeatures();
+    public void selectNoFeatures();
 }

@@ -19,6 +19,14 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
     public FeatureSelectMenuPanel() {
         initComponents();
     }
+    
+    public void blockInteraction(boolean doBlock)
+    {
+        addButton.setEnabled(!doBlock);
+        removeButton.setEnabled(!doBlock);
+        autoButton.setEnabled(!doBlock);
+        exploreButton.setEnabled(!doBlock);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -32,6 +40,7 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
         addButton = new javax.swing.JButton();
         removeButton = new javax.swing.JButton();
         autoButton = new javax.swing.JButton();
+        exploreButton = new javax.swing.JButton();
 
         addButton.setText("Add");
         addButton.addActionListener(new java.awt.event.ActionListener() {
@@ -54,6 +63,13 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
             }
         });
 
+        exploreButton.setText("Explore");
+        exploreButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exploreButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -61,11 +77,13 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(43, 43, 43)
                 .addComponent(addButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 99, Short.MAX_VALUE)
+                .addGap(78, 78, 78)
                 .addComponent(removeButton)
-                .addGap(73, 73, 73)
+                .addGap(85, 85, 85)
                 .addComponent(autoButton)
-                .addGap(74, 74, 74))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
+                .addComponent(exploreButton)
+                .addGap(38, 38, 38))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -74,7 +92,8 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addButton)
                     .addComponent(removeButton)
-                    .addComponent(autoButton))
+                    .addComponent(autoButton)
+                    .addComponent(exploreButton))
                 .addContainerGap(123, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -91,12 +110,19 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
 
     private void autoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoButtonActionPerformed
         // TODO add your handling code here:
+        delegate.autoSelectPressed();
     }//GEN-LAST:event_autoButtonActionPerformed
+
+    private void exploreButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exploreButtonActionPerformed
+        // TODO add your handling code here:
+        delegate.exploreFeaturePressed();
+    }//GEN-LAST:event_exploreButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JButton autoButton;
+    private javax.swing.JButton exploreButton;
     private javax.swing.JButton removeButton;
     // End of variables declaration//GEN-END:variables
 }

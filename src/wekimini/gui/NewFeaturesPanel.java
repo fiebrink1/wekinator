@@ -50,30 +50,13 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     {
         featureSetPlotPanel.setDimensions(664 - 10, 200);
         
-        FeatureMenuDelegate menuDelegate = new FeatureMenuDelegate() {
-            @Override
-            public void addFeaturePressed() {
-                menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
-                filterPanel.setIsAdding(true);
-                menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
-            }
-
-            @Override
-            public void autoSelectPressed() {
-                autoSelect();
-            }
-
-            @Override
-            public void removeFeaturePressed() {
-                menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
-                menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
-                filterPanel.setIsAdding(false);
-            }
-
+        FeatureFilterDelegate filterDelegate = new FeatureFilterDelegate()
+        {
             @Override
             public void backPressed() {
                 menuLayeredPane.setLayer(filterPanel, BOTTOM_LAYER);
                 menuLayeredPane.setLayer(mainMenuPanel, TOP_LAYER);
+                updateFilters();
             }
 
             @Override
@@ -85,12 +68,50 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             public void selectAllFeatures() {
                 selectAll();
             }
+            
+            @Override
+            public void selectNoFeatures() {
+                clearAll();
+            }
 
             @Override
             public void updateFeatures() {
-                handleSetChange(!filterPanel.getIsAdding());
+                handleSetChange(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.REMOVING);
             }
             
+        };
+        
+        FeatureMenuDelegate menuDelegate = new FeatureMenuDelegate() {
+            @Override
+            public void addFeaturePressed() {
+                menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
+                menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
+                filterPanel.setState(FilterFeaturesPanel.FilterPanelState.ADDING);
+                updateFeaturePlot();
+            }
+
+            @Override
+            public void autoSelectPressed() {
+                autoSelect();
+            }
+
+            @Override
+            public void removeFeaturePressed() {
+                menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
+                menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
+                filterPanel.setState(FilterFeaturesPanel.FilterPanelState.REMOVING);
+                updateFeaturePlot();
+            }
+
+            @Override
+            public void exploreFeaturePressed()
+            {
+                menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
+                menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
+                filterPanel.setState(FilterFeaturesPanel.FilterPanelState.EXPLORING);
+                updateFeaturePlot();
+            }
+
         };
         
         mainMenuPanel = new FeatureSelectMenuPanel();
@@ -99,7 +120,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         mainMenuPanel.setBounds(0, 0, menuLayeredPane.getWidth(), menuLayeredPane.getHeight());
         
         filterPanel = new FilterFeaturesPanel();
-        filterPanel.delegate = menuDelegate;
+        filterPanel.delegate = filterDelegate;
         filterPanel.setPreferredSize(menuLayeredPane.getPreferredSize());
         filterPanel.setBounds(0, 0, menuLayeredPane.getWidth(), menuLayeredPane.getHeight());
         
@@ -204,6 +225,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     
     public void blockInteraction(boolean block, boolean fromDelegate)
     {
+        filterPanel.blockInteraction(block);
+        mainMenuPanel.blockInteraction(block);
         if(block)
         {
             featureSetPlotPanel.showLoading();
@@ -266,6 +289,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     
     private void updateFeaturePlot()
     {
+        featureSetPlotPanel.filterState = filterPanel.getState();
         ArrayList<FeatureSetPlotItem> items = new ArrayList();
         Feature[] currentSet = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures();
         System.out.println("update feature plot :" + updatingRankings);
@@ -384,6 +408,13 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         updateFeaturePlot();
     }
     
+    private void clearAll()
+    {
+        delegate.blockInteraction(true);
+        selected = new Feature[0];
+        updateFeaturePlot();
+    }
+    
     private void updateThreshold(double features)
     {
         double max = w.getDataManager().featureManager.getFeatureNames().length;
@@ -449,7 +480,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 }
             }
             selected = new Feature[0];
-            //availableFiltersTable.repaint();
             delegate.featureListUpdated();
         }
         else
@@ -558,7 +588,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         menuLayeredPane.setLayout(menuLayeredPaneLayout);
         menuLayeredPaneLayout.setHorizontalGroup(
             menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 681, Short.MAX_VALUE)
+            .addGap(0, 684, Short.MAX_VALUE)
         );
         menuLayeredPaneLayout.setVerticalGroup(
             menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -585,7 +615,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(menuLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
@@ -596,8 +626,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(infoFilterSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(infoFilterSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

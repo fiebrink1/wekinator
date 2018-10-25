@@ -19,11 +19,13 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
               <Component id="addButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="99" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="78" max="-2" attributes="0"/>
               <Component id="removeButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="73" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="85" max="-2" attributes="0"/>
               <Component id="autoButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="74" max="-2" attributes="0"/>
+              <EmptySpace pref="82" max="32767" attributes="0"/>
+              <Component id="exploreButton" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -35,6 +37,7 @@
                   <Component id="addButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="removeButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="autoButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="exploreButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="123" max="32767" attributes="0"/>
           </Group>
@@ -64,6 +67,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="autoButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="exploreButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Explore"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exploreButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

@@ -60,6 +60,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             BasicStroke.JOIN_ROUND);
     public FeatureSetPlotItem selectedFeature;
     private FeatureSetPlotItem hoveredFeature;
+    public FilterFeaturesPanel.FilterPanelState filterState;
         
     public FeatureSetPlotPanel()
     {
@@ -285,51 +286,83 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             g2d.setStroke(DOTTED_STROKE);
             g2d.draw(new Line2D.Double(thresholdX, PADDING, thresholdX, plotHeight));
         }
-        for(FeatureSetPlotItem f:features)
+        if(filterState == FilterFeaturesPanel.FilterPanelState.EXPLORING)
         {
-            f.x = ((librarySize-f.ranking)/librarySize) * plotWidth;
-            f.x += PADDING;
-            f.y = yForFeature(f.feature);
-            Color c = colorForTags(f.feature.tags, false);
-            g2d.setColor(c);
-            double r = RADIUS;
-            if(!f.isSelected)
+            for(FeatureSetPlotItem f:features)
             {
-                if(f.isInSet)
+                if(f.isSelected)
                 {
+                    f.x = ((librarySize-f.ranking)/librarySize) * plotWidth;
+                    f.x += PADDING;
+                    f.y = yForFeature(f.feature);
+                    Color c = colorForTags(f.feature.tags, false);
+                    g2d.setColor(c);
+                    double r = RADIUS;
                     g2d.setStroke(CIRCLE_STROKE);
                     g2d.fill(new Ellipse2D.Double(f.x, f.y, r, r));
                 }
-                else
-                {
-                    g2d.setStroke(CIRCLE_STROKE);
-                    g2d.draw(new Ellipse2D.Double(f.x, f.y, r, r));
-                }
             }
         }
-        for(FeatureSetPlotItem f:features)
+        else if(filterState == FilterFeaturesPanel.FilterPanelState.NONE)
         {
-            Color c = colorForTags(f.feature.tags, false);
-            g2d.setColor(c);
-            double r = RADIUS;
-            if(f.isSelected)
+            for(FeatureSetPlotItem f:features)
             {
                 if(f.isInSet)
                 {
+                    f.x = ((librarySize-f.ranking)/librarySize) * plotWidth;
+                    f.x += PADDING;
+                    f.y = yForFeature(f.feature);
+                    Color c = colorForTags(f.feature.tags, false);
+                    g2d.setColor(c);
+                    double r = RADIUS;
                     g2d.setStroke(CIRCLE_STROKE);
                     g2d.fill(new Ellipse2D.Double(f.x, f.y, r, r));
                 }
-                else
-                {
-                    g2d.setStroke(CIRCLE_STROKE);
-                    g2d.draw(new Ellipse2D.Double(f.x, f.y, r, r));
-                }
-                r = RADIUS + 4;
-                g2d.setStroke(SELECTED_STROKE);
-                g2d.setColor(Color.LIGHT_GRAY);
-                g2d.draw(new Ellipse2D.Double(f.x - 2, f.y - 2, r, r));
             }
         }
+        else
+        {
+            boolean adding = filterState == FilterFeaturesPanel.FilterPanelState.ADDING;
+            //Draw unselected features first (so selected ones are on top)
+            for(FeatureSetPlotItem f:features)
+            {
+                f.x = ((librarySize-f.ranking)/librarySize) * plotWidth;
+                f.x += PADDING;
+                f.y = yForFeature(f.feature);
+                Color c = colorForTags(f.feature.tags, false);
+                g2d.setColor(c);
+                double r = RADIUS;
+                if(f.isInSet)
+                {
+                    if(adding || (!adding && !f.isSelected))
+                    {
+                        g2d.setStroke(CIRCLE_STROKE);
+                        g2d.fill(new Ellipse2D.Double(f.x, f.y, r, r));
+                    }   
+                }
+            }
+            for(FeatureSetPlotItem f:features)
+            {
+                Color c = colorForTags(f.feature.tags, false);
+                g2d.setColor(c);
+                double r = RADIUS;
+                if(f.isSelected)
+                {
+                    if(!f.isInSet && adding)
+                    {
+                        g2d.setStroke(CIRCLE_STROKE);
+                        g2d.draw(new Line2D.Double(f.x , f.y + r / 2, f.x + r, f.y + r / 2));
+                        g2d.draw(new Line2D.Double(f.x + r / 2 , f.y, f.x + r / 2, f.y + r));
+                    }
+                    else if(f.isInSet && !adding)
+                    {
+                        g2d.setStroke(CIRCLE_STROKE);
+                        g2d.draw(new Line2D.Double(f.x , f.y + r / 2, f.x + r, f.y + r / 2));
+                    }
+                }
+            }
+        }
+        
         if(hoveredFeature != null)
         {
             g2d.setColor(Color.MAGENTA);
