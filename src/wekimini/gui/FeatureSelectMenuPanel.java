@@ -20,13 +20,21 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
         initComponents();
     }
     
-    public void blockInteraction(boolean doBlock)
+    public void blockInteraction(boolean doBlock, boolean hasTrainingData)
     {
-        addButton.setEnabled(!doBlock);
-        removeButton.setEnabled(!doBlock);
-        autoButton.setEnabled(!doBlock);
-        exploreButton.setEnabled(!doBlock);
-        aboveThreshButton.setEnabled(!doBlock);
+        if(!hasTrainingData)
+        {
+            autoButton.setEnabled(false);
+            aboveThreshButton.setEnabled(false);
+        }
+        else
+        {
+            addButton.setEnabled(!doBlock);
+            removeButton.setEnabled(!doBlock);
+            autoButton.setEnabled(!doBlock);
+            exploreButton.setEnabled(!doBlock);
+            aboveThreshButton.setEnabled(!doBlock);
+        }
     }
 
     /**

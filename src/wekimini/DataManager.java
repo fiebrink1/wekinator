@@ -944,25 +944,40 @@ public class DataManager {
         Instances formatted = getAllFeaturesInstances(outputIndex, false);
         sel.useThreshold = false;
         System.out.println("Giving " + formatted.numAttributes() + " attributes to selector");
-        int[] indices =  sel.getAttributeIndicesForInstances(formatted);
         infoRankNames[outputIndex] = new HashMap();
-        System.out.println("Received " + indices.length + " indices from selector");
-        int ptr = 0;
-        String[] o = featureManager.getAllFeaturesGroup().getModifiers().getOutputNames().clone();
-        for(int attributeIndex:indices)
+        int[] indices;
+        if(formatted.numInstances() > 0)
         {
-            String name = o[attributeIndex];
-            if(name == null)
+            indices =  sel.getAttributeIndicesForInstances(formatted);
+            System.out.println("Received " + indices.length + " indices from selector");
+            int ptr = 0;
+            String[] o = featureManager.getAllFeaturesGroup().getModifiers().getOutputNames().clone();
+            for(int attributeIndex:indices)
             {
-                System.out.println("not found " + o[attributeIndex]);
-                for(int i = 0; i< o.length; i++)
+                String name = o[attributeIndex];
+                if(name == null)
                 {
-                    System.out.println(o[i]);
+                    System.out.println("not found " + o[attributeIndex]);
+                    for(int i = 0; i< o.length; i++)
+                    {
+                        System.out.println(o[i]);
+                    }
                 }
+                infoRankNames[outputIndex].put(name, ptr); 
+                ptr++;
             }
-            infoRankNames[outputIndex].put(name, ptr); 
-            ptr++;
         }
+        else
+        {
+            //If no training data yet, default to sequential order
+            int ptr = 0;
+            for(String name : featureManager.getAllFeaturesGroup().getNames())
+            {
+                infoRankNames[outputIndex].put(name+":0:0", ptr); 
+                ptr++;
+            }
+        }
+        
         System.out.println("---DONE UPDATING INFO GAIN RANKINGS");
         infoGainRankingsDirty = false;
     }

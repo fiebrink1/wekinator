@@ -67,8 +67,15 @@ public final class FeatureCollection
         inputGroupings.put("Gyro",new int[] {GYROX, GYROY, GYROZ});
         
         initLibrary(windowSize, bufferSize);
-        
+
         modifiers = new ModifierCollection(inputNames);
+                    
+        addFeatureForKey("AccX");
+        addFeatureForKey("AccY");
+        addFeatureForKey("AccZ");
+        addFeatureForKey("GyroX");
+        addFeatureForKey("GyroY");
+        addFeatureForKey("GyroZ");
     }
     
     public void initLibrary(int windowSize, int bufferSize)

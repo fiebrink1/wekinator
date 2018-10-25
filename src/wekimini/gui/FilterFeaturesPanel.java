@@ -135,21 +135,8 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
     
     private void filtersUpdated()
     {
-
-        updateAddRemoveButton();
+        
         delegate.filtersUpdated();
-    }
-    
-    private void updateAddRemoveButton()
-    {
-        if((selectedOperationFilters.isEmpty() && selectedInputFilter.equals(NO_INPUT)) || blocked)
-        {
-            addRemoveButton.setEnabled(false);
-        }
-        else
-        {
-            addRemoveButton.setEnabled(true);
-        }
     }
     
     public void setState(FilterPanelState state)
@@ -185,7 +172,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
     {
         blocked = doBlock;
         selectAllButton.setEnabled(!doBlock);
-        updateAddRemoveButton();
+        addRemoveButton.setEnabled(!doBlock);
         clearSelectionButton.setEnabled(!doBlock);
     }
     
@@ -405,7 +392,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
                     .addComponent(jLabel7)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(selectAllButton)
                     .addComponent(clearSelectionButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)

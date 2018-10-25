@@ -57,6 +57,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 menuLayeredPane.setLayer(filterPanel, BOTTOM_LAYER);
                 menuLayeredPane.setLayer(mainMenuPanel, TOP_LAYER);
                 updateFilters();
+                updatePlotTitle();
             }
 
             @Override
@@ -87,7 +88,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
                 menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
                 filterPanel.setState(FilterFeaturesPanel.FilterPanelState.ADDING);
-                plotTitleLabel.setText("Your Features");
+                updatePlotTitle();
                 updateFeaturePlot();
             }
 
@@ -107,7 +108,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
                 filterPanel.setState(FilterFeaturesPanel.FilterPanelState.REMOVING);
                 updateFeaturePlot();
-                plotTitleLabel.setText("Your Features");
+                updatePlotTitle();
             }
 
             @Override
@@ -117,7 +118,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
                 filterPanel.setState(FilterFeaturesPanel.FilterPanelState.EXPLORING);
                 updateFeaturePlot();
-                plotTitleLabel.setText("Exploring Features");
+                updatePlotTitle();
             }
 
         };
@@ -155,6 +156,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         };
         w.getSupervisedLearningManager().addPropertyChangeListener(learningStateListener);
+        updatePlotTitle();
     }
     
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
@@ -231,10 +233,31 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         }
     }
     
+    private boolean hasTrainingData()
+    {
+        return w.getDataManager().getNumExamples() > 0;
+    }
+    
+    private void updatePlotTitle()
+    {
+        if(!hasTrainingData())
+        {
+            plotTitleLabel.setText("Features - Record Data To Get Information Gain Rankings");
+        }
+        else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.EXPLORING)
+        {
+            plotTitleLabel.setText("Exploring Features");
+        }
+        else
+        {
+            plotTitleLabel.setText("Your Features");
+        }
+    }
+    
     public void blockInteraction(boolean block, boolean fromDelegate)
     {
         filterPanel.blockInteraction(block);
-        mainMenuPanel.blockInteraction(block);
+        mainMenuPanel.blockInteraction(block, hasTrainingData());
         if(block)
         {
             featureSetPlotPanel.showLoading();

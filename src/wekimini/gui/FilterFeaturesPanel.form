@@ -72,9 +72,9 @@
                   <Component id="jScrollPane4" min="-2" pref="75" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="selectAllButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="clearSelectionButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="clearSelectionButton" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="addRemoveButton" min="-2" pref="39" max="-2" attributes="0"/>
