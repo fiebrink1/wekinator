@@ -311,11 +311,17 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                         ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureTagSearch(w, sf, f);
                     }
                 }
-                selected = f;
+                setSelectedFeatures(f);
                 updateFeaturePlot();
             }
         };
         worker.execute();
+    }
+    
+    private void setSelectedFeatures(Feature[] f)
+    {
+        filterPanel.updatedSelectedFeatures(f);
+        selected = f;
     }
     
     private void updateFeaturePlot()
@@ -428,7 +434,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     {
         delegate.blockInteraction(true);
         w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).removeAll();
-        selected = w.getDataManager().getInfoGainRankings(outputIndex, threshold, above);
+        setSelectedFeatures(w.getDataManager().getInfoGainRankings(outputIndex, threshold, above));
         delegate.blockInteraction(false);
         handleSetChange(false);
     }
@@ -436,14 +442,14 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private void selectAll()
     {
         delegate.blockInteraction(true);
-        selected = w.getDataManager().featureManager.getAllFeaturesGroup().getCurrentFeatures();
+        setSelectedFeatures(w.getDataManager().featureManager.getAllFeaturesGroup().getCurrentFeatures());
         updateFeaturePlot();
     }
     
     private void clearAll()
     {
         delegate.blockInteraction(true);
-        selected = new Feature[0];
+        setSelectedFeatures(new Feature[0]);
         updateFeaturePlot();
     }
     
@@ -511,7 +517,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     }
                 }
             }
-            selected = new Feature[0];
+            setSelectedFeatures(new Feature[0]);
             delegate.featureListUpdated();
         }
         else

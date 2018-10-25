@@ -26,6 +26,15 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace min="-2" pref="52" max="-2" attributes="0"/>
+                      <Component id="selectAllButton" min="-2" pref="147" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="addRemoveButton" min="-2" pref="290" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="clearSelectionButton" min="-2" pref="145" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="52" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel6" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -37,18 +46,7 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="-2" pref="200" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="addRemoveButton" min="-2" pref="290" max="-2" attributes="0"/>
-                          <Group type="102" attributes="0">
-                              <Component id="selectAllButton" min="-2" pref="147" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Component id="clearSelectionButton" min="-2" pref="145" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                      <EmptySpace min="-2" pref="200" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="descriptionLabel" alignment="0" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -72,12 +70,13 @@
                   <Component id="jScrollPane4" min="-2" pref="75" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="selectAllButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="clearSelectionButton" min="-2" max="-2" attributes="0"/>
+              <Component id="descriptionLabel" min="-2" pref="28" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="addRemoveButton" alignment="3" min="-2" pref="39" max="-2" attributes="0"/>
+                  <Component id="selectAllButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="clearSelectionButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="addRemoveButton" min="-2" pref="39" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -175,6 +174,12 @@
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="Use Filters To Select Features"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="descriptionLabel">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="No Features Selected"/>
       </Properties>
     </Component>
   </SubComponents>
