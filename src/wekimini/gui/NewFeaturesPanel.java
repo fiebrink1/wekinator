@@ -245,7 +245,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     {
         if(!hasTrainingData())
         {
-            plotTitleLabel.setText("Features - Record Data To Get Information Gain Rankings");
+            plotTitleLabel.setText("Features - Record Examples To Get Information Gain Rankings");
         }
         else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.EXPLORING)
         {

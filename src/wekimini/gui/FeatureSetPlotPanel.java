@@ -298,7 +298,13 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
                 g2d.setStroke(CIRCLE_STROKE);
                 g2d.fill(new Ellipse2D.Double(f.x, f.y, r, r));
             }
-            else if (f.state == FeatureSetPlotItem.FeaturePlotItemState.ADDING)
+        }
+        for(FeatureSetPlotItem f:features)
+        {
+            Color c = colorForTags(f.feature.tags, false);
+            g2d.setColor(c);
+            double r = RADIUS;
+            if (f.state == FeatureSetPlotItem.FeaturePlotItemState.ADDING)
             {
                 g2d.setStroke(CIRCLE_STROKE);
                 g2d.draw(new Line2D.Double(f.x , f.y + r / 2, f.x + r, f.y + r / 2));

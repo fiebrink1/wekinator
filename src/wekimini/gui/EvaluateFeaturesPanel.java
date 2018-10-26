@@ -133,6 +133,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                     ((FeaturnatorLogger)KadenzeLogging.getLogger()).logEvaluatePanelChanged(w, panelState);
                 }
                 evaluateBtn.setText(panelState == 0 ? "Re-evaluate" : "Update MDS");
+                evaluateBtn.setEnabled(panelState == 0 ? controller.canRun() : controller.canTrain());
             }
         });
         tabbedPanel.addChangeListener(panelListener);
@@ -149,8 +150,8 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
         
-        trainBtn.setEnabled(controller.canRun());
-        evaluateBtn.setEnabled(controller.canRun());
+        trainBtn.setEnabled(controller.canTrain());
+        evaluateBtn.setEnabled(panelState == 0 ? controller.canRun() : controller.canTrain());
         
         switch (evt.getPropertyName()) {
             case SupervisedLearningManager.PROP_RECORDINGROUND:
@@ -213,7 +214,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     
     private void updateMDS()
     {
-        if(controller.canRun() && !updatingMDS)
+        if(controller.canTrain() && !updatingMDS)
         {
             System.out.println("----Feature list updated (EVALUATE PANEL), updating MDS");
             mdsWorker = new SwingWorker<String,Void>()
