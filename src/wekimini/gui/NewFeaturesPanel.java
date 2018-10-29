@@ -57,30 +57,32 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         {
             @Override
             public void backPressed() {
-                menuLayeredPane.setLayer(filterPanel, BOTTOM_LAYER);
-                menuLayeredPane.setLayer(mainMenuPanel, TOP_LAYER);
+                showMenu();
                 updateFilters();
-                updatePlotTitle();
+                updateLabels();
             }
 
             @Override
             public void filtersUpdated() {
                 updateFilters();
+                updateLabels();
             }
             
             @Override
             public void selectAllFeatures() {
                 selectAll();
+                updateLabels();
             }
             
             @Override
             public void selectNoFeatures() {
                 clearAll();
+                updateLabels();
             }
 
             @Override
             public void updateFeatures() {
-                handleSetChange(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.REMOVING);
+                
             }
             
         };
@@ -88,10 +90,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         FeatureMenuDelegate menuDelegate = new FeatureMenuDelegate() {
             @Override
             public void addFeaturePressed() {
-                menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
-                menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
+                showFilters();
                 filterPanel.setState(FilterFeaturesPanel.FilterPanelState.ADDING);
-                updatePlotTitle();
+                updateLabels();
                 updateFeaturePlot();
             }
 
@@ -107,21 +108,19 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
             @Override
             public void removeFeaturePressed() {
-                menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
-                menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
+                showFilters();
                 filterPanel.setState(FilterFeaturesPanel.FilterPanelState.REMOVING);
                 updateFeaturePlot();
-                updatePlotTitle();
+                updateLabels();
             }
 
             @Override
             public void exploreFeaturePressed()
             {
-                menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
-                menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
+                showFilters();
                 filterPanel.setState(FilterFeaturesPanel.FilterPanelState.EXPLORING);
                 updateFeaturePlot();
-                updatePlotTitle();
+                updateLabels();
             }
 
         };
@@ -159,7 +158,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         };
         w.getSupervisedLearningManager().addPropertyChangeListener(learningStateListener);
-        updatePlotTitle();
+        updateLabels();
+        showMenu();
     }
     
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
@@ -187,6 +187,28 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             default:
                 break;
         }
+    }
+    
+    public void showFilters()
+    {
+        menuLayeredPane.setLayer(filterPanel, TOP_LAYER);
+        menuLayeredPane.setLayer(mainMenuPanel, BOTTOM_LAYER);
+        infoFilterSlider.setVisible(false);
+        featureSetPlotPanel.showThreshold = false;
+        addRemoveButton.setVisible(true);
+        updateLabels();
+    }
+    
+    public void showMenu()
+    {
+        filterPanel.clearSelection();
+        filterPanel.setState(FilterFeaturesPanel.FilterPanelState.NONE);
+        menuLayeredPane.setLayer(filterPanel, BOTTOM_LAYER);
+        menuLayeredPane.setLayer(mainMenuPanel, TOP_LAYER);
+        infoFilterSlider.setVisible(true);
+        featureSetPlotPanel.showThreshold = true;
+        addRemoveButton.setVisible(false);
+        updateLabels();
     }
     
     public void update(Wekinator w, int output)
@@ -241,8 +263,23 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         return w.getDataManager().getNumExamples() > 0;
     }
     
-    private void updatePlotTitle()
+    private void updateFilterDescription()
     {
+        
+    }
+    
+    private void updateLabels()
+    {
+        int numSelected = showing;
+        if(filterPanel.getState() == FilterPanelState.ADDING)
+        {
+            numSelected = toAdd;
+        } 
+        else if (filterPanel.getState() == FilterPanelState.REMOVING)
+        {
+            numSelected = toRemove;
+        } 
+        
         if(!hasTrainingData())
         {
             plotTitleLabel.setText("Features - Record Examples To Get Information Gain Rankings");
@@ -251,16 +288,74 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         {
             plotTitleLabel.setText("Exploring Features");
         }
-        else
+        else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.ADDING)
+        {
+            plotTitleLabel.setText("Adding Features");
+        }
+        else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.NONE)
         {
             plotTitleLabel.setText("Your Features");
         }
+        if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.REMOVING)
+        {
+            plotTitleLabel.setText("Removing Features");
+        }
+        if(filterPanel.getState() == FilterPanelState.EXPLORING)
+        {
+            addRemoveButton.setVisible(false);
+        }
+        
+        String desc;
+        if(!filterPanel.filtersSelected() && numSelected == 0)
+        {
+            desc = "No Features Selected";
+        }
+        else
+        {
+            desc = "Showing";
+            if(filterPanel.getState() == FilterPanelState.ADDING)
+            {
+                desc = "Add";
+            }
+            else if (filterPanel.getState() == FilterPanelState.REMOVING)
+            {
+                desc = "Remove";
+            }
+            if(selected.length == w.getDataManager().featureManager.getFeatureNames().length)
+            {
+                desc = desc + " All Features";
+            }
+            else
+            {
+                desc = desc + " Features with ";
+                if(filterPanel.inputFilterSelected())
+                {
+                    desc = desc + filterPanel.selectedInputFilter;
+                }
+                if(filterPanel.operationFilterSelected())
+                {
+                    for(int i = 0; i < filterPanel.selectedOperationFilters.size(); i++)
+                    {
+                        String f = filterPanel.selectedOperationFilters.get(i);
+                        String delim = i == filterPanel.selectedOperationFilters.size() - 1 ? " and " : ", ";
+                        if(filterPanel.inputFilterSelected() || i > 0)
+                        {
+                            desc = desc + delim;
+                        }
+                        desc = desc + f;
+                    }
+                }
+                desc = desc + " (" + numSelected + ")";
+            }
+        }        
+        addRemoveButton.setText(desc);
     }
     
     public void blockInteraction(boolean block, boolean fromDelegate)
     {
         filterPanel.blockInteraction(block);
         mainMenuPanel.blockInteraction(block, hasTrainingData());
+        addRemoveButton.setEnabled(!block);
         if(block)
         {
             featureSetPlotPanel.showLoading();
@@ -320,23 +415,15 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         };
         worker.execute();
     }
-    private void updateFilterLabel()
+    
+   // private void updateFilterLabel()
     {
-        int numSelected = showing;
-        if(filterPanel.getState() == FilterPanelState.ADDING)
-        {
-            numSelected = toAdd;
-        } 
-        else if (filterPanel.getState() == FilterPanelState.REMOVING)
-        {
-            numSelected = toRemove;
-        } 
-        filterPanel.updatedSelectedFeatures(numSelected);
+        
     }
     
     private void setSelectedFeatures(Feature[] f)
     {
-        updateFilterLabel();
+        updateLabels();
         selected = f;
     }
     
@@ -442,7 +529,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     }
                 }
                 showing = items.size();
-                updateFilterLabel();
+                updateLabels();
                 FeatureSetPlotItem[] f = new FeatureSetPlotItem[items.size()];
                 f = items.toArray(f);
                 featureSetPlotPanel.update(f, w.getDataManager().featureManager.getFeatureNames().length);
@@ -558,6 +645,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 }
             }
             setSelectedFeatures(new Feature[0]);
+            showMenu();
             delegate.featureListUpdated();
         }
         else
@@ -600,6 +688,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         plotTitleLabel = new javax.swing.JLabel();
         menuLayeredPane = new javax.swing.JLayeredPane();
+        addRemoveButton = new javax.swing.JButton();
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -670,8 +759,17 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         );
         menuLayeredPaneLayout.setVerticalGroup(
             menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 283, Short.MAX_VALUE)
+            .addGap(0, 251, Short.MAX_VALUE)
         );
+
+        addRemoveButton.setBackground(new java.awt.Color(0, 0, 0));
+        addRemoveButton.setFont(new java.awt.Font("Lucida Grande", 1, 15)); // NOI18N
+        addRemoveButton.setText("Add ");
+        addRemoveButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addRemoveButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -680,6 +778,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(addRemoveButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -693,7 +794,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addComponent(menuLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(plotTitleLabel)
@@ -704,7 +805,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(infoFilterSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(infoFilterSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(addRemoveButton, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -721,8 +825,14 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         featureSetPlotPanel.updateThreshold(threshold);
     }//GEN-LAST:event_infoFilterSliderStateChanged
 
+    private void addRemoveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addRemoveButtonActionPerformed
+        // TODO add your handling code here:
+        handleSetChange(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.REMOVING);
+    }//GEN-LAST:event_addRemoveButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addRemoveButton;
     private wekimini.gui.FeatureSetPlotPanel featureSetPlotPanel;
     private javax.swing.JSlider infoFilterSlider;
     private javax.swing.JLabel jLabel2;

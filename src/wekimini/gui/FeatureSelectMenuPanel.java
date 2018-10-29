@@ -83,7 +83,7 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
             }
         });
 
-        aboveThreshButton.setText("Select Above Threshold");
+        aboveThreshButton.setText("Add All Above Threshold");
         aboveThreshButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aboveThreshButtonActionPerformed(evt);

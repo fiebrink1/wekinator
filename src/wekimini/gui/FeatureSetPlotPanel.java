@@ -43,6 +43,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     ImageIcon loadingIcon;
     private double threshold = 0.5;
     private Boolean highlightThreshold = false;
+    public Boolean showThreshold = true;
     private Timer thresholdTimer = null;
     private static final int THRESHOLD_HEIGHLIGHT_DECAY = 200;
     private static final int PADDING = 20;
@@ -279,7 +280,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             double thresholdW = plotWidth - thresholdX + (2 * PADDING);
             g2d.fill(new Rectangle2D.Double(thresholdX, PADDING, thresholdW, plotHeight));
         }
-        else
+        else if(showThreshold)
         {
             g2d.setColor(Color.BLACK);
             g2d.setStroke(DOTTED_STROKE);

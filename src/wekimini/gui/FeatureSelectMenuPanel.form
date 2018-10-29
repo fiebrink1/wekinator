@@ -103,7 +103,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="aboveThreshButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Select Above Threshold"/>
+        <Property name="text" type="java.lang.String" value="Add All Above Threshold"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="aboveThreshButtonActionPerformed"/>

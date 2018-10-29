@@ -217,7 +217,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         if(controller.canTrain() && !updatingMDS)
         {
             System.out.println("----Feature list updated (EVALUATE PANEL), updating MDS");
-            mdsWorker = new SwingWorker<String,Void>()
+            mdsWorker = new SwingWorker<String,Void>()  
             {            
                 @Override
                 public String doInBackground()

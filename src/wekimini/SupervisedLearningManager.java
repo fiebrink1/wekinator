@@ -337,7 +337,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         this.recordingState = recordingState;
         if(recordingState == RecordingState.NOT_RECORDING)
         {
-            w.save();
+            //w.save();
         }
         propertyChangeSupport.firePropertyChange(PROP_RECORDINGSTATE, oldRecordingState, recordingState);
     }
