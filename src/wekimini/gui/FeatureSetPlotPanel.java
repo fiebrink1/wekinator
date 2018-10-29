@@ -119,7 +119,6 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         imageHeight = h;
         plotHeight = h - (2 * PADDING);
         plotWidth = w  - (2 * PADDING);
-        image = new BufferedImage((int)imageWidth, (int)imageHeight, BufferedImage.TYPE_INT_ARGB);
         setBackground(Color.white);
         clear();
     }
@@ -175,7 +174,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
                 y = plotHeight * (6 / totalSensors);
                 break;
         }
-        return y + PADDING;
+        return y + (2 * PADDING);
     }
 
     public static Color colorForTag(String tag, Boolean faded)
