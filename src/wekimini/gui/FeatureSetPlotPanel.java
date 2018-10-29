@@ -277,13 +277,13 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         {
             g2d.setColor(Color.LIGHT_GRAY);
             double thresholdW = plotWidth - thresholdX + (2 * PADDING);
-            g2d.fill(new Rectangle2D.Double(thresholdX, PADDING, thresholdW, plotHeight));
+            g2d.fill(new Rectangle2D.Double(thresholdX, 0, thresholdW, imageHeight));
         }
         else if(showThreshold)
         {
             g2d.setColor(Color.BLACK);
             g2d.setStroke(DOTTED_STROKE);
-            g2d.draw(new Line2D.Double(thresholdX, PADDING, thresholdX, plotHeight));
+            g2d.draw(new Line2D.Double(thresholdX, 0, thresholdX, imageHeight));
         }
         for(FeatureSetPlotItem f:features)
         {

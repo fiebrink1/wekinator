@@ -51,7 +51,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
     private void setUpPlots() 
     {
-        featureSetPlotPanel.setDimensions(700 - 10, 200);
+        featureSetPlotPanel.setDimensions(700 - 10, 175);
         
         FeatureFilterDelegate filterDelegate = new FeatureFilterDelegate()
         {
@@ -144,8 +144,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 FeatureSetPlotItem f = featureSetPlotPanel.getNearest(e.getX(), e.getY());
                 if(f != null)
                 {
-                    delegate.newFeatureSelected(f.feature);
-                    featureSetPlotPanel.selectedFeature = f;
+                    selectFeature(f);
                 }
             }
         };
@@ -223,49 +222,16 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     {
         w.getSupervisedLearningManager().removePropertyChangeListener(learningStateListener);
     }
-
-    public void newFeatureSelected(Feature ft)
-    {
-        delegate.newFeatureSelected(ft);
-    }
     
-    public void addFeature(Feature ft)
+    public void selectFeature(FeatureSetPlotItem f)
     {
-        if(w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING)
-        {
-            if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
-            {
-                ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureAdded(w);
-            }
-            w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(ft.name);
-            delegate.featureListUpdated();
-        }
-        else
-        {
-            Object[] options = {"Stop Running","OK"};
-            int n = JOptionPane.showOptionDialog(null,
-                "Cannot edit features whilst Running",
-                "Warning",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,     
-                options,  
-                options[0]); 
-            if(n ==0)
-            {
-                new WekinatorSupervisedLearningController(w.getSupervisedLearningManager(),w).stopRun();
-            }
-        }
+        featureSetPlotPanel.selectedFeature = f;
+        delegate.newFeatureSelected(f.feature);
     }
     
     private boolean hasTrainingData()
     {
         return w.getDataManager().getNumExamples() > 0;
-    }
-    
-    private void updateFilterDescription()
-    {
-        
     }
     
     private void updateLabels()
@@ -280,6 +246,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             numSelected = toRemove;
         } 
         
+        lowInfoLabel.setVisible(hasTrainingData());
+        highInfoLabel.setVisible(hasTrainingData());
         if(!hasTrainingData())
         {
             plotTitleLabel.setText("Features - Record Examples To Get Information Gain Rankings");
@@ -416,11 +384,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         worker.execute();
     }
     
-   // private void updateFilterLabel()
-    {
-        
-    }
-    
     private void setSelectedFeatures(Feature[] f)
     {
         updateLabels();
@@ -535,6 +498,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 featureSetPlotPanel.update(f, w.getDataManager().featureManager.getFeatureNames().length);
                 updatingRankings = false;
                 delegate.blockInteraction(false);
+                if(items.size() > 0)
+                {
+                    //selectFeature(items.get(0));
+                }
             }
         };
         if(!updatingRankings)
@@ -684,11 +651,11 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         jTable1 = new javax.swing.JTable();
         infoFilterSlider = new javax.swing.JSlider();
         featureSetPlotPanel = new wekimini.gui.FeatureSetPlotPanel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        plotTitleLabel = new javax.swing.JLabel();
+        lowInfoLabel = new javax.swing.JLabel();
+        highInfoLabel = new javax.swing.JLabel();
         menuLayeredPane = new javax.swing.JLayeredPane();
         addRemoveButton = new javax.swing.JButton();
+        plotTitleLabel = new javax.swing.JLabel();
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -738,24 +705,20 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         );
         featureSetPlotPanelLayout.setVerticalGroup(
             featureSetPlotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 197, Short.MAX_VALUE)
+            .addGap(0, 177, Short.MAX_VALUE)
         );
 
-        jLabel2.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jLabel2.setText("Low Info");
+        lowInfoLabel.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        lowInfoLabel.setText("Low Info");
 
-        jLabel3.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jLabel3.setText("High Info");
-
-        plotTitleLabel.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        plotTitleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        plotTitleLabel.setText("Your  Features");
+        highInfoLabel.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        highInfoLabel.setText("High Info");
 
         javax.swing.GroupLayout menuLayeredPaneLayout = new javax.swing.GroupLayout(menuLayeredPane);
         menuLayeredPane.setLayout(menuLayeredPaneLayout);
         menuLayeredPaneLayout.setHorizontalGroup(
             menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 684, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         menuLayeredPaneLayout.setVerticalGroup(
             menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -763,7 +726,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         );
 
         addRemoveButton.setBackground(new java.awt.Color(0, 0, 0));
-        addRemoveButton.setFont(new java.awt.Font("Lucida Grande", 1, 15)); // NOI18N
+        addRemoveButton.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         addRemoveButton.setText("Add ");
         addRemoveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -771,24 +734,28 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         });
 
+        plotTitleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        plotTitleLabel.setText("jLabel1");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(addRemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(85, 85, 85))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(addRemoveButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
+                        .addComponent(lowInfoLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel3))
+                        .addComponent(highInfoLabel))
                     .addComponent(infoFilterSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(plotTitleLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(menuLayeredPane))
+                    .addComponent(menuLayeredPane)
+                    .addComponent(plotTitleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -797,18 +764,17 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(menuLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(plotTitleLabel)
+                .addComponent(addRemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(plotTitleLabel)
+                .addGap(4, 4, 4)
                 .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3))
+                    .addComponent(lowInfoLabel)
+                    .addComponent(highInfoLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(infoFilterSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(addRemoveButton, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(infoFilterSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -834,13 +800,13 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addRemoveButton;
     private wekimini.gui.FeatureSetPlotPanel featureSetPlotPanel;
+    private javax.swing.JLabel highInfoLabel;
     private javax.swing.JSlider infoFilterSlider;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
+    private javax.swing.JLabel lowInfoLabel;
     private javax.swing.JLayeredPane menuLayeredPane;
     private javax.swing.JLabel plotTitleLabel;
     private wekimini.gui.TestSetFrame testSetFrame1;

@@ -1060,12 +1060,12 @@ public class DataManager {
     
     private void updateFeatureInstances(int index, boolean testSet, boolean allFeatures)
     { 
-        System.out.println("updating features, all = " + allFeatures);
+        //System.out.println("updating features, all = " + allFeatures);
         Instances newInstances;
         if(allFeatures)
         {
             newInstances = featureManager.getAllFeaturesNewInstances();
-            System.out.println("got all features instance " + newInstances.numAttributes());
+            //System.out.println("got all features instance " + newInstances.numAttributes());
             featureManager.resetAllFeaturesModifiers();
         }
         else
