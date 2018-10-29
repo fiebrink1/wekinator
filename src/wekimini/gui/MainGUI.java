@@ -625,7 +625,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuItemEvaluation = new javax.swing.JMenuItem();
         menuPerformanceCheck = new javax.swing.JCheckBoxMenuItem();
         menuConsole = new javax.swing.JMenuItem();
-        jMenuItem8 = new javax.swing.JMenuItem();
         testSetMenuItem = new javax.swing.JMenuItem();
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
@@ -768,14 +767,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         jMenu2.add(menuConsole);
 
-        jMenuItem8.setText("Features");
-        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem8ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem8);
-
         testSetMenuItem.setText("Test Set");
         testSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -912,11 +903,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private void menuLoadFromARFFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuLoadFromARFFActionPerformed
         showArffLoader();
     }//GEN-LAST:event_menuLoadFromARFFActionPerformed
-
-    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-        // TODO add your handling code here:
-        showFeaturesWindow();
-    }//GEN-LAST:event_jMenuItem8ActionPerformed
 
     private void testSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testSetMenuItemActionPerformed
         // TODO add your handling code here:
@@ -1138,7 +1124,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JMenuItem jMenuItem8;
     private wekimini.gui.SupervisedLearningPanel learningPanel1;
     private javax.swing.JMenu menuActions;
     private javax.swing.JMenuItem menuConsole;
