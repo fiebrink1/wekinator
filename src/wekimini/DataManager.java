@@ -1088,7 +1088,7 @@ public class DataManager {
                 {
                     input = inputInstance.toDoubleArray();
                     double output = input[input.length-1];
-                    features = allFeatures ? featureManager.modifyInputsForAllFeatures(input) : featureManager.modifyInputsForOutput(input, index);
+                    features = allFeatures ? featureManager.modifyInputsForAllFeatures(input, true) : featureManager.modifyInputsForOutput(input, index, true);
                     withOutput = new double[features.length + 1];
                     withOutput[withOutput.length-1] = output;
                     System.arraycopy(features, 0, withOutput, 0, features.length);
@@ -1375,7 +1375,7 @@ public class DataManager {
         //System.out.println("getting classifiable for plot");
         double[] features;
         Instances instances;
-        features = featureManager.modifyInputsForAllFeatures(vals);
+        features = featureManager.modifyInputsForAllFeatures(vals, false);
         instances = featureManager.getNewInstancesOfLength(features.length, numClasses[0]);
         Instance featureInstance = new Instance(1.0, features);
         instances.add(featureInstance);
@@ -1390,7 +1390,7 @@ public class DataManager {
         double[] features;
         double[] data;
         Instances instances;
-        features = featureManager.modifyInputsForOutput(vals, which);
+        features = featureManager.modifyInputsForOutput(vals, which, false);
         data = new double[features.length + 1];
         System.arraycopy(features, 0, data, 0, features.length);
         instances = featureManager.getNewInstances(which, numClasses[which]);

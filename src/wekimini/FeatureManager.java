@@ -113,7 +113,7 @@ public class FeatureManager
         
         if(inputNames.length == 6)
         {
-            allFeatures.computeAndGetValuesForNewInputs(new double[inputNames.length]);
+            allFeatures.computeAndGetValuesForNewInputs(new double[inputNames.length], true);
         }
         
         for(int i = 0; i < numOutputs; i++)
@@ -171,9 +171,9 @@ public class FeatureManager
         return getNewInstancesOfLength(2, numClasses);
     }
     
-    protected double[] modifyInputsForOutput(double[] newInputs, int output)
+    protected double[] modifyInputsForOutput(double[] newInputs, int output, boolean updateNames)
     {        
-        return featureCollections.get(output).computeAndGetValuesForNewInputs(newInputs);
+        return featureCollections.get(output).computeAndGetValuesForNewInputs(newInputs, updateNames);
     }
     
     protected void resetAllModifiers()
@@ -260,9 +260,9 @@ public class FeatureManager
     }
     
     //All Features
-    protected double[] modifyInputsForAllFeatures(double[] newInputs)
+    protected double[] modifyInputsForAllFeatures(double[] newInputs, boolean updateNames)
     {    
-        return allFeatures.computeAndGetValuesForNewInputs(newInputs);
+        return allFeatures.computeAndGetValuesForNewInputs(newInputs, updateNames);
     }
     
     protected void resetAllFeaturesModifiers()

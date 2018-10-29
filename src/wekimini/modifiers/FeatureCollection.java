@@ -415,11 +415,11 @@ public final class FeatureCollection
         return connections;
     }
     
-    public double[] computeAndGetValuesForNewInputs(double[] newInputs)
+    public double[] computeAndGetValuesForNewInputs(double[] newInputs, boolean updateNames)
     {
         try {
             double[] vals;
-            vals = modifiers.computeAndGetValuesForNewInputs(newInputs, added);
+            vals = modifiers.computeAndGetValuesForNewInputs(newInputs, added, updateNames);
             updateFeatureIndexes();
             return vals;
         } 

@@ -268,7 +268,7 @@ public class ModifierCollection {
     
     //Calculate outputs
     
-    private void computeValuesForNewInputs(double[] newInputs, HashMap<String, Feature> features) {
+    private void computeValuesForNewInputs(double[] newInputs, HashMap<String, Feature> features, boolean updateNames) {
         
         int modifierOutputIndex = 0;
         int completedIndex = 0;
@@ -309,24 +309,35 @@ public class ModifierCollection {
                         completedModifiers.add(toComplete);
                         if(toComplete.addToOutput)
                         {
-                            //SAVE THE INDEX OF THE VALUE ADDED AND A REFERNCE TO ITS SOURCE (THE MODIFIER)
-                            String featureName = getFeatureNameForModifierID(toComplete.inputID, features);
+                            String featureName = "";
+                            if(updateNames)
+                            {
+                                //SAVE THE INDEX OF THE VALUE ADDED AND A REFERNCE TO ITS SOURCE (THE MODIFIER)
+                                featureName = getFeatureNameForModifierID(toComplete.inputID, features);
+                            }
+                            
                             
                             if (toComplete instanceof ModifiedInputSingleOutput) 
                             {
                                 newVals[modifierOutputIndex] = ((ModifiedInputSingleOutput)toComplete).getValue();
-                                String name = featureName + ":0";
-                                //System.out.println("added feature name " + name + " - " + toComplete.inputID);
-                                names[modifierOutputIndex] = name;
+                                if(updateNames)
+                                {
+                                    String name = featureName + ":0";
+                                    //System.out.println("added feature name " + name + " - " + toComplete.inputID);
+                                    names[modifierOutputIndex] = name;
+                                }
                             }
                             else 
                             {
                                 System.arraycopy(((ModifiedInputVectorOutput)toComplete).getValues(), 0, newVals, modifierOutputIndex, toComplete.getSize());
                                 for(int i = 0; i < toComplete.getSize(); i++)
                                 {
-                                    String name = featureName + ":" + i;
-                                    //System.out.println("added feature name " + name + " - " + toComplete.inputID);
-                                    names[modifierOutputIndex] = name;
+                                    if(updateNames)
+                                    {
+                                        String name = featureName + ":" + i;
+                                        //System.out.println("added feature name " + name + " - " + toComplete.inputID);
+                                        names[modifierOutputIndex] = name;
+                                    }
                                 }
                             }
                             modifierOutputIndex += toComplete.getSize();
@@ -337,12 +348,15 @@ public class ModifierCollection {
             completedIndex++;
         }
         currentValues = newVals;
-        outputNames = names;
+        if(updateNames)
+        {
+            outputNames = names;
+        }
     }
 
-    public double[] computeAndGetValuesForNewInputs(double[] newInputs, HashMap<String, Feature> features) {
+    public double[] computeAndGetValuesForNewInputs(double[] newInputs, HashMap<String, Feature> features, boolean updateNames) {
         try {
-            computeValuesForNewInputs(newInputs, features);
+            computeValuesForNewInputs(newInputs, features, updateNames);
         } 
         catch (ConcurrentModificationException ex)
         {

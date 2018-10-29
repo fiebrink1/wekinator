@@ -526,11 +526,30 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     
     private void selectThresh(boolean above)
     {
-        delegate.blockInteraction(true);
-        w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).removeAll();
-        setSelectedFeatures(w.getDataManager().getInfoGainRankings(outputIndex, threshold, above));
-        delegate.blockInteraction(false);
-        handleSetChange(false);
+        if(w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING)
+        {
+            delegate.blockInteraction(true);
+            w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).removeAll();
+            setSelectedFeatures(w.getDataManager().getInfoGainRankings(outputIndex, threshold, above));
+            delegate.blockInteraction(false);
+            handleSetChange(false);
+        } 
+        else 
+        {
+            Object[] options = {"Stop Running","OK"};
+            int n = JOptionPane.showOptionDialog(null,
+                "Cannot edit features whilst Running",
+                "Warning",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE, 
+                null,     
+                options,  
+                options[0]); 
+            if(n ==0)
+            {
+                new WekinatorSupervisedLearningController(w.getSupervisedLearningManager(),w).stopRun();
+            }
+        }
     }
     
     private void selectAll()
@@ -735,7 +754,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         });
 
         plotTitleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        plotTitleLabel.setText("jLabel1");
+        plotTitleLabel.setText("Text");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

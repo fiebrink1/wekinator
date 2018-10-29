@@ -189,7 +189,7 @@
     <Component class="javax.swing.JLabel" name="plotTitleLabel">
       <Properties>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="jLabel1"/>
+        <Property name="text" type="java.lang.String" value="Text"/>
       </Properties>
     </Component>
   </SubComponents>

@@ -72,6 +72,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
                 FeatureSetPlotItem newItem = getNearest(e.getX(), e.getY());
                 if(hoveredFeature  != newItem)
                 {
+                    //System.out.println("hovered feature " + newItem.feature.name);
                     hoveredFeature = newItem;
                     repaint();
                 }

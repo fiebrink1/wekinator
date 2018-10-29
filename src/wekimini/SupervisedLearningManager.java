@@ -925,7 +925,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     
     //Right now, this simply won't change indices where mask is false
     public double[] computeValues(double[] inputs, boolean[] computeMask) {
-        if(isPlotting)
+        if(isPlotting  && runningState != RunningState.RUNNING)
         {
             updatePlots(inputs);
         }
