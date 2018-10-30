@@ -20,7 +20,8 @@ public class SerialPortInput {
     private static final int PACKET_SIZE = 6;
     private static final int BAUD_RATE = 38400;
     private static final boolean PRINT_PACKETS = false;
-    private static final String EMAKE_PREFIX = "tty.wchusbserial";
+    private static final String EMAKE_PREFIX_OSX = "tty.wchusbserial";
+    private static final String EMAKE_PREFIX_WIN = "COM";
     String leftOver = "";
     int sendPtr = 0;
     double[] toSend =  new double[PACKET_SIZE];
@@ -56,6 +57,45 @@ public class SerialPortInput {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
+    
+    private void connectPort(SerialPort p)
+    {
+        this.port = p;
+        setConnectionState(SerialConnectionState.CONNECTED);
+        p.setBaudRate(BAUD_RATE);
+        p.openPort();
+        System.out.println("opening port....");
+        p.addDataListener(new SerialPortDataListener() {
+           @Override
+           public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
+           @Override
+           public void serialEvent(SerialPortEvent event)
+           {
+               //System.out.println("serialEvent"); 
+                if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
+                    return;
+                byte[] newData = new byte[p.bytesAvailable()];
+                p.readBytes(newData, newData.length);
+                processBytes(newData);
+           }
+        });
+    }
+    
+    public void connect(String targetName)
+    {
+        if(port != null) {
+            cleanUp();
+        }
+        SerialPort[] ports = SerialPort.getCommPorts();
+        for(SerialPort p : ports)
+        {
+            System.out.println(p.getSystemPortName());
+            if(p.getSystemPortName().equals(targetName))
+            {
+                connectPort(p);
+            }
+        }
+    }
    
     public void connect()
     {
@@ -66,27 +106,10 @@ public class SerialPortInput {
         for(SerialPort p : ports)
         {
             System.out.println(p.getSystemPortName());
-            if(p.getSystemPortName().contains(EMAKE_PREFIX))
+            if(p.getSystemPortName().contains(EMAKE_PREFIX_OSX)||
+                    p.getSystemPortName().contains(EMAKE_PREFIX_WIN))
             {
-                this.port = p;
-                setConnectionState(SerialConnectionState.CONNECTED);
-                p.setBaudRate(BAUD_RATE);
-                p.openPort();
-                System.out.println("opening port....");
-                p.addDataListener(new SerialPortDataListener() {
-                   @Override
-                   public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
-                   @Override
-                   public void serialEvent(SerialPortEvent event)
-                   {
-                       //System.out.println("serialEvent"); 
-                        if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
-                            return;
-                        byte[] newData = new byte[p.bytesAvailable()];
-                        p.readBytes(newData, newData.length);
-                        processBytes(newData);
-                   }
-                });
+                connectPort(p);
             }
         }
     }
