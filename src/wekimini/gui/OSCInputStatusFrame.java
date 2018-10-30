@@ -55,6 +55,11 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
 
         int p = w.getOSCReceiver().getReceivePort();
         fieldOscPort.setText(Integer.toString(p));
+        String[] serialPorts = w.getInputManager().getAvailablePorts();
+        for(String sp:serialPorts)
+        {
+            serialPortComboBox.addItem(sp);
+        }
     }
 
     private void inputReceiverPropertyChanged(PropertyChangeEvent evt) {
@@ -98,6 +103,7 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         buttonOscListen = new javax.swing.JButton();
         labelOscStatus = new javax.swing.JLabel();
+        serialPortComboBox = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("OSC Input Status");
@@ -129,6 +135,12 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
 
         labelOscStatus.setText("Not connected");
 
+        serialPortComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                serialPortComboBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -141,8 +153,11 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(fieldOscPort))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(buttonOscListen)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(buttonOscListen)
+                                .addGap(47, 47, 47)
+                                .addComponent(serialPortComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -162,7 +177,9 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(fieldOscPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonOscListen)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(buttonOscListen)
+                    .addComponent(serialPortComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(8, Short.MAX_VALUE))
         );
 
@@ -172,7 +189,7 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 416, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -219,6 +236,11 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_buttonOscListenActionPerformed
 
+    private void serialPortComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialPortComboBoxActionPerformed
+        // TODO add your handling code here:
+        w.getInputManager().setTargetPort((String)serialPortComboBox.getSelectedItem());
+    }//GEN-LAST:event_serialPortComboBoxActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -261,5 +283,6 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel labelOscStatus;
+    private javax.swing.JComboBox<String> serialPortComboBox;
     // End of variables declaration//GEN-END:variables
 }

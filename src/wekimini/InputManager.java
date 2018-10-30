@@ -5,6 +5,7 @@
  */
 package wekimini;
 
+import com.fazecast.jSerialComm.SerialPort;
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 import java.beans.PropertyChangeEvent;
@@ -44,6 +45,8 @@ public class InputManager {
     private final List<InputListener> inputValueListeners;
     private final EventListenerList inputGroupChangeListeners = new EventListenerList();
     public static final String PROP_INPUTGROUP = "inputGroup";
+    private static final String AUTO_SERIAL_PORT = "Auto-Connect";
+    private String targetPort = AUTO_SERIAL_PORT;
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private double[] currentValues = new double[0];
     private static final Logger logger = Logger.getLogger(InputManager.class.getName());
@@ -125,12 +128,38 @@ public class InputManager {
         cleanUp();
     }
     
+    public void setTargetPort(String name)
+    {
+        targetPort = name;
+    }
+    
     public void reconnectSerial()
     {
        if(serialInput != null)
        {
-           serialInput.connect();
+           if(targetPort.equals(AUTO_SERIAL_PORT))
+           {
+               serialInput.connect();
+           }
+           else
+           {
+               serialInput.connect(targetPort);
+           }
        }
+    }
+    
+    public String[] getAvailablePorts()
+    {
+        SerialPort[] ports = SerialPort.getCommPorts();
+        String[] names = new String[ports.length+1];
+        int ptr = 1;
+        names[0] = AUTO_SERIAL_PORT;
+        for(SerialPort p:ports)
+        {
+            names[ptr] = p.getSystemPortName();
+            ptr++;
+        }
+        return names;
     }
     
     private void cleanUp()
