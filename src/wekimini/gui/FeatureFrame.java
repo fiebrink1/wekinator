@@ -97,7 +97,7 @@ public class FeatureFrame extends JFrame {
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                w.getSupervisedLearningManager().isPlotting = false;
+                w.getSupervisedLearningManager().setIsPlotting(false);
                 evaluateFeaturesPanel.onClose();
                 newFeaturesPanel.onClose();
             }
@@ -109,6 +109,7 @@ public class FeatureFrame extends JFrame {
         prepareForLibraryUpdate();
         featureDetailPanel.blockInteraction(true, true);
         newFeaturesPanel.blockInteraction(true, true);
+        
     }
     
     private void unblockAll()
@@ -265,7 +266,8 @@ public class FeatureFrame extends JFrame {
             ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeaturePreviewed(w, selectedFeature);
         }
         PlotRowModel model = new PlotRowModel(100);
-        w.getSupervisedLearningManager().isPlotting = true;
+        System.out.print("-----------updateSelectedFeature, setting plotting to TRUE--------");
+        w.getSupervisedLearningManager().setIsPlotting(true);
         model.isStreaming = true;
         model.feature = selectedFeature;
         featureDetailPanel.setModel(model);
@@ -292,7 +294,7 @@ public class FeatureFrame extends JFrame {
         if(resetState)
         {
             wasRunning = w.getSupervisedLearningManager().getRunningState() != SupervisedLearningManager.RunningState.NOT_RUNNING;
-            wasPlotting = w.getSupervisedLearningManager().isPlotting;
+            wasPlotting = w.getSupervisedLearningManager().getIsPlotting();
             evaluateFeaturesPanel.cancelWorkers();
             if(wasRunning)
             {
@@ -301,7 +303,7 @@ public class FeatureFrame extends JFrame {
             if(wasPlotting)
             {
                 System.out.println("setting is plotting to false");
-                w.getSupervisedLearningManager().isPlotting = false;
+                w.getSupervisedLearningManager().setIsPlotting(false);
             }
             resetState = false;
         }
@@ -310,11 +312,11 @@ public class FeatureFrame extends JFrame {
     private void resetFollowingLibraryUpdate()
     {
         System.out.println("----resetFollowingLibraryUpdate");
-        if(wasRunning)
-        {
-            w.getSupervisedLearningManager().startRunning();
-        }
-        w.getSupervisedLearningManager().isPlotting = wasPlotting;
+//        if(wasRunning)
+//        {
+//            w.getSupervisedLearningManager().startRunning();
+//        }
+//        w.getSupervisedLearningManager().setIsPlotting(wasPlotting);
         resetState = true;
     }
 

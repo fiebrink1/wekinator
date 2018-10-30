@@ -127,6 +127,10 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         model.points.clear();
         plotPanel.updateModel(model);
         diagramView.setVisible(false);
+        if(w != null)
+        {
+             w.getSupervisedLearningManager().setIsPlotting(false);
+        }
     }
     
     public void update(Wekinator w)

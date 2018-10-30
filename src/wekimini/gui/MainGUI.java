@@ -625,6 +625,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuItemEvaluation = new javax.swing.JMenuItem();
         menuPerformanceCheck = new javax.swing.JCheckBoxMenuItem();
         menuConsole = new javax.swing.JMenuItem();
+        featureMenuItem = new javax.swing.JMenuItem();
         testSetMenuItem = new javax.swing.JMenuItem();
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
@@ -767,6 +768,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         jMenu2.add(menuConsole);
 
+        featureMenuItem.setText("Features");
+        featureMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                featureMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu2.add(featureMenuItem);
+
         testSetMenuItem.setText("Test Set");
         testSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -908,6 +917,11 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         // TODO add your handling code here:
         showTestWindow();
     }//GEN-LAST:event_testSetMenuItemActionPerformed
+
+    private void featureMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_featureMenuItemActionPerformed
+        // TODO add your handling code here:
+        showFeaturesWindow();
+    }//GEN-LAST:event_featureMenuItemActionPerformed
 
     private void flushLogs() {
         KadenzeLogging.getLogger().flush();
@@ -1114,6 +1128,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem checkEnableOSCControl;
+    private javax.swing.JMenuItem featureMenuItem;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;

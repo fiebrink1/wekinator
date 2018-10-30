@@ -209,7 +209,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         tableModel.data.set(model.rowIndex, model);
         model.points = new LinkedList();
         model.classes = new LinkedList();
-        w.getSupervisedLearningManager().isPlotting = areAnyRowsStreaming();
+        w.getSupervisedLearningManager().setIsPlotting(areAnyRowsStreaming());
         if(model.isStreaming)
         {
             

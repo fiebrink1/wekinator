@@ -90,8 +90,10 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     private boolean computeDistribution = false;
     private Instance currentInputInstance;
-    public boolean isPlotting = false;
+    private boolean isPlotting = false;
     public boolean canUpdate = true;
+    private ArrayList<Double> plotLag = new ArrayList();
+    private ArrayList<Double> runLag = new ArrayList();
     
     /**
      * Get the value of computeDistribution
@@ -381,11 +383,27 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public void startRunning()
     {
         setRunningState(RunningState.RUNNING);
+        plotLag.clear();
+        runLag.clear();
     }
     
     public void stopRunning()
     {
         setRunningState(RunningState.NOT_RUNNING);
+        double sum = 0;
+        for(Double d:plotLag)
+        {
+            sum += d;
+        }
+        System.out.println("Plot Lag " + sum / (double) plotLag.size());
+       
+        sum = 0;
+        for(Double d:runLag)
+        {
+            sum += d;
+        }
+        System.out.println("Run Lag " + sum / (double) runLag.size());
+
     }
 
     private void setRunningState(RunningState runningState) {
@@ -923,16 +941,34 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         return currentInputInstance.value(index);
     }
     
+    public boolean getIsPlotting()
+    {
+        return isPlotting;
+    }
+    
+    public void setIsPlotting(boolean isPlotting)
+    {
+        this.isPlotting = isPlotting; 
+    }
+    
     //Right now, this simply won't change indices where mask is false
     public double[] computeValues(double[] inputs, boolean[] computeMask) {
-        if(isPlotting  && runningState != RunningState.RUNNING)
+        double t0 = System.currentTimeMillis();
+        if(isPlotting)
         {
             updatePlots(inputs);
         }
+        double t1 = System.currentTimeMillis();
+        double diff = t1- t0;
+        plotLag.add(diff);
         if(runningState == RunningState.RUNNING)
         {
             for (int i = 0; i < computeMask.length; i++) {
+                t0 = System.currentTimeMillis();
                 Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, i);
+                t1 = System.currentTimeMillis();
+                diff = t1- t0;
+                runLag.add(diff);
                 if (computeMask[i] && paths.get(i).canCompute()) {
 
                     try {
