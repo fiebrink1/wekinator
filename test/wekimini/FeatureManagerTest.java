@@ -157,9 +157,9 @@ public class FeatureManagerTest {
 //        fc.clearAdded();
 //        fc.addFeatureForKey("MeanAccX");
 //        FeatureSingleModifierOutput added = (FeatureSingleModifierOutput) fc.getCurrentFeatures()[0];
-//        ModifiedInput outputModifier = fm.getAllFeaturesGroup().getModifiers().getModifierForID(added.getOutputModifierID());
+//        ModifiedInput outputModifier = fm.getAllFeatures().getModifiers().getModifierForID(added.getOutputModifierID());
 //        fm.setFeatureWindowSize(20,30);
-//        ModifiedInput newOutputModifier = fm.getAllFeaturesGroup().getModifiers().getModifierForID(added.getOutputModifierID());
+//        ModifiedInput newOutputModifier = fm.getAllFeatures().getModifiers().getModifierForID(added.getOutputModifierID());
 //    }
 //    
     @Test
@@ -172,7 +172,7 @@ public class FeatureManagerTest {
         {
             testWindowSizeForFeatureGroup(ws, bs, fc);
         }
-        testWindowSizeForFeatureGroup(ws, bs, fm.getAllFeaturesGroup());
+        testWindowSizeForFeatureGroup(ws, bs, fm.getAllFeatures());
         
         ws = 5;
         bs = 50;
@@ -181,7 +181,7 @@ public class FeatureManagerTest {
         {
             testWindowSizeForFeatureGroup(ws, bs, fc);
         }
-        testWindowSizeForFeatureGroup(ws, bs, fm.getAllFeaturesGroup());
+        testWindowSizeForFeatureGroup(ws, bs, fm.getAllFeatures());
     }
     
     public void testWindowSizeForFeatureGroup(int ws, int bs, FeatureCollection fc)

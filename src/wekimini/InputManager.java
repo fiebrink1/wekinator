@@ -53,6 +53,8 @@ public class InputManager {
     private final OSCReceiver oscReceiver;
     public static final String PROP_CONNECTIONSTATE = "inputConnectionState";
     private InputConnectionState connectionState = InputConnectionState.NOT_CONNECTED;
+    private ArrayList<Double> inputLag = new ArrayList();
+    private double prevInput = -1;
     
     public enum InputConnectionState {
         NOT_CONNECTED, CONNECTING, CONNECTED, FAIL
@@ -305,6 +307,11 @@ public class InputManager {
     private void messageArrived(String messageName, OSCMessage m) {
         //TODO: CHeck if enabled before doing anything
         //System.out.println("Received " + messageName + " :" + m.getAddress() + ":" + m.getArguments());
+        if(prevInput > 0)
+        {
+            inputLag.add((System.currentTimeMillis() - prevInput)); 
+        }
+        prevInput = System.currentTimeMillis();
         if (inputGroup != null && messageName.equals(inputGroup.getOscMessage())) {
             List<Object> oscArg = m.getArguments();
             double inputVals[] = new double[oscArg.size()];
@@ -407,8 +414,27 @@ public class InputManager {
             }
         }
     }
+    
+    public void resetLag()
+    {
+//        prevInput = -1;
+//        inputLag.clear();
+    }
+    
+    public void showLag()
+    {
+//        double sum = 0;
+//        for(Double d:inputLag)
+//        {
+//            sum += d;
+//        }
+//        double sampleRate = sum / ((double)inputLag.size());
+//        
+//        System.out.println("Input manager Sample rate " + sampleRate);
+    }
 
     private void notifyListeners(double[] data) {
+        
         for (InputListener l : inputValueListeners) {
             l.update(data);
         }

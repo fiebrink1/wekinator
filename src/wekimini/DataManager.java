@@ -951,7 +951,7 @@ public class DataManager {
             indices =  sel.getAttributeIndicesForInstances(formatted);
             System.out.println("Received " + indices.length + " indices from selector");
             int ptr = 0;
-            String[] o = featureManager.getAllFeaturesGroup().getModifiers().getOutputNames().clone();
+            String[] o = featureManager.getAllFeatures().getModifiers().getOutputNames().clone();
             for(int attributeIndex:indices)
             {
                 String name = o[attributeIndex];
@@ -971,7 +971,7 @@ public class DataManager {
         {
             //If no training data yet, default to sequential order
             int ptr = 0;
-            for(String name : featureManager.getAllFeaturesGroup().getNames())
+            for(String name : featureManager.getAllFeatures().getNames())
             {
                 infoRankNames[outputIndex].put(name+":0:0", ptr); 
                 ptr++;
@@ -998,7 +998,7 @@ public class DataManager {
                 int ptr = 0;
                 for(int attributeIndex:features)
                 {
-                    String name = featureManager.getAllFeaturesGroup().getModifiers().nameForIndex(attributeIndex);
+                    String name = featureManager.getAllFeatures().getModifiers().nameForIndex(attributeIndex);
                     String[] split = name.split(":");
                     featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(split[0]);
                     selectedFeatureNames[outputIndex][ptr] = name;
@@ -1049,7 +1049,7 @@ public class DataManager {
             int ptr = 0;
             for(int attributeIndex:indices)
             {
-                selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeaturesGroup().getModifiers().nameForIndex(attributeIndex);
+                selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeatures().getModifiers().nameForIndex(attributeIndex);
                 ptr++;
             }
         }
@@ -1370,12 +1370,18 @@ public class DataManager {
         return vals;
     }
     
+    public void setPlotFeature(Feature ft)
+    {
+        featureManager.getPlotFeatures().clearAdded();
+        featureManager.getPlotFeatures().addFeatureForKey(ft.name);
+    }
+    
     public Instance getClassifiableInstanceForPlot(double[] vals)
     {
         //System.out.println("getting classifiable for plot");
         double[] features;
         Instances instances;
-        features = featureManager.modifyInputsForAllFeatures(vals, false);
+        features = featureManager.modifyInputsForPlotFeatures(vals, false);
         instances = featureManager.getNewInstancesOfLength(features.length, numClasses[0]);
         Instance featureInstance = new Instance(1.0, features);
         instances.add(featureInstance);

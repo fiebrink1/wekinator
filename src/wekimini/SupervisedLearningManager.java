@@ -89,11 +89,22 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     private final List<OutputAddedListener> outputAddedListeners;
 
     private boolean computeDistribution = false;
-    private Instance currentInputInstance;
+    
+    private Instance plotInstance;
     private boolean isPlotting = false;
     public boolean canUpdate = true;
-    private ArrayList<Double> plotLag = new ArrayList();
-    private ArrayList<Double> runLag = new ArrayList();
+    
+    private static final int RMS_RATE = 50;
+    private double[] plotLag = new double[RMS_RATE];
+    private double[] runLag = new double[RMS_RATE];
+    private double[] inputLag = new double[RMS_RATE];
+    private int inputPtr = 0;
+    private int plotPtr = 0;
+    private int runPtr = 0;
+    private double prevInput = -1;
+    SwingWorker computeInputsWorker;
+    private boolean isLagging = false;
+            
     
     /**
      * Get the value of computeDistribution
@@ -383,27 +394,56 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public void startRunning()
     {
         setRunningState(RunningState.RUNNING);
-        plotLag.clear();
-        runLag.clear();
+        resetLag();
     }
     
     public void stopRunning()
     {
         setRunningState(RunningState.NOT_RUNNING);
+        showLag();
+    }
+    
+    public boolean getIsLagging()
+    {
+        return isLagging;
+    }
+    
+    private void resetLag()
+    {
+        plotLag = new double[RMS_RATE];
+        runLag = new double[RMS_RATE];
+        prevInput = -1;
+        inputLag = new double[RMS_RATE];
+        w.getInputManager().resetLag();
+    }
+    
+    private void showLag()
+    {
         double sum = 0;
         for(Double d:plotLag)
         {
             sum += d;
         }
-        System.out.println("Plot Lag " + sum / (double) plotLag.size());
-       
+        double meanPlotLag = sum / ((double)plotLag.length);
+        
         sum = 0;
         for(Double d:runLag)
         {
             sum += d;
         }
-        System.out.println("Run Lag " + sum / (double) runLag.size());
-
+        double meanRunLag = sum / ((double)runLag.length);
+        
+        sum = 0;
+        for(Double d:inputLag)
+        {
+            sum += d;
+        }
+        double sampleRate = sum / ((double)inputLag.length);
+        w.getInputManager().showLag();
+        System.out.println("Sample rate " + sampleRate);
+        System.out.println("Plot Lag " + meanPlotLag);
+        System.out.println("Run Lag " + meanRunLag);
+        System.out.println("Total Lag " + (meanPlotLag + meanRunLag));
     }
 
     private void setRunningState(RunningState runningState) {
@@ -718,6 +758,12 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
             @Override
             public void update(double[] vals) {
+                if(prevInput > 0)
+                {
+                    inputLag[inputPtr] = (System.currentTimeMillis() - prevInput);
+                    inputPtr = (inputPtr + 1) % RMS_RATE;
+                }
+                prevInput = System.currentTimeMillis();
                 updateInputs(vals);
             }
 
@@ -806,6 +852,12 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
             @Override
             public void update(double[] vals) {
+                if(prevInput > 0)
+                {
+                    inputLag[inputPtr] = (System.currentTimeMillis() - prevInput);
+                    inputPtr = (inputPtr + 1) % RMS_RATE; 
+                }
+                prevInput = System.currentTimeMillis();
                 updateInputs(vals);
             }
 
@@ -922,23 +974,23 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         //TODO: listen for record/run enable change and update our Mask
         // System.out.println("What do we do? Path changed for output: " + p.getOSCOutput().getName());
     }
-
-    public Instance getCurrentInputInstance()
-    {
-        return currentInputInstance;
-    }
     
     public double getCurrentValueforFeature(Feature ft, int output)
     {
-        Feature allFt = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey(ft.name);
+        Feature plotFt = w.getDataManager().featureManager.getPlotFeatures().getFeatureForKey(ft.name);
         int index = 0;
-        if(allFt.getOutputIndexes().length > output)
+        if(plotFt.getOutputIndexes().length > output)
         {
-            index = allFt.getOutputIndexes()[output];
+            index = plotFt.getOutputIndexes()[output];
         }
-                
-        //System.out.println("plotting:"+index);
-        return currentInputInstance.value(index);
+        if(plotInstance == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return plotInstance.value(index);
+        }  
     }
     
     public boolean getIsPlotting()
@@ -948,11 +1000,19 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     
     public void setIsPlotting(boolean isPlotting)
     {
+        if(isPlotting)
+        {
+            resetLag();
+        }
+        else
+        {
+            showLag();
+        }
         this.isPlotting = isPlotting; 
     }
     
     //Right now, this simply won't change indices where mask is false
-    public double[] computeValues(double[] inputs, boolean[] computeMask) {
+    private double[] computeValues(double[] inputs, boolean[] computeMask) {
         double t0 = System.currentTimeMillis();
         if(isPlotting)
         {
@@ -960,7 +1020,8 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         }
         double t1 = System.currentTimeMillis();
         double diff = t1- t0;
-        plotLag.add(diff);
+        plotLag[plotPtr] = diff;
+        plotPtr = (plotPtr + 1) % RMS_RATE;
         if(runningState == RunningState.RUNNING)
         {
             for (int i = 0; i < computeMask.length; i++) {
@@ -968,7 +1029,8 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                 Instance instance = w.getDataManager().getClassifiableInstanceForOutput(inputs, i);
                 t1 = System.currentTimeMillis();
                 diff = t1- t0;
-                runLag.add(diff);
+                runLag[runPtr] = diff;
+                runPtr = (runPtr + 1) % RMS_RATE;
                 if (computeMask[i] && paths.get(i).canCompute()) {
 
                     try {
@@ -1042,10 +1104,11 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     public void updatePlots(double[] inputs)
     {
-        currentInputInstance = w.getDataManager().getClassifiableInstanceForPlot(inputs);
+        plotInstance = w.getDataManager().getClassifiableInstanceForPlot(inputs);
     }
     
     public void updateInputs(double[] inputs) {
+        
         //System.out.println("update inputs");
         if (recordingState != RecordingState.NOT_RECORDING) 
         {
@@ -1059,23 +1122,41 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         } 
         else if (runningState != RunningState.NOT_RUNNING || isPlotting) 
         {
-            double[] d = computeValues(inputs, pathRunningMask);
-            
-            if(runningState == RunningState.RUNNING)
+            if(computeInputsWorker != null)
             {
-                w.getOutputManager().setNewComputedValues(d);
-
-                //TODO: Get rid of search every time : slows us down!
-                for (int i = 0; i < w.getOutputManager().getOutputGroup().getNumOutputs(); i++) {
-                    if ((w.getOutputManager().getOutputGroup().getOutput(i) instanceof OSCClassificationOutput)
-                            && ((OSCClassificationOutput) w.getOutputManager().getOutputGroup().getOutput(i)).isSendingDistribution()) {
-                        double[] dist = computeProbabilisticOutputs(inputs, i);
-                        w.getOutputManager().setDistribution(i, dist);
-                    }
-
-                }
+                isLagging = !computeInputsWorker.isDone();
             }
-        }
+            computeInputsWorker = new SwingWorker<double[],Void>()  
+            {         
+                double[] d;
+                @Override
+                public double[] doInBackground()
+                {
+                    d = computeValues(inputs, pathRunningMask);
+                    return d;
+                }
+
+                @Override
+                public void done()
+                {
+                    if(runningState == RunningState.RUNNING)
+                    {
+                        w.getOutputManager().setNewComputedValues(d);
+
+                        //TODO: Get rid of search every time : slows us down!
+                        for (int i = 0; i < w.getOutputManager().getOutputGroup().getNumOutputs(); i++) {
+                            if ((w.getOutputManager().getOutputGroup().getOutput(i) instanceof OSCClassificationOutput)
+                                    && ((OSCClassificationOutput) w.getOutputManager().getOutputGroup().getOutput(i)).isSendingDistribution()) {
+                                double[] dist = computeProbabilisticOutputs(inputs, i);
+                                w.getOutputManager().setDistribution(i, dist);
+                            }
+
+                        }
+                    }
+                }
+            };
+            computeInputsWorker.execute();
+        }     
     }
 
     private void updateInputBundle(List<List<Double>> values) {

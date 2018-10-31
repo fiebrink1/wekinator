@@ -358,7 +358,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 sf = selectedFilters.toArray(sf);
                 if(sf.length > 0)
                 {
-                    f = w.getDataManager().featureManager.getAllFeaturesGroup().getFeaturesForTags(sf, false);
+                    f = w.getDataManager().featureManager.getAllFeatures().getFeaturesForTags(sf, false);
                 }
                 else
                 {
@@ -555,7 +555,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private void selectAll()
     {
         delegate.blockInteraction(true);
-        setSelectedFeatures(w.getDataManager().featureManager.getAllFeaturesGroup().getCurrentFeatures());
+        setSelectedFeatures(w.getDataManager().featureManager.getAllFeatures().getCurrentFeatures());
         updateFeaturePlot();
     }
     

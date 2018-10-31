@@ -21,6 +21,7 @@ public class FeatureManager
     //There is one feature group for each path/output
     protected ArrayList<FeatureCollection> featureCollections;
     private FeatureCollection allFeatures;
+    private FeatureCollection plotFeatures;
     private int windowSize = 15;
     private int bufferSize = 15;
     protected String[] inputNames;
@@ -111,15 +112,19 @@ public class FeatureManager
             allFeatures.addFeatureForKey(feature);
         }
         
+        plotFeatures = new FeatureCollection(inputNames, windowSize, bufferSize);
+        
         if(inputNames.length == 6)
         {
             allFeatures.computeAndGetValuesForNewInputs(new double[inputNames.length], true);
+            plotFeatures.computeAndGetValuesForNewInputs(new double[inputNames.length], true);
         }
         
         for(int i = 0; i < numOutputs; i++)
         {   
             featureCollections.add(new FeatureCollection(inputNames, windowSize, bufferSize));
         }
+        
     }
     
     protected void setAllOutputsDirty()
@@ -245,7 +250,7 @@ public class FeatureManager
     {
         windowSize = wSize;
         bufferSize = bSize;
-        int output = 0;
+        plotFeatures.setFeatureWindowSize(windowSize, bufferSize);
         allFeatures.setFeatureWindowSize(windowSize, bufferSize);
         allFeatures.removeAll();
         for(String feature:allFeatures.getNames())
@@ -255,7 +260,6 @@ public class FeatureManager
         for(FeatureCollection fc:featureCollections)
         {
             fc.setFeatureWindowSize(windowSize, bufferSize);
-            output++;
         }
     }
     
@@ -298,8 +302,24 @@ public class FeatureManager
         allFeatures.setDirty(testSet);
     }
     
-    public FeatureCollection getAllFeaturesGroup()
+    public FeatureCollection getAllFeatures()
     {
         return allFeatures;
+    }
+    
+    //Plot Features
+    protected double[] modifyInputsForPlotFeatures(double[] newInputs, boolean updateNames)
+    {    
+        return plotFeatures.computeAndGetValuesForNewInputs(newInputs, updateNames);
+    }
+    
+    protected void resetPlotFeaturesModifiers()
+    {
+        plotFeatures.resetAllModifiers();
+    }
+    
+    public FeatureCollection getPlotFeatures()
+    {
+        return plotFeatures;
     }
 }

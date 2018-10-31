@@ -52,7 +52,7 @@ public class BestInfoTest {
         int ptr = 0;
         for(int attributeIndex:attibutes)
         {
-            String name = w.getDataManager().featureManager.getAllFeaturesGroup().getModifiers().nameForIndex(attributeIndex);
+            String name = w.getDataManager().featureManager.getAllFeatures().getModifiers().nameForIndex(attributeIndex);
             String[] split = name.split(":");
             w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey(split[0]);
         }

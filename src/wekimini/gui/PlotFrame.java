@@ -42,22 +42,22 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         this.w = w;
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE)  ;   
         Timer timer = new Timer(REFRESH_RATE, (ActionEvent evt) -> {
-            Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
-            if(in != null)
-            {
-                int numPlots = tableModel.getRowCount();
-                for(int i = 0; i < numPlots; i++)
-                {
-                    PlotRowModel model = tableModel.getValueAt(i, 0);
-                    if(model.isStreaming)
-                    {
-                        float val = (float) in.value(model.feature.getOutputIndexes()[0]);
-                        //System.out.print("adding " + val + " to model " + model.pathIndex);
-                        model.addPoint(val);
-                    }
-                    rows.get(i).updateModel(model);
-                }
-            }
+//            Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
+//            if(in != null)
+//            {
+//                int numPlots = tableModel.getRowCount();
+//                for(int i = 0; i < numPlots; i++)
+//                {
+//                    PlotRowModel model = tableModel.getValueAt(i, 0);
+//                    if(model.isStreaming)
+//                    {
+//                        float val = (float) in.value(model.feature.getOutputIndexes()[0]);
+//                        //System.out.print("adding " + val + " to model " + model.pathIndex);
+//                        model.addPoint(val);
+//                    }
+//                    rows.get(i).updateModel(model);
+//                }
+//            }
         });  
         timer.start();
     }
@@ -243,7 +243,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         {
             outputs[i] = w.getDataManager().getOutputName(i);
         }
-        String[] features = w.getDataManager().featureManager.getAllFeaturesGroup().getModifiers().getOutputNames();
+        String[] features = w.getDataManager().featureManager.getAllFeatures().getModifiers().getOutputNames();
         int numRows = tableModel.data.size();
         rows = new ArrayList(numRows);
         JPanel content = new JPanel();

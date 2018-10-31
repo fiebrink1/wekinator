@@ -61,6 +61,9 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     SwingWorker mdsWorker;
     public FeatureEditorDelegate delegate;
     private int panelState;
+    private static final int LAGGING_UPDATE_RATE = 20;
+    private boolean[] lagging = new boolean[LAGGING_UPDATE_RATE];
+    private int laggingPtr = 0;
     
     public EvaluateFeaturesPanel() {
         initComponents();
@@ -137,10 +140,25 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             }
         });
         tabbedPanel.addChangeListener(panelListener);
+        warningLabel.setVisible(false);
     }
     
     private void outputUpdated(double vals[])
     {
+        if(laggingPtr % LAGGING_UPDATE_RATE == 0)
+        {
+           int showWarning = 0;
+           for(boolean b:lagging)
+           {
+               if(b)
+               {
+                   showWarning++;
+               }
+           }
+           warningLabel.setVisible(showWarning > LAGGING_UPDATE_RATE / 2);
+        }
+        lagging[laggingPtr] = w.getSupervisedLearningManager().getIsLagging();
+        laggingPtr = (laggingPtr + 1) % LAGGING_UPDATE_RATE;
         DecimalFormat df = new DecimalFormat("0.00"); 
         outputLabel.setText(df.format(vals[0]));
         outputPlotModel.addPoint(vals[0]);
@@ -182,6 +200,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 }
                 else
                 {
+                    warningLabel.setVisible(false);
                     trainBtn.setForeground(Color.black);
                     trainBtn.setText("Train and Run");
                 }
@@ -322,6 +341,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         mdsPlotHolder = new javax.swing.JPanel();
         outputLabel = new javax.swing.JLabel();
         plotHolderPanel = new javax.swing.JPanel();
+        warningLabel = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(204, 204, 204), null, new java.awt.Color(204, 204, 204)));
@@ -376,7 +396,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         );
         confusionWrapperLayout.setVerticalGroup(
             confusionWrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 164, Short.MAX_VALUE)
+            .addGap(0, 174, Short.MAX_VALUE)
         );
 
         jLayeredPane1.setLayer(confusionHoldingImage, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -404,7 +424,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jLayeredPane1Layout.createSequentialGroup()
                     .addGap(12, 12, 12)
-                    .addComponent(confusionWrapper, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
+                    .addComponent(confusionWrapper, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
                     .addContainerGap()))
         );
 
@@ -418,7 +438,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         );
         mdsPlotHolderLayout.setVerticalGroup(
             mdsPlotHolderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 182, Short.MAX_VALUE)
+            .addGap(0, 192, Short.MAX_VALUE)
         );
 
         tabbedPanel.addTab("MDS", mdsPlotHolder);
@@ -437,8 +457,13 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         );
         plotHolderPanelLayout.setVerticalGroup(
             plotHolderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 36, Short.MAX_VALUE)
+            .addGap(0, 40, Short.MAX_VALUE)
         );
+
+        warningLabel.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
+        warningLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        warningLabel.setText("<html>Latency Warning: Can't compute features in realtime, use less features!</html>");
+        warningLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 0, 0)));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -447,19 +472,14 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(plotHolderPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addComponent(evaluateBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(tabbedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(outputTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(trainBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(outputLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(accuracyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addComponent(evaluateBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(tabbedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(accuracyLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(plotHolderPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(warningLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -473,11 +493,13 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(plotHolderPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(warningLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(evaluateBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(accuracyLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tabbedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(tabbedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -559,5 +581,6 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private javax.swing.JPanel plotHolderPanel;
     private javax.swing.JTabbedPane tabbedPanel;
     private javax.swing.JButton trainBtn;
+    private javax.swing.JLabel warningLabel;
     // End of variables declaration//GEN-END:variables
 }

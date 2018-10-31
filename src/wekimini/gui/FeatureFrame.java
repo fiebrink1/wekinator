@@ -93,7 +93,7 @@ public class FeatureFrame extends JFrame {
         featureDetailPanel.update(w);
         evaluateFeaturesPanel.update(w, 0);
         
-        selectedFeature = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey("AccX");
+        selectedFeature = w.getDataManager().featureManager.getAllFeatures().getFeatureForKey("AccX");
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -170,19 +170,19 @@ public class FeatureFrame extends JFrame {
                         .addComponent(newFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 711, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+                            .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 491, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(newFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 535, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(featureDetailPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -260,7 +260,7 @@ public class FeatureFrame extends JFrame {
     
     private void updateSelectedFeature(Feature ft)
     {
-        selectedFeature = w.getDataManager().featureManager.getAllFeaturesGroup().getFeatureForKey(ft.name);
+        selectedFeature = w.getDataManager().featureManager.getAllFeatures().getFeatureForKey(ft.name);
         if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
         {
             ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeaturePreviewed(w, selectedFeature);
@@ -268,6 +268,7 @@ public class FeatureFrame extends JFrame {
         PlotRowModel model = new PlotRowModel(100);
         System.out.print("-----------updateSelectedFeature, setting plotting to TRUE--------");
         w.getSupervisedLearningManager().setIsPlotting(true);
+        w.getDataManager().setPlotFeature(ft);
         model.isStreaming = true;
         model.feature = selectedFeature;
         featureDetailPanel.setModel(model);
@@ -312,10 +313,10 @@ public class FeatureFrame extends JFrame {
     private void resetFollowingLibraryUpdate()
     {
         System.out.println("----resetFollowingLibraryUpdate");
-//        if(wasRunning)
-//        {
-//            w.getSupervisedLearningManager().startRunning();
-//        }
+        if(wasRunning)
+        {
+            w.getSupervisedLearningManager().startRunning();
+        }
 //        w.getSupervisedLearningManager().setIsPlotting(wasPlotting);
         resetState = true;
     }

@@ -144,8 +144,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
         plotPanel.updateModel(model);
         
         timer = new Timer(REFRESH_RATE, (ActionEvent evt) -> {
-            Instance in = w.getSupervisedLearningManager().getCurrentInputInstance();
-            if(in != null && model != null)
+            if(model != null)
             {
                 double val = w.getSupervisedLearningManager().getCurrentValueforFeature(model.feature, featureOutputIndex);
                 model.addPoint(val);
@@ -217,7 +216,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     
     private void addItemsForModifier(int iD, String name)
     {
-        ModifiedInput outputModifier = w.getDataManager().featureManager.getAllFeaturesGroup().getModifiers().getModifierForID(iD);
+        ModifiedInput outputModifier = w.getDataManager().featureManager.getAllFeatures().getModifiers().getModifierForID(iD);
         for(int i = 0; i < outputModifier.getSize(); i++)
         {
             outputComboBox.addItem(name + ":" + i);
