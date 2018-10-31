@@ -20,6 +20,6 @@ public class FeatureSetPlotItem {
     double y; 
     
     public enum FeaturePlotItemState {
-        ADDING, REMOVING, NORMAL, HIDE
+        ADDING, REMOVING, NORMAL, HIDE, FADED
     };
 }

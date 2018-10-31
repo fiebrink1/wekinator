@@ -47,6 +47,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     private Timer thresholdTimer = null;
     private static final int THRESHOLD_HEIGHLIGHT_DECAY = 200;
     private static final int PADDING = 20;
+    private static final int FADED_ALPHA = 100;
     private final static BasicStroke DOTTED_STROKE = new BasicStroke(5, 
             BasicStroke.CAP_BUTT, 
             BasicStroke.JOIN_ROUND,
@@ -180,7 +181,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
 
     public static Color colorForTag(String tag, Boolean faded)
     {
-        int alpha = faded ? 140 : 255;
+        int alpha = faded ? FADED_ALPHA : 255;
         switch (tag) {
             case "Mean":
                 return new Color(208, 2, 27, alpha);
@@ -291,10 +292,11 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             f.x = ((librarySize-f.ranking)/librarySize) * plotWidth;
             f.x += PADDING;
             f.y = yForFeature(f.feature);
-            Color c = colorForTags(f.feature.tags, false);
+            Color c = colorForTags(f.feature.tags, f.state == FeatureSetPlotItem.FeaturePlotItemState.FADED);
             g2d.setColor(c);
             double r = RADIUS;
-            if(f.state == FeatureSetPlotItem.FeaturePlotItemState.NORMAL)
+            if(f.state == FeatureSetPlotItem.FeaturePlotItemState.NORMAL
+                    || f.state == FeatureSetPlotItem.FeaturePlotItemState.FADED)
             {
                 g2d.setStroke(CIRCLE_STROKE);
                 g2d.fill(new Ellipse2D.Double(f.x, f.y, r, r));

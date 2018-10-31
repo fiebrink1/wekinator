@@ -248,30 +248,6 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         
         lowInfoLabel.setVisible(hasTrainingData());
         highInfoLabel.setVisible(hasTrainingData());
-        if(!hasTrainingData())
-        {
-            plotTitleLabel.setText("Features - Record Examples To Get Information Gain Rankings");
-        }
-        else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.EXPLORING)
-        {
-            plotTitleLabel.setText("Exploring Features");
-        }
-        else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.ADDING)
-        {
-            plotTitleLabel.setText("Adding Features");
-        }
-        else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.NONE)
-        {
-            plotTitleLabel.setText("Your Features");
-        }
-        if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.REMOVING)
-        {
-            plotTitleLabel.setText("Removing Features");
-        }
-        if(filterPanel.getState() == FilterPanelState.EXPLORING)
-        {
-            addRemoveButton.setVisible(false);
-        }
         
         String desc;
         if(!filterPanel.filtersSelected() && numSelected == 0)
@@ -317,6 +293,28 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         }        
         addRemoveButton.setText(desc);
+        
+        if(!hasTrainingData())
+        {
+            plotTitleLabel.setText("Features - Record Examples To Get Information Gain Rankings");
+        }
+        else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.EXPLORING)
+        {
+            plotTitleLabel.setText(desc);
+            addRemoveButton.setVisible(false);
+        }
+        else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.ADDING)
+        {
+            plotTitleLabel.setText("Adding Features");
+        }
+        else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.NONE)
+        {
+            plotTitleLabel.setText("Your Features");
+        }
+        if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.REMOVING)
+        {
+            plotTitleLabel.setText("Removing Features");
+        }
     }
     
     public void blockInteraction(boolean block, boolean fromDelegate)
@@ -434,7 +432,15 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     }
                     else 
                     {
-                        item.state = FeatureSetPlotItem.FeaturePlotItemState.NORMAL;
+                        if (filterPanel.getState() == FilterPanelState.REMOVING ||
+                            filterPanel.getState() == FilterPanelState.ADDING)
+                        {
+                            item.state = FeatureSetPlotItem.FeaturePlotItemState.FADED;
+                        }
+                        else
+                        {
+                            item.state = FeatureSetPlotItem.FeaturePlotItemState.NORMAL;
+                        }
                     }
                     try {
                         item.ranking = rankingSet.get(inSet.name+":0:0");
@@ -476,7 +482,15 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                         }
                         else 
                         {
-                            item.state = FeatureSetPlotItem.FeaturePlotItemState.NORMAL;
+                            if (filterPanel.getState() == FilterPanelState.REMOVING ||
+                                filterPanel.getState() == FilterPanelState.ADDING)
+                            {
+                                item.state = FeatureSetPlotItem.FeaturePlotItemState.FADED;
+                            }
+                            else
+                            {
+                                item.state = FeatureSetPlotItem.FeaturePlotItemState.NORMAL;
+                            }
                         }
                         try {
                             item.ranking = rankingSet.get(result.name+":0:0");
