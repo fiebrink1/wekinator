@@ -62,7 +62,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     public FeatureEditorDelegate delegate;
     private int panelState;
     private static final int LAGGING_UPDATE_RATE = 20;
-    private boolean[] lagging = new boolean[LAGGING_UPDATE_RATE];
+    private int laggingCtr = 0;
     private int laggingPtr = 0;
     
     public EvaluateFeaturesPanel() {
@@ -145,25 +145,26 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     
     private void outputUpdated(double vals[])
     {
-        if(laggingPtr % LAGGING_UPDATE_RATE == 0)
-        {
-           int showWarning = 0;
-           for(boolean b:lagging)
-           {
-               if(b)
-               {
-                   showWarning++;
-               }
-           }
-           warningLabel.setVisible(showWarning > LAGGING_UPDATE_RATE / 2);
-        }
-        lagging[laggingPtr] = w.getSupervisedLearningManager().getIsLagging();
-        laggingPtr = (laggingPtr + 1) % LAGGING_UPDATE_RATE;
+        updateLagWarning();
         DecimalFormat df = new DecimalFormat("0.00"); 
         outputLabel.setText(df.format(vals[0]));
         outputPlotModel.addPoint(vals[0]);
         outputPlot.updateModel(outputPlotModel);
         repaint();
+    }
+    
+    private void updateLagWarning()
+    {
+        if(laggingPtr % LAGGING_UPDATE_RATE == 0)
+        {
+           warningLabel.setVisible(laggingCtr > LAGGING_UPDATE_RATE / 2);
+           laggingCtr = 0;
+        }
+        if(w.getSupervisedLearningManager().getIsLagging())
+        {
+            laggingCtr++;
+        }
+        laggingPtr = (laggingPtr + 1) % LAGGING_UPDATE_RATE;
     }
     
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
