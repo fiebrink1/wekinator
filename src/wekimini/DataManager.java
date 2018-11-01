@@ -941,7 +941,8 @@ public class DataManager {
     {
         System.out.println("---STARTING TO UPDATE INFO GAIN RANKINGS");
         InfoGainSelector sel = new InfoGainSelector();
-        Instances formatted = getAllFeaturesInstances(outputIndex, false);
+        
+        Instances formatted = getAllFeaturesInstances(outputIndex, true);
         sel.useThreshold = false;
         System.out.println("Giving " + formatted.numAttributes() + " attributes to selector");
         infoRankNames[outputIndex] = new HashMap();

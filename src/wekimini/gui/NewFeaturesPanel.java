@@ -613,7 +613,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         if(w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING)
         {
             delegate.blockInteraction(true);
-            w.getDataManager().setFeaturesForBestInfo(outputIndex, false,  new BestInfoSelector.BestInfoResultsReceiver() {
+            w.getDataManager().setFeaturesForBestInfo(outputIndex, true,  new BestInfoSelector.BestInfoResultsReceiver() {
                 @Override
                 public void finished(int[] features)
                 {

@@ -134,7 +134,7 @@ public class BestInfoSelector {
                 cvCancelled();
             }
         });
-        ModelEvaluationFrame.EvaluationMode eval = ModelEvaluationFrame.EvaluationMode.CROSS_VALIDATION;
+        ModelEvaluationFrame.EvaluationMode eval = ModelEvaluationFrame.EvaluationMode.TESTING_SET;
         e.givenIndices = attributes;
         Path p = w.getSupervisedLearningManager().getPaths().get(outputIndex);
         LinkedList<Path> paths = new LinkedList<>();
