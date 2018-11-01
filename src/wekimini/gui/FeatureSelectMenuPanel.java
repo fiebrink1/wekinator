@@ -57,7 +57,7 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
 
         setBackground(new java.awt.Color(255, 255, 255));
 
-        addButton.setText("Add Features...");
+        addButton.setText("More Features...");
         addButton.setToolTipText("");
         addButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -65,7 +65,7 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
             }
         });
 
-        removeButton.setText("Remove Features...");
+        removeButton.setText("Less Features...");
         removeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeButtonActionPerformed(evt);

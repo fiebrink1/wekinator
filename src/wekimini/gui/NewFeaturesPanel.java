@@ -316,25 +316,38 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         
         if(!hasTrainingData())
         {
-            plotTitleLabel.setText("Features - Record Examples To Get Information Gain Rankings");
+            plotTitleLabel.setText("Features - Record Examples To Use Automatic Methods");
+            infoFilterSlider.setVisible(false);
+            featureSetPlotPanel.showThreshold = false;
         }
-        else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.EXPLORING)
+        else 
         {
-            plotTitleLabel.setText(desc);
-            addRemoveButton.setVisible(false);
+            if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.EXPLORING)
+            {
+                plotTitleLabel.setText(desc);
+                addRemoveButton.setVisible(false);
+            }
+            else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.ADDING)
+            {
+                plotTitleLabel.setText("Adding Features - Click a Feature for Information");
+                infoFilterSlider.setVisible(false);
+                featureSetPlotPanel.showThreshold = false;
+            }
+            else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.NONE)
+            {
+                int numFeatures = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures().length;
+                plotTitleLabel.setText("You currently have " + numFeatures + " Features - Click a Feature for Information");
+                infoFilterSlider.setVisible(true);
+                featureSetPlotPanel.showThreshold = true;
+            }
+            else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.REMOVING)
+            {
+                plotTitleLabel.setText("Removing Features - Click a Feature for Information");
+                infoFilterSlider.setVisible(false);
+                featureSetPlotPanel.showThreshold = false;
+            }
         }
-        else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.ADDING)
-        {
-            plotTitleLabel.setText("Adding Features - Click Feature for Information");
-        }
-        else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.NONE)
-        {
-            plotTitleLabel.setText("Your Features - Click Feature for Information");
-        }
-        if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.REMOVING)
-        {
-            plotTitleLabel.setText("Removing Features - Click Feature for Information");
-        }
+        
     }
     
     public void blockInteraction(boolean block, boolean fromDelegate)
@@ -702,6 +715,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         testSetFrame1 = new wekimini.gui.TestSetFrame();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jProgressBar1 = new javax.swing.JProgressBar();
         infoFilterSlider = new javax.swing.JSlider();
         featureSetPlotPanel = new wekimini.gui.FeatureSetPlotPanel();
         lowInfoLabel = new javax.swing.JLabel();
@@ -738,6 +752,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(204, 204, 204), null, new java.awt.Color(204, 204, 204)));
+        setPreferredSize(new java.awt.Dimension(590, 549));
 
         infoFilterSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -778,8 +793,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             .addGap(0, 251, Short.MAX_VALUE)
         );
 
-        addRemoveButton.setBackground(new java.awt.Color(0, 0, 0));
-        addRemoveButton.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        addRemoveButton.setBackground(new java.awt.Color(204, 204, 204));
+        addRemoveButton.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
         addRemoveButton.setText("Add ");
         addRemoveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -787,7 +802,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         });
 
-        plotTitleLabel.setFont(new java.awt.Font("Lucida Grande", 1, 15)); // NOI18N
+        plotTitleLabel.setFont(new java.awt.Font("Lucida Grande", 0, 15)); // NOI18N
         plotTitleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         plotTitleLabel.setText("Text");
 
@@ -796,20 +811,23 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(addRemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(85, 85, 85))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lowInfoLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(highInfoLabel))
-                    .addComponent(infoFilterSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(menuLayeredPane)
-                    .addComponent(plotTitleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lowInfoLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(highInfoLabel))
+                            .addComponent(infoFilterSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(menuLayeredPane)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(87, 151, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(plotTitleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(addRemoveButton, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE))
+                        .addGap(79, 79, 79)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -856,6 +874,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private wekimini.gui.FeatureSetPlotPanel featureSetPlotPanel;
     private javax.swing.JLabel highInfoLabel;
     private javax.swing.JSlider infoFilterSlider;
+    private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;

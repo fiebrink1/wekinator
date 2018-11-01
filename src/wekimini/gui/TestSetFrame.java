@@ -22,7 +22,7 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
     private PropertyChangeListener listener;
     private double currentClass = 1;
     private boolean canUndo = false;
-    private static final int NUM_CLASSES = 6;
+    private int numClasses = 6;
     private static final int EXAMPLES_PER_CLASS = 200;
     private int numExamplesLeftForClass = EXAMPLES_PER_CLASS;
     private static final String PLEASE_RECORD_STRING = "Please record examples of Gesture ";
@@ -37,6 +37,7 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
     public void update(Wekinator w)
     {
         this.w = w;
+        numClasses = w.getDataManager().getNumClasses(0);
         numExamplesLeftForClass = EXAMPLES_PER_CLASS;
         w.getOutputManager().setTestValues(new double[]{currentClass});
         w.getDataManager().addChangeListener(this);
@@ -70,8 +71,8 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
     
     private void updateUI()
     {
-        boolean canNext = numExamplesLeftForClass < 1 && currentClass <= NUM_CLASSES;
-        boolean isDone = currentClass > NUM_CLASSES;
+        boolean canNext = numExamplesLeftForClass < 1 && currentClass <= numClasses;
+        boolean isDone = currentClass > numClasses;
         boolean hasStartedGesture = numExamplesLeftForClass < EXAMPLES_PER_CLASS;
         if(!isDone)
         {

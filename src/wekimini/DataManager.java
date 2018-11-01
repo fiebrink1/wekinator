@@ -694,6 +694,11 @@ public class DataManager {
         inputInstances.insertAttributeAt(a, numMetaData + getNumInputs() + which);
         dummyInstances = new Instances(inputInstances, 0);
     }
+    
+    public int getNumClasses(int which)
+    {
+        return numClasses[which];
+    }
 
     private void initializeOutputData() {
         isDiscrete = new boolean[numOutputs];

@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
@@ -290,6 +291,13 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             g2d.setColor(Color.BLACK);
             g2d.setStroke(DOTTED_STROKE);
             g2d.draw(new Line2D.Double(thresholdX, 0, thresholdX, imageHeight));
+            AffineTransform at = new AffineTransform();
+            at.rotate(Math.PI / 2);
+            g2d.setTransform(at);
+            g2d.setPaint(new Color(0.0f,0.0f,0.0f,1.0f));
+            g2d.drawString("Threshold", (int)50, (int)-(thresholdX + 10));
+            at.rotate(-Math.PI / 2);
+            g2d.setTransform(at);
         }
         for(FeatureSetPlotItem f:features)
         {
