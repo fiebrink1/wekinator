@@ -291,10 +291,15 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
             if(selected.length == w.getDataManager().featureManager.getFeatureNames().length) 
             {
-                desc = desc + " All Features";
+                desc = desc + " All Available Features";
             }
             else
             {
+                if(numSelected == 0)
+                {
+                    desc = "No";
+                }
+                addRemoveButton.setEnabled(numSelected > 0);
                 desc = desc + " Features Tagged ";
                 if(filterPanel.inputFilterSelected())
                 {
@@ -309,7 +314,14 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     }
                     desc = desc + filterPanel.selectedOperationFilter;
                 }
-                desc = desc + " (" + numSelected + ")";
+                if(numSelected == 0)
+                {
+                    desc = desc + " Available";
+                }
+                else
+                {
+                   desc = desc + " (" + numSelected + ")";
+                }
             }
         }        
         addRemoveButton.setText(desc);
@@ -347,21 +359,21 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 infoFilterSlider.setVisible(false);
                 featureSetPlotPanel.showThreshold = false;
             }
-        }
-        
+        }  
     }
     
     public void blockInteraction(boolean block, boolean fromDelegate)
     {
         filterPanel.blockInteraction(block);
         mainMenuPanel.blockInteraction(block, hasTrainingData());
-        addRemoveButton.setEnabled(!block);
         if(block)
         {
+            addRemoveButton.setEnabled(false);
             featureSetPlotPanel.showLoading();
         }
         else
         {
+            addRemoveButton.setEnabled(showing > 0);
             featureSetPlotPanel.hideLoading();
         }
         if(!fromDelegate)
@@ -540,6 +552,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     }
                 }
                 showing = items.size();
+                addRemoveButton.setEnabled(showing > 0);
                 updateLabels();
                 FeatureSetPlotItem[] f = new FeatureSetPlotItem[items.size()];
                 f = items.toArray(f);

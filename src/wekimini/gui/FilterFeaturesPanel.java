@@ -157,6 +157,14 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
     public void setState(FilterPanelState state)
     {
         this.state = state;
+        if(state == FilterPanelState.ADDING)
+        {
+            titleLabel.setText("Use The Tags to Pick The Features You Want to Use");
+        }
+        else if (state == FilterPanelState.REMOVING)
+        {
+            titleLabel.setText("Use The Tags to Pick The Features You Want to Remove");
+        }
     }
     
     public FilterPanelState getState()
@@ -290,7 +298,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
         selectAllButton = new javax.swing.JButton();
         backButton = new javax.swing.JButton();
         clearSelectionButton = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        titleLabel = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setPreferredSize(new java.awt.Dimension(704, 251));
@@ -326,7 +334,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
         ));
         jScrollPane4.setViewportView(operationFiltersTable);
 
-        selectAllButton.setText("Select All");
+        selectAllButton.setText("All");
         selectAllButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 selectAllButtonActionPerformed(evt);
@@ -340,16 +348,16 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
             }
         });
 
-        clearSelectionButton.setText("Select None");
+        clearSelectionButton.setText("None");
         clearSelectionButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 clearSelectionButtonActionPerformed(evt);
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Use Filters To Select Features");
+        titleLabel.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+        titleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        titleLabel.setText("Use Filters To Select Features");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -361,7 +369,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(backButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel7)
@@ -384,7 +392,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
                 .addContainerGap(13, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(backButton)
-                    .addComponent(jLabel1))
+                    .addComponent(titleLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(selectAllButton)
@@ -425,12 +433,12 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
     private javax.swing.JButton backButton;
     private javax.swing.JButton clearSelectionButton;
     private javax.swing.JTable inputFiltersTable;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTable operationFiltersTable;
     private javax.swing.JButton selectAllButton;
+    private javax.swing.JLabel titleLabel;
     // End of variables declaration//GEN-END:variables
 }
