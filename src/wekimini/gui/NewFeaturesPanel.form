@@ -103,7 +103,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="menuLayeredPane" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="addRemoveButton" min="-2" pref="30" max="-2" attributes="0"/>
+              <Component id="addRemoveButton" min="-2" pref="38" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="plotTitleLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>

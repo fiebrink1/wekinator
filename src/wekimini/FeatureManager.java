@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.Attribute;
+import wekimini.kadenze.FeaturnatorLogger;
+import wekimini.kadenze.KadenzeLogging;
 import wekimini.modifiers.ModifiedInput;
 import wekimini.modifiers.FeatureCollection;
 import wekimini.util.Util;

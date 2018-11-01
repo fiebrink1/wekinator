@@ -175,6 +175,16 @@ public class FeaturnatorLogger implements KadenzeLogger  {
         pw.println(ts() + "," + w.getID() + ",EVALUATE_PANEL," + panel);
     }
     
+    public void logWindowSizeChanged(Wekinator w, int wSize)
+    {
+        pw.println(ts() + "," + w.getID() + ",WINDOW_SIZE," + wSize);
+    }
+    
+    public void logAllFeaturesSelected(Wekinator w)
+    {
+        pw.println(ts() + "," + w.getID() + ",ALL_SELECTED");
+    }
+    
     private String featureListToString(Feature[] features)
     {
         String str = "[";

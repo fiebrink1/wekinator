@@ -180,9 +180,9 @@ public class FeatureFrame extends JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 491, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 504, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(newFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 535, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(featureDetailPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -217,12 +217,17 @@ public class FeatureFrame extends JFrame {
     
     private void updateWindowSize(double newVal)
     {
+
         prepareForLibraryUpdate();
         int ws = (int)(5 + (newVal * 60));
         //TODO::WINDOW AND BUFFER SIZE ARE THE SAME HERE
         w.getDataManager().featureManager.setFeatureWindowSize(ws, ws);
         resetFollowingLibraryUpdate();
         featureLibraryUpdate();
+        if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+        {
+            ((FeaturnatorLogger)KadenzeLogging.getLogger()).logWindowSizeChanged(w, ws);
+        }
     }
     
     /**

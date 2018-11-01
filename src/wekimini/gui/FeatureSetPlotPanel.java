@@ -333,7 +333,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
                     polygon.lineTo(x1Points[index], y1Points[index]);
                 }
                 polygon.closePath();
-                g2d.setColor(Color.WHITE);
+                g2d.setColor(Color.DARK_GRAY);
                 g2d.setStroke(THIN_STROKE);
                 g2d.draw(polygon);
             }

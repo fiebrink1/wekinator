@@ -29,7 +29,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
     public FeatureFilterDelegate delegate;
     private String highlightedTag = "";
     public String selectedInputFilter = NO_INPUT;
-    public ArrayList<String> selectedOperationFilters = new ArrayList();
+    public String selectedOperationFilter = NO_INPUT;
     private FilterPanelState state = FilterPanelState.NONE;
     private boolean blocked = false;
     public enum FilterPanelState {
@@ -77,13 +77,13 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
                     int row = source.rowAtPoint(e.getPoint());
                     int col = source.columnAtPoint(e.getPoint());
                     String tag = (String)source.getModel().getValueAt(row, col);
-                     if(selectedOperationFilters.contains(tag))
+                    if(tag.equals(selectedOperationFilter))
                     {
-                        selectedOperationFilters.remove(tag);
+                        selectedOperationFilter = NO_INPUT; 
                     }
                     else
                     {
-                        selectedOperationFilters.add(tag);
+                        selectedOperationFilter = tag;
                     }
                     filtersUpdated();
                     source.repaint();
@@ -145,7 +145,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
     
     public boolean operationFilterSelected()
     {
-        return selectedOperationFilters.size() > 0;
+        return !selectedOperationFilter.equals(NO_INPUT);
     }
     
     public boolean filtersSelected()
@@ -165,7 +165,11 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
     
     public ArrayList<String> getSelectedFilters()
     {
-        ArrayList<String> sf = new ArrayList(selectedOperationFilters);
+        ArrayList<String> sf = new ArrayList();
+        if(!selectedOperationFilter.equals(NO_INPUT))
+        {
+            sf.add(selectedOperationFilter);
+        }
         if(!selectedInputFilter.equals(NO_INPUT))
         {
             sf.add(selectedInputFilter);
@@ -182,7 +186,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
     
     public void clearSelection()
     {
-        selectedOperationFilters.clear();
+        selectedOperationFilter = NO_INPUT;
         selectedInputFilter = NO_INPUT;
         inputFiltersTable.repaint();
         operationFiltersTable.repaint();
@@ -244,7 +248,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
                 borderColor = new Color(245, 245, 245, 255);
                 selectedTextColor = borderColor;
             }
-            if(selectedOperationFilters.contains(tag) || tag.equals(selectedInputFilter))
+            if(tag.equals(selectedOperationFilter) || tag.equals(selectedInputFilter))
             {
                 setBackground(textColor);
                 setBorder(BorderFactory.createEmptyBorder(4, 3, 4, 1));

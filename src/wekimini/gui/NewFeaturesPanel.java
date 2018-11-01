@@ -72,6 +72,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             public void selectAllFeatures() {
                 selectAll();
                 updateLabels();
+                if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+                {
+                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logAllFeaturesSelected(w);
+                }
             }
             
             @Override
@@ -94,16 +98,28 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 filterPanel.setState(FilterFeaturesPanel.FilterPanelState.ADDING);
                 updateLabels();
                 updateFeaturePlot();
+                if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+                {
+                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logAddPanelOpened(w);
+                }
             }
 
             @Override
             public void autoSelectPressed() {
                 autoSelect();
+                if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+                {
+                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logAutoSelect(w, w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures());
+                }
             }
             
             @Override
             public void selectThresholdPressed(boolean above) {
                 selectThresh(above);
+                if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+                {
+                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logSelectAboveThreshold(w, w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures());
+                }
             }
 
             @Override
@@ -112,6 +128,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 filterPanel.setState(FilterFeaturesPanel.FilterPanelState.REMOVING);
                 updateFeaturePlot();
                 updateLabels();
+                if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+                {
+                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logRemovePanelOpened(w);
+                }
             }
 
             @Override
@@ -121,6 +141,10 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 filterPanel.setState(FilterFeaturesPanel.FilterPanelState.EXPLORING);
                 updateFeaturePlot();
                 updateLabels();
+                if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+                {
+                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logExplorePanelOpened(w);
+                }
             }
 
         };
@@ -265,7 +289,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             {
                 desc = "Remove";
             }
-            if(selected.length == w.getDataManager().featureManager.getFeatureNames().length)
+            if(selected.length == w.getDataManager().featureManager.getFeatureNames().length) 
             {
                 desc = desc + " All Features";
             }
@@ -278,16 +302,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 }
                 if(filterPanel.operationFilterSelected())
                 {
-                    for(int i = 0; i < filterPanel.selectedOperationFilters.size(); i++)
+                    String delim = " and ";
+                    if(filterPanel.inputFilterSelected())
                     {
-                        String f = filterPanel.selectedOperationFilters.get(i);
-                        String delim = i == filterPanel.selectedOperationFilters.size() - 1 ? " and " : ", ";
-                        if(filterPanel.inputFilterSelected() || i > 0)
-                        {
-                            desc = desc + delim;
-                        }
-                        desc = desc + f;
+                        desc = desc + delim;
                     }
+                    desc = desc + filterPanel.selectedOperationFilter;
                 }
                 desc = desc + " (" + numSelected + ")";
             }
@@ -797,7 +817,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(menuLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(addRemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(addRemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(plotTitleLabel)
                 .addGap(4, 4, 4)

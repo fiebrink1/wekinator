@@ -442,6 +442,8 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             sum += d;
         }
         sampleRate = sum / ((double)inputLag.length);
+        
+        isLagging = (sampleRate - (meanRunLag + meanPlotLag)) < 1.0;
     }
     
     private void showLag()
@@ -1135,7 +1137,6 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
             if(numFrames > 50 && numFrames % 10 == 0)
             {
                 calculateLags();
-                isLagging = sampleRate < (meanRunLag + meanPlotLag);
             }
             numFrames++;
             
