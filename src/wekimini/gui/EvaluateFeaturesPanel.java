@@ -7,22 +7,16 @@ package wekimini.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
-import javax.swing.BorderFactory;
 import javax.swing.Timer;
-import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.jdesktop.swingworker.SwingWorker;
-import weka.core.Instance;
-import wekimini.DataManager;
 import wekimini.OutputManager;
 import wekimini.Path;
 import wekimini.SupervisedLearningManager;
@@ -33,7 +27,6 @@ import wekimini.gui.ModelEvaluationFrame.EvaluationMode;
 import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.ModelEvaluator;
-import wekimini.modifiers.Feature;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.util.ConfusionParser;
@@ -61,9 +54,8 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     SwingWorker mdsWorker;
     public FeatureEditorDelegate delegate;
     private int panelState;
-    private static final int LAGGING_UPDATE_RATE = 20;
-    private int laggingCtr = 0;
-    private int laggingPtr = 0;
+    private static final int LAGGING_DECAY_RATE = 500;
+    private Timer lagTimer;
     
     public EvaluateFeaturesPanel() {
         initComponents();
@@ -155,16 +147,25 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     
     private void updateLagWarning()
     {
-        if(laggingPtr % LAGGING_UPDATE_RATE == 0)
-        {
-           warningLabel.setVisible(laggingCtr > LAGGING_UPDATE_RATE / 2);
-           laggingCtr = 0;
-        }
         if(w.getSupervisedLearningManager().getIsLagging())
         {
-            laggingCtr++;
+            if(lagTimer != null)
+            {
+                if(lagTimer.isRunning())
+                {
+                    lagTimer.stop();
+                    lagTimer = null;
+                }
+            }
+
+            lagTimer = new Timer(LAGGING_DECAY_RATE, (ActionEvent arg0) -> {
+                warningLabel.setVisible(false);
+            });
+            lagTimer.setRepeats(false); 
+            lagTimer.start();
+            warningLabel.setVisible(true);
         }
-        laggingPtr = (laggingPtr + 1) % LAGGING_UPDATE_RATE;
+
     }
     
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {

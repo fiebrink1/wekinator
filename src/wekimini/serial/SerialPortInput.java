@@ -18,7 +18,7 @@ public class SerialPortInput {
     
     public SerialPortDelegate delegate = null;
     private static final int PACKET_SIZE = 6;
-    private static final int BAUD_RATE = 38400;
+    private static final int BAUD_RATE = 115200;
     private static final boolean PRINT_PACKETS = false;
     private static final String EMAKE_PREFIX_OSX = "tty.wchusbserial";
     private static final String EMAKE_PREFIX_WIN = "COM";

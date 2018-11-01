@@ -145,6 +145,31 @@ public class FeaturnatorLogger implements KadenzeLogger  {
         pw.println(ts() + "," + w.getID() + ",FEATURE_TAG_SEARCH," + stringListToString(tags) + "," + featureListToString(results));
     }
     
+    public void logAddPanelOpened(Wekinator w)
+    {
+        pw.println(ts() + "," + w.getID() + ",ADD_PANEL,");
+    }
+    
+    public void logRemovePanelOpened(Wekinator w)
+    {
+        pw.println(ts() + "," + w.getID() + ",REMOVE_PANEL,");
+    }
+    
+    public void logExplorePanelOpened(Wekinator w)
+    {
+        pw.println(ts() + "," + w.getID() + ",EXPLORE_PANEL,");
+    }
+    
+    public void logSelectAboveThreshold(Wekinator w, Feature[] results)
+    {
+        pw.println(ts() + "," + w.getID() + ",THRESHOLD_SELECT," + featureListToString(results));
+    }
+    
+    public void logAutoSelect(Wekinator w, Feature[] results)
+    {
+        pw.println(ts() + "," + w.getID() + ",AUTO_SELECT," + featureListToString(results));
+    }
+    
     public void logEvaluatePanelChanged(Wekinator w, int panel)
     {
         pw.println(ts() + "," + w.getID() + ",EVALUATE_PANEL," + panel);

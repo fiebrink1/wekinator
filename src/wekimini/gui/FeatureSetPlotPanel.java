@@ -47,7 +47,9 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     private Timer thresholdTimer = null;
     private static final int THRESHOLD_HEIGHLIGHT_DECAY = 200;
     private static final int PADDING = 20;
-    private static final int FADED_ALPHA = 100;
+    private static final int FADED_ALPHA = 50;
+    private static final int NORMAL_ALPHA = 220;
+    private static final int FULL_ALPHA = 255;
     private final static BasicStroke DOTTED_STROKE = new BasicStroke(5, 
             BasicStroke.CAP_BUTT, 
             BasicStroke.JOIN_ROUND,
@@ -55,6 +57,9 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             new float[]{9}, 
             0);
     private final static BasicStroke CIRCLE_STROKE = new BasicStroke(4, 
+            BasicStroke.CAP_BUTT, 
+            BasicStroke.JOIN_ROUND);
+    private final static BasicStroke THIN_STROKE = new BasicStroke(2, 
             BasicStroke.CAP_BUTT, 
             BasicStroke.JOIN_ROUND);
     private final static BasicStroke SELECTED_STROKE = new BasicStroke(3, 
@@ -179,9 +184,8 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         return y + (2 * PADDING);
     }
 
-    public static Color colorForTag(String tag, Boolean faded)
+    public static Color colorForTag(String tag, int alpha)
     {
-        int alpha = faded ? FADED_ALPHA : 255;
         switch (tag) {
             case "Mean":
                 return new Color(208, 2, 27, alpha);
@@ -213,49 +217,49 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         return null;
     }
     
-    public static Color colorForTags(ArrayList<String> tags, Boolean faded)
+    public static Color colorForTags(ArrayList<String> tags, int alpha)
     {
         if(tags.contains("Mean"))
         {
-            return colorForTag("Mean", faded);
+            return colorForTag("Mean", alpha);
         }
         else if(tags.contains("Standard Deviation"))
         {
-            return colorForTag("Standard Deviation", faded);
+            return colorForTag("Standard Deviation", alpha);
         }
         else if(tags.contains("Energy"))
         {
-            return colorForTag("Energy", faded);
+            return colorForTag("Energy", alpha);
         }
         else if(tags.contains("Max"))
         {
-            return colorForTag("Max", faded);
+            return colorForTag("Max", alpha);
         }
         else if(tags.contains("Min"))
         {
-            return colorForTag("Min", faded);
+            return colorForTag("Min", alpha);
         }
         else if(tags.contains("FFT"))
         {
-            return colorForTag("FFT", faded);
+            return colorForTag("FFT", alpha);
         }
         else if(tags.contains("1st Order Diff"))
         {
-            return colorForTag("1st Order Diff", faded);
+            return colorForTag("1st Order Diff", alpha);
         }
         else if(tags.contains("IQR"))
         {
-            return colorForTag("IQR", faded);
+            return colorForTag("IQR", alpha);
         }
         else if(tags.contains("Raw"))
         {
-            return colorForTag("Raw", faded);
+            return colorForTag("Raw", alpha);
         }
         else if(tags.contains("Buffer"))
         {
-            return colorForTag("Buffer", faded);
+            return colorForTag("Buffer", alpha);
         }
-        return colorForTag("Raw", faded);
+        return colorForTag("Raw", alpha);
     }
 
     @Override
@@ -292,7 +296,8 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             f.x = ((librarySize-f.ranking)/librarySize) * plotWidth;
             f.x += PADDING;
             f.y = yForFeature(f.feature);
-            Color c = colorForTags(f.feature.tags, f.state == FeatureSetPlotItem.FeaturePlotItemState.FADED);
+            int alpha = f.state == FeatureSetPlotItem.FeaturePlotItemState.FADED ? FADED_ALPHA : NORMAL_ALPHA;
+            Color c = colorForTags(f.feature.tags, alpha);
             g2d.setColor(c);
             double r = RADIUS;
             if(f.state == FeatureSetPlotItem.FeaturePlotItemState.NORMAL
@@ -304,9 +309,9 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
         }
         for(FeatureSetPlotItem f:features)
         {
-            Color c = colorForTags(f.feature.tags, false);
+            Color c = colorForTags(f.feature.tags, FULL_ALPHA);
             g2d.setColor(c);
-            double r = RADIUS;
+            double r  = RADIUS;
             if (f.state == FeatureSetPlotItem.FeaturePlotItemState.ADDING)
             {
                 g2d.setStroke(CIRCLE_STROKE);
@@ -317,6 +322,20 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             {
                 g2d.setStroke(CIRCLE_STROKE);
                 g2d.draw(new Line2D.Double(f.x , f.y + r / 2, f.x + r, f.y + r / 2));
+                
+                int margin = 2;
+                double x1Points[] = {f.x-margin, f.x + r + (margin), f.x + r + (margin) , f.x-margin};
+                double y1Points[] = {f.y + (r / 2) + (margin*2), f.y + (r / 2) + (margin*2), f.y + (r / 2) - (margin*2), f.y + (r / 2) - (margin*2)};
+                GeneralPath polygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, x1Points.length);
+                polygon.moveTo(x1Points[0], y1Points[0]);
+                for (int index = 1; index < x1Points.length; index++) 
+                {
+                    polygon.lineTo(x1Points[index], y1Points[index]);
+                }
+                polygon.closePath();
+                g2d.setColor(Color.WHITE);
+                g2d.setStroke(THIN_STROKE);
+                g2d.draw(polygon);
             }
         }
         

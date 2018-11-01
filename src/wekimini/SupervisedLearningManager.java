@@ -25,17 +25,13 @@ import weka.core.Instance;
 import wekimini.Path.ModelState;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
-import wekimini.learning.Model;
-import wekimini.learning.ModelBuilder;
 import wekimini.learning.SupervisedLearningModel;
 import wekimini.modifiers.Feature;
 import wekimini.modifiers.FeatureCollection;
-import wekimini.modifiers.FeatureMultipleModifierOutput;
-import wekimini.modifiers.FeatureSingleModifierOutput;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
-import wekimini.osc.OSCReceiver;
 import wekimini.util.WeakListenerSupport;
+import java.util.concurrent.*;
 
 /**
  *
@@ -102,8 +98,13 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     private int plotPtr = 0;
     private int runPtr = 0;
     private double prevInput = -1;
-    SwingWorker computeInputsWorker;
+    //SwingWorker computeInputsWorker;
+    private final ExecutorService pool;
     private boolean isLagging = false;
+    private double meanRunLag = 0;
+    private double meanPlotLag = 0;
+    private double sampleRate = 0;
+    private long numFrames = 0;
             
     
     /**
@@ -395,6 +396,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     {
         setRunningState(RunningState.RUNNING);
         resetLag();
+        numFrames = 0;
     }
     
     public void stopRunning()
@@ -415,30 +417,36 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         prevInput = -1;
         inputLag = new double[RMS_RATE];
         w.getInputManager().resetLag();
+        isLagging = false;
     }
     
-    private void showLag()
+    private void calculateLags()
     {
         double sum = 0;
         for(Double d:plotLag)
         {
             sum += d;
         }
-        double meanPlotLag = sum / ((double)plotLag.length);
+        meanPlotLag = sum / ((double)plotLag.length);
         
         sum = 0;
         for(Double d:runLag)
         {
             sum += d;
         }
-        double meanRunLag = sum / ((double)runLag.length);
+        meanRunLag = sum / ((double)runLag.length);
         
         sum = 0;
         for(Double d:inputLag)
         {
             sum += d;
         }
-        double sampleRate = sum / ((double)inputLag.length);
+        sampleRate = sum / ((double)inputLag.length);
+    }
+    
+    private void showLag()
+    {
+        calculateLags();
         w.getInputManager().showLag();
         System.out.println("Sample rate " + sampleRate);
         System.out.println("Plot Lag " + meanPlotLag);
@@ -492,6 +500,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     //TODO (low priority: merge constructors into one)
     public SupervisedLearningManager(Wekinator w, Instances data, Instances testData, List<Path> paths) {
         this.w = w;
+        pool = Executors.newFixedThreadPool(1);
         controller = new WekinatorSupervisedLearningController(this, w);
         inputNamesToIndices = new HashMap<>();
         pathsToOutputIndices = new HashMap<>();
@@ -541,6 +550,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
 
     public SupervisedLearningManager(Wekinator w) {
         this.w = w;
+        pool = Executors.newFixedThreadPool(1);
         controller = new WekinatorSupervisedLearningController(this, w);
         inputNamesToIndices = new HashMap<>();
         pathsToOutputIndices = new HashMap<>();
@@ -1122,23 +1132,19 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
         } 
         else if (runningState != RunningState.NOT_RUNNING || isPlotting) 
         {
-            if(computeInputsWorker != null)
+            if(numFrames > 50 && numFrames % 10 == 0)
             {
-                isLagging = !computeInputsWorker.isDone();
+                calculateLags();
+                isLagging = sampleRate < (meanRunLag + meanPlotLag);
             }
-            computeInputsWorker = new SwingWorker<double[],Void>()  
-            {         
+            numFrames++;
+            
+            pool.execute(new Runnable() {
                 double[] d;
                 @Override
-                public double[] doInBackground()
+                public void run()
                 {
                     d = computeValues(inputs, pathRunningMask);
-                    return d;
-                }
-
-                @Override
-                public void done()
-                {
                     if(runningState == RunningState.RUNNING)
                     {
                         w.getOutputManager().setNewComputedValues(d);
@@ -1154,8 +1160,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                         }
                     }
                 }
-            };
-            computeInputsWorker.execute();
+            });
         }     
     }
 

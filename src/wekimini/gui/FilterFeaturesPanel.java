@@ -235,7 +235,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
                         int row, int column) {
             String tag = (String)value;
             FiltersTableModel model = (FiltersTableModel)table.getModel();
-            Color textColor = FeatureSetPlotPanel.colorForTag(tag, false);
+            Color textColor = FeatureSetPlotPanel.colorForTag(tag, 255);
             Color borderColor = textColor;
             Color selectedTextColor = Color.DARK_GRAY;
             if(textColor == null)
