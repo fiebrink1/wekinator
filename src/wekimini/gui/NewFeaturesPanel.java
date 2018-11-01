@@ -325,15 +325,15 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         }
         else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.ADDING)
         {
-            plotTitleLabel.setText("Adding Features");
+            plotTitleLabel.setText("Adding Features - Click Feature for Information");
         }
         else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.NONE)
         {
-            plotTitleLabel.setText("Your Features");
+            plotTitleLabel.setText("Your Features - Click Feature for Information");
         }
         if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.REMOVING)
         {
-            plotTitleLabel.setText("Removing Features");
+            plotTitleLabel.setText("Removing Features - Click Feature for Information");
         }
     }
     
@@ -787,6 +787,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
         });
 
+        plotTitleLabel.setFont(new java.awt.Font("Lucida Grande", 1, 15)); // NOI18N
         plotTitleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         plotTitleLabel.setText("Text");
 
@@ -816,17 +817,17 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(menuLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(2, 2, 2)
                 .addComponent(addRemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(2, 2, 2)
                 .addComponent(plotTitleLabel)
                 .addGap(4, 4, 4)
                 .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(2, 2, 2)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lowInfoLabel)
                     .addComponent(highInfoLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(2, 2, 2)
                 .addComponent(infoFilterSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents

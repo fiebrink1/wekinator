@@ -115,16 +115,10 @@ public class TestSetFrame extends javax.swing.JFrame implements ChangeListener {
     }
     
    private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
-        if (evt.getPropertyName() == SupervisedLearningManager.PROP_RECORDINGROUND) {
-        }else if (evt.getPropertyName() == SupervisedLearningManager.PROP_RECORDINGSTATE) {
+       if (evt.getPropertyName().equals(SupervisedLearningManager.PROP_RECORDINGSTATE)) {
             System.out.println("recording state changed");
             updateUI();
-        } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_LEARNINGSTATE) {
-        } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_RUNNINGSTATE) {
-        } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_NUMEXAMPLESTHISROUND) {
-        } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_ABLE_TO_RECORD) {
-        } else if (evt.getPropertyName() == SupervisedLearningManager.PROP_ABLE_TO_RUN) {
-        }
+        } 
     }
    
     

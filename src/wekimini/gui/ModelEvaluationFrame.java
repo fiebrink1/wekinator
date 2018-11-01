@@ -134,8 +134,6 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         panelFoldsParent = new javax.swing.JPanel();
         cardFolds = new javax.swing.JPanel();
         cardNone = new javax.swing.JPanel();
-        recordingButton = new javax.swing.JButton();
-        deleteButton = new javax.swing.JButton();
         labelConnectedInputs3 = new javax.swing.JLabel();
         labelConnectedInputs2 = new javax.swing.JLabel();
         labelConnectedInputs1 = new javax.swing.JLabel();
@@ -143,10 +141,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         comboMethod = new javax.swing.JComboBox();
         progressBar = new javax.swing.JProgressBar();
         buttonCompute = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
         testSetSizeLabel = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        deleteLastRoundButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         confusionTab = new javax.swing.JTabbedPane();
         jPanel6 = new javax.swing.JPanel();
@@ -219,20 +214,6 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
 
         panelFoldsParent.add(cardNone, "cardNone");
 
-        recordingButton.setLabel("Start Recording Test Set");
-        recordingButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                recordingButtonActionPerformed(evt);
-            }
-        });
-
-        deleteButton.setText("Delete Test Set");
-        deleteButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButtonActionPerformed(evt);
-            }
-        });
-
         labelConnectedInputs3.setText("folds");
 
         labelConnectedInputs2.setText("with");
@@ -260,18 +241,7 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setText("Test Set");
-
         testSetSizeLabel.setText("0");
-
-        jLabel4.setText("examples");
-
-        deleteLastRoundButton.setText("Delete Last Round");
-        deleteLastRoundButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteLastRoundButtonActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -289,19 +259,9 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
                                 .addGap(15, 15, 15)
                                 .addComponent(panelFoldsParent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(recordingButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(deleteButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(deleteLastRoundButton)
-                                .addGap(18, 18, 18)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(testSetSizeLabel)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel4)))))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                                .addGap(520, 520, 520)
+                                .addComponent(testSetSizeLabel)))
+                        .addGap(0, 66, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(buttonCompute, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -323,24 +283,13 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(testSetSizeLabel)
-                                    .addComponent(jLabel4))
-                                .addGap(9, 9, 9))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(deleteButton)
-                                    .addComponent(deleteLastRoundButton))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                        .addGap(22, 22, 22)
+                        .addComponent(testSetSizeLabel)
+                        .addGap(9, 9, 9)
                         .addComponent(panelFoldsParent, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(28, 28, 28))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(recordingButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(labelConnectedInputs, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(comboModelToEvaluate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -617,34 +566,6 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_textNumFoldsKeyTyped
 
-    private void recordingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordingButtonActionPerformed
-       if(w.getSupervisedLearningManager().getRecordingState() != SupervisedLearningManager.RecordingState.RECORDING_TEST)
-       {
-           recordingButton.setText("Stop Recording Test Set");
-           w.getDataManager().setDeleteTestSetUntilIndex();
-           w.getSupervisedLearningManager().setRecordingTarget(SupervisedLearningManager.RecordingState.RECORDING_TEST);
-           w.getSupervisedLearningManager().startRecording();
-       }
-       else
-       {
-           recordingButton.setText("Start Recording Test Set");
-           w.getSupervisedLearningManager().getSupervisedLearningController().stopRecord();
-       }
-       testSetSizeLabel.setText(Integer.toString(w.getDataManager().getTestInstances().numInstances()));
-    }//GEN-LAST:event_recordingButtonActionPerformed
-
-    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        // TODO add your handling code here:
-        w.getDataManager().deleteTestSet();
-        testSetSizeLabel.setText(Integer.toString(w.getDataManager().getTestInstances().numInstances()));
-    }//GEN-LAST:event_deleteButtonActionPerformed
-
-    private void deleteLastRoundButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteLastRoundButtonActionPerformed
-        // TODO add your handling code here:
-        w.getDataManager().deleteLastTestSetRound();
-        testSetSizeLabel.setText(Integer.toString(w.getDataManager().getTestInstances().numInstances()));
-    }//GEN-LAST:event_deleteLastRoundButtonActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -693,12 +614,8 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
     private javax.swing.JComboBox comboMethod;
     private javax.swing.JComboBox comboModelToEvaluate;
     private javax.swing.JTabbedPane confusionTab;
-    private javax.swing.JButton deleteButton;
-    private javax.swing.JButton deleteLastRoundButton;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -716,7 +633,6 @@ public class ModelEvaluationFrame extends javax.swing.JFrame {
     private javax.swing.JPanel panelFoldsParent;
     private javax.swing.JPanel panelResultsList;
     private javax.swing.JProgressBar progressBar;
-    private javax.swing.JButton recordingButton;
     private javax.swing.JScrollPane scrollPaneInputs;
     private javax.swing.JLabel testSetSizeLabel;
     private javax.swing.JTextField textNumFolds;

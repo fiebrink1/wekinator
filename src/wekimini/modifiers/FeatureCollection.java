@@ -853,7 +853,6 @@ class RawFODFeature extends FeatureSingleModifierOutput
         this.index = index;
         this.sensor = FeatureMetadata.diagramForInput(index);
         tags.add("1st Order Diff");
-        tags.add("Raw");
         tags.addAll(new ArrayList<>(Arrays.asList(FeatureMetadata.tagsForInput(index))));
         this.description = FeatureCollection.FOD_DESCRIPTION;
     }

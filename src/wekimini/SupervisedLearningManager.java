@@ -395,6 +395,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     public void startRunning()
     {
         setRunningState(RunningState.RUNNING);
+        w.getDataManager().featureManager.resetAllModifiers();
         resetLag();
         numFrames = 0;
     }
