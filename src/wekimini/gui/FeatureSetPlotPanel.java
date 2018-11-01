@@ -286,19 +286,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             double thresholdW = plotWidth - thresholdX + (2 * PADDING);
             g2d.fill(new Rectangle2D.Double(thresholdX, 0, thresholdW, imageHeight));
         }
-        else if(showThreshold)
-        {
-            g2d.setColor(Color.BLACK);
-            g2d.setStroke(DOTTED_STROKE);
-            g2d.draw(new Line2D.Double(thresholdX, 0, thresholdX, imageHeight));
-            AffineTransform at = new AffineTransform();
-            at.rotate(Math.PI / 2);
-            g2d.setTransform(at);
-            g2d.setPaint(new Color(0.0f,0.0f,0.0f,1.0f));
-            g2d.drawString("Threshold", (int)50, (int)-(thresholdX + 10));
-            at.rotate(-Math.PI / 2);
-            g2d.setTransform(at);
-        }
+        
         for(FeatureSetPlotItem f:features)
         {
             f.x = ((librarySize-f.ranking)/librarySize) * plotWidth;
@@ -347,8 +335,23 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             }
         }
         
+        if(showThreshold)
+        {
+            g2d.setColor(Color.BLACK);
+            g2d.setStroke(DOTTED_STROKE);
+            g2d.draw(new Line2D.Double(thresholdX, 0, thresholdX, imageHeight));
+            AffineTransform at = new AffineTransform();
+            at.rotate(Math.PI / 2);
+            g2d.setTransform(at);
+            g2d.setPaint(new Color(0.0f,0.0f,0.0f,1.0f));
+            g2d.drawString("Threshold", (int)50, (int)-(thresholdX + 10));
+            at.rotate(-Math.PI / 2);
+            g2d.setTransform(at);
+        }
+        
         if(hoveredFeature != null)
         {
+            g2d.setStroke(CIRCLE_STROKE);
             g2d.setColor(Color.MAGENTA);
             double r = RADIUS;
             int x = (int)hoveredFeature.x;

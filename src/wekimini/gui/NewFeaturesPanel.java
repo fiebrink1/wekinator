@@ -295,7 +295,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
             else
             {
-                desc = desc + " Features with ";
+                desc = desc + " Features Tagged ";
                 if(filterPanel.inputFilterSelected())
                 {
                     desc = desc + filterPanel.selectedInputFilter;
@@ -316,7 +316,8 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         
         if(!hasTrainingData())
         {
-            plotTitleLabel.setText("Features - Record Examples To Use Automatic Methods");
+            int numFeatures = w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures().length;
+            plotTitleLabel.setText("You currently have " + numFeatures + " Features - Record Examples To Use Automatic Methods");
             infoFilterSlider.setVisible(false);
             featureSetPlotPanel.showThreshold = false;
         }
