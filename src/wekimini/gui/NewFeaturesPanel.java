@@ -280,18 +280,18 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         }
         else
         {
-            desc = "Showing";
+            desc = "Showing All";
             if(filterPanel.getState() == FilterPanelState.ADDING)
             {
-                desc = "Add";
+                desc = "Add All";
             }
             else if (filterPanel.getState() == FilterPanelState.REMOVING)
             {
-                desc = "Remove";
+                desc = "Remove All";
             }
             if(selected.length == w.getDataManager().featureManager.getFeatureNames().length) 
             {
-                desc = desc + " All Available Features";
+                desc = desc + " Available Features";
             }
             else
             {
