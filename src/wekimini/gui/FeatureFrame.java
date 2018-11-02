@@ -119,7 +119,7 @@ public class FeatureFrame extends JFrame {
         newFeaturesPanel.blockInteraction(false, true);
     }
     
-    private void featureLibraryUpdate()
+    public void featureLibraryUpdate()
     {
         w.getDataManager().setInfoGainRankingsDirty();
         w.getDataManager().featureListUpdated();

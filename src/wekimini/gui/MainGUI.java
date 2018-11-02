@@ -63,6 +63,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private InputOutputConnectionsEditor inputOutputConnectionsWindow = null;
     private FeatureFrame featuresWindow = null;
     private TestSetFrame testFrame = null;
+    private Study2SubmissionFrame submissionFrame = null;
     private final Wekinator w;
     private boolean closeable = true; //flaseif this is the last window open
     private static final Logger logger = Logger.getLogger(MainGUI.class.getName());
@@ -617,16 +618,15 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         menuLoadFromARFF = new javax.swing.JMenuItem();
         menuItemSave = new javax.swing.JMenuItem();
         menuItemSaveAs = new javax.swing.JMenuItem();
+        submissionMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
-        menuItemEvaluation = new javax.swing.JMenuItem();
         menuPerformanceCheck = new javax.swing.JCheckBoxMenuItem();
         menuConsole = new javax.swing.JMenuItem();
         featureMenuItem = new javax.swing.JMenuItem();
-        testSetMenuItem = new javax.swing.JMenuItem();
         menuActions = new javax.swing.JMenu();
         checkEnableOSCControl = new javax.swing.JCheckBoxMenuItem();
         menuKadenze = new javax.swing.JMenu();
@@ -708,6 +708,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         menuFile.add(menuItemSaveAs);
 
+        submissionMenuItem.setText("Final Submission");
+        submissionMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submissionMenuItemActionPerformed(evt);
+            }
+        });
+        menuFile.add(submissionMenuItem);
+
         jMenuBar1.add(menuFile);
 
         jMenu2.setText("View");
@@ -744,14 +752,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         });
         jMenu2.add(jMenuItem7);
 
-        menuItemEvaluation.setText("Model evaluation");
-        menuItemEvaluation.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuItemEvaluationActionPerformed(evt);
-            }
-        });
-        jMenu2.add(menuItemEvaluation);
-
         menuPerformanceCheck.setText("Performance mode view");
         menuPerformanceCheck.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -775,14 +775,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             }
         });
         jMenu2.add(featureMenuItem);
-
-        testSetMenuItem.setText("Test Set");
-        testSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                testSetMenuItemActionPerformed(evt);
-            }
-        });
-        jMenu2.add(testSetMenuItem);
 
         jMenuBar1.add(jMenu2);
 
@@ -901,10 +893,6 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         w.showConsole();
     }//GEN-LAST:event_menuConsoleActionPerformed
 
-    private void menuItemEvaluationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemEvaluationActionPerformed
-        showEvaluationWindow();
-    }//GEN-LAST:event_menuItemEvaluationActionPerformed
-
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         flushLogs();
     }//GEN-LAST:event_jMenuItem3ActionPerformed
@@ -913,15 +901,15 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         showArffLoader();
     }//GEN-LAST:event_menuLoadFromARFFActionPerformed
 
-    private void testSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testSetMenuItemActionPerformed
-        // TODO add your handling code here:
-        showTestWindow();
-    }//GEN-LAST:event_testSetMenuItemActionPerformed
-
     private void featureMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_featureMenuItemActionPerformed
         // TODO add your handling code here:
         showFeaturesWindow();
     }//GEN-LAST:event_featureMenuItemActionPerformed
+
+    private void submissionMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submissionMenuItemActionPerformed
+        // TODO add your handling code here:
+        showSubmissionWindow();
+    }//GEN-LAST:event_submissionMenuItemActionPerformed
 
     private void flushLogs() {
         KadenzeLogging.getLogger().flush();
@@ -1043,7 +1031,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         }
     }
    
-      private void showTestWindow()
+    private void showTestWindow()
     {
         if (testFrame == null) {
             testFrame = new TestSetFrame();
@@ -1061,6 +1049,42 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             Util.callOnClosed(testFrame, callMe);
         } else {
             testFrame.toFront();
+        }
+    }
+    
+    private void showSubmissionWindow()
+    {
+        if (submissionFrame == null) {
+            submissionFrame = new Study2SubmissionFrame();
+            submissionFrame.update(w, new SubmissionDelegate() {
+                @Override
+                public void recordTestSet()
+                {
+                  showTestWindow();
+                }
+                @Override
+                public void featureSetUpdated()
+                {
+                    if(featuresWindow != null)
+                    {
+                        featuresWindow.featureLibraryUpdate();
+                    }
+                }
+            });
+            submissionFrame.setVisible(true);
+
+            //Problem: Won't call on button-triggered dispose...
+            Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
+                @Override
+                public void callMe() {
+                    testFrame = null;
+                }
+                
+            };
+
+            Util.callOnClosed(submissionFrame, callMe);
+        } else {
+            submissionFrame.toFront();
         }
     }
 
@@ -1143,15 +1167,14 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
     private javax.swing.JMenu menuActions;
     private javax.swing.JMenuItem menuConsole;
     private javax.swing.JMenu menuFile;
-    private javax.swing.JMenuItem menuItemEvaluation;
     private javax.swing.JMenuItem menuItemSave;
     private javax.swing.JMenuItem menuItemSaveAs;
     private javax.swing.JMenu menuKadenze;
     private javax.swing.JMenuItem menuLoadFromARFF;
     private javax.swing.JCheckBoxMenuItem menuPerformanceCheck;
     private javax.swing.JPanel panelParent;
+    private javax.swing.JMenuItem submissionMenuItem;
     private wekimini.gui.SupervisedLearningPanel supervisedLearningPanel1;
-    private javax.swing.JMenuItem testSetMenuItem;
     // End of variables declaration//GEN-END:variables
 
     void displayEditOutput(String name) {
@@ -1183,7 +1206,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
         panelParent.removeAll();
         dtwLearningPanel1 = new DtwLearningPanel(w);
         panelParent.add(dtwLearningPanel1);
-        menuItemEvaluation.setEnabled(false);
+        //menuItemEvaluation.setEnabled(false);
         //dtwLearningPanel1.setup(w);
         revalidate();
         repaint();
