@@ -355,9 +355,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(204, 204, 204), null, new java.awt.Color(204, 204, 204)));
         setPreferredSize(new java.awt.Dimension(235, 425));
 
-        trainBtn.setBackground(new java.awt.Color(255, 51, 0));
         trainBtn.setText("Train and Run");
-        trainBtn.setContentAreaFilled(false);
         trainBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 trainBtnActionPerformed(evt);
@@ -367,9 +365,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         outputTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         outputTitle.setText("Model Output:");
 
-        evaluateBtn.setBackground(new java.awt.Color(255, 0, 204));
         evaluateBtn.setText("Evaluate");
-        evaluateBtn.setContentAreaFilled(false);
         evaluateBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 evaluateBtnActionPerformed(evt);
@@ -432,7 +428,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jLayeredPane1Layout.createSequentialGroup()
                     .addGap(12, 12, 12)
-                    .addComponent(confusionWrapper, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
+                    .addComponent(confusionWrapper, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
                     .addContainerGap()))
         );
 
@@ -465,7 +461,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         );
         plotHolderPanelLayout.setVerticalGroup(
             plotHolderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 40, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         warningLabel.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
