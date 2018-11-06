@@ -548,11 +548,9 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
        if(panelState == 0)
        {
             if(controller.canTrain()) {
-                trainBtn.setEnabled(false);
-                trainBtn.setText("Training...");
                 runAfterTraining = false;
                 evaluateAfterTraining = true;
-                controller.train();
+                trainInBackground();
             }
             else
             {
@@ -565,15 +563,36 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
        }
     }//GEN-LAST:event_evaluateBtnActionPerformed
 
+    private void trainInBackground()
+    {
+        trainBtn.setEnabled(false);
+        trainBtn.setText("Training...");
+        SwingWorker trainWorker = new SwingWorker<String,Void>() {
+                @Override
+                public String doInBackground()
+                {
+                    controller.train();
+                    return "Done";
+                }
+
+                @Override
+                public void done()
+                {
+
+
+                }
+            };
+        trainWorker.execute();
+    }
+    
     private void trainBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainBtnActionPerformed
         isRunning = w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.RUNNING;
         if(!isRunning)
         {
             if (controller.canTrain()) {
-                trainBtn.setEnabled(false);
-                trainBtn.setText("Training...");
+                
                 runAfterTraining = true;
-                controller.train();
+                trainInBackground();
             }
         }
         else

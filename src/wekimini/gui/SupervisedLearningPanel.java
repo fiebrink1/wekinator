@@ -6,6 +6,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.ImageIcon;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import org.jdesktop.swingworker.SwingWorker;
 import wekimini.SupervisedLearningManager;
 import wekimini.Path;
 import wekimini.StatusUpdateCenter;
@@ -542,7 +543,26 @@ public class SupervisedLearningPanel extends javax.swing.JPanel {
             w.getSupervisedLearningManager().getSupervisedLearningController().cancelTrain();
             //w.getSupervisedLearningManager().cancelTraining();
         } else {
-            w.getSupervisedLearningManager().getSupervisedLearningController().train();     
+            buttonTrain.setEnabled(false);
+            buttonTrain.setText("Training...");
+            SwingWorker trainWorker = new SwingWorker<String,Void>() {
+                @Override
+                public String doInBackground()
+                {
+                    w.getSupervisedLearningManager().getSupervisedLearningController().train(); 
+                    return "Done";
+                }
+
+                @Override
+                public void done()
+                {
+                    buttonTrain.setEnabled(true);
+                    buttonTrain.setText("Train");
+
+                }
+            };
+            trainWorker.execute();
+                
             //w.getSupervisedLearningManager().buildAll();
         }
     }//GEN-LAST:event_buttonTrainActionPerformed
