@@ -238,7 +238,22 @@ public class OSCInputStatusFrame extends javax.swing.JFrame {
 
     private void serialPortComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialPortComboBoxActionPerformed
         // TODO add your handling code here:
+        w.getInputManager().stopListening();
         w.getInputManager().setTargetPort((String)serialPortComboBox.getSelectedItem());
+        int port;
+        try {
+            port = Integer.parseInt(fieldOscPort.getText());
+        } catch (NumberFormatException ex) {
+            Util.showPrettyErrorPane(this, "Port must be a valid integer greater than 0");
+            return;
+        }
+        if (port <= 0) {
+            Util.showPrettyErrorPane(this, "Port must be a valid integer greater than 0");
+            return;
+        }
+
+        w.getOSCReceiver().setReceivePort(port);
+        w.getInputManager().startListening();
     }//GEN-LAST:event_serialPortComboBoxActionPerformed
 
     /**

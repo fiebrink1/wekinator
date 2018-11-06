@@ -1077,7 +1077,7 @@ public class MainGUI extends javax.swing.JFrame implements Closeable {
             Util.CallableOnClosed callMe = new Util.CallableOnClosed() {
                 @Override
                 public void callMe() {
-                    testFrame = null;
+                    submissionFrame = null;
                 }
                 
             };
