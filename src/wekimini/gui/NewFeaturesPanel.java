@@ -5,6 +5,7 @@
  */
 package wekimini.gui;
 
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -183,6 +184,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         w.getSupervisedLearningManager().addPropertyChangeListener(learningStateListener);
         updateLabels();
         showMenu();
+        
+        
+                
     }
     
     private void learningManagerPropertyChanged(PropertyChangeEvent evt) {
@@ -264,10 +268,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         if(filterPanel.getState() == FilterPanelState.ADDING)
         {
             numSelected = toAdd;
+            addRemoveButton.setText("Add");
         } 
         else if (filterPanel.getState() == FilterPanelState.REMOVING)
         {
             numSelected = toRemove;
+            addRemoveButton.setText("Remove");
         } 
         
         lowInfoLabel.setVisible(hasTrainingData());
@@ -324,7 +330,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 }
             }
         }        
-        addRemoveButton.setText(desc);
+        
         
         if(!hasTrainingData())
         {
@@ -342,7 +348,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
             else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.ADDING)
             {
-                plotTitleLabel.setText("Adding Features - Click a Feature for Information");
+                plotTitleLabel.setText(desc);
                 infoFilterSlider.setVisible(false);
                 featureSetPlotPanel.showThreshold = false;
             }
@@ -355,7 +361,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
             }
             else if(filterPanel.getState() == FilterFeaturesPanel.FilterPanelState.REMOVING)
             {
-                plotTitleLabel.setText("Removing Features - Click a Feature for Information");
+                plotTitleLabel.setText(desc);
                 infoFilterSlider.setVisible(false);
                 featureSetPlotPanel.showThreshold = false;
             }
@@ -800,7 +806,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         menuLayeredPane.setLayout(menuLayeredPaneLayout);
         menuLayeredPaneLayout.setHorizontalGroup(
             menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 574, Short.MAX_VALUE)
         );
         menuLayeredPaneLayout.setVerticalGroup(
             menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -810,6 +816,9 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         addRemoveButton.setBackground(new java.awt.Color(204, 204, 204));
         addRemoveButton.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
         addRemoveButton.setText("Add ");
+        addRemoveButton.setToolTipText("");
+        addRemoveButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        addRemoveButton.setOpaque(true);
         addRemoveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addRemoveButtonActionPerformed(evt);
@@ -824,36 +833,33 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lowInfoLabel)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(highInfoLabel))
-                            .addComponent(infoFilterSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(menuLayeredPane)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(87, 151, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(plotTitleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(addRemoveButton, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE))
-                        .addGap(79, 79, 79)))
+                        .addComponent(lowInfoLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(highInfoLabel))
+                    .addComponent(infoFilterSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
+                    .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(menuLayeredPane)
+                    .addComponent(plotTitleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(addRemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(menuLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(2, 2, 2)
-                .addComponent(addRemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(2, 2, 2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(plotTitleLabel)
-                .addGap(4, 4, 4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(addRemoveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(featureSetPlotPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
