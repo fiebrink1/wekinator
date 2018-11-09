@@ -110,7 +110,7 @@ public class Study2SubmissionFrame extends javax.swing.JFrame {
         largeSetButton = new javax.swing.JButton();
         resetFeatures = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         testSetButton.setText("Record Test Set");
         testSetButton.addActionListener(new java.awt.event.ActionListener() {
