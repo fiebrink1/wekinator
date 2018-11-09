@@ -116,8 +116,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         initComponents();
         setWekinator(w);
         setupAlgorithmChoices();
-        updateOutputCard();
-        updateOutputOptions();
+        updateGUIFotOutputType();
         inputNamesListener = new WekinatorController.NamesListener() {
 
             @Override
@@ -316,7 +315,6 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         fieldOutputOSCMessage = new javax.swing.JTextField();
         comboOutputType = new javax.swing.JComboBox();
         panelOutputTypes = new javax.swing.JPanel();
-        cardBlank = new javax.swing.JPanel();
         cardNumClasses = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         fieldNumClasses = new javax.swing.JTextField();
@@ -327,6 +325,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         jLabel11 = new javax.swing.JLabel();
         fieldNumDtwTypes = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
+        cardBlank = new javax.swing.JPanel();
         buttonOutputOptions = new javax.swing.JButton();
         jLabel13 = new javax.swing.JLabel();
         fieldHostName = new javax.swing.JTextField();
@@ -571,6 +570,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         });
 
         comboOutputType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All continuous (default settings)", "All classifiers (default settings)", "All dynamic time warping (default settings)", "Custom" }));
+        comboOutputType.setSelectedIndex(1);
         comboOutputType.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboOutputTypeActionPerformed(evt);
@@ -579,26 +579,12 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
         panelOutputTypes.setLayout(new java.awt.CardLayout());
 
-        cardBlank.setBackground(new java.awt.Color(255, 255, 255));
-
-        javax.swing.GroupLayout cardBlankLayout = new javax.swing.GroupLayout(cardBlank);
-        cardBlank.setLayout(cardBlankLayout);
-        cardBlankLayout.setHorizontalGroup(
-            cardBlankLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 534, Short.MAX_VALUE)
-        );
-        cardBlankLayout.setVerticalGroup(
-            cardBlankLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 34, Short.MAX_VALUE)
-        );
-
-        panelOutputTypes.add(cardBlank, "cardBlank");
-
         cardNumClasses.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel9.setText("with");
 
-        fieldNumClasses.setText("5");
+        fieldNumClasses.setText("6");
+        fieldNumClasses.setToolTipText("");
         fieldNumClasses.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 fieldNumClassesKeyTyped(evt);
@@ -697,6 +683,21 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
         panelOutputTypes.add(cardDTW, "cardDTW");
 
+        cardBlank.setBackground(new java.awt.Color(255, 255, 255));
+
+        javax.swing.GroupLayout cardBlankLayout = new javax.swing.GroupLayout(cardBlank);
+        cardBlank.setLayout(cardBlankLayout);
+        cardBlankLayout.setHorizontalGroup(
+            cardBlankLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 534, Short.MAX_VALUE)
+        );
+        cardBlankLayout.setVerticalGroup(
+            cardBlankLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 34, Short.MAX_VALUE)
+        );
+
+        panelOutputTypes.add(cardBlank, "cardBlank");
+
         buttonOutputOptions.setText("Options");
         buttonOutputOptions.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -710,7 +711,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
         jLabel14.setText("Port:");
 
-        fieldSendPort.setText("57120");
+        fieldSendPort.setText("12000");
         fieldSendPort.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 fieldSendPortKeyTyped(evt);
@@ -1056,10 +1057,15 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     }//GEN-LAST:event_fieldOutputOSCMessageActionPerformed
 
     private void comboOutputTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboOutputTypeActionPerformed
+        updateGUIFotOutputType();
+    }//GEN-LAST:event_comboOutputTypeActionPerformed
+
+    private void updateGUIFotOutputType()
+    {
         updateOutputCard();
         updateOutputOptions();
         updateNumOutputsOption();
-    }//GEN-LAST:event_comboOutputTypeActionPerformed
+    }
 
     private void updateNumOutputsOption() {
        int index = comboOutputType.getSelectedIndex();
