@@ -44,7 +44,7 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
                 "Assignment 4, Part 2",
                 "Assignment 6, Part 1",
                 "Assignment 6, Part 2",
-                "Assignment 7"
+                "Assignment 7",
             };
 
     private final KadenzeAssignmentType[] assignmentTypes
@@ -69,7 +69,7 @@ public class KadenzePromptFrame extends javax.swing.JFrame {
                 KadenzeAssignmentType.ASSIGNMENT4_PART2,
                 KadenzeAssignmentType.ASSIGNMENT6_PART1,
                 KadenzeAssignmentType.ASSIGNMENT6_PART2,
-                KadenzeAssignmentType.ASSIGNMENT7
+                KadenzeAssignmentType.ASSIGNMENT7,
             };
 
     /**

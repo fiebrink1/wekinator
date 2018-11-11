@@ -34,6 +34,7 @@ public class GlobalSettings {
    }
    
     public boolean hasKadenzeSaveLocation() {
+        String s = prefs.get("kadenzeSaveLocation", "");
         return prefs.getBoolean("hasKadenzeSaveLocation", false);
     }
     

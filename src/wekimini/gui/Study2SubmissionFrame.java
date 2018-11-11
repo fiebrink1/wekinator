@@ -31,6 +31,7 @@ public class Study2SubmissionFrame extends javax.swing.JFrame {
             @Override
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 dispose();
+                w.save();
             }
         });
     }

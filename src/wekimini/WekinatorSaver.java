@@ -19,6 +19,7 @@ import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 import wekimini.FeatureManagerData;
 import wekimini.PathAndDataLoader;
+import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.dtw.DtwModel;
@@ -226,6 +227,15 @@ public class WekinatorSaver {
         saveData(projectDir, w);
         saveModels(projectDir, w);
         saveFeatures(projectDir, w);
+        saveLogs();
+    }
+    
+    private static void saveLogs()
+    {
+        if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+        {
+            ((FeaturnatorLogger)KadenzeLogging.getLogger()).flush();
+        }
     }
 
     //TODO: take care of this within object static load functions, not here

@@ -78,6 +78,15 @@ public class FeaturnatorLogger implements KadenzeLogger  {
         hasLoggedModelsInThisAssignment = false;
     }
     
+    public void setParentDir(String parentDir)
+    {
+        this.parentDir = parentDir;
+        currentAssignmentDir = getAssignmentDirectory(parentDir, currentAssignmentType);
+        File dir = new File(currentAssignmentDir);
+        dir.mkdirs();
+        File f = getAssignmentFilename(dir, currentAssignmentType);
+    }
+    
     public String getUserDir()
     {
         return currentAssignmentDir;

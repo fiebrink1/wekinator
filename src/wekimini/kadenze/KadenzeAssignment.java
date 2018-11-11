@@ -90,7 +90,8 @@ public class KadenzeAssignment {
         ASSIGNMENT6_PART1,
         ASSIGNMENT6_PART2,
         ASSIGNMENT7,
-        FEATURNATOR_STUDY_1
+        FEATURNATOR_STUDY_1,
+        FEATURNATOR_STUDY_2
     }
 
     public static int getAssignmentNumber(KadenzeAssignmentType t) {
@@ -144,6 +145,8 @@ public class KadenzeAssignment {
                 return 7;
             case FEATURNATOR_STUDY_1:
                 return 8;
+             case FEATURNATOR_STUDY_2:
+                return 9;
             default:
                 System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
                 return -1;
@@ -200,6 +203,8 @@ public class KadenzeAssignment {
             case ASSIGNMENT7:
                 return 1;
             case FEATURNATOR_STUDY_1:
+                return 1;
+            case FEATURNATOR_STUDY_2:
                 return 1;
             default:
                 System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
@@ -258,6 +263,8 @@ public class KadenzeAssignment {
                 return "assignment7_1.txt";
             case FEATURNATOR_STUDY_1:
                 return "featurnator_study_1.txt";
+            case FEATURNATOR_STUDY_2:
+                return "featurnator_study_2.txt";
             default:
                 System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
                 return "tmp.txt";
@@ -315,6 +322,8 @@ public class KadenzeAssignment {
                 return "Assignment 7";
             case FEATURNATOR_STUDY_1:
                 return "Study 1";
+            case FEATURNATOR_STUDY_2:
+                return "Study 2";
             default:
                 System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
                 return "";
@@ -372,6 +381,8 @@ public class KadenzeAssignment {
                 return "assignment7" + File.separator + "assignment7";
             case FEATURNATOR_STUDY_1:
                 return "featurnator_study_1";
+            case FEATURNATOR_STUDY_2:
+                return "featurnator_study_2";
             default:
                 System.out.println("ERROR NO ASSIGNMENT NUMBER FOUND");
                 return "";
@@ -427,6 +438,8 @@ public class KadenzeAssignment {
             case ASSIGNMENT7:
                 return new AssignmentFinalLogger();
             case FEATURNATOR_STUDY_1:
+                return new FeaturnatorLogger();
+            case FEATURNATOR_STUDY_2:
                 return new FeaturnatorLogger();
             default:
                 throw new Exception("No logger for this assignment!");

@@ -35,7 +35,9 @@ import wekimini.gui.About;
 import wekimini.gui.InitInputOutputFrame;
 import wekimini.gui.Preferences;
 import wekimini.gui.Study1Prompt;
+import wekimini.gui.Study2Prompt;
 import wekimini.kadenze.FeaturnatorLogger;
+import wekimini.kadenze.KadenzeAssignment;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.kadenze.KadenzePromptFrame;
 import wekimini.learning.LearningAlgorithmRegistry;
@@ -63,6 +65,7 @@ public final class WekiMiniRunner {
     private static boolean isKadenze = false;
     private static int nextID = 1;
     private static final boolean IS_STUDY_1 = false;
+    private static final boolean IS_STUDY_2 = true;
     
     //Load it and start running, handle old project
     public void runNewProjectAutomatically(Wekinator oldWekinator, String filename, NewProjectOptions options) throws Exception {
@@ -195,6 +198,10 @@ public final class WekiMiniRunner {
                 {
                     new Study1Prompt().setVisible(true);
                 }
+                else if(IS_STUDY_2)
+                {
+                    new Study2Prompt().setVisible(true);
+                }
                 else
                 {
                     if (WekiMiniRunner.isKadenze) {
@@ -211,6 +218,65 @@ public final class WekiMiniRunner {
 
     public int numRunningProjects() {
         return wekinatorCurrentMainFrames.size();
+    }
+    
+    public Wekinator runStudy2(String currentSaveLocation)
+    {
+        Wekinator w = null;
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+            Date date = new Date();
+            String dir = currentSaveLocation;
+            File f = new File(dir);
+            w = new Wekinator(WekiMiniRunner.generateNextID());
+            String[] inputs = new String[]{"accX","accY","accZ","gyroX","gyroY","gyroZ"};
+            int numClasses = inputs.length;
+            int numOutputs = 1;
+            String name = "Inputs";
+            String inputMessage = "/wek/inputs";
+            OSCInputGroup inputGroup = new OSCInputGroup(name, inputMessage, 6, inputs);
+            List<OSCOutput> outputs = new LinkedList<>();
+            for (int i = 0; i < 1; i++) {
+                OSCClassificationOutput o = new OSCClassificationOutput("output"+i, numClasses, false);
+                outputs.add(o);
+            }
+            String outputMessage = "/wek/outputs";
+            OSCOutputGroup outputGroup = new OSCOutputGroup(outputs, outputMessage, "127.0.0.1", 12000);
+            
+            w.getInputManager().setOSCInputGroup(inputGroup);
+            w.getOutputManager().setOSCOutputGroup(outputGroup);
+            w.getLearningManager().setSupervisedLearning();
+            
+            LearningModelBuilder mb = LearningAlgorithmRegistry.getClassificationModelBuilders()[0];
+            for (int i = 0; i < outputGroup.getNumOutputs(); i++) 
+            {
+                LearningModelBuilder mbnew = mb.fromTemplate(mb);
+                logger.log(Level.INFO, "Setting model builder to" + mbnew.getPrettyName());
+                w.getSupervisedLearningManager().setModelBuilderForPath(mbnew, i);
+            }
+                        
+            WekinatorSaver.createNewProject("Study2", f, w);
+            w.setHasSaveLocation(true);
+            w.setProjectLocation(dir);
+            w.setProjectName("Study2");
+            
+            w.addCloseListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    logger.log(Level.INFO, "Wekinator project closed");
+                    if (wekinatorCurrentMainFrames.size() == 1) 
+                    {
+                        handleClosingLast();
+                    } 
+                    wekinatorCurrentMainFrames.remove((Wekinator) e.getSource());
+                }
+            });
+            
+        } catch(IOException e)
+        {
+            
+        }
+        return w;
     }
     
     public Wekinator runStudy1(String userID, String hostName, int port)
