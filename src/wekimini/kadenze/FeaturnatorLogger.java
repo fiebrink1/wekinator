@@ -133,10 +133,22 @@ public class FeaturnatorLogger implements KadenzeLogger  {
         pw.println(ts() + "," + w.getID() + ",FEATURE_ADDED," + featureListToString(featureList));
     }
     
+    public void logFeaturesAdded(Wekinator w)
+    {
+        Feature[] featureList = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatures();
+        pw.println(ts() + "," + w.getID() + ",FEATURES_ADDED," + featureListToString(featureList));
+    }
+    
     public void logFeatureRemoved(Wekinator w)
     {
         Feature[] featureList = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatures();
         pw.println(ts() + "," + w.getID() + ",FEATURE_REMOVED," + featureListToString(featureList));
+    }
+    
+    public void logFeaturesRemoved(Wekinator w)
+    {
+        Feature[] featureList = w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatures();
+        pw.println(ts() + "," + w.getID() + ",FEATURES_REMOVED," + featureListToString(featureList));
     }
     
     public void logFeaturePreviewed(Wekinator w, Feature f)

@@ -64,7 +64,7 @@ public class Study2Prompt extends javax.swing.JFrame implements WekiMiniRunner.C
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(400, 300));
+        setPreferredSize(new java.awt.Dimension(400, 250));
 
         saveLocationButton.setText("Set Save Location");
         saveLocationButton.addActionListener(new java.awt.event.ActionListener() {

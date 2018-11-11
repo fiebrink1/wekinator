@@ -682,19 +682,22 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 if(remove)
                 {
                     w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).removeFeatureForKey(f.name);
-                    if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
-                    {
-                        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureRemoved(w);
-                    }
                     
                 }
                 else
                 {
                     w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(f.name);
-                    if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
-                    {
-                        ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeatureAdded(w);
-                    }
+                }
+            }
+            if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
+            {
+                if(remove)
+                {
+                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeaturesRemoved(w);
+                }
+                else
+                {
+                    ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeaturesAdded(w);
                 }
             }
             setSelectedFeatures(new Feature[0]);
