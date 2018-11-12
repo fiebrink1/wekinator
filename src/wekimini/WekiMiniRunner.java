@@ -232,7 +232,7 @@ public final class WekiMiniRunner {
             int numOutputs = 1;
             String name = "Inputs";
             String inputMessage = "/wek/inputs";
-            OSCInputGroup inputGroup = new OSCInputGroup(name, inputMessage, 6, inputs);
+            OSCInputGroup inputGroup = new OSCInputGroup(name, inputMessage, numClasses, inputs);
             List<OSCOutput> outputs = new LinkedList<>();
             for (int i = 0; i < 1; i++) {
                 OSCClassificationOutput o = new OSCClassificationOutput("output"+i, numClasses, false);
