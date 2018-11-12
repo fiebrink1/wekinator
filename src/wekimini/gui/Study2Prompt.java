@@ -7,6 +7,9 @@ package wekimini.gui;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -176,7 +179,7 @@ public class Study2Prompt extends javax.swing.JFrame implements WekiMiniRunner.C
         };
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setApproveButtonText("Choose directory");
-        fc.setDialogTitle("Choose directory for Kadenze assignments");
+        fc.setDialogTitle("Choose directory for Week 6 Assignment");
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         int returnVal = fc.showSaveDialog(this);
@@ -184,20 +187,20 @@ public class Study2Prompt extends javax.swing.JFrame implements WekiMiniRunner.C
             File chosenFile;
             File f = fc.getSelectedFile();
             if (f.isDirectory()) {
-                // System.out.println("Choosing directory: " + f.getAbsolutePath());
                 chosenFile = f;
             } else {
                 chosenFile = f.getParentFile();
-                // System.out.println("Choosing parent dir: " + f2.getAbsolutePath());
             }
             try {
-                filePathLabel.setText("<html>"+ chosenFile.getCanonicalPath());
                 currentSaveLocation = chosenFile.getCanonicalPath();
             } catch (IOException ex) {
                 //Rare event that can't resolve canonical path name
-                filePathLabel.setText("<html>" + chosenFile.getAbsolutePath());
                 currentSaveLocation = chosenFile.getAbsolutePath();
             }
+            DateFormat dateFormat = new SimpleDateFormat("ddMMyy-HHmm");
+            Date date = new Date();
+            currentSaveLocation = currentSaveLocation + File.separator + "Week6-"+dateFormat.format(date);
+            filePathLabel.setText("<html>"+currentSaveLocation);
         }
     }//GEN-LAST:event_saveLocationButtonActionPerformed
 

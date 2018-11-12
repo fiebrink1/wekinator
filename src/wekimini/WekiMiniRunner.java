@@ -224,8 +224,6 @@ public final class WekiMiniRunner {
     {
         Wekinator w = null;
         try {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-            Date date = new Date();
             String dir = currentSaveLocation;
             File f = new File(dir);
             w = new Wekinator(WekiMiniRunner.generateNextID());
@@ -244,6 +242,7 @@ public final class WekiMiniRunner {
             OSCOutputGroup outputGroup = new OSCOutputGroup(outputs, outputMessage, "127.0.0.1", 12000);
             
             w.getInputManager().setOSCInputGroup(inputGroup);
+            w.getInputManager().startListening();
             w.getOutputManager().setOSCOutputGroup(outputGroup);
             w.getLearningManager().setSupervisedLearning();
             
@@ -255,10 +254,10 @@ public final class WekiMiniRunner {
                 w.getSupervisedLearningManager().setModelBuilderForPath(mbnew, i);
             }
                         
-            WekinatorSaver.createNewProject("Study2", f, w);
+            WekinatorSaver.createNewProject("Week6", f, w);
             w.setHasSaveLocation(true);
             w.setProjectLocation(dir);
-            w.setProjectName("Study2");
+            w.setProjectName("Week6");
             
             w.addCloseListener(new ChangeListener() {
                 @Override
