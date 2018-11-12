@@ -5,16 +5,23 @@
  */
 package wekimini.gui;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.JFrame;
 import javax.swing.Timer;
+import org.jdesktop.swingworker.SwingWorker;
 import wekimini.SupervisedLearningManager;
+import wekimini.TrainingRunner;
 import wekimini.Wekinator;
+import wekimini.WekinatorSupervisedLearningController;
 import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeLogging;
 import wekimini.modifiers.Feature;
+
 
 /**
  *
@@ -30,7 +37,10 @@ public class FeatureFrame extends JFrame {
     boolean wasRunning;
     boolean wasPlotting;
     boolean resetState = true;
-
+    private WekinatorSupervisedLearningController controller;
+    private PropertyChangeListener trainingListener;
+    private PropertyChangeListener learningStateListener;
+    private boolean runAfterTraining = false;
 
     public FeatureFrame() {
         initComponents();
@@ -101,7 +111,35 @@ public class FeatureFrame extends JFrame {
                 evaluateFeaturesPanel.onClose();
                 newFeaturesPanel.onClose();
             }
-        }); 
+        });
+        controller = new WekinatorSupervisedLearningController(w.getSupervisedLearningManager(),w);
+        learningStateListener = new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                learningManagerPropertyChanged(evt);
+            }
+        };
+        w.getSupervisedLearningManager().addPropertyChangeListener(learningStateListener);
+        w.getTrainingRunner().addPropertyChangeListener(trainingListener);
+    }
+    
+    private void learningManagerPropertyChanged(PropertyChangeEvent evt) 
+    {
+        switch (evt.getPropertyName()) {
+            case SupervisedLearningManager.PROP_LEARNINGSTATE:
+                System.out.println("learning state changed *******");
+                if(w.getSupervisedLearningManager().getLearningState() == SupervisedLearningManager.LearningState.DONE_TRAINING)
+                {
+                    System.out.println("DONE TRAINING!");
+                    w.getStatusUpdateCenter().update(this, "Done training");
+                    if(runAfterTraining)
+                    {
+                        controller.startRun();
+                        runAfterTraining = false;
+                    }
+                } 
+                break;
+        }
     }
     
     private void blockAll()
@@ -315,14 +353,42 @@ public class FeatureFrame extends JFrame {
         }
     }
     
+   private void trainInBackground()
+    {
+        SwingWorker trainWorker = new SwingWorker<String,Void>() {
+                @Override
+                public String doInBackground()
+                {
+                    controller.train();
+                    return "Done";
+                }
+
+                @Override
+                public void done()
+                {
+
+
+                }
+            };
+        trainWorker.execute();
+    }
+    
     private void resetFollowingLibraryUpdate()
     {
         System.out.println("----resetFollowingLibraryUpdate");
         if(wasRunning)
         {
-            w.getSupervisedLearningManager().startRunning();
+            if(controller.canTrain())
+            {
+                 trainInBackground();
+                 runAfterTraining = true;
+            }
+            else
+            {
+                controller.startRun();
+            }
         }
-//        w.getSupervisedLearningManager().setIsPlotting(wasPlotting);
+        w.getSupervisedLearningManager().setIsPlotting(wasPlotting);
         resetState = true;
     }
 

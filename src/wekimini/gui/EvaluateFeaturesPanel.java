@@ -103,7 +103,6 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
             }
         };
         w.getSupervisedLearningManager().addPropertyChangeListener(learningStateListener);
-        
         w.getTrainingRunner().addPropertyChangeListener(trainingListener);
         w.getOutputManager().addOutputGroupComputedListener(new OutputManager.OutputValueListener() {
 
