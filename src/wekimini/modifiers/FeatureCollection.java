@@ -612,6 +612,14 @@ class FeatureMetadata
             case FeatureCollection.GYROX: return InputSensor.GYROX;
             case FeatureCollection.GYROY: return InputSensor.GYROY;
             case FeatureCollection.GYROZ: return InputSensor.GYROZ;
+            case 6: return InputSensor.EMG1;
+            case 7: return InputSensor.EMG2;
+            case 8: return InputSensor.EMG3;
+            case 9: return InputSensor.EMG4;
+            case 10: return InputSensor.EMG5;
+            case 11: return InputSensor.EMG6;
+            case 12: return InputSensor.EMG7;
+            case 13: return InputSensor.EMG8;
         }
         return InputSensor.UNKNOWN;
     }

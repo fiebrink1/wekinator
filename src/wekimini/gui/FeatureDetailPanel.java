@@ -208,10 +208,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
               
         updateComboBox();
         
-        if(!timer.isRunning())
-        {
-            timer.start();
-        }
+        timer.start();
     }
     
     private void addItemsForModifier(int iD, String name)

@@ -158,7 +158,7 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
     private double yForFeature(Feature ft)
     {
         double y = 0;
-        double totalSensors = 7;
+        double totalSensors = 15;
         switch(ft.sensor) {
             case ACCX:
                 y = plotHeight * (0 / totalSensors);
@@ -178,8 +178,32 @@ public class FeatureSetPlotPanel extends javax.swing.JPanel {
             case GYROZ:
                 y = plotHeight * (5 / totalSensors);
                 break;
-            case MULTIPLE:
+           case EMG1:
                 y = plotHeight * (6 / totalSensors);
+                break;
+            case EMG2:
+                y = plotHeight * (7 / totalSensors);
+                break;
+            case EMG3:
+                y = plotHeight * (8 / totalSensors);
+                break;
+            case EMG4:
+                y = plotHeight * (9 / totalSensors);
+                break;
+            case EMG5:
+                y = plotHeight * (10 / totalSensors);
+                break;
+            case EMG6:
+                y = plotHeight * (11 / totalSensors);
+                break;
+            case EMG7:
+                y = plotHeight * (12 / totalSensors);
+                break;
+            case EMG8:
+                y = plotHeight * (13 / totalSensors);
+                break;
+            case MULTIPLE:
+                y = plotHeight * (14 / totalSensors);
                 break;
         }
         return y + (2 * PADDING);

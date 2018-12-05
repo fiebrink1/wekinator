@@ -65,7 +65,7 @@ public final class WekiMiniRunner {
     private static boolean isKadenze = false;
     private static int nextID = 1;
     private static final boolean IS_STUDY_1 = false;
-    private static final boolean IS_STUDY_2 = true;
+    private static final boolean IS_STUDY_2 = false;
     
     //Load it and start running, handle old project
     public void runNewProjectAutomatically(Wekinator oldWekinator, String filename, NewProjectOptions options) throws Exception {

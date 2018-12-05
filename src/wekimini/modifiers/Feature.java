@@ -16,7 +16,7 @@ import java.util.Objects;
 public class Feature 
 {
     public enum InputSensor {
-        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,MULTIPLE,UNKNOWN
+        ACCX,ACCY,ACCZ,GYROX,GYROY,GYROZ,EMG1,EMG2,EMG3,EMG4,EMG5,EMG6,EMG7,EMG8,MULTIPLE,UNKNOWN
     }
     
     public final String name;

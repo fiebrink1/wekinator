@@ -33,7 +33,7 @@ public class BestInfoSelector {
     public Classifier classifier;
     private ModelEvaluator e = null;
     private Wekinator w;
-    private int interval = 20;
+    public int interval = 20;
     private int start = 5;
     private int max = -1;
     private int[] bestFeatures;
@@ -161,7 +161,11 @@ public class BestInfoSelector {
     {
         System.out.println("CV Finished");
         setSize += interval;
-        double res = Double.parseDouble((results[0].replaceAll("%", "")));
+        String resultString = (results[0].replaceAll("%", ""));
+        resultString = (resultString.replaceAll("RMS", ""));
+        resultString = (resultString.replaceAll(" ", ""));
+        resultString = (resultString.replaceAll("\\p{P}", ""));
+        double res = Double.parseDouble(resultString);
         if(res > bestAcc)
         {
             bestFeatures = thresholded;
