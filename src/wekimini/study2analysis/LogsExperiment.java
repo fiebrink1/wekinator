@@ -71,14 +71,106 @@ public class LogsExperiment {
             {
 
             }
+            long cumSumRunning = 0;
+            long cumSumRecording = 0;
+            long prevStart = 0;
+            int cvCtr = 0;
+            int runCtr = 0;
+            int newFeatureRunCtr = 0;
+            int newDataRunCtr = 0;
+            boolean running = false;
+            boolean recording = false;
+            boolean didChangeFeatures = false;
+            boolean didChangeData = false;
+            ArrayList<String> exploredFeatures = new ArrayList();
             for(String line : lines)
             {
-                System.out.println(line);
+                String split[] = line.split(",");
+                if(split[2].equals("AUTO_SELECT"))
+                {
+                    participant.autoSelectCount++;
+                }
+                else if (split[2].equals("THRESHOLD_SELECT"))
+                {
+                    participant.thresholdSelectCount++;
+                }
+                else if (split[2].equals("FEATURES_ADDED"))
+                {
+                    participant.addFeaturesCount++;
+                }
+                else if (split[2].equals("ADD_PANEL"))
+                {
+                    participant.addPanelCount++;
+                }
+                if(split[2].equals("START_RUN"))
+                {
+                    prevStart = Long.parseUnsignedLong(split[0]);
+                    running = true;
+                }
+                if(running && split[2].equals("RUN_STOP"))
+                {
+                    long endTime = Long.parseUnsignedLong(split[0]);
+                    cumSumRunning += (endTime - prevStart);
+                    runCtr++;
+                    running = false;
+                    newFeatureRunCtr += didChangeFeatures ? 1 : 0;
+                    newDataRunCtr += didChangeData ? 1 : 0;
+                    didChangeFeatures = false;
+                    didChangeData = false;
+                }
+                if(split[2].equals("SUPERVISED_RECORD_START"))
+                {
+                    prevStart = Long.parseUnsignedLong(split[0]);
+                    recording = true;
+                    didChangeData = true;
+                }
+                if(recording && split[2].equals("SUPERVISED_RECORD_STOP"))
+                {
+                    long endTime = Long.parseUnsignedLong(split[0]);
+                    cumSumRecording += (endTime - prevStart);
+                    recording = false;
+                }
+                if(line.contains("CROSS_VALIDATATION"))
+                {
+                    cvCtr++;
+                }
+                if(split[2].equals("FEATURES_REMOVED") || split[2].equals("FEATURES_ADDED"))
+                {
+                    didChangeFeatures = true;
+                    if(split[2].equals("FEATURES_ADDED"))
+                    {
+                        if(split[3].length() > 3)
+                        {
+                            String featuresAdded = split[3].substring(1, split[3].length()-2);
+                            String[] sepFt = featuresAdded.split(",");
+                            for(String ft : sepFt)
+                            {
+                                if(!exploredFeatures.contains(ft))
+                                {
+                                    exploredFeatures.add(ft);
+                                }
+                            } 
+                        } 
+                    }
+                }
             }
+            String[] f = new String[exploredFeatures.size()];
+            f = exploredFeatures.toArray(f);
+            participant.features.put("explored", f);
+            participant.timeSpentRunning = cumSumRunning;
+            participant.timeSpentRecording = cumSumRecording;
+            participant.cvCount = cvCtr;
+            participant.runCount = runCtr;
+            participant.newDataRunCount = newDataRunCtr;
+            participant.newFeatureRunCount = newFeatureRunCtr;
+            logParticipant();
             participantIterator.remove(); 
             runForNextParticipant();
         }
-        
+        else
+        {
+            logAll();
+        }
 
     }
     
@@ -92,7 +184,7 @@ public class LogsExperiment {
        participants.add(participant);
     }
     
-        private void logAll()
+    private void logAll()
     {
         System.out.println("LOGGING ALL");
         ObjectMapper json = new ObjectMapper();
@@ -104,7 +196,7 @@ public class LogsExperiment {
         }
         catch(Exception e)
         {
-            System.out.println("ERROR: writing file");
+            System.out.println("ERROR: writing file" + e);
         }
         System.exit(0);
     }
