@@ -1143,7 +1143,6 @@ public class DataManager {
                 }
                 else
                 {
-                    System.out.println("-------------~~~~~~~~~~~~~~~~~UPDATING allFeaturesInstances " + featureInstances.get(0).numAttributes());
                     allFeaturesInstances = featureInstances; 
                 }
                 featureManager.didRecalculateAllFeatures(testSet);
