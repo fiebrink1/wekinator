@@ -403,6 +403,10 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
     private void setLearningState(LearningState learningState) {
         LearningState oldLearningState = this.learningState;
         this.learningState = learningState;
+        if(this.learningState == SupervisedLearningManager.LearningState.DONE_TRAINING)
+        {
+            w.getOutputManager().sendMessage("/wekinator/status/done-training");
+        }
         updateAbleToRun();
         propertyChangeSupport.firePropertyChange(PROP_LEARNINGSTATE, oldLearningState, learningState);
     }
