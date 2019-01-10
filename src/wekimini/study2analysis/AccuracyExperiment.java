@@ -47,8 +47,8 @@ public class AccuracyExperiment {
     private Iterator participantIterator;
     private ArrayList<Participant> participants;
     private boolean testSet = true;
-    //"P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12","P13","P15","P16","P17",
-    private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot", "1"};
+    //P3 + P6 have no test data 
+    private final String[] blackList = new String[] {"P3", "P6"};
     private Map.Entry currentFeatures;
     private double evalStartTime = 0; 
     
@@ -152,29 +152,10 @@ public class AccuracyExperiment {
             } catch (Exception ex) {
                 Logger.getLogger(AccuracyExperiment.class.getName()).log(Level.SEVERE, null, ex);
             }
-            //w.getSupervisedLearningManager().setModelBuilderForPath(new SVMModelBuilder(), 0);
             participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
             participant.features.put("user",w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
             participant.features.put("all",(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames()));
-            
-//            int mean = 165;
-//            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
-//            String[] ranked = w.getDataManager().selectedFeatureNames[0];
-//            mean = 5;
-//            for(int i = 0; i < 9; i++)
-//            {
-//                String[] split = new String[mean];
-//                System.arraycopy(ranked, 0, split, 0, mean);
-//                participant.features.put("info"+i,split);
-//                mean +=20;
-//            }
-            
             participant.features.put("raw",new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
-
-//            System.out.println("starting forwards search");
-//            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
-//            System.out.println("completed forwards search in " + participant.timeTakenForwards);
-//            participant.features.put("forwards", w.getDataManager().selectedFeatureNames[0]);
             
             featureIterator = participant.features.entrySet().iterator();
             
