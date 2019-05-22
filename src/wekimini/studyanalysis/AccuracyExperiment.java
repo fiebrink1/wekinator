@@ -3,33 +3,34 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.study2analysis;
+package wekimini.studyanalysis;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import weka.core.Instances;
-import weka.core.converters.ArffSaver;
 import wekimini.DataManager;
 import wekimini.Path;
 import wekimini.Wekinator;
 import wekimini.WekinatorSaver;
 import wekimini.gui.ModelEvaluationFrame;
 import wekimini.learning.ModelEvaluator;
-import wekimini.study1analysis.Participant;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import weka.core.Instances;
+import weka.core.converters.ArffSaver;
+import wekimini.learning.SVMModelBuilder;
 
 /**
  *
@@ -38,17 +39,18 @@ import wekimini.study1analysis.Participant;
 public class AccuracyExperiment {
     
     private Wekinator w;
-    private static final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study_2_logs/projects";
-    private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study_2_analysis";
-    private final String PROJECT_NAME = "Week6.wekproj";     
-    private final String TEST_SET_PATH = "current" + File.separator + "testData.arff";     
+    private final String STUDY_DIR = "featurnator_study_1";
+    private final String PROJECT_NAME = "Study1.wekproj";
+    //private final String ROOT_DIR = "../../studyData/Study1_logs";
+    private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
+    private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
     private Participant participant;
     private Iterator featureIterator;
     private Iterator participantIterator;
     private ArrayList<Participant> participants;
     private boolean testSet = true;
-    //P3 + P6 have no test data 
-    private final String[] blackList = new String[] {"P3", "P6"};
+    //"P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12","P13","P15","P16","P17",
+    private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot", "1"};
     private Map.Entry currentFeatures;
     private double evalStartTime = 0; 
     
@@ -72,6 +74,8 @@ public class AccuracyExperiment {
     private void logParticipant()
     {
         System.out.println(participant.participantID);
+        System.out.println(participant.timeTakenForwards);
+        System.out.println(participant.timeTakenBackwards);
         System.out.println(participant.testSetResults);
         System.out.println(participant.trainingSetResults);
         participants.add(participant);
@@ -152,10 +156,29 @@ public class AccuracyExperiment {
             } catch (Exception ex) {
                 Logger.getLogger(AccuracyExperiment.class.getName()).log(Level.SEVERE, null, ex);
             }
+            //w.getSupervisedLearningManager().setModelBuilderForPath(new SVMModelBuilder(), 0);
             participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
             participant.features.put("user",w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
             participant.features.put("all",(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames()));
+            
+            int mean = 165;
+            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
+            String[] ranked = w.getDataManager().selectedFeatureNames[0];
+            mean = 5;
+            for(int i = 0; i < 9; i++)
+            {
+                String[] split = new String[mean];
+                System.arraycopy(ranked, 0, split, 0, mean);
+                participant.features.put("info"+i,split);
+                mean +=20;
+            }
+            
             participant.features.put("raw",new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
+
+            System.out.println("starting forwards search");
+            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
+            System.out.println("completed forwards search in " + participant.timeTakenForwards);
+            participant.features.put("forwards", w.getDataManager().selectedFeatureNames[0]);
             
             featureIterator = participant.features.entrySet().iterator();
             
@@ -285,22 +308,19 @@ public class AccuracyExperiment {
             if(file.isDirectory())
             {
                 String pID = file.getName();
-                File[] projectDirs = file.listFiles();
-                for(File projectDir : projectDirs)
+                File studyFolder = new File(file.getAbsolutePath() + File.separator + STUDY_DIR);
+                File[] listOfStudyFiles = studyFolder.listFiles();
+                for(File studyFile : listOfStudyFiles)
                 {
-                    if(projectDir.getName().contains("Week6"))
+                    if(studyFile.getName().contains("ProjectFiles"))
                     {
-                        String projectFile = projectDir.getAbsolutePath() + File.separator + PROJECT_NAME;
-                        String testSetFile = projectDir.getAbsolutePath() + File.separator + TEST_SET_PATH;
-                        File f = new File(testSetFile);
-                        if(f.exists() && !f.isDirectory()) { 
-                            projects.put(pID, projectFile);
-                        }
-                    }
+                        String projectFile = studyFile.getAbsolutePath() + File.separator + PROJECT_NAME;
+                        projects.put(pID, projectFile);
+                        break;
+                    } 
                 }
-                
             }
         }
         return projects;
-    } 
+    }
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.study1analysis;
+package wekimini.studyanalysis;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -36,14 +36,13 @@ import wekimini.learning.SVMModelBuilder;
  *
  * @author louismccallum
  */
-public class AccuracyExperiment {
+public class Study2AccuracyExperiment {
     
     private Wekinator w;
-    private final String STUDY_DIR = "featurnator_study_1";
-    private final String PROJECT_NAME = "Study1.wekproj";
+    private final String PROJECT_NAME = "Week6";
     //private final String ROOT_DIR = "../../studyData/Study1_logs";
-    private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
-    private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
+    private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study_2_logs/projects";
+    private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study2_analysis";
     private Participant participant;
     private Iterator featureIterator;
     private Iterator participantIterator;
@@ -56,7 +55,7 @@ public class AccuracyExperiment {
     
     public static void main(String[] args)
     {
-        AccuracyExperiment e = new AccuracyExperiment();
+        Study2AccuracyExperiment e = new Study2AccuracyExperiment();
         e.runTests();
     }
     
@@ -156,29 +155,10 @@ public class AccuracyExperiment {
             } catch (Exception ex) {
                 Logger.getLogger(AccuracyExperiment.class.getName()).log(Level.SEVERE, null, ex);
             }
-            //w.getSupervisedLearningManager().setModelBuilderForPath(new SVMModelBuilder(), 0);
             participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
             participant.features.put("user",w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
             participant.features.put("all",(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames()));
-            
-            int mean = 165;
-            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
-            String[] ranked = w.getDataManager().selectedFeatureNames[0];
-            mean = 5;
-            for(int i = 0; i < 9; i++)
-            {
-                String[] split = new String[mean];
-                System.arraycopy(ranked, 0, split, 0, mean);
-                participant.features.put("info"+i,split);
-                mean +=20;
-            }
-            
             participant.features.put("raw",new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
-
-            System.out.println("starting forwards search");
-            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
-            System.out.println("completed forwards search in " + participant.timeTakenForwards);
-            participant.features.put("forwards", w.getDataManager().selectedFeatureNames[0]);
             
             featureIterator = participant.features.entrySet().iterator();
             
@@ -259,6 +239,17 @@ public class AccuracyExperiment {
     private void evaluatorCancelled() {
 
     }
+    
+    private double getPercent(String res)
+    {
+        try {
+            return Double.parseDouble((res.replaceAll("%", "")));
+        } catch (NumberFormatException e)
+        {
+            return -1;
+        }
+        
+    }
 
     private void evaluatorFinished(String[] results) 
     {
@@ -267,7 +258,7 @@ public class AccuracyExperiment {
             System.out.println("Done test set");
             double timeTaken = System.currentTimeMillis() - evalStartTime;
             participant.testSetTimes.put((String)currentFeatures.getKey(), timeTaken);
-            participant.testSetResults.put((String)currentFeatures.getKey(), Double.parseDouble((results[0].replaceAll("%", ""))));
+            participant.testSetResults.put((String)currentFeatures.getKey(),getPercent(results[0]));
             testSet = false;
             evaluate();
         }
@@ -276,7 +267,7 @@ public class AccuracyExperiment {
             System.out.println("Done training set");
             double timeTaken = System.currentTimeMillis() - evalStartTime;
             participant.trainingSetTimes.put((String)currentFeatures.getKey(), timeTaken);
-            participant.trainingSetResults.put((String)currentFeatures.getKey(), Double.parseDouble((results[0].replaceAll("%", ""))));
+            participant.trainingSetResults.put((String)currentFeatures.getKey(), getPercent(results[0]));
             testSet = true;
             
             if(featureIterator.hasNext())
@@ -301,23 +292,26 @@ public class AccuracyExperiment {
     {
         HashMap<String, String> projects = new HashMap();
         File folder = new File(ROOT_DIR);
-        System.out.println(ROOT_DIR);
         File[] listOfFiles = folder.listFiles();
-        for(File file : listOfFiles)
+        for(File idFile : listOfFiles)
         {
-            if(file.isDirectory())
+            if(idFile.isDirectory())
             {
-                String pID = file.getName();
-                File studyFolder = new File(file.getAbsolutePath() + File.separator + STUDY_DIR);
-                File[] listOfStudyFiles = studyFolder.listFiles();
-                for(File studyFile : listOfStudyFiles)
+                String pID = idFile.getName();
+                for(File projectFile : idFile.listFiles())
                 {
-                    if(studyFile.getName().contains("ProjectFiles"))
+                    if(projectFile.isDirectory() && projectFile.getName().contains(PROJECT_NAME))
                     {
-                        String projectFile = studyFile.getAbsolutePath() + File.separator + PROJECT_NAME;
-                        projects.put(pID, projectFile);
-                        break;
-                    } 
+                        File[] listOfStudyFiles = projectFile.listFiles();
+                        for(File studyFile : listOfStudyFiles)
+                        {
+                            if(studyFile.getName().contains(PROJECT_NAME))
+                            {
+                                projects.put(pID, studyFile.getAbsolutePath());
+                                break;
+                            } 
+                        }
+                    }
                 }
             }
         }
