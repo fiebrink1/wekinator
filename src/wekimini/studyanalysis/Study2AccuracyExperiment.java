@@ -38,20 +38,20 @@ import wekimini.learning.SVMModelBuilder;
  */
 public class Study2AccuracyExperiment {
     
-    private Wekinator w;
-    private final String PROJECT_NAME = "Week6";
-    //private final String ROOT_DIR = "../../studyData/Study1_logs";
-    private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study_2_logs/projects";
-    private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study2_analysis";
-    private Participant participant;
-    private Iterator featureIterator;
-    private Iterator participantIterator;
-    private ArrayList<Participant> participants;
-    private boolean testSet = true;
+    public Wekinator w;
+    public final String PROJECT_NAME = "Week6";
+    //public final String ROOT_DIR = "../../studyData/Study1_logs";
+    public final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study_2_logs/projects";
+    public final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study2_analysis";
+    public Participant participant;
+    public Iterator featureIterator;
+    public Iterator participantIterator;
+    public ArrayList<Participant> participants;
+    public boolean testSet = true;
     //"P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12","P13","P15","P16","P17",
-    private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot", "1"};
-    private Map.Entry currentFeatures;
-    private double evalStartTime = 0; 
+    public final String[] blackList = new String[] {"P6", "P16", "P20", "P18", "P17"};
+    public Map.Entry currentFeatures;
+    public double evalStartTime = 0; 
     
     public static void main(String[] args)
     {
@@ -59,7 +59,7 @@ public class Study2AccuracyExperiment {
         e.runTests();
     }
     
-    private void runTests()
+    public void runTests()
     {
         HashMap<String, String> projects = getProjectLocations();
         participantIterator = projects.entrySet().iterator();
@@ -70,7 +70,7 @@ public class Study2AccuracyExperiment {
         }
     }
     
-    private void logParticipant()
+    public void logParticipant()
     {
         System.out.println(participant.participantID);
         System.out.println(participant.timeTakenForwards);
@@ -92,7 +92,7 @@ public class Study2AccuracyExperiment {
         exportAllFeatures();
     }
     
-    private void logAll()
+    public void logAll()
     {
         ObjectMapper json = new ObjectMapper();
         DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
@@ -108,13 +108,13 @@ public class Study2AccuracyExperiment {
         System.exit(0);
     }
     
-    private void reset()
+    public void reset()
     {
         testSet = true;
         participant = new Participant();
     }
     
-    private boolean isBlackListed(String pID)
+    public boolean isBlackListed(String pID)
     {
         for(String blackListed : blackList)
         {
@@ -126,7 +126,7 @@ public class Study2AccuracyExperiment {
         return false;
     }
     
-    private void runForNextParticipant()
+    public void runForNextParticipant()
     {
         reset();
                 
@@ -168,7 +168,7 @@ public class Study2AccuracyExperiment {
         }
     }
             
-    private void setNextFeatures()
+    public void setNextFeatures()
     {
         w.getDataManager().featureManager.getFeatureGroups().get(0).removeAll();
         currentFeatures = (Map.Entry)featureIterator.next();
@@ -180,7 +180,7 @@ public class Study2AccuracyExperiment {
         }
     }
     
-    private void exportAllFeatures()
+    public void exportAllFeatures()
     {
         Instances dataSet = w.getDataManager().getAllFeaturesInstances(0,false);
         ArffSaver saver = new ArffSaver();
@@ -193,7 +193,7 @@ public class Study2AccuracyExperiment {
         }
     }
     
-    private void evaluate()
+    public void evaluate()
     {
         evalStartTime = System.currentTimeMillis();
         ModelEvaluator evaluator = new ModelEvaluator(w, new ModelEvaluator.EvaluationResultsReceiver() {
@@ -227,20 +227,20 @@ public class Study2AccuracyExperiment {
         });
     }
     
-    private void evaluatorPropertyChanged(PropertyChangeEvent evt) {
+    public void evaluatorPropertyChanged(PropertyChangeEvent evt) {
         
     }
 
-    private void evaluatorModelFinished(int modelNum, String results, String confusion) {
+    public void evaluatorModelFinished(int modelNum, String results, String confusion) {
 
 
     }
 
-    private void evaluatorCancelled() {
+    public void evaluatorCancelled() {
 
     }
     
-    private double getPercent(String res)
+    public double getPercent(String res)
     {
         try {
             return Double.parseDouble((res.replaceAll("%", "")));
@@ -251,7 +251,7 @@ public class Study2AccuracyExperiment {
         
     }
 
-    private void evaluatorFinished(String[] results) 
+    public void evaluatorFinished(String[] results) 
     {
         if(testSet)
         {
@@ -288,7 +288,7 @@ public class Study2AccuracyExperiment {
         }
     }
     
-    private HashMap<String, String> getProjectLocations()
+    public HashMap<String, String> getProjectLocations()
     {
         HashMap<String, String> projects = new HashMap();
         File folder = new File(ROOT_DIR);

@@ -34,6 +34,9 @@ public class Participant {
     public int thresholdSelectCount = 0;
     public int addFeaturesCount = 0;
     public int addPanelCount = 0;
+    public int removePanelCount = 0;
+    public Boolean didEvalLargeLast = false;
+    public Boolean didEvalRawLast = false;
     
     public Participant()
     {

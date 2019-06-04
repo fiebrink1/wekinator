@@ -5,112 +5,56 @@
  */
 package wekimini.studyanalysis;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
  *
  * @author louismccallum
  */
-public class LogsExperiment {
-    
-    public final String STUDY_DIR = "featurnator_study_1";
-    public final String PROJECT_NAME = "featurnator_study_1_notest.txt";
-    public final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
-    public final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
-    public Participant participant;
-    public Iterator participantIterator;
-    public final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot", "1", "P1", "P10"};
-    public ArrayList<Participant> participants = new ArrayList();
+public class Study2LogsExperiment extends LogsExperiment {
+    public final String LOG_NAME = "featurnator_study_2";
+    public final String PROJECT_NAME = "Week6";
+    public final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study_2_logs/projects";
+    public final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study2_analysis";
+    public final String[] blackList = new String[] {"P6", "P16", "P20", "P18", "P17"};
     
     public static void main(String[] args)
     {
-        LogsExperiment e = new LogsExperiment();
+        Study2LogsExperiment e = new Study2LogsExperiment();
         e.runTests();
     }
     
+    @Override
     public String getRootDir()
     {
         return ROOT_DIR;
     }
     
+    @Override
     public String getProjectName()
     {
         return PROJECT_NAME;
     }
     
+    @Override
     public String getResultsDir()
     {
         return RESULTS_DIR;
     }
     
+    @Override
     public String[] getBlacklist()
     {
         return blackList;
     }
     
-    
-    public void runTests()
-    {
-        HashMap<String, String> projects = getProjectLocations();
-        participantIterator = projects.entrySet().iterator();
-        if(participantIterator.hasNext())
-        {
-            runForNextParticipant();
-        }
-    }
-    
-    public void reset()
-    {
-        participant = new Participant();
-    }
-    
-    public boolean isBlackListed(String pID)
-    {
-        for(String blackListed : getBlacklist())
-        {
-            if(pID.equals(blackListed))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    public void logParticipant()
-    {
-       participants.add(participant);
-    }
-    
-    public void logAll()
-    {
-        System.out.println("LOGGING ALL");
-        ObjectMapper json = new ObjectMapper();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-        Date date = new Date();
-        String path = getResultsDir() + File.separator + "logExperiment" + dateFormat.format(date) + ".json";
-        try{
-            json.writeValue(new FileOutputStream(path), participants);
-        }
-        catch(Exception e)
-        {
-            System.out.println("ERROR: writing file");
-        }
-        System.exit(0);
-    }
-    
+    @Override
     public void runForNextParticipant()
     {
         reset();
@@ -148,6 +92,10 @@ public class LogsExperiment {
             long prevStart = 0;
             int cvCtr = 0;
             int runCtr = 0;
+            int auto = 0;
+            int remove = 0;
+            int add = 0;
+            int threshold = 0;
             int newFeatureRunCtr = 0;
             int newDataRunCtr = 0;
             boolean running = false;
@@ -159,6 +107,32 @@ public class LogsExperiment {
             for(String line : lines)
             {
                 String split[] = line.split(",");
+                if(split[2].equals("EVAL_ALL_FEATURES"))
+                {
+                    participant.didEvalLargeLast = true;
+                    participant.didEvalRawLast = false;
+                }
+                if(split[2].equals("EVAL_RAW_FEATURES"))
+                {
+                    participant.didEvalLargeLast = false;
+                    participant.didEvalRawLast = true;
+                }
+                if(split[2].equals("AUTO_SELECT"))
+                {
+                    auto++;
+                }
+                if(split[2].equals("THRESHOLD_SELECT"))
+                {
+                    threshold++;
+                }
+                if(split[2].equals("REMOVE_PANEL"))
+                {
+                    remove++;
+                }
+                if(split[2].equals("ADD_PANEL"))
+                {
+                    add++;
+                }
                 if(split[2].equals("START_RUN"))
                 {
                     prevStart = Long.parseUnsignedLong(split[0]);
@@ -191,10 +165,10 @@ public class LogsExperiment {
                 {
                     cvCtr++;
                 }
-                if(split[2].equals("FEATURE_REMOVED") || split[2].equals("FEATURE_ADDED"))
+                if(split[2].equals("FEATURES_REMOVED") || split[2].equals("FEATURES_ADDED"))
                 {
                     didChangeFeatures = true;
-                    if(split[2].equals("FEATURE_ADDED"))
+                    if(split[2].equals("FEATURES_ADDED"))
                     {
                         if(split[3].length() > 3)
                         {
@@ -216,6 +190,9 @@ public class LogsExperiment {
             System.out.println(cvCtr);
             String[] f = new String[exploredFeatures.size()];
             f = exploredFeatures.toArray(f);
+            participant.addPanelCount = add;
+            participant.removePanelCount = remove;
+            participant.thresholdSelectCount = threshold;
             participant.features.put("explored", f);
             participant.timeSpentRunning = cumSumRunning;
             participant.timeSpentRecording = cumSumRecording;
@@ -223,6 +200,7 @@ public class LogsExperiment {
             participant.runCount = runCtr;
             participant.newDataRunCount = newDataRunCtr;
             participant.newFeatureRunCount = newFeatureRunCtr;
+            participant.autoSelectCount = auto;
             participantIterator.remove(); 
             logParticipant();
             runForNextParticipant();
@@ -233,28 +211,40 @@ public class LogsExperiment {
             return;
         }
     }
-     
+    
+    @Override
     public HashMap<String, String> getProjectLocations()
     {
         HashMap<String, String> projects = new HashMap();
         File folder = new File(getRootDir());
-        System.out.println(getRootDir());
         File[] listOfFiles = folder.listFiles();
-        for(File file : listOfFiles)
+        for(File idFile : listOfFiles)
         {
-            if(file.isDirectory())
+            if(idFile.isDirectory())
             {
-                String pID = file.getName();
-                File studyFolder = new File(file.getAbsolutePath() + File.separator + STUDY_DIR);
-                File[] listOfStudyFiles = studyFolder.listFiles();
-                for(File studyFile : listOfStudyFiles)
+                String pID = idFile.getName();
+                for(File projectFile : idFile.listFiles())
                 {
-                    if(studyFile.getName().contains(getProjectName()))
+                    if(projectFile.isDirectory() && projectFile.getName().contains(getProjectName()))
                     {
-                        String projectFile = studyFile.getAbsolutePath();
-                        projects.put(pID, projectFile);
-                        break;
-                    } 
+                        File[] listOfStudyFiles = projectFile.listFiles();
+                        for(File studyFile : listOfStudyFiles)
+                        {
+                            if(studyFile.getName().contains(LOG_NAME))
+                            {
+                                File[] listOfLogFiles = studyFile.listFiles();
+                                for(File logFile : listOfLogFiles)
+                                {
+                                    if(logFile.getName().contains(LOG_NAME))
+                                    {
+                                        System.out.println(logFile.getName());
+                                        projects.put(pID, logFile.getAbsolutePath());
+                                        break;
+                                    }
+                                }
+                            } 
+                        }
+                    }
                 }
             }
         }
