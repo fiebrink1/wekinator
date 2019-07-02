@@ -26,14 +26,7 @@ public class InfoGainSelector extends RankedFeatureSelector {
     {
         try {
             int classIndex = instances.numAttributes() - 1;
-//            Discretize dis = new Discretize();
-//            dis.setInputFormat(instances);     
-//            dis.setAttributeIndicesArray(new int[]{classIndex});
-//            Instances discreted = Filter.useFilter(instances, dis); 
-//            NumericToNominal nom = new NumericToNominal();
-//            nom.setInputFormat(instances); 
-//            //nom.setAttributeIndicesArray(new int[]{classIndex});
-//            instances = Filter.useFilter(instances, nom);
+
             System.out.println(instances.firstInstance().classAttribute().isNominal());
             System.out.println(instances.firstInstance().classAttribute().isNumeric());
             AttributeSelection attsel = new AttributeSelection();
