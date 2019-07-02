@@ -63,8 +63,18 @@ public final class FeatureCollection
         inputs.put("GyroY", GYROY);
         inputs.put("GyroZ", GYROZ);
         
+//        inputs.put("EMG1", 6);
+//        inputs.put("EMG2", 7);
+//        inputs.put("EMG3", 8);
+//        inputs.put("EMG4", 9);
+//        inputs.put("EMG5", 10);
+//        inputs.put("EMG6", 11);
+//        inputs.put("EMG7", 12);
+//        inputs.put("EMG8", 13);
+        
         inputGroupings.put("Acc",new int[] {ACCX, ACCY, ACCZ});
         inputGroupings.put("Gyro",new int[] {GYROX, GYROY, GYROZ});
+//        inputGroupings.put("EMG",new int[] {6,7,8,9,10,11,12,13});
         
         initLibrary(windowSize, bufferSize);
 
@@ -76,6 +86,14 @@ public final class FeatureCollection
         addFeatureForKey("GyroX");
         addFeatureForKey("GyroY");
         addFeatureForKey("GyroZ");
+        addFeatureForKey("EMG1");
+        addFeatureForKey("EMG2");
+        addFeatureForKey("EMG3");
+        addFeatureForKey("EMG4");
+        addFeatureForKey("EMG5");
+        addFeatureForKey("EMG6");
+        addFeatureForKey("EMG7");
+        addFeatureForKey("EMG8");
     }
     
     public void initLibrary(int windowSize, int bufferSize)
@@ -194,16 +212,16 @@ public final class FeatureCollection
             library.add(new MaxFFT("MaxBinFFT" + pair.getKey(), pair.getValue(), 128));
         }
         //60
-        it = inputs.entrySet().iterator();
-        while(it.hasNext())
-        {
-            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-            for(int i = 0; i < bufferSize; i++)
-            {
-                library.add(new BufferFeatureSingleOutput("Buffer" + pair.getKey() + i, pair.getValue(), bufferSize, i));
-            }
-            //library.add(new BufferFeature("Buffer" + pair.getKey(), pair.getValue(), bufferSize));
-        }
+//        it = inputs.entrySet().iterator();
+//        while(it.hasNext())
+//        {
+//            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+//            for(int i = 0; i < bufferSize; i++)
+//            {
+//                library.add(new BufferFeatureSingleOutput("Buffer" + pair.getKey() + i, pair.getValue(), bufferSize, i));
+//            }
+//            //library.add(new BufferFeature("Buffer" + pair.getKey(), pair.getValue(), bufferSize));
+//        }
         
         it = inputs.entrySet().iterator();
         while(it.hasNext())
@@ -594,6 +612,14 @@ class FeatureMetadata
             case FeatureCollection.GYROX: return InputSensor.GYROX;
             case FeatureCollection.GYROY: return InputSensor.GYROY;
             case FeatureCollection.GYROZ: return InputSensor.GYROZ;
+//            case 6: return InputSensor.EMG1;
+//            case 7: return InputSensor.EMG2;
+//            case 8: return InputSensor.EMG3;
+//            case 9: return InputSensor.EMG4;
+//            case 10: return InputSensor.EMG5;
+//            case 11: return InputSensor.EMG6;
+//            case 12: return InputSensor.EMG7;
+//            case 13: return InputSensor.EMG8;
         }
         return InputSensor.UNKNOWN;
     }
@@ -609,6 +635,10 @@ class FeatureMetadata
             case FeatureCollection.GYROY: return new String[]{"GyroscopeY", "Gyroscope"};
             case FeatureCollection.GYROZ: return new String[]{"GyroscopeZ", "Gyroscope"};
         }
+//        if(index > 5)
+//        {
+//            return new String[]{"EMG"};
+//        }
         return new String[0];
     }
     

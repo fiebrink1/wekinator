@@ -991,6 +991,7 @@ public class DataManager {
     {
         selectedFeatureNames = new String[numOutputs][];
         BestInfoSelector sel = new BestInfoSelector(w);
+        sel.interval = 50;
         sel.outputIndex = outputIndex;
         Instances formatted = getAllFeaturesInstances(outputIndex, testSet);
         sel.getAttributeIndicesForInstances(formatted, new BestInfoSelector.BestInfoResultsReceiver() {
@@ -1143,7 +1144,6 @@ public class DataManager {
                 }
                 else
                 {
-                    System.out.println("-------------~~~~~~~~~~~~~~~~~UPDATING allFeaturesInstances " + featureInstances.get(0).numAttributes());
                     allFeaturesInstances = featureInstances; 
                 }
                 featureManager.didRecalculateAllFeatures(testSet);
@@ -1382,7 +1382,7 @@ public class DataManager {
         //System.out.println("getting classifiable for plot");
         double[] features;
         Instances instances;
-        features = featureManager.modifyInputsForPlotFeatures(vals, false);
+        features = featureManager.modifyInputsForPlotFeatures(vals, true);
         instances = featureManager.getNewInstancesOfLength(features.length, numClasses[0]);
         Instance featureInstance = new Instance(1.0, features);
         instances.add(featureInstance);

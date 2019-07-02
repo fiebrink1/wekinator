@@ -4,9 +4,7 @@
  * and open the template in the editor.
  */
 package wekimini.modifiers;
-import java.util.HashMap;
 import weka.core.*;
-import weka.core.Capabilities.*;
 import weka.filters.*;
 /**
  *

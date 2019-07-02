@@ -25,22 +25,25 @@ public class InfoGainSelector extends RankedFeatureSelector {
     public int[] getAttributeIndicesForInstances(Instances instances)
     {
         try {
-            Discretize dis = new Discretize();
-            dis.setInputFormat(instances);     
-            Instances discreted = Filter.useFilter(instances, dis); 
-            NumericToNominal nom = new NumericToNominal();
-            nom.setInputFormat(discreted);   
-            discreted = Filter.useFilter(discreted, nom);
-            
+            int classIndex = instances.numAttributes() - 1;
+//            Discretize dis = new Discretize();
+//            dis.setInputFormat(instances);     
+//            dis.setAttributeIndicesArray(new int[]{classIndex});
+//            Instances discreted = Filter.useFilter(instances, dis); 
+//            NumericToNominal nom = new NumericToNominal();
+//            nom.setInputFormat(instances); 
+//            //nom.setAttributeIndicesArray(new int[]{classIndex});
+//            instances = Filter.useFilter(instances, nom);
+            System.out.println(instances.firstInstance().classAttribute().isNominal());
+            System.out.println(instances.firstInstance().classAttribute().isNumeric());
             AttributeSelection attsel = new AttributeSelection();
             InfoGainAttributeEval eval = new InfoGainAttributeEval();
             Ranker search = new Ranker();
             attsel.setEvaluator(eval);
             attsel.setSearch(search);
-            int classIndex = discreted.numAttributes() - 1;
-            discreted.setClassIndex(classIndex);
+            instances.setClassIndex(classIndex);
             
-            attsel.SelectAttributes(discreted);
+            attsel.SelectAttributes(instances);
             
             //Return best results from ranked array
             int[] ranked =  attsel.selectedAttributes();

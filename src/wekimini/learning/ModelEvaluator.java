@@ -251,7 +251,8 @@ public class ModelEvaluator {
                                 KadenzeLogging.getLogger().trainingAccuracyComputed(w, i, result);
                             }
                             setResults(i, result);  
-                            finishedModel(i, result, eval.toMatrixString());
+                            finishedModel(i, result, "");
+                            //finishedModel(i, result, eval.toMatrixString());
                             numEvaluated++;
 
                             if (isCancelled()) {
