@@ -29,13 +29,13 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="featureDetailPanel" pref="975" max="32767" attributes="0"/>
+                  <Component id="featureDetailPanel" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Component id="newFeaturesPanel" min="-2" pref="719" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="jLabel2" pref="250" max="32767" attributes="0"/>
-                          <Component id="evaluateFeaturesPanel" max="32767" attributes="0"/>
+                          <Component id="evaluateFeaturesPanel" pref="250" max="32767" attributes="0"/>
+                          <Component id="featureInput" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -48,12 +48,11 @@
           <Group type="102" alignment="0" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="featureInput" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                       <Component id="evaluateFeaturesPanel" min="-2" pref="504" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="newFeaturesPanel" alignment="0" min="-2" pref="535" max="-2" attributes="0"/>
+                  <Component id="newFeaturesPanel" min="-2" pref="535" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
               <Component id="featureDetailPanel" min="-2" max="-2" attributes="0"/>
@@ -79,17 +78,13 @@
     </Component>
     <Component class="wekimini.gui.EvaluateFeaturesPanel" name="evaluateFeaturesPanel">
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel2">
+    <Component class="javax.swing.JTextField" name="featureInput">
       <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="ff" red="ff" type="rgb"/>
-        </Property>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Lucida Grande" size="15" style="1"/>
-        </Property>
-        <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="Evaluate"/>
+        <Property name="text" type="java.lang.String" value="-features-"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="featureInputActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

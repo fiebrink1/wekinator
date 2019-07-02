@@ -22,7 +22,7 @@ public class Study2LogsExperiment extends LogsExperiment {
     public final String PROJECT_NAME = "Week6";
     public final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study_2_logs/projects";
     public final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study2_analysis";
-    public final String[] blackList = new String[] {"P6", "P16", "P20", "P18", "P17"};
+    public final String[] blackList = new String[] {"P6"};
     
     public static void main(String[] args)
     {

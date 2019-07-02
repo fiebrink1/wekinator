@@ -184,17 +184,19 @@ public class FeatureFrame extends JFrame {
         newFeaturesPanel = new wekimini.gui.NewFeaturesPanel();
         featureDetailPanel = new wekimini.gui.FeatureDetailPanel();
         evaluateFeaturesPanel = new wekimini.gui.EvaluateFeaturesPanel();
-        jLabel2 = new javax.swing.JLabel();
+        featureInput = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
 
         newFeaturesPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(204, 204, 204), null, new java.awt.Color(204, 204, 204)));
 
-        jLabel2.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel2.setFont(new java.awt.Font("Lucida Grande", 1, 15)); // NOI18N
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Evaluate");
+        featureInput.setText("-features-");
+        featureInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                featureInputActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -203,13 +205,13 @@ public class FeatureFrame extends JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(featureDetailPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 975, Short.MAX_VALUE)
+                    .addComponent(featureDetailPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(newFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 719, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
-                            .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+                            .addComponent(featureInput))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -217,9 +219,8 @@ public class FeatureFrame extends JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(featureInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(5, 5, 5)
                         .addComponent(evaluateFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 504, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(newFeaturesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 535, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -229,6 +230,22 @@ public class FeatureFrame extends JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void featureInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_featureInputActionPerformed
+        w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).clearAdded();
+        String featureStr = featureInput.getText();
+        String[] split = featureStr.split(",");
+        for(String ft : split)
+        {
+//            ft = ft.replaceAll("[", "");
+//            ft = ft.replaceAll("]", "");
+            w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(ft);
+            
+        }
+        w.getDataManager().featureListUpdated();
+        newFeaturesPanel.featureListUpdated();
+        evaluateFeaturesPanel.featuresListUpdated();
+    }//GEN-LAST:event_featureInputActionPerformed
 
     private void debounceSliderAction(double newVal)
     {
@@ -395,7 +412,7 @@ public class FeatureFrame extends JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private wekimini.gui.EvaluateFeaturesPanel evaluateFeaturesPanel;
     private wekimini.gui.FeatureDetailPanel featureDetailPanel;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JTextField featureInput;
     private wekimini.gui.NewFeaturesPanel newFeaturesPanel;
     // End of variables declaration//GEN-END:variables
 }
