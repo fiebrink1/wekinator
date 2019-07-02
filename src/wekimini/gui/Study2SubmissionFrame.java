@@ -30,6 +30,7 @@ public class Study2SubmissionFrame extends javax.swing.JFrame {
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent evt) {
+                resetFeatures();
                 dispose();
                 w.save();
             }
