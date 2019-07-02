@@ -63,18 +63,18 @@ public final class FeatureCollection
         inputs.put("GyroY", GYROY);
         inputs.put("GyroZ", GYROZ);
         
-        inputs.put("EMG1", 6);
-        inputs.put("EMG2", 7);
-        inputs.put("EMG3", 8);
-        inputs.put("EMG4", 9);
-        inputs.put("EMG5", 10);
-        inputs.put("EMG6", 11);
-        inputs.put("EMG7", 12);
-        inputs.put("EMG8", 13);
+//        inputs.put("EMG1", 6);
+//        inputs.put("EMG2", 7);
+//        inputs.put("EMG3", 8);
+//        inputs.put("EMG4", 9);
+//        inputs.put("EMG5", 10);
+//        inputs.put("EMG6", 11);
+//        inputs.put("EMG7", 12);
+//        inputs.put("EMG8", 13);
         
         inputGroupings.put("Acc",new int[] {ACCX, ACCY, ACCZ});
         inputGroupings.put("Gyro",new int[] {GYROX, GYROY, GYROZ});
-        inputGroupings.put("EMG",new int[] {6,7,8,9,10,11,12,13});
+//        inputGroupings.put("EMG",new int[] {6,7,8,9,10,11,12,13});
         
         initLibrary(windowSize, bufferSize);
 
@@ -612,14 +612,14 @@ class FeatureMetadata
             case FeatureCollection.GYROX: return InputSensor.GYROX;
             case FeatureCollection.GYROY: return InputSensor.GYROY;
             case FeatureCollection.GYROZ: return InputSensor.GYROZ;
-            case 6: return InputSensor.EMG1;
-            case 7: return InputSensor.EMG2;
-            case 8: return InputSensor.EMG3;
-            case 9: return InputSensor.EMG4;
-            case 10: return InputSensor.EMG5;
-            case 11: return InputSensor.EMG6;
-            case 12: return InputSensor.EMG7;
-            case 13: return InputSensor.EMG8;
+//            case 6: return InputSensor.EMG1;
+//            case 7: return InputSensor.EMG2;
+//            case 8: return InputSensor.EMG3;
+//            case 9: return InputSensor.EMG4;
+//            case 10: return InputSensor.EMG5;
+//            case 11: return InputSensor.EMG6;
+//            case 12: return InputSensor.EMG7;
+//            case 13: return InputSensor.EMG8;
         }
         return InputSensor.UNKNOWN;
     }
@@ -635,10 +635,10 @@ class FeatureMetadata
             case FeatureCollection.GYROY: return new String[]{"GyroscopeY", "Gyroscope"};
             case FeatureCollection.GYROZ: return new String[]{"GyroscopeZ", "Gyroscope"};
         }
-        if(index > 5)
-        {
-            return new String[]{"EMG"};
-        }
+//        if(index > 5)
+//        {
+//            return new String[]{"EMG"};
+//        }
         return new String[0];
     }
     

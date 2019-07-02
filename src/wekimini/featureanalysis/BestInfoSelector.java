@@ -65,23 +65,17 @@ public class BestInfoSelector {
         try {
             System.out.println("starting best info selection");
             this.receiver = receiver;
-            Discretize dis = new Discretize();
-            dis.setInputFormat(instances);     
-            Instances discreted = Filter.useFilter(instances, dis); 
-            NumericToNominal nom = new NumericToNominal();
-            nom.setInputFormat(discreted);   
-            discreted = Filter.useFilter(discreted, nom);
             
             AttributeSelection attsel = new AttributeSelection();
             InfoGainAttributeEval eval = new InfoGainAttributeEval();
             Ranker search = new Ranker();
             attsel.setEvaluator(eval);
             attsel.setSearch(search);
-            classIndex = discreted.numAttributes() - 1;
-            discreted.setClassIndex(classIndex);
+            classIndex = instances.numAttributes() - 1;
+            instances.setClassIndex(classIndex);
             
             System.out.println("starting best info ranking");
-            attsel.SelectAttributes(discreted);
+            attsel.SelectAttributes(instances);
             System.out.println("finished best info ranking");  
             
             //Return best results from ranked array

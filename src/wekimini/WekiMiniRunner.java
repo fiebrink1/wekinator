@@ -227,7 +227,7 @@ public final class WekiMiniRunner {
             String dir = currentSaveLocation;
             File f = new File(dir);
             w = new Wekinator(WekiMiniRunner.generateNextID());
-            String[] inputs = new String[]{"accX","accY","accZ","gyroX","gyroY","gyroZ","emg1","emg2","emg3","emg4","emg5","emg6","emg7","emg8",};
+            String[] inputs = new String[]{"accX","accY","accZ","gyroX","gyroY","gyroZ"};
             int numClasses = inputs.length;
             int numOutputs = 1;
             String name = "Inputs";
