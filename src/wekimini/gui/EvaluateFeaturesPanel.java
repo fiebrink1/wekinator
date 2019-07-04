@@ -524,11 +524,14 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private void cvModelFinished(int modelNum, String results, String confusion) 
     {
         System.out.println("Model " + modelNum + ": " + results);
-        int[][] arr = ConfusionParser.parseMatrix(confusion);
-        confusionPanel.setModel(arr);
+        if(!confusion.equals(""))
+        {
+            int[][] arr = ConfusionParser.parseMatrix(confusion);
+            confusionPanel.setModel(arr);        
+            confusionWrapper.setVisible(true);
+            confusionHoldingImage.setVisible(false);
+        }
         accuracyLabel.setText("<html><strong>CV</strong>: " + results + "</html>");
-        confusionWrapper.setVisible(true);
-        confusionHoldingImage.setVisible(false);
         evaluateBtn.setText("Re-evaluate");
         evaluateBtn.setEnabled(true);
     }

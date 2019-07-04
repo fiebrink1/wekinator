@@ -199,7 +199,7 @@ public class ModelEvaluator {
                     Path p = paths.get(i);
                     if (p.canBuild()) {
                         try {
-                           //System.out.println("Evaluating with " + numFolds);
+                            System.out.println("Evaluating with " + numFolds);
                             //EVALUATE HERE: TODO 
                             Instances instances;
                             if(givenIndices.length == 0)
@@ -250,9 +250,17 @@ public class ModelEvaluator {
                             } else {
                                 KadenzeLogging.getLogger().trainingAccuracyComputed(w, i, result);
                             }
-                            setResults(i, result);  
-                            finishedModel(i, result, "");
-                            //finishedModel(i, result, eval.toMatrixString());
+                            setResults(i, result);
+                            String confusion = "";
+                            try {
+                                confusion = eval.toMatrixString();
+                            } 
+                            catch (Exception e)
+                            {
+                                
+                            }
+                            finishedModel(i, result, confusion);
+
                             numEvaluated++;
 
                             if (isCancelled()) {
@@ -299,7 +307,7 @@ public class ModelEvaluator {
     }
     
     protected void finishedModel(int modelNum, String result, String confusion) {
-        receiver.finishedModel(modelNum, result, confusion );
+        receiver.finishedModel(modelNum, result, confusion);
     }
     
     protected void finished() {
