@@ -251,6 +251,12 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         w.getSupervisedLearningManager().removePropertyChangeListener(learningStateListener);
     }
     
+    public void setOutputIndex(int o)
+    {
+        this.outputIndex = o;
+        featureListUpdated();
+    }
+    
     public void selectFeature(FeatureSetPlotItem f)
     {
         featureSetPlotPanel.selectedFeature = f;

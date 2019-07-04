@@ -102,7 +102,7 @@ public class DataManager {
     public FeatureManager featureManager;
     public String[][] selectedFeatureNames = new String[0][0];
     private HashMap<String, Integer>[] infoRankNames = new HashMap[0];
-    private Boolean infoGainRankingsDirty = true;
+    private Boolean infoGainRankingsDirty[] = new Boolean[]{true};
     private int nextTrainingID = 1;
     private int nextTestingID = 1;
     private int numOutputs = 0;
@@ -586,6 +586,11 @@ public class DataManager {
     public void initialize(String[] inputNames, OSCOutputGroup outputGroup) {
         numOutputs = outputGroup.getNumOutputs();
         infoRankNames = new HashMap[numOutputs];
+        infoGainRankingsDirty = new Boolean[numOutputs];
+        for(int i = 0; i < numOutputs; i++)
+        {
+            infoGainRankingsDirty[i] = true;
+        }
         numExamplesPerOutput = new int[numOutputs];
         this.inputNames = new String[inputNames.length];
         System.arraycopy(inputNames, 0, this.inputNames, 0, inputNames.length);
@@ -900,13 +905,21 @@ public class DataManager {
     
     public void setInfoGainRankingsDirty()
     {
-        infoGainRankingsDirty = true;
+        for(int i = 0; i < numOutputs; i++)
+        {
+            infoGainRankingsDirty[i] = true;
+        }
+    }
+    
+    public void setInfoGainRankingsDirty(int outputIndex)
+    {
+        infoGainRankingsDirty[outputIndex] = true;
     }
     
     public HashMap<String, Integer> getInfoGainRankings(int outputIndex) 
     {
         System.out.println("getInfoGainRankings isDirty = " + infoGainRankingsDirty);
-        if(infoGainRankingsDirty)
+        if(infoGainRankingsDirty[outputIndex])
         {
             updateInfoGainRankings(outputIndex);
         }
@@ -915,7 +928,7 @@ public class DataManager {
     
     public Feature[] getInfoGainRankings(int outputIndex, double threshold, Boolean above) 
     {
-        if(infoGainRankingsDirty)
+        if(infoGainRankingsDirty[outputIndex])
         {
             updateInfoGainRankings(outputIndex);
         }
@@ -984,7 +997,7 @@ public class DataManager {
         }
         
         System.out.println("---DONE UPDATING INFO GAIN RANKINGS");
-        infoGainRankingsDirty = false;
+        infoGainRankingsDirty[outputIndex] = false;
     }
     
     public void setFeaturesForBestInfo(int outputIndex, boolean testSet, BestInfoSelector.BestInfoResultsReceiver receiver)

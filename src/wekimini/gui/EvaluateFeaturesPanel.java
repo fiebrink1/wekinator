@@ -202,7 +202,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 isRunning = w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.RUNNING;
                 System.out.println("Callback isRunning:" + isRunning);
                 if (isRunning) {
-                    trainBtn.setText("Stop running");
+                trainBtn.setText("Stop running");
                     trainBtn.setForeground(Color.red);
                 }
                 else
