@@ -135,12 +135,21 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         warningLabel.setVisible(false);
     }
     
+    public void setOutputIndex(int output)
+    {
+        this.outputIndex = output;
+        Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
+        OSCOutput o = path.getOSCOutput();
+        outputPlot.interpolatePoints = !(o instanceof OSCClassificationOutput);
+        mdsPlot.setOutOfDate();
+    }
+    
     private void outputUpdated(double vals[])
     {
         updateLagWarning();
         DecimalFormat df = new DecimalFormat("0.00"); 
-        outputLabel.setText(df.format(vals[0]));
-        outputPlotModel.addPoint(vals[0]);
+        outputLabel.setText(df.format(vals[outputIndex]));
+        outputPlotModel.addPoint(vals[outputIndex]);
         outputPlot.updateModel(outputPlotModel);
         repaint();
     }

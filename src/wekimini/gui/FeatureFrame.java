@@ -63,7 +63,7 @@ public class FeatureFrame extends JFrame {
             public void featureListUpdated()
             {
                 System.out.println("FeatureEditorDelegate featureListUpdated()");
-                w.getDataManager().featureListUpdated();
+                w.getDataManager().featureListUpdated(outputIndex);
                 newFeaturesPanel.featureListUpdated();
                 evaluateFeaturesPanel.featuresListUpdated();
                 //featureDetailPanel.showNoFeature();
@@ -166,7 +166,7 @@ public class FeatureFrame extends JFrame {
     public void featureLibraryUpdate()
     {
         w.getDataManager().setInfoGainRankingsDirty(outputIndex);
-        w.getDataManager().featureListUpdated();
+        w.getDataManager().featureListUpdated(outputIndex);
         newFeaturesPanel.featureListUpdated();
         evaluateFeaturesPanel.featuresListUpdated();
     }
@@ -242,6 +242,7 @@ public class FeatureFrame extends JFrame {
         outputIndex = outputModelComboBox.getSelectedIndex();
         
         newFeaturesPanel.setOutputIndex(outputIndex);
+        evaluateFeaturesPanel.setOutputIndex(outputIndex);
         
         resetFollowingLibraryUpdate();
     }//GEN-LAST:event_outputModelComboBoxActionPerformed

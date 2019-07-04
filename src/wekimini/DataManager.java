@@ -86,7 +86,7 @@ public class DataManager {
     private List<Instances> trainingFeatureInstances = null;
     //Array of instances (one for each output), each represented as a reduced 2 dimensions calculated from the selected features.
     private List<Instances> trainingMDSInstances = null;
-    private boolean mdsDirty = true;
+    private boolean[] mdsDirty;
     //Array of instances (one for each output) with the selected features calculated from the test set. 
     private List<Instances> testingFeatureInstances = null;
     //Array of instances (one for each output) with the all the possible features calculated from the raw input (for use in automatic selection) 
@@ -438,7 +438,7 @@ public class DataManager {
             else
             {
                 featureManager.setDirty(i);
-                mdsDirty = true;
+                mdsDirty[i] = true;
             }
             if (!outputMask[i]) {
                 in.setMissing(numMetaData + getNumInputs() + i);
@@ -587,9 +587,11 @@ public class DataManager {
         numOutputs = outputGroup.getNumOutputs();
         infoRankNames = new HashMap[numOutputs];
         infoGainRankingsDirty = new Boolean[numOutputs];
+        mdsDirty = new boolean[numOutputs];
         for(int i = 0; i < numOutputs; i++)
         {
             infoGainRankingsDirty[i] = true;
+            mdsDirty[i] = true;
         }
         numExamplesPerOutput = new int[numOutputs];
         this.inputNames = new String[inputNames.length];
@@ -665,7 +667,7 @@ public class DataManager {
             }
             featureManager.setTestSetDirty(i);
             featureManager.setDirty(i);
-            mdsDirty = true;
+            mdsDirty[i] = true;
         }
 
         if(inputs)
@@ -1091,7 +1093,7 @@ public class DataManager {
         {
             newInstances = featureManager.getNewInstances(index, numClasses[index]);
             featureManager.resetAllModifiers();
-            mdsDirty = true;
+            mdsDirty[index] = true;
         }
         try{
             Instances in = testSet ? testInstances : inputInstances;
@@ -1206,22 +1208,22 @@ public class DataManager {
         return testSet ? testingFeatureInstances : trainingFeatureInstances;
     }
     
-    public void featureListUpdated()
+    public void featureListUpdated(int outputIndex)
     {
-        mdsDirty = true;
+        mdsDirty[outputIndex] = true;
         w.getSupervisedLearningManager().setAbleToRun(false);
     }
     
     public Instances getMDSInstances(int outputIndex)
     {
         System.out.println("getting MDS infstance");
-        if(mdsDirty)
+        if(mdsDirty[outputIndex])
         {
             for(int i = 0; i < numOutputs; i++)
             {
                 updateMDSInstances(i);
             }
-            mdsDirty = false;
+            mdsDirty[outputIndex] = false;
         }
         return trainingMDSInstances.get(outputIndex);
     }
