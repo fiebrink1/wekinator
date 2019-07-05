@@ -37,7 +37,7 @@ public class ReplaceColumnFilter extends SimpleBatchFilter {
             targetInstance.setValue(targetAttributeIndex, srcValue);
         }
             
-        return source;
+        return input;
     }
     
 }

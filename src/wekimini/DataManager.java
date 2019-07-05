@@ -964,6 +964,12 @@ public class DataManager {
         System.out.println("---STARTING TO UPDATE INFO GAIN RANKINGS");
         InfoGainSelector sel = new InfoGainSelector();
         Instances formatted = getAllFeaturesInstances(outputIndex, false);
+        Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
+        //If regression, swap labels for class values
+        if(!(path.getOSCOutput() instanceof OSCClassificationOutput))
+        {
+            formatted = trainingRoundAsClass(outputIndex, false);
+        }
         sel.useThreshold = false;
         System.out.println("Giving " + formatted.numAttributes() + " attributes to selector");
         infoRankNames[outputIndex] = new HashMap();
@@ -1010,8 +1016,13 @@ public class DataManager {
         BestInfoSelector sel = new BestInfoSelector(w);
         sel.interval = 50;
         sel.outputIndex = outputIndex;
-        //Instances formatted = getAllFeaturesInstances(outputIndex, testSet);
-        Instances formatted = trainingRoundAsClass(outputIndex, testSet);
+        Instances formatted = getAllFeaturesInstances(outputIndex, false);
+        Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
+        //If regression, swap labels for class values
+        if(!(path.getOSCOutput() instanceof OSCClassificationOutput))
+        {
+            formatted = trainingRoundAsClass(outputIndex, false);
+        }
         sel.getAttributeIndicesForInstances(formatted, new BestInfoSelector.BestInfoResultsReceiver() {
              @Override
              public void finished(int[] features)
@@ -1092,7 +1103,8 @@ public class DataManager {
             replace.source = in;
             replace.sourceAttributeIndex = 2;
             replace.targetAttributeIndex = ft.classIndex();
-            return Filter.useFilter(ft, replace);
+            Instances swapped = Filter.useFilter(ft, replace);
+            return swapped;
         } catch (Exception e)
         {
             return null;

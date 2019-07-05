@@ -30,6 +30,7 @@ public class CorrelateTest extends ModifierTest {
     public void setUpFilters(int windowSize)
     {
         w.getDataManager().featureManager.removeAllModifiersFromOutput(0);
+        //Remove any features that are added by default
         w.getDataManager().featureManager.featureCollections.get(1).removeAll();
         w.getDataManager().featureManager.featureCollections.get(2).removeAll();
         w.getDataManager().featureManager.featureCollections.get(3).removeAll();

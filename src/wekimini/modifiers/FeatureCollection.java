@@ -13,9 +13,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import org.jdesktop.swingworker.SwingWorker;
-import wekimini.kadenze.FeaturnatorLogger;
-import wekimini.kadenze.KadenzeLogging;
 import wekimini.modifiers.Feature.InputSensor;
 import wekimini.modifiers.WindowedOperation.Operation;
 /**
