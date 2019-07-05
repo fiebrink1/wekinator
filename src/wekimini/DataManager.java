@@ -53,9 +53,12 @@ import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
 import mdsj.MDSJ;
+import weka.filters.unsupervised.attribute.Add;
+import weka.filters.unsupervised.attribute.Remove;
 import wekimini.featureanalysis.BestInfoSelector;
 import wekimini.featureanalysis.RankedFeatureSelector;
 import wekimini.modifiers.Feature;
+import wekimini.modifiers.ReplaceColumnFilter;
 
 
 /**
@@ -783,7 +786,6 @@ public class DataManager {
 
         s.setAttributeIndicesArray(saving);
         s.setInputFormat(dummyInstances);
-
         trainingFilters[output] = r;
         inputSavingFilters[output] = s;
     }
@@ -1008,7 +1010,8 @@ public class DataManager {
         BestInfoSelector sel = new BestInfoSelector(w);
         sel.interval = 50;
         sel.outputIndex = outputIndex;
-        Instances formatted = getAllFeaturesInstances(outputIndex, testSet);
+        //Instances formatted = getAllFeaturesInstances(outputIndex, testSet);
+        Instances formatted = trainingRoundAsClass(outputIndex, testSet);
         sel.getAttributeIndicesForInstances(formatted, new BestInfoSelector.BestInfoResultsReceiver() {
              @Override
              public void finished(int[] features)
@@ -1079,6 +1082,23 @@ public class DataManager {
         return sel.timeTaken;
     }
     
+    private Instances trainingRoundAsClass(int index, boolean testSet)
+    {
+        try {
+            Instances in = testSet ? testInstances : inputInstances;
+            Instances ft = getAllFeaturesInstances(index, testSet);
+            ReplaceColumnFilter replace = new ReplaceColumnFilter();
+            replace.setInputFormat(ft);
+            replace.source = in;
+            replace.sourceAttributeIndex = 2;
+            replace.targetAttributeIndex = ft.classIndex();
+            return Filter.useFilter(ft, replace);
+        } catch (Exception e)
+        {
+            return null;
+        }
+    }
+    
     private void updateFeatureInstances(int index, boolean testSet, boolean allFeatures)
     { 
         //System.out.println("updating features, all = " + allFeatures);
@@ -1107,8 +1127,10 @@ public class DataManager {
                 Instance inputInstance = filteredInputs.instance(i);
                 if(!isOutputMissing(i,index, testSet))
                 {
-                    input = inputInstance.toDoubleArray();
-                    double output = input[input.length-1];
+                    withOutput = inputInstance.toDoubleArray();
+                    input = new double[withOutput.length - 1];
+                    System.arraycopy(withOutput, 0, input, 0, input.length);
+                    double output = withOutput[withOutput.length-1];
                     features = allFeatures ? featureManager.modifyInputsForAllFeatures(input, true) : featureManager.modifyInputsForOutput(input, index, true);
                     withOutput = new double[features.length + 1];
                     withOutput[withOutput.length-1] = output;

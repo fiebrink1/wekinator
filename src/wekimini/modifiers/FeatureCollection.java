@@ -86,14 +86,14 @@ public final class FeatureCollection
         addFeatureForKey("GyroX");
         addFeatureForKey("GyroY");
         addFeatureForKey("GyroZ");
-        addFeatureForKey("EMG1");
-        addFeatureForKey("EMG2");
-        addFeatureForKey("EMG3");
-        addFeatureForKey("EMG4");
-        addFeatureForKey("EMG5");
-        addFeatureForKey("EMG6");
-        addFeatureForKey("EMG7");
-        addFeatureForKey("EMG8");
+//        addFeatureForKey("EMG1");
+//        addFeatureForKey("EMG2");
+//        addFeatureForKey("EMG3");
+//        addFeatureForKey("EMG4");
+//        addFeatureForKey("EMG5");
+//        addFeatureForKey("EMG6");
+//        addFeatureForKey("EMG7");
+//        addFeatureForKey("EMG8");
     }
     
     public void initLibrary(int windowSize, int bufferSize)
@@ -444,6 +444,7 @@ public final class FeatureCollection
         catch (Exception e)
         {
             System.out.println("Exception in computing new inputs");
+            e.printStackTrace();
         }
         return new double[0];
     }

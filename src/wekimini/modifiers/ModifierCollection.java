@@ -273,6 +273,10 @@ public class ModifierCollection {
         int modifierOutputIndex = 0;
         int completedIndex = 0;
         double[] newVals = new double[currentValues.length];
+        if(features.isEmpty())
+        {
+            updateNames = false;
+        }
         for(int i = 0; i < newVals.length; i++)
         {
             newVals[i] = 0;
@@ -329,7 +333,12 @@ public class ModifierCollection {
                             }
                             else 
                             {
-                                System.arraycopy(((ModifiedInputVectorOutput)toComplete).getValues(), 0, newVals, modifierOutputIndex, toComplete.getSize());
+                                double[] src = ((ModifiedInputVectorOutput)toComplete).getValues();
+                                int srcPos = 0; 
+                                double[] dest = newVals;
+                                int destPos = modifierOutputIndex;
+                                int length = toComplete.getSize();
+                                System.arraycopy(src, srcPos, dest, destPos, length);
                                 for(int i = 0; i < toComplete.getSize(); i++)
                                 {
                                     if(updateNames)

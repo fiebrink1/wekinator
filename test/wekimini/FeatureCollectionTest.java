@@ -36,6 +36,7 @@ public class FeatureCollectionTest {
         assertEquals(1, fm.getFeatureGroups().size());
         fm.passThroughInputToOutput(false, 0);
         fc = fm.getFeatureGroups().get(0);
+        fc.removeAll();
     }
     
     @Test

@@ -33,6 +33,7 @@ public class FeatureManagerTest {
         fm.addOutputs(1, names);
         assertEquals(1, fm.getFeatureGroups().size());
         fm.passThroughInputToOutput(false, 0);
+        fm.getFeatureGroups().get(0).removeAll();
     }
     
     @Test
