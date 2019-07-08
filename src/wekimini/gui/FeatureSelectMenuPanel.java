@@ -12,6 +12,7 @@ package wekimini.gui;
 public class FeatureSelectMenuPanel extends javax.swing.JPanel {
     
     public FeatureMenuDelegate delegate;
+    private boolean canCancelAuto = false;
 
     /**
      * Creates new form FeatureSelectMenuPanel
@@ -144,7 +145,23 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
                 .addGap(26, 26, 26))
         );
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    public void setCanCancelAuto(boolean canCancel)
+    {
+        this.canCancelAuto = canCancel;
+        if(canCancel)
+        {
+            autoButton.setEnabled(true);
+            autoButton.setText("Cancel");
+        }
+        else
+        {
+            autoButton.setEnabled(true);
+            autoButton.setText("Auto Select");
+        }
+        
+    }
+    
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
         // TODO add your handling code here:
         delegate.addFeaturePressed();
@@ -157,7 +174,16 @@ public class FeatureSelectMenuPanel extends javax.swing.JPanel {
 
     private void autoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoButtonActionPerformed
         // TODO add your handling code here:
-        delegate.autoSelectPressed();
+        if(!canCancelAuto)
+        {
+            delegate.autoSelectPressed();
+            setCanCancelAuto(true);
+        }
+        else
+        {
+            delegate.cancelAutoSelect();
+            setCanCancelAuto(false);
+        }
     }//GEN-LAST:event_autoButtonActionPerformed
 
     private void aboveThreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboveThreshButtonActionPerformed

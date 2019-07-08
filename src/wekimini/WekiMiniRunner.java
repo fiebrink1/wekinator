@@ -64,10 +64,10 @@ public final class WekiMiniRunner {
     private final ImageIcon myIcon = new ImageIcon(getClass().getResource("/wekimini/icons/wekimini_small.png"));
     private static boolean isKadenze = false;
     private static int nextID = 1;
-    public enum Study_ID {
+    public enum StudyID {
         STUDY_1, STUDY_2, STUDY_3
     }
-    private static final Study_ID studyId = Study_ID.STUDY_2;
+    private static final StudyID studyId = StudyID.STUDY_3;
     
     //Load it and start running, handle old project
     public void runNewProjectAutomatically(Wekinator oldWekinator, String filename, NewProjectOptions options) throws Exception {
@@ -196,11 +196,11 @@ public final class WekiMiniRunner {
         aboutBox.setKadenze(isKadenze);
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                if(studyId == Study_ID.STUDY_1)
+                if(studyId == StudyID.STUDY_1)
                 {
                     new Study1Prompt().setVisible(true);
                 }
-                else if (studyId == Study_ID.STUDY_2 || studyId == Study_ID.STUDY_3)
+                else if (studyId == StudyID.STUDY_2 || studyId == StudyID.STUDY_3)
                 {
                     new SaveLocationFirstPrompt(studyId).setVisible(true);
                 }

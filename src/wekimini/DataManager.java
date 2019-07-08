@@ -1121,7 +1121,7 @@ public class DataManager {
     
     private void updateFeatureInstances(int index, boolean testSet, boolean allFeatures)
     { 
-        //System.out.println("updating features, all = " + allFeatures);
+        System.out.println("updating features, all = " + allFeatures);
         Instances newInstances;
         if(allFeatures)
         {
@@ -1332,10 +1332,10 @@ public class DataManager {
     {
         if(featureManager.isAllFeaturesDirty(testSet))
         {
-            for(int i = 0; i < numOutputs; i++)
-            {
-                updateFeatureInstances(i, testSet, true);
-            }
+//            for(int i = 0; i < numOutputs; i++)
+//            {
+                updateFeatureInstances(0, testSet, true);
+//            }
             featureManager.didRecalculateAllFeatures(testSet);
         }
         Instances formatted =  featureManager.getAllFeaturesNewInstances(numClasses[outputIndex]);

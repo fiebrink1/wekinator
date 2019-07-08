@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import wekimini.GlobalSettings;
 import wekimini.WekiMiniRunner;
-import wekimini.WekiMiniRunner.Study_ID;
+import wekimini.WekiMiniRunner.StudyID;
 import wekimini.Wekinator;
 import wekimini.WekinatorFileData;
 import wekimini.kadenze.KadenzeAssignment;
@@ -35,9 +35,9 @@ public class SaveLocationFirstPrompt extends javax.swing.JFrame implements WekiM
     String currentSaveLocation = "None";
     private Wekinator w;
     private boolean closeable;
-    private Study_ID studyID;
+    private StudyID studyID;
     
-    public SaveLocationFirstPrompt(Study_ID studyID)  {
+    public SaveLocationFirstPrompt(StudyID studyID)  {
         initComponents();
         this.studyID = studyID;
     }
@@ -166,7 +166,7 @@ public class SaveLocationFirstPrompt extends javax.swing.JFrame implements WekiM
         }
         try{
             WekiMiniRunner runner = WekiMiniRunner.getInstance();
-            if(studyID == Study_ID.STUDY_3) 
+            if(studyID == StudyID.STUDY_3) 
             {
                 w = runner.runStudy3(currentSaveLocation);
             }

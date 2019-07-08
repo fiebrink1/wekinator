@@ -45,6 +45,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
     private int showing = 0;
     private int toRemove = 0;
     private int toAdd = 0;
+    private SwingWorker autoWorker;
     
     public NewFeaturesPanel() {
         initComponents();
@@ -112,6 +113,11 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                 {
                     ((FeaturnatorLogger)KadenzeLogging.getLogger()).logAutoSelect(w, w.getDataManager().featureManager.getFeatureGroups().get(outputIndex).getCurrentFeatures());
                 }
+            }
+            
+            @Override
+            public void cancelAutoSelect() {
+                cancelAuto();
             }
             
             @Override
@@ -647,19 +653,45 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
         infoFilterSlider.setValue(sliderVal);
     }
     
+    private void cancelAuto()
+    {
+        delegate.blockInteraction(false);
+        if(!autoWorker.isDone())
+        {
+            autoWorker.cancel(true);
+        }
+    }
+    
     private void autoSelect()
     {
         if(w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.NOT_RUNNING)
         {
-            delegate.blockInteraction(true);
-            w.getDataManager().setFeaturesForBestInfo(outputIndex, false,  new BestInfoSelector.BestInfoResultsReceiver() {
+            autoWorker = new SwingWorker<Void ,Void>()
+            {  
                 @Override
-                public void finished(int[] features)
+                public Void doInBackground()
                 {
-                   updateThreshold(features.length);
-                   updateFeaturePlot();
+                    delegate.blockInteraction(true);
+                    w.getDataManager().setFeaturesForBestInfo(outputIndex, false,  new BestInfoSelector.BestInfoResultsReceiver() {
+                        @Override
+                        public void finished(int[] features)
+                        {
+                           updateThreshold(features.length);
+                           updateFeaturePlot();
+                           mainMenuPanel.setCanCancelAuto(false);
+                        }
+                    });
+                    return null;
                 }
-            });
+
+                @Override
+                public void done()
+                {
+                    
+                }
+
+            };
+            autoWorker.run();
         }
         else
         {
