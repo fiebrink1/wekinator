@@ -11,9 +11,6 @@ import weka.attributeSelection.AttributeSelection;
 import weka.attributeSelection.Ranker;
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.core.Instances;
-import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.Discretize;
-import weka.filters.unsupervised.attribute.NumericToNominal;
 
 /**
  *

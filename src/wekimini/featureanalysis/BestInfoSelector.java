@@ -155,11 +155,17 @@ public class BestInfoSelector {
     {
         System.out.println("CV Finished");
         setSize += interval;
+        boolean error = results[0].contains("RMS");
         String resultString = (results[0].replaceAll("%", ""));
         resultString = (resultString.replaceAll("RMS", ""));
         resultString = (resultString.replaceAll(" ", ""));
         resultString = (resultString.replaceAll("\\p{P}", ""));
         double res = Double.parseDouble(resultString);
+        //Invert if reporting error (not accuracy) as we want a LOW number
+        if(error)
+        {
+            res = 1.0 - res;
+        }
         if(res > bestAcc)
         {
             bestFeatures = thresholded;
@@ -182,7 +188,7 @@ public class BestInfoSelector {
     
     private void cvPropertyChanged(PropertyChangeEvent evt) 
     {
-        System.out.println("CV property changed");
+        System.out.println("CV property changed ");
     }
     
     public interface BestInfoResultsReceiver {

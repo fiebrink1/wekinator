@@ -138,14 +138,11 @@ public class FeatureSelector {
     
     public static Instances filterAttributes(Instances instances, int[] indices)
     {
-        System.out.println("--------FILTERING ATTRIBUTES");
         try
         {
-            int classIndex = instances.classAttribute().index();
-            int [] toRemove = {classIndex};
             int[] withClassIndex = new int[indices.length+1];
             System.arraycopy(indices, 0, withClassIndex, 0, indices.length);
-            System.arraycopy(toRemove, 0, withClassIndex, indices.length, toRemove.length);
+            withClassIndex[indices.length] = instances.classAttribute().index();
             Remove keep = new Remove();
             keep.setInvertSelection(true);
             keep.setAttributeIndicesArray(withClassIndex);

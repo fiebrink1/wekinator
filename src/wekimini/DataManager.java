@@ -1015,7 +1015,7 @@ public class DataManager {
     {
         selectedFeatureNames = new String[numOutputs][];
         BestInfoSelector sel = new BestInfoSelector(w);
-        sel.interval = 50;
+        sel.interval = 20;
         sel.outputIndex = outputIndex;
         Instances formatted = getAllFeaturesInstances(outputIndex, false);
         Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);

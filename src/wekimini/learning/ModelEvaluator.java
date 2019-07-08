@@ -210,19 +210,26 @@ public class ModelEvaluator {
                             {
                                 instances = w.getDataManager().getFeaturesInstancesFromIndices(givenIndices, i, false);
                             }
+                            System.out.println("Got training data");
                             Evaluation eval = new Evaluation(instances);
                             Classifier c = ((LearningModelBuilder)p.getModelBuilder()).getClassifier();
+                            System.out.println("Got classifier");
                             Classifier c2;
                             switch(mode)
                             {
                                 case CROSS_VALIDATION:
                                     Random r = new Random();
+                                    System.out.println("Cross validating Model");
                                     eval.crossValidateModel(c, instances, numFolds, r);
+                                    System.out.println("Cross validated Model");
                                     break;
                                 case TRAINING_SET:
                                     c2 = Classifier.makeCopy(c);
+                                    System.out.println("Building classifier");
                                     c2.buildClassifier(instances);
+                                    System.out.println("Built classifier");
                                     eval.evaluateModel(c2, instances);
+                                    System.out.println("Evaluated Model");
                                     break;
                                 case TESTING_SET:
                                     Instances testingInstances;
@@ -241,7 +248,7 @@ public class ModelEvaluator {
                             }
                             String result;
                             if (p.getModelBuilder() instanceof ClassificationModelBuilder) {
-                                 result = dFormat.format(eval.pctCorrect()) + "%"; //WON"T WORK FOR NN
+                                result = dFormat.format(eval.pctCorrect()) + "%"; //WON"T WORK FOR NN
                             } else {
                                 result = dFormat.format(eval.errorRate()) + " (RMS)";
                             }
