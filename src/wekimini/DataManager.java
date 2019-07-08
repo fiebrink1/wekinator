@@ -54,6 +54,7 @@ import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
 import mdsj.MDSJ;
 import weka.filters.unsupervised.attribute.Add;
+import weka.filters.unsupervised.attribute.NumericToNominal;
 import weka.filters.unsupervised.attribute.Remove;
 import wekimini.featureanalysis.BestInfoSelector;
 import wekimini.featureanalysis.RankedFeatureSelector;
@@ -1103,7 +1104,14 @@ public class DataManager {
             replace.source = in;
             replace.sourceAttributeIndex = 2;
             replace.targetAttributeIndex = ft.classIndex();
+  
             Instances swapped = Filter.useFilter(ft, replace);
+            
+            NumericToNominal nom = new NumericToNominal();
+            nom.setAttributeIndicesArray(new int[]{swapped.classIndex()});
+            nom.setInputFormat(swapped);
+            swapped = Filter.useFilter(swapped, nom);
+            
             return swapped;
         } catch (Exception e)
         {
