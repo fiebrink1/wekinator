@@ -23,7 +23,6 @@ public class FeatureManager
     //There is one feature group for each path/output
     protected ArrayList<FeatureCollection> featureCollections;
     private ArrayList<FeatureCollection> allFeatures;
-    private boolean allFeaturesDirty[];
     private FeatureCollection plotFeatures;
     private int windowSize = 15;
     private int bufferSize = 15;
@@ -266,11 +265,6 @@ public class FeatureManager
             featureCollections.get(i).setFeatureWindowSize(windowSize, bufferSize);
         }
         plotFeatures.setFeatureWindowSize(windowSize, bufferSize);
-
-        for(FeatureCollection fc:featureCollections)
-        {
-            fc.setFeatureWindowSize(windowSize, bufferSize);
-        }
     }
     
     //All Features
@@ -299,19 +293,16 @@ public class FeatureManager
     
     protected boolean isAllFeaturesDirty(int output, boolean testSet)
     {
-        //return allFeaturesDirty[output];
         return allFeatures.get(output).isDirty(testSet);
     }
     
     protected void didRecalculateAllFeatures(int output, boolean testSet)
     {
-        //allFeaturesDirty[output] = false;
         allFeatures.get(output).didRecalculateFeatures(testSet);
     }
     
     protected void setAllFeaturesToDirty(int output, boolean testSet)
     {
-        //allFeaturesDirty[output] = true;
         allFeatures.get(output).setDirty(testSet);
     }
     
