@@ -49,7 +49,7 @@ public class Study2AccuracyExperiment {
     public ArrayList<Participant> participants;
     public boolean testSet = true;
     //"P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12","P13","P15","P16","P17",
-    public final String[] blackList = new String[] {"P6", "P16", "P20", "P18", "P17"};
+    public final String[] blackList = new String[] {"P6", "P16", "P18"};
     public Map.Entry currentFeatures;
     public double evalStartTime = 0; 
     
