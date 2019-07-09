@@ -243,7 +243,7 @@ public class PlotFrame extends javax.swing.JFrame implements PlotRowDelegate {
         {
             outputs[i] = w.getDataManager().getOutputName(i);
         }
-        String[] features = w.getDataManager().featureManager.getAllFeatures().getModifiers().getOutputNames();
+        String[] features = w.getDataManager().featureManager.getAllFeatures(0).getModifiers().getOutputNames();
         int numRows = tableModel.data.size();
         rows = new ArrayList(numRows);
         JPanel content = new JPanel();

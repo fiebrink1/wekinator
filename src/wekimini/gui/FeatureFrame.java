@@ -109,7 +109,7 @@ public class FeatureFrame extends JFrame {
             outputModelComboBox.addItem("Output " + (i+1));
         }
         
-        selectedFeature = w.getDataManager().featureManager.getAllFeatures().getFeatureForKey("AccX");
+        selectedFeature = w.getDataManager().featureManager.getAllFeatures(outputIndex).getFeatureForKey("AccX");
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -320,7 +320,7 @@ public class FeatureFrame extends JFrame {
     
     private void updateSelectedFeature(Feature ft)
     {
-        selectedFeature = w.getDataManager().featureManager.getAllFeatures().getFeatureForKey(ft.name);
+        selectedFeature = w.getDataManager().featureManager.getAllFeatures(outputIndex).getFeatureForKey(ft.name);
         if(KadenzeLogging.getLogger() instanceof FeaturnatorLogger)
         {
             ((FeaturnatorLogger)KadenzeLogging.getLogger()).logFeaturePreviewed(w, selectedFeature);

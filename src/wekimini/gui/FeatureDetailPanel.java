@@ -213,7 +213,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     
     private void addItemsForModifier(int iD, String name)
     {
-        ModifiedInput outputModifier = w.getDataManager().featureManager.getAllFeatures().getModifiers().getModifierForID(iD);
+        ModifiedInput outputModifier = w.getDataManager().featureManager.getAllFeatures(0).getModifiers().getModifierForID(iD);
         for(int i = 0; i < outputModifier.getSize(); i++)
         {
             outputComboBox.addItem(name + ":" + i);

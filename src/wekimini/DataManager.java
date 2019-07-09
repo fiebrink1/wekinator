@@ -980,7 +980,7 @@ public class DataManager {
             indices =  sel.getAttributeIndicesForInstances(formatted);
             System.out.println("Received " + indices.length + " indices from selector");
             int ptr = 0;
-            String[] o = featureManager.getAllFeatures().getModifiers().getOutputNames().clone();
+            String[] o = featureManager.getAllFeatures(outputIndex).getModifiers().getOutputNames().clone();
             for(int attributeIndex:indices)
             {
                 String name = o[attributeIndex];
@@ -1000,7 +1000,7 @@ public class DataManager {
         {
             //If no training data yet, default to sequential order
             int ptr = 0;
-            for(String name : featureManager.getAllFeatures().getNames())
+            for(String name : featureManager.getAllFeatures(outputIndex).getNames())
             {
                 infoRankNames[outputIndex].put(name+":0:0", ptr); 
                 ptr++;
@@ -1034,7 +1034,7 @@ public class DataManager {
                 int ptr = 0;
                 for(int attributeIndex:features)
                 {
-                    String name = featureManager.getAllFeatures().getModifiers().nameForIndex(attributeIndex);
+                    String name = featureManager.getAllFeatures(outputIndex).getModifiers().nameForIndex(attributeIndex);
                     String[] split = name.split(":");
                     featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(split[0]);
                     selectedFeatureNames[outputIndex][ptr] = name;
@@ -1085,7 +1085,7 @@ public class DataManager {
             int ptr = 0;
             for(int attributeIndex:indices)
             {
-                selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeatures().getModifiers().nameForIndex(attributeIndex);
+                selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeatures(outputIndex).getModifiers().nameForIndex(attributeIndex);
                 ptr++;
             }
         }
@@ -1127,7 +1127,7 @@ public class DataManager {
         {
             newInstances = featureManager.getAllFeaturesNewInstances();
             //System.out.println("got all features instance " + newInstances.numAttributes());
-            featureManager.resetAllFeaturesModifiers();
+            featureManager.resetAllFeaturesModifiers(index);
         }
         else
         {
@@ -1151,7 +1151,7 @@ public class DataManager {
                     input = new double[withOutput.length - 1];
                     System.arraycopy(withOutput, 0, input, 0, input.length);
                     double output = withOutput[withOutput.length-1];
-                    features = allFeatures ? featureManager.modifyInputsForAllFeatures(input, true) : featureManager.modifyInputsForOutput(input, index, true);
+                    features = allFeatures ? featureManager.modifyInputsForAllFeatures(index, input, true) : featureManager.modifyInputsForOutput(input, index, true);
                     withOutput = new double[features.length + 1];
                     withOutput[withOutput.length-1] = output;
                     System.arraycopy(features, 0, withOutput, 0, features.length);
@@ -1203,7 +1203,7 @@ public class DataManager {
                 {
                     allFeaturesInstances = featureInstances; 
                 }
-                featureManager.didRecalculateAllFeatures(testSet);
+                featureManager.didRecalculateAllFeatures(index, testSet);
             }
             else
             {
@@ -1330,13 +1330,13 @@ public class DataManager {
     
     public Instances getAllFeaturesInstances(int outputIndex, boolean testSet)
     {
-        if(featureManager.isAllFeaturesDirty(testSet))
+        if(featureManager.isAllFeaturesDirty(outputIndex, testSet))
         {
-//            for(int i = 0; i < numOutputs; i++)
-//            {
-                updateFeatureInstances(0, testSet, true);
-//            }
-            featureManager.didRecalculateAllFeatures(testSet);
+            //for(int i = 0; i < numOutputs; i++)
+            //{
+                updateFeatureInstances(outputIndex, testSet, true);
+            //}
+            featureManager.didRecalculateAllFeatures(outputIndex, testSet);
         }
         Instances formatted =  featureManager.getAllFeaturesNewInstances(numClasses[outputIndex]);
         Instances in = testSet ? allFeaturesTestInstances.get(outputIndex) : allFeaturesInstances.get(outputIndex);
@@ -1740,8 +1740,11 @@ public class DataManager {
     private void fireStateChanged() {
         
         featureManager.setAllOutputsDirty();
-        featureManager.setAllFeaturesToDirty(true);
-        featureManager.setAllFeaturesToDirty(false);
+        for(int i = 0; i < numOutputs; i++)
+        {
+            featureManager.setAllFeaturesToDirty(i, true);
+            featureManager.setAllFeaturesToDirty(i, false);
+        }
         
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {

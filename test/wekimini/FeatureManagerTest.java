@@ -169,20 +169,26 @@ public class FeatureManagerTest {
         int ws = 20;
         int bs = 30;
         fm.setFeatureWindowSize(ws,bs);
+        int i = 0;
         for(FeatureCollection fc:fm.getFeatureGroups())
         {
             testWindowSizeForFeatureGroup(ws, bs, fc);
+            testWindowSizeForFeatureGroup(ws, bs, fm.getAllFeatures(i));
+            i++;
         }
-        testWindowSizeForFeatureGroup(ws, bs, fm.getAllFeatures());
+        
         
         ws = 5;
         bs = 50;
         fm.setFeatureWindowSize(ws,bs);
+        i = 0;
         for(FeatureCollection fc:fm.getFeatureGroups())
         {
             testWindowSizeForFeatureGroup(ws, bs, fc);
+            testWindowSizeForFeatureGroup(ws, bs, fm.getAllFeatures(i));
+            i++;
         }
-        testWindowSizeForFeatureGroup(ws, bs, fm.getAllFeatures());
+        
     }
     
     public void testWindowSizeForFeatureGroup(int ws, int bs, FeatureCollection fc)

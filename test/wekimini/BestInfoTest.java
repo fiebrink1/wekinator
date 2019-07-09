@@ -45,7 +45,7 @@ public class BestInfoTest {
         w.getDataManager().featureManager.getFeatureGroups().get(0).removeAll();
         for(int attributeIndex:attributes)
         {
-            String name = w.getDataManager().featureManager.getAllFeatures().getModifiers().nameForIndex(attributeIndex);
+            String name = w.getDataManager().featureManager.getAllFeatures(0).getModifiers().nameForIndex(attributeIndex);
             String[] split = name.split(":");
             w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey(split[0]);
         }
