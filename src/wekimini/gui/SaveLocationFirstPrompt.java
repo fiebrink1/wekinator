@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import wekimini.GlobalSettings;
 import wekimini.WekiMiniRunner;
+import wekimini.WekiMiniRunner.StudyID;
 import wekimini.Wekinator;
 import wekimini.WekinatorFileData;
 import wekimini.kadenze.KadenzeAssignment;
@@ -25,18 +26,20 @@ import wekimini.util.Util;
  *
  * @author louismccallum
  */
-public class Study2Prompt extends javax.swing.JFrame implements WekiMiniRunner.Closeable {
+public class SaveLocationFirstPrompt extends javax.swing.JFrame implements WekiMiniRunner.Closeable {
 
     /**
-     * Creates new form Study2Prompt
+     * Creates new form SaveLocationFirstPrompt
      */
     
     String currentSaveLocation = "None";
     private Wekinator w;
     private boolean closeable;
+    private StudyID studyID;
     
-    public Study2Prompt()  {
+    public SaveLocationFirstPrompt(StudyID studyID)  {
         initComponents();
+        this.studyID = studyID;
     }
     
     @Override
@@ -163,9 +166,16 @@ public class Study2Prompt extends javax.swing.JFrame implements WekiMiniRunner.C
         }
         try{
             WekiMiniRunner runner = WekiMiniRunner.getInstance();
-            w = runner.runStudy2(currentSaveLocation);
-            w.getMainGUI().setVisible(true);
-            runner.transferControl(w, this, w.getMainGUI());
+            if(studyID == StudyID.STUDY_3) 
+            {
+                w = runner.runStudy3(currentSaveLocation);
+            }
+            else
+            {
+                w = runner.runStudy2(currentSaveLocation);
+                w.getMainGUI().setVisible(true);
+                runner.transferControl(w, this, w.getMainGUI());
+            }
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -199,7 +209,7 @@ public class Study2Prompt extends javax.swing.JFrame implements WekiMiniRunner.C
             }
             DateFormat dateFormat = new SimpleDateFormat("ddMMyy-HHmm");
             Date date = new Date();
-            currentSaveLocation = currentSaveLocation + File.separator + "Week6-"+dateFormat.format(date);
+            currentSaveLocation = currentSaveLocation + File.separator + "Featurnator-"+dateFormat.format(date);
             filePathLabel.setText("<html>"+currentSaveLocation);
         }
     }//GEN-LAST:event_saveLocationButtonActionPerformed
@@ -237,37 +247,38 @@ public class Study2Prompt extends javax.swing.JFrame implements WekiMiniRunner.C
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Study2Prompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Study2Prompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Study2Prompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Study2Prompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Study2Prompt().setVisible(true);
-            }
-        });
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(SaveLocationFirstPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(SaveLocationFirstPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(SaveLocationFirstPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(SaveLocationFirstPrompt.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new SaveLocationFirstPrompt().setVisible(true);
+//            }
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton doneButton;

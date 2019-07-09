@@ -135,12 +135,21 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
         warningLabel.setVisible(false);
     }
     
+    public void setOutputIndex(int output)
+    {
+        this.outputIndex = output;
+        Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
+        OSCOutput o = path.getOSCOutput();
+        outputPlot.interpolatePoints = !(o instanceof OSCClassificationOutput);
+        mdsPlot.setOutOfDate();
+    }
+    
     private void outputUpdated(double vals[])
     {
         updateLagWarning();
         DecimalFormat df = new DecimalFormat("0.00"); 
-        outputLabel.setText(df.format(vals[0]));
-        outputPlotModel.addPoint(vals[0]);
+        outputLabel.setText(df.format(vals[outputIndex]));
+        outputPlotModel.addPoint(vals[outputIndex]);
         outputPlot.updateModel(outputPlotModel);
         repaint();
     }
@@ -202,7 +211,7 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
                 isRunning = w.getSupervisedLearningManager().getRunningState() == SupervisedLearningManager.RunningState.RUNNING;
                 System.out.println("Callback isRunning:" + isRunning);
                 if (isRunning) {
-                    trainBtn.setText("Stop running");
+                trainBtn.setText("Stop running");
                     trainBtn.setForeground(Color.red);
                 }
                 else
@@ -515,11 +524,14 @@ public class EvaluateFeaturesPanel extends javax.swing.JPanel {
     private void cvModelFinished(int modelNum, String results, String confusion) 
     {
         System.out.println("Model " + modelNum + ": " + results);
-        int[][] arr = ConfusionParser.parseMatrix(confusion);
-        confusionPanel.setModel(arr);
+        if(!confusion.equals(""))
+        {
+            int[][] arr = ConfusionParser.parseMatrix(confusion);
+            confusionPanel.setModel(arr);        
+            confusionWrapper.setVisible(true);
+            confusionHoldingImage.setVisible(false);
+        }
         accuracyLabel.setText("<html><strong>CV</strong>: " + results + "</html>");
-        confusionWrapper.setVisible(true);
-        confusionHoldingImage.setVisible(false);
         evaluateBtn.setText("Re-evaluate");
         evaluateBtn.setEnabled(true);
     }

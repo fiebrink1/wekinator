@@ -53,9 +53,13 @@ import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
 import mdsj.MDSJ;
+import weka.filters.unsupervised.attribute.Add;
+import weka.filters.unsupervised.attribute.NumericToNominal;
+import weka.filters.unsupervised.attribute.Remove;
 import wekimini.featureanalysis.BestInfoSelector;
 import wekimini.featureanalysis.RankedFeatureSelector;
 import wekimini.modifiers.Feature;
+import wekimini.modifiers.ReplaceColumnFilter;
 
 
 /**
@@ -86,7 +90,7 @@ public class DataManager {
     private List<Instances> trainingFeatureInstances = null;
     //Array of instances (one for each output), each represented as a reduced 2 dimensions calculated from the selected features.
     private List<Instances> trainingMDSInstances = null;
-    private boolean mdsDirty = true;
+    private boolean[] mdsDirty;
     //Array of instances (one for each output) with the selected features calculated from the test set. 
     private List<Instances> testingFeatureInstances = null;
     //Array of instances (one for each output) with the all the possible features calculated from the raw input (for use in automatic selection) 
@@ -102,7 +106,7 @@ public class DataManager {
     public FeatureManager featureManager;
     public String[][] selectedFeatureNames = new String[0][0];
     private HashMap<String, Integer>[] infoRankNames = new HashMap[0];
-    private Boolean infoGainRankingsDirty = true;
+    private Boolean infoGainRankingsDirty[] = new Boolean[]{true};
     private int nextTrainingID = 1;
     private int nextTestingID = 1;
     private int numOutputs = 0;
@@ -438,7 +442,7 @@ public class DataManager {
             else
             {
                 featureManager.setDirty(i);
-                mdsDirty = true;
+                mdsDirty[i] = true;
             }
             if (!outputMask[i]) {
                 in.setMissing(numMetaData + getNumInputs() + i);
@@ -586,6 +590,13 @@ public class DataManager {
     public void initialize(String[] inputNames, OSCOutputGroup outputGroup) {
         numOutputs = outputGroup.getNumOutputs();
         infoRankNames = new HashMap[numOutputs];
+        infoGainRankingsDirty = new Boolean[numOutputs];
+        mdsDirty = new boolean[numOutputs];
+        for(int i = 0; i < numOutputs; i++)
+        {
+            infoGainRankingsDirty[i] = true;
+            mdsDirty[i] = true;
+        }
         numExamplesPerOutput = new int[numOutputs];
         this.inputNames = new String[inputNames.length];
         System.arraycopy(inputNames, 0, this.inputNames, 0, inputNames.length);
@@ -660,7 +671,7 @@ public class DataManager {
             }
             featureManager.setTestSetDirty(i);
             featureManager.setDirty(i);
-            mdsDirty = true;
+            mdsDirty[i] = true;
         }
 
         if(inputs)
@@ -776,7 +787,6 @@ public class DataManager {
 
         s.setAttributeIndicesArray(saving);
         s.setInputFormat(dummyInstances);
-
         trainingFilters[output] = r;
         inputSavingFilters[output] = s;
     }
@@ -900,13 +910,21 @@ public class DataManager {
     
     public void setInfoGainRankingsDirty()
     {
-        infoGainRankingsDirty = true;
+        for(int i = 0; i < numOutputs; i++)
+        {
+            infoGainRankingsDirty[i] = true;
+        }
+    }
+    
+    public void setInfoGainRankingsDirty(int outputIndex)
+    {
+        infoGainRankingsDirty[outputIndex] = true;
     }
     
     public HashMap<String, Integer> getInfoGainRankings(int outputIndex) 
     {
         System.out.println("getInfoGainRankings isDirty = " + infoGainRankingsDirty);
-        if(infoGainRankingsDirty)
+        if(infoGainRankingsDirty[outputIndex])
         {
             updateInfoGainRankings(outputIndex);
         }
@@ -915,7 +933,7 @@ public class DataManager {
     
     public Feature[] getInfoGainRankings(int outputIndex, double threshold, Boolean above) 
     {
-        if(infoGainRankingsDirty)
+        if(infoGainRankingsDirty[outputIndex])
         {
             updateInfoGainRankings(outputIndex);
         }
@@ -947,6 +965,12 @@ public class DataManager {
         System.out.println("---STARTING TO UPDATE INFO GAIN RANKINGS");
         InfoGainSelector sel = new InfoGainSelector();
         Instances formatted = getAllFeaturesInstances(outputIndex, false);
+        Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
+        //If regression, swap labels for class values
+        if(!(path.getOSCOutput() instanceof OSCClassificationOutput))
+        {
+            formatted = trainingRoundAsClass(outputIndex, false);
+        }
         sel.useThreshold = false;
         System.out.println("Giving " + formatted.numAttributes() + " attributes to selector");
         infoRankNames[outputIndex] = new HashMap();
@@ -956,7 +980,7 @@ public class DataManager {
             indices =  sel.getAttributeIndicesForInstances(formatted);
             System.out.println("Received " + indices.length + " indices from selector");
             int ptr = 0;
-            String[] o = featureManager.getAllFeatures().getModifiers().getOutputNames().clone();
+            String[] o = featureManager.getAllFeatures(outputIndex).getModifiers().getOutputNames().clone();
             for(int attributeIndex:indices)
             {
                 String name = o[attributeIndex];
@@ -976,7 +1000,7 @@ public class DataManager {
         {
             //If no training data yet, default to sequential order
             int ptr = 0;
-            for(String name : featureManager.getAllFeatures().getNames())
+            for(String name : featureManager.getAllFeatures(outputIndex).getNames())
             {
                 infoRankNames[outputIndex].put(name+":0:0", ptr); 
                 ptr++;
@@ -984,16 +1008,22 @@ public class DataManager {
         }
         
         System.out.println("---DONE UPDATING INFO GAIN RANKINGS");
-        infoGainRankingsDirty = false;
+        infoGainRankingsDirty[outputIndex] = false;
     }
     
     public void setFeaturesForBestInfo(int outputIndex, boolean testSet, BestInfoSelector.BestInfoResultsReceiver receiver)
     {
         selectedFeatureNames = new String[numOutputs][];
         BestInfoSelector sel = new BestInfoSelector(w);
-        sel.interval = 50;
+        sel.interval = 20;
         sel.outputIndex = outputIndex;
-        Instances formatted = getAllFeaturesInstances(outputIndex, testSet);
+        Instances formatted = getAllFeaturesInstances(outputIndex, false);
+        Path path = w.getSupervisedLearningManager().getPaths().get(outputIndex);
+        //If regression, swap labels for class values
+        if(!(path.getOSCOutput() instanceof OSCClassificationOutput))
+        {
+            formatted = trainingRoundAsClass(outputIndex, false);
+        }
         sel.getAttributeIndicesForInstances(formatted, new BestInfoSelector.BestInfoResultsReceiver() {
              @Override
              public void finished(int[] features)
@@ -1004,7 +1034,7 @@ public class DataManager {
                 int ptr = 0;
                 for(int attributeIndex:features)
                 {
-                    String name = featureManager.getAllFeatures().getModifiers().nameForIndex(attributeIndex);
+                    String name = featureManager.getAllFeatures(outputIndex).getModifiers().nameForIndex(attributeIndex);
                     String[] split = name.split(":");
                     featureManager.getFeatureGroups().get(outputIndex).addFeatureForKey(split[0]);
                     selectedFeatureNames[outputIndex][ptr] = name;
@@ -1055,7 +1085,7 @@ public class DataManager {
             int ptr = 0;
             for(int attributeIndex:indices)
             {
-                selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeatures().getModifiers().nameForIndex(attributeIndex);
+                selectedFeatureNames[outputIndex][ptr] = featureManager.getAllFeatures(outputIndex).getModifiers().nameForIndex(attributeIndex);
                 ptr++;
             }
         }
@@ -1064,21 +1094,46 @@ public class DataManager {
         return sel.timeTaken;
     }
     
+    private Instances trainingRoundAsClass(int index, boolean testSet)
+    {
+        try {
+            Instances in = testSet ? testInstances : inputInstances;
+            Instances ft = getAllFeaturesInstances(index, testSet);
+            ReplaceColumnFilter replace = new ReplaceColumnFilter();
+            replace.setInputFormat(ft);
+            replace.source = in;
+            replace.sourceAttributeIndex = 2;
+            replace.targetAttributeIndex = ft.classIndex();
+  
+            Instances swapped = Filter.useFilter(ft, replace);
+            
+            NumericToNominal nom = new NumericToNominal();
+            nom.setAttributeIndicesArray(new int[]{swapped.classIndex()});
+            nom.setInputFormat(swapped);
+            swapped = Filter.useFilter(swapped, nom);
+            
+            return swapped;
+        } catch (Exception e)
+        {
+            return null;
+        }
+    }
+    
     private void updateFeatureInstances(int index, boolean testSet, boolean allFeatures)
     { 
-        //System.out.println("updating features, all = " + allFeatures);
+        System.out.println("updating features, all = " + allFeatures);
         Instances newInstances;
         if(allFeatures)
         {
             newInstances = featureManager.getAllFeaturesNewInstances();
             //System.out.println("got all features instance " + newInstances.numAttributes());
-            featureManager.resetAllFeaturesModifiers();
+            featureManager.resetAllFeaturesModifiers(index);
         }
         else
         {
             newInstances = featureManager.getNewInstances(index, numClasses[index]);
             featureManager.resetAllModifiers();
-            mdsDirty = true;
+            mdsDirty[index] = true;
         }
         try{
             Instances in = testSet ? testInstances : inputInstances;
@@ -1092,9 +1147,11 @@ public class DataManager {
                 Instance inputInstance = filteredInputs.instance(i);
                 if(!isOutputMissing(i,index, testSet))
                 {
-                    input = inputInstance.toDoubleArray();
-                    double output = input[input.length-1];
-                    features = allFeatures ? featureManager.modifyInputsForAllFeatures(input, true) : featureManager.modifyInputsForOutput(input, index, true);
+                    withOutput = inputInstance.toDoubleArray();
+                    input = new double[withOutput.length - 1];
+                    System.arraycopy(withOutput, 0, input, 0, input.length);
+                    double output = withOutput[withOutput.length-1];
+                    features = allFeatures ? featureManager.modifyInputsForAllFeatures(index, input, true) : featureManager.modifyInputsForOutput(input, index, true);
                     withOutput = new double[features.length + 1];
                     withOutput[withOutput.length-1] = output;
                     System.arraycopy(features, 0, withOutput, 0, features.length);
@@ -1146,7 +1203,7 @@ public class DataManager {
                 {
                     allFeaturesInstances = featureInstances; 
                 }
-                featureManager.didRecalculateAllFeatures(testSet);
+                featureManager.didRecalculateAllFeatures(index, testSet);
             }
             else
             {
@@ -1193,22 +1250,22 @@ public class DataManager {
         return testSet ? testingFeatureInstances : trainingFeatureInstances;
     }
     
-    public void featureListUpdated()
+    public void featureListUpdated(int outputIndex)
     {
-        mdsDirty = true;
+        mdsDirty[outputIndex] = true;
         w.getSupervisedLearningManager().setAbleToRun(false);
     }
     
     public Instances getMDSInstances(int outputIndex)
     {
         System.out.println("getting MDS infstance");
-        if(mdsDirty)
+        if(mdsDirty[outputIndex])
         {
             for(int i = 0; i < numOutputs; i++)
             {
                 updateMDSInstances(i);
             }
-            mdsDirty = false;
+            mdsDirty[outputIndex] = false;
         }
         return trainingMDSInstances.get(outputIndex);
     }
@@ -1273,13 +1330,13 @@ public class DataManager {
     
     public Instances getAllFeaturesInstances(int outputIndex, boolean testSet)
     {
-        if(featureManager.isAllFeaturesDirty(testSet))
+        if(featureManager.isAllFeaturesDirty(outputIndex, testSet))
         {
-            for(int i = 0; i < numOutputs; i++)
-            {
-                updateFeatureInstances(i, testSet, true);
-            }
-            featureManager.didRecalculateAllFeatures(testSet);
+            //for(int i = 0; i < numOutputs; i++)
+            //{
+                updateFeatureInstances(outputIndex, testSet, true);
+            //}
+            featureManager.didRecalculateAllFeatures(outputIndex, testSet);
         }
         Instances formatted =  featureManager.getAllFeaturesNewInstances(numClasses[outputIndex]);
         Instances in = testSet ? allFeaturesTestInstances.get(outputIndex) : allFeaturesInstances.get(outputIndex);
@@ -1683,8 +1740,11 @@ public class DataManager {
     private void fireStateChanged() {
         
         featureManager.setAllOutputsDirty();
-        featureManager.setAllFeaturesToDirty(true);
-        featureManager.setAllFeaturesToDirty(false);
+        for(int i = 0; i < numOutputs; i++)
+        {
+            featureManager.setAllFeaturesToDirty(i, true);
+            featureManager.setAllFeaturesToDirty(i, false);
+        }
         
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {

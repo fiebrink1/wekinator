@@ -113,7 +113,7 @@ public class FilterFeaturesPanel extends javax.swing.JPanel {
         operationFiltersTable.setRowHeight(140/4);
         
         String[] inputs = new String[] {"Accelerometer", "Gyroscope",
-                "AccelerometerX", "AccelerometerY", "AccelerometerZ", "GyroscopeX", "GyroscopeY", "GyroscopeZ","EMG"
+                "AccelerometerX", "AccelerometerY", "AccelerometerZ", "GyroscopeX", "GyroscopeY", "GyroscopeZ"
         };
         inputFiltersTable.setModel(new FiltersTableModel(inputs));
         inputFiltersTable.setDefaultRenderer(String.class, new FiltersTableRenderer());

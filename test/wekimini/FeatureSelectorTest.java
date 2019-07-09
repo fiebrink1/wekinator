@@ -129,7 +129,7 @@ public class FeatureSelectorTest {
             method.invoke(w.getDataManager(), 0, false, true);
             Instances firstInstances = w.getDataManager().getAllFeaturesInstances(0, false);
             int attributes = firstInstances.numAttributes();
-            int allFeaturesOutputSize = w.getDataManager().featureManager.getAllFeatures().getModifiers().getOutputDimensionality();
+            int allFeaturesOutputSize = w.getDataManager().featureManager.getAllFeatures(0).getModifiers().getOutputDimensionality();
             assertEquals(allFeaturesOutputSize, attributes - 1, 0);
             //assertEquals(w.getDataManager().featureManager.getAllFeatures().valueMap)
             //method.invoke(w.getDataManager());

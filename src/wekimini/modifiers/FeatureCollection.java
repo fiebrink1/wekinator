@@ -13,9 +13,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import org.jdesktop.swingworker.SwingWorker;
-import wekimini.kadenze.FeaturnatorLogger;
-import wekimini.kadenze.KadenzeLogging;
 import wekimini.modifiers.Feature.InputSensor;
 import wekimini.modifiers.WindowedOperation.Operation;
 /**
@@ -86,14 +83,14 @@ public final class FeatureCollection
         addFeatureForKey("GyroX");
         addFeatureForKey("GyroY");
         addFeatureForKey("GyroZ");
-        addFeatureForKey("EMG1");
-        addFeatureForKey("EMG2");
-        addFeatureForKey("EMG3");
-        addFeatureForKey("EMG4");
-        addFeatureForKey("EMG5");
-        addFeatureForKey("EMG6");
-        addFeatureForKey("EMG7");
-        addFeatureForKey("EMG8");
+//        addFeatureForKey("EMG1");
+//        addFeatureForKey("EMG2");
+//        addFeatureForKey("EMG3");
+//        addFeatureForKey("EMG4");
+//        addFeatureForKey("EMG5");
+//        addFeatureForKey("EMG6");
+//        addFeatureForKey("EMG7");
+//        addFeatureForKey("EMG8");
     }
     
     public void initLibrary(int windowSize, int bufferSize)
@@ -212,16 +209,16 @@ public final class FeatureCollection
             library.add(new MaxFFT("MaxBinFFT" + pair.getKey(), pair.getValue(), 128));
         }
         //60
-//        it = inputs.entrySet().iterator();
-//        while(it.hasNext())
-//        {
-//            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
-//            for(int i = 0; i < bufferSize; i++)
-//            {
-//                library.add(new BufferFeatureSingleOutput("Buffer" + pair.getKey() + i, pair.getValue(), bufferSize, i));
-//            }
-//            //library.add(new BufferFeature("Buffer" + pair.getKey(), pair.getValue(), bufferSize));
-//        }
+        it = inputs.entrySet().iterator();
+        while(it.hasNext())
+        {
+            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            for(int i = 0; i < bufferSize; i++)
+            {
+                library.add(new BufferFeatureSingleOutput("Buffer" + pair.getKey() + i, pair.getValue(), bufferSize, i));
+            }
+            //library.add(new BufferFeature("Buffer" + pair.getKey(), pair.getValue(), bufferSize));
+        }
         
         it = inputs.entrySet().iterator();
         while(it.hasNext())
@@ -444,6 +441,7 @@ public final class FeatureCollection
         catch (Exception e)
         {
             System.out.println("Exception in computing new inputs");
+            e.printStackTrace();
         }
         return new double[0];
     }

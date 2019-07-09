@@ -1,8 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/////*
+// * To change this license header, choose License Headers in Project Properties.
+// * To change this template file, choose Tools | Templates
+// * and open the template in the editor.
+// */
 package wekimini.gui;
 
 import java.awt.event.ActionEvent;
@@ -213,7 +213,7 @@ public class FeatureDetailPanel extends javax.swing.JPanel {
     
     private void addItemsForModifier(int iD, String name)
     {
-        ModifiedInput outputModifier = w.getDataManager().featureManager.getAllFeatures().getModifiers().getModifierForID(iD);
+        ModifiedInput outputModifier = w.getDataManager().featureManager.getAllFeatures(0).getModifiers().getModifierForID(iD);
         for(int i = 0; i < outputModifier.getSize(); i++)
         {
             outputComboBox.addItem(name + ":" + i);

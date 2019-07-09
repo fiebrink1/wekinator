@@ -5,17 +5,11 @@
  */
 package wekimini;
 
-import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import weka.core.Instance;
 import weka.core.Instances;
-import wekimini.featureanalysis.BestInfoSelector;
-import wekimini.featureanalysis.InfoGainSelector;
 
 /**
  *
@@ -47,24 +41,23 @@ public class BestInfoTest {
     @Test
     public void testMatchingAcrossSets()
     {
-        int[] attibutes = {0, 10, 20, 30, 40, 50};
+        int[] attributes = {0, 10, 20, 30, 40, 50};
         w.getDataManager().featureManager.getFeatureGroups().get(0).removeAll();
-        int ptr = 0;
-        for(int attributeIndex:attibutes)
+        for(int attributeIndex:attributes)
         {
-            String name = w.getDataManager().featureManager.getAllFeatures().getModifiers().nameForIndex(attributeIndex);
+            String name = w.getDataManager().featureManager.getAllFeatures(0).getModifiers().nameForIndex(attributeIndex);
             String[] split = name.split(":");
             w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey(split[0]);
         }
         Instances user = w.getDataManager().getFeatureInstances(false).get(0);
-        Instances filtered = w.getDataManager().getFeaturesInstancesFromIndices(attibutes, 0, false);
+        Instances filtered = w.getDataManager().getFeaturesInstancesFromIndices(attributes, 0, false);
         for(int i = 0; i < user.numInstances(); i++)
         {
             Instance userIn = user.instance(i);
             Instance filterIn = filtered.instance(i);
             for(int a = 0; a < userIn.numAttributes(); a++)
             {
-                System.out.println(userIn.value(a) + ","  + filterIn.value(a));
+                //System.out.println(userIn.value(a) + ","  + filterIn.value(a));
                 assertEquals(userIn.value(a), filterIn.value(a), 0.0);
             }
         }
@@ -74,24 +67,28 @@ public class BestInfoTest {
     public void testMatchingAllFeatures()
     {
         w.getDataManager().featureManager.getFeatureGroups().get(0).removeAll();
-        int ptr = 0;
         String[] names = w.getDataManager().featureManager.getFeatureNames();
+        //Make sure the raw inputs are added in the correct order
+        w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey("AccX");
+        w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey("AccY");
+        w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey("AccZ");
+        w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey("GyroX");
+        w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey("GyroY");
+        w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey("GyroZ");
         for(String name:names)
         {
             w.getDataManager().featureManager.getFeatureGroups().get(0).addFeatureForKey(name);
         }
         Instances user = w.getDataManager().getFeatureInstances(false).get(0);
         Instances filtered = w.getDataManager().getAllFeaturesInstances(0, false);
-        for(int i = 0; i < user.numInstances(); i++)
+        for(int a = 0; a < user.numAttributes(); a++)
         {
-            Instance userIn = user.instance(i);
-            Instance filterIn = filtered.instance(i);
-            for(int a = 0; a < userIn.numAttributes(); a++)
+            for(int i = 0; i < user.numInstances(); i++)
             {
-                System.out.println(userIn.value(a) + ","  + filterIn.value(a));
+                Instance userIn = user.instance(i);
+                Instance filterIn = filtered.instance(i);
                 assertEquals(userIn.value(a), filterIn.value(a), 0.0);
             }
         }
     }  
-
 }

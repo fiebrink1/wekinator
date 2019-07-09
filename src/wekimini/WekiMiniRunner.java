@@ -35,7 +35,7 @@ import wekimini.gui.About;
 import wekimini.gui.InitInputOutputFrame;
 import wekimini.gui.Preferences;
 import wekimini.gui.Study1Prompt;
-import wekimini.gui.Study2Prompt;
+import wekimini.gui.SaveLocationFirstPrompt;
 import wekimini.kadenze.FeaturnatorLogger;
 import wekimini.kadenze.KadenzeAssignment;
 import wekimini.kadenze.KadenzeLogging;
@@ -64,8 +64,10 @@ public final class WekiMiniRunner {
     private final ImageIcon myIcon = new ImageIcon(getClass().getResource("/wekimini/icons/wekimini_small.png"));
     private static boolean isKadenze = false;
     private static int nextID = 1;
-    private static final boolean IS_STUDY_1 = false;
-    private static final boolean IS_STUDY_2 = false;
+    public enum StudyID {
+        STUDY_1, STUDY_2, STUDY_3
+    }
+    private static final StudyID studyId = StudyID.STUDY_3;
     
     //Load it and start running, handle old project
     public void runNewProjectAutomatically(Wekinator oldWekinator, String filename, NewProjectOptions options) throws Exception {
@@ -194,19 +196,20 @@ public final class WekiMiniRunner {
         aboutBox.setKadenze(isKadenze);
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                if(IS_STUDY_1)
+                if(studyId == StudyID.STUDY_1)
                 {
                     new Study1Prompt().setVisible(true);
                 }
-                else if(IS_STUDY_2)
+                else if (studyId == StudyID.STUDY_2 || studyId == StudyID.STUDY_3)
                 {
-                    new Study2Prompt().setVisible(true);
+                    new SaveLocationFirstPrompt(studyId).setVisible(true);
                 }
                 else
                 {
                     if (WekiMiniRunner.isKadenze) {
                         new KadenzePromptFrame().setVisible(true);
                     } else {
+      
                         KadenzeLogging.noLogging();
                         WekiMiniRunner.getInstance().runNewProject();
                     }
@@ -218,6 +221,60 @@ public final class WekiMiniRunner {
 
     public int numRunningProjects() {
         return wekinatorCurrentMainFrames.size();
+    }
+    
+    public Wekinator runStudy3(String currentSaveLocation)
+    {
+        try {
+            String dir = currentSaveLocation;
+            File f = new File(dir);
+            Wekinator w = new Wekinator(WekiMiniRunner.generateNextID());
+            String[] inputs = new String[]{"accX","accY","accZ","gyroX","gyroY","gyroZ"};
+            int numClasses = inputs.length;
+            String name = "Inputs";
+            String inputMessage = "/myo1";
+            OSCInputGroup inputGroup = new OSCInputGroup(name, inputMessage, numClasses, inputs);
+            List<OSCOutput> outputs = new LinkedList<>();
+            for (int i = 0; i < 1; i++) {
+                OSCClassificationOutput o = new OSCClassificationOutput("output"+i, numClasses, false);
+                outputs.add(o);
+            }
+            String outputMessage = "/wek/outputs";
+            OSCOutputGroup outputGroup = new OSCOutputGroup(outputs, outputMessage, "127.0.0.1", 12000);
+            
+            w.getInputManager().setOSCInputGroup(inputGroup);
+            w.getOutputManager().setOSCOutputGroup(outputGroup);
+            
+            KadenzeLogging.getLogger().newProjectStarted(w);
+            InitInputOutputFrame newProjectFrame = new InitInputOutputFrame(w);
+            newProjectFrame.setVisible(true);
+            wekinatorCurrentMainFrames.put(w, newProjectFrame);
+
+            newProjectFrame.addWindowListener(wl);
+
+            w.addCloseListener(new ChangeListener() {
+
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    logger.log(Level.INFO, "Wekinator project closed");
+                    if (wekinatorCurrentMainFrames.size() == 1) {
+                        //It's our last great hope
+                        handleClosingLast();
+                    } else {
+                        //   System.out.println("Wek closed, but not the last one");
+                    }
+                    wekinatorCurrentMainFrames.remove((Wekinator) e.getSource());
+                }
+            });
+            WekinatorSaver.createNewProject("Week6", f, w);
+            w.setHasSaveLocation(true);
+            w.setProjectLocation(dir);
+            w.setProjectName("Week6");
+            return w;
+        } catch (IOException | SecurityException ex) {
+            logger.log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     
     public Wekinator runStudy2(String currentSaveLocation)
@@ -352,9 +409,9 @@ public final class WekiMiniRunner {
                     f.addWindowListener(wl);
 
                     /* if (runningWekinators.size() == 0) {
-                     f.setCloseable(false);
+                     newProjectFrame.setCloseable(false);
                      } else {
-                     f.setCloseable(true);
+                     newProjectFrame.setCloseable(true);
                      for (Closeable c : wekinatorCurrentMainFrames.values()) {
                      c.setCloseable(true);
                      }

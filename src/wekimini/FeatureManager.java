@@ -22,7 +22,7 @@ public class FeatureManager
 {
     //There is one feature group for each path/output
     protected ArrayList<FeatureCollection> featureCollections;
-    private FeatureCollection allFeatures;
+    private ArrayList<FeatureCollection> allFeatures;
     private FeatureCollection plotFeatures;
     private int windowSize = 15;
     private int bufferSize = 15;
@@ -31,15 +31,17 @@ public class FeatureManager
     public FeatureManager()
     {
         featureCollections = new ArrayList<>();
+        allFeatures = new ArrayList<>();
     }
     
     public FeatureManager(FeatureManagerData dataFromFile)
     {
         featureCollections = new ArrayList<>();
+        allFeatures = new ArrayList<>();
         windowSize = dataFromFile.windowSize;
         bufferSize = dataFromFile.bufferSize;
         addOutputs(dataFromFile.numOutputs,dataFromFile.inputNames);
-
+        
         for(int i = 0; i < dataFromFile.added.size(); i++)
         {
             FeatureCollection fc = featureCollections.get(i);
@@ -107,24 +109,24 @@ public class FeatureManager
     protected void addOutputs(int numOutputs, String[] in)
     {
         this.inputNames = in;
-        allFeatures = new FeatureCollection(inputNames, windowSize, bufferSize);
-        
-        for(String feature:allFeatures.getNames())
+        for(int i = 0; i < numOutputs; i++)
         {
-            allFeatures.addFeatureForKey(feature);
+            allFeatures.add(new FeatureCollection(inputNames, windowSize, bufferSize));
+            for(String feature:allFeatures.get(i).getNames())
+            {
+                allFeatures.get(i).addFeatureForKey(feature);
+            }
+            if(inputNames.length == 6)
+            {
+                allFeatures.get(i).computeAndGetValuesForNewInputs(new double[inputNames.length], true);
+            }
+            featureCollections.add(new FeatureCollection(inputNames, windowSize, bufferSize));
         }
         
         plotFeatures = new FeatureCollection(inputNames, windowSize, bufferSize);
-        
         if(inputNames.length == 6)
         {
-            allFeatures.computeAndGetValuesForNewInputs(new double[inputNames.length], true);
             plotFeatures.computeAndGetValuesForNewInputs(new double[inputNames.length], true);
-        }
-        
-        for(int i = 0; i < numOutputs; i++)
-        {   
-            featureCollections.add(new FeatureCollection(inputNames, windowSize, bufferSize));
         }
         
     }
@@ -252,61 +254,61 @@ public class FeatureManager
     {
         windowSize = wSize;
         bufferSize = bSize;
+        for(int i = 0; i < featureCollections.size(); i++)
+        {
+            allFeatures.get(i).removeAll();
+            allFeatures.get(i).setFeatureWindowSize(windowSize, bufferSize);
+            for(String feature:allFeatures.get(i).getNames())
+            {
+                allFeatures.get(i).addFeatureForKey(feature);
+            }
+            featureCollections.get(i).setFeatureWindowSize(windowSize, bufferSize);
+        }
         plotFeatures.setFeatureWindowSize(windowSize, bufferSize);
-        allFeatures.setFeatureWindowSize(windowSize, bufferSize);
-        allFeatures.removeAll();
-        for(String feature:allFeatures.getNames())
-        {
-            allFeatures.addFeatureForKey(feature);
-        }
-        for(FeatureCollection fc:featureCollections)
-        {
-            fc.setFeatureWindowSize(windowSize, bufferSize);
-        }
     }
     
     //All Features
-    protected double[] modifyInputsForAllFeatures(double[] newInputs, boolean updateNames)
+    protected double[] modifyInputsForAllFeatures(int output, double[] newInputs, boolean updateNames)
     {    
-        return allFeatures.computeAndGetValuesForNewInputs(newInputs, updateNames);
+        return allFeatures.get(output).computeAndGetValuesForNewInputs(newInputs, updateNames);
     }
     
-    protected void resetAllFeaturesModifiers()
+    protected void resetAllFeaturesModifiers(int output)
     {
-        allFeatures.resetAllModifiers();
+        allFeatures.get(output).resetAllModifiers();
     }
     
     protected Instances getAllFeaturesNewInstances()
     {
-        int length = allFeatures.getModifiers().getOutputDimensionality();
+        int length = allFeatures.get(0).getModifiers().getOutputDimensionality();
         System.out.println("getting new instances " + length);
         return getNewInstancesOfLength(length, 0);
     }
     
     protected Instances getAllFeaturesNewInstances(int numClasses)
     {
-        int length = allFeatures.getModifiers().getOutputDimensionality();
+        int length = allFeatures.get(0).getModifiers().getOutputDimensionality();
         return getNewInstancesOfLength(length, numClasses);
     }
     
-    protected boolean isAllFeaturesDirty(boolean testSet)
+    protected boolean isAllFeaturesDirty(int output, boolean testSet)
     {
-        return allFeatures.isDirty(testSet);
+        return allFeatures.get(output).isDirty(testSet);
     }
     
-    protected void didRecalculateAllFeatures(boolean testSet)
+    protected void didRecalculateAllFeatures(int output, boolean testSet)
     {
-        allFeatures.didRecalculateFeatures(testSet);
+        allFeatures.get(output).didRecalculateFeatures(testSet);
     }
     
-    protected void setAllFeaturesToDirty(boolean testSet)
+    protected void setAllFeaturesToDirty(int output, boolean testSet)
     {
-        allFeatures.setDirty(testSet);
+        allFeatures.get(output).setDirty(testSet);
     }
     
-    public FeatureCollection getAllFeatures()
+    public FeatureCollection getAllFeatures(int output)
     {
-        return allFeatures;
+        return allFeatures.get(output);
     }
     
     //Plot Features
