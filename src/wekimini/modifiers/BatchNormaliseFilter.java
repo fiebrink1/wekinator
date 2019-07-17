@@ -51,7 +51,7 @@ public class BatchNormaliseFilter extends SimpleBatchFilter {
                 }
                 if(j != result.classIndex())
                 {
-                    newVals[j] = (val - minVal) / delta;
+                    newVals[j] = ((val - minVal) / delta) * 10000000;
                 }
                 else
                 {
