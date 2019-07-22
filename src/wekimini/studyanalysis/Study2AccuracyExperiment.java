@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.study1analysis;
+package wekimini.studyanalysis;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -36,31 +36,30 @@ import wekimini.learning.SVMModelBuilder;
  *
  * @author louismccallum
  */
-public class AccuracyExperiment {
+public class Study2AccuracyExperiment {
     
-    private Wekinator w;
-    private final String STUDY_DIR = "featurnator_study_1";
-    private final String PROJECT_NAME = "Study1.wekproj";
-    //private final String ROOT_DIR = "../../studyData/Study1_logs";
-    private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
-    private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
-    private Participant participant;
-    private Iterator featureIterator;
-    private Iterator participantIterator;
-    private ArrayList<Participant> participants;
-    private boolean testSet = true;
+    public Wekinator w;
+    public final String PROJECT_NAME = "Week6";
+    //public final String ROOT_DIR = "../../studyData/Study1_logs";
+    public final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study_2_logs/projects";
+    public final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study2_analysis";
+    public Participant participant;
+    public Iterator featureIterator;
+    public Iterator participantIterator;
+    public ArrayList<Participant> participants;
+    public boolean testSet = true;
     //"P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12","P13","P15","P16","P17",
-    private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot", "1"};
-    private Map.Entry currentFeatures;
-    private double evalStartTime = 0; 
+    public final String[] blackList = new String[] {"P6", "P16", "P18"};
+    public Map.Entry currentFeatures;
+    public double evalStartTime = 0; 
     
     public static void main(String[] args)
     {
-        AccuracyExperiment e = new AccuracyExperiment();
+        Study2AccuracyExperiment e = new Study2AccuracyExperiment();
         e.runTests();
     }
     
-    private void runTests()
+    public void runTests()
     {
         HashMap<String, String> projects = getProjectLocations();
         participantIterator = projects.entrySet().iterator();
@@ -71,7 +70,7 @@ public class AccuracyExperiment {
         }
     }
     
-    private void logParticipant()
+    public void logParticipant()
     {
         System.out.println(participant.participantID);
         System.out.println(participant.timeTakenForwards);
@@ -93,7 +92,7 @@ public class AccuracyExperiment {
         exportAllFeatures();
     }
     
-    private void logAll()
+    public void logAll()
     {
         ObjectMapper json = new ObjectMapper();
         DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
@@ -109,13 +108,13 @@ public class AccuracyExperiment {
         System.exit(0);
     }
     
-    private void reset()
+    public void reset()
     {
         testSet = true;
         participant = new Participant();
     }
     
-    private boolean isBlackListed(String pID)
+    public boolean isBlackListed(String pID)
     {
         for(String blackListed : blackList)
         {
@@ -127,7 +126,7 @@ public class AccuracyExperiment {
         return false;
     }
     
-    private void runForNextParticipant()
+    public void runForNextParticipant()
     {
         reset();
                 
@@ -156,29 +155,10 @@ public class AccuracyExperiment {
             } catch (Exception ex) {
                 Logger.getLogger(AccuracyExperiment.class.getName()).log(Level.SEVERE, null, ex);
             }
-            //w.getSupervisedLearningManager().setModelBuilderForPath(new SVMModelBuilder(), 0);
             participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
             participant.features.put("user",w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
             participant.features.put("all",(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames()));
-            
-            int mean = 165;
-            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
-            String[] ranked = w.getDataManager().selectedFeatureNames[0];
-            mean = 5;
-            for(int i = 0; i < 9; i++)
-            {
-                String[] split = new String[mean];
-                System.arraycopy(ranked, 0, split, 0, mean);
-                participant.features.put("info"+i,split);
-                mean +=20;
-            }
-            
             participant.features.put("raw",new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
-
-            System.out.println("starting forwards search");
-            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
-            System.out.println("completed forwards search in " + participant.timeTakenForwards);
-            participant.features.put("forwards", w.getDataManager().selectedFeatureNames[0]);
             
             featureIterator = participant.features.entrySet().iterator();
             
@@ -188,7 +168,7 @@ public class AccuracyExperiment {
         }
     }
             
-    private void setNextFeatures()
+    public void setNextFeatures()
     {
         w.getDataManager().featureManager.getFeatureGroups().get(0).removeAll();
         currentFeatures = (Map.Entry)featureIterator.next();
@@ -200,7 +180,7 @@ public class AccuracyExperiment {
         }
     }
     
-    private void exportAllFeatures()
+    public void exportAllFeatures()
     {
         Instances dataSet = w.getDataManager().getAllFeaturesInstances(0,false);
         ArffSaver saver = new ArffSaver();
@@ -213,7 +193,7 @@ public class AccuracyExperiment {
         }
     }
     
-    private void evaluate()
+    public void evaluate()
     {
         evalStartTime = System.currentTimeMillis();
         ModelEvaluator evaluator = new ModelEvaluator(w, new ModelEvaluator.EvaluationResultsReceiver() {
@@ -247,27 +227,38 @@ public class AccuracyExperiment {
         });
     }
     
-    private void evaluatorPropertyChanged(PropertyChangeEvent evt) {
+    public void evaluatorPropertyChanged(PropertyChangeEvent evt) {
         
     }
 
-    private void evaluatorModelFinished(int modelNum, String results, String confusion) {
+    public void evaluatorModelFinished(int modelNum, String results, String confusion) {
 
 
     }
 
-    private void evaluatorCancelled() {
+    public void evaluatorCancelled() {
 
     }
+    
+    public double getPercent(String res)
+    {
+        try {
+            return Double.parseDouble((res.replaceAll("%", "")));
+        } catch (NumberFormatException e)
+        {
+            return -1;
+        }
+        
+    }
 
-    private void evaluatorFinished(String[] results) 
+    public void evaluatorFinished(String[] results) 
     {
         if(testSet)
         {
             System.out.println("Done test set");
             double timeTaken = System.currentTimeMillis() - evalStartTime;
             participant.testSetTimes.put((String)currentFeatures.getKey(), timeTaken);
-            participant.testSetResults.put((String)currentFeatures.getKey(), Double.parseDouble((results[0].replaceAll("%", ""))));
+            participant.testSetResults.put((String)currentFeatures.getKey(),getPercent(results[0]));
             testSet = false;
             evaluate();
         }
@@ -276,7 +267,7 @@ public class AccuracyExperiment {
             System.out.println("Done training set");
             double timeTaken = System.currentTimeMillis() - evalStartTime;
             participant.trainingSetTimes.put((String)currentFeatures.getKey(), timeTaken);
-            participant.trainingSetResults.put((String)currentFeatures.getKey(), Double.parseDouble((results[0].replaceAll("%", ""))));
+            participant.trainingSetResults.put((String)currentFeatures.getKey(), getPercent(results[0]));
             testSet = true;
             
             if(featureIterator.hasNext())
@@ -297,27 +288,30 @@ public class AccuracyExperiment {
         }
     }
     
-    private HashMap<String, String> getProjectLocations()
+    public HashMap<String, String> getProjectLocations()
     {
         HashMap<String, String> projects = new HashMap();
         File folder = new File(ROOT_DIR);
-        System.out.println(ROOT_DIR);
         File[] listOfFiles = folder.listFiles();
-        for(File file : listOfFiles)
+        for(File idFile : listOfFiles)
         {
-            if(file.isDirectory())
+            if(idFile.isDirectory())
             {
-                String pID = file.getName();
-                File studyFolder = new File(file.getAbsolutePath() + File.separator + STUDY_DIR);
-                File[] listOfStudyFiles = studyFolder.listFiles();
-                for(File studyFile : listOfStudyFiles)
+                String pID = idFile.getName();
+                for(File projectFile : idFile.listFiles())
                 {
-                    if(studyFile.getName().contains("ProjectFiles"))
+                    if(projectFile.isDirectory() && projectFile.getName().contains(PROJECT_NAME))
                     {
-                        String projectFile = studyFile.getAbsolutePath() + File.separator + PROJECT_NAME;
-                        projects.put(pID, projectFile);
-                        break;
-                    } 
+                        File[] listOfStudyFiles = projectFile.listFiles();
+                        for(File studyFile : listOfStudyFiles)
+                        {
+                            if(studyFile.getName().contains(PROJECT_NAME))
+                            {
+                                projects.put(pID, studyFile.getAbsolutePath());
+                                break;
+                            } 
+                        }
+                    }
                 }
             }
         }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.study1analysis;
+package wekimini.studyanalysis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -26,14 +26,14 @@ import java.util.Map;
  */
 public class LogsExperiment {
     
-    private final String STUDY_DIR = "featurnator_study_1";
-    private final String PROJECT_NAME = "featurnator_study_1_notest.txt";
-    private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
-    private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
-    private Participant participant;
-    private Iterator participantIterator;
-    private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot", "1", "P1", "P10"};
-    private ArrayList<Participant> participants = new ArrayList();
+    public final String STUDY_DIR = "featurnator_study_1";
+    public final String PROJECT_NAME = "featurnator_study_1_notest.txt";
+    public final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
+    public final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
+    public Participant participant;
+    public Iterator participantIterator;
+    public final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot", "1", "P1", "P10"};
+    public ArrayList<Participant> participants = new ArrayList();
     
     public static void main(String[] args)
     {
@@ -41,7 +41,28 @@ public class LogsExperiment {
         e.runTests();
     }
     
-    private void runTests()
+    public String getRootDir()
+    {
+        return ROOT_DIR;
+    }
+    
+    public String getProjectName()
+    {
+        return PROJECT_NAME;
+    }
+    
+    public String getResultsDir()
+    {
+        return RESULTS_DIR;
+    }
+    
+    public String[] getBlacklist()
+    {
+        return blackList;
+    }
+    
+    
+    public void runTests()
     {
         HashMap<String, String> projects = getProjectLocations();
         participantIterator = projects.entrySet().iterator();
@@ -51,14 +72,14 @@ public class LogsExperiment {
         }
     }
     
-    private void reset()
+    public void reset()
     {
         participant = new Participant();
     }
     
-    private boolean isBlackListed(String pID)
+    public boolean isBlackListed(String pID)
     {
-        for(String blackListed : blackList)
+        for(String blackListed : getBlacklist())
         {
             if(pID.equals(blackListed))
             {
@@ -68,18 +89,18 @@ public class LogsExperiment {
         return false;
     }
     
-    private void logParticipant()
+    public void logParticipant()
     {
        participants.add(participant);
     }
     
-    private void logAll()
+    public void logAll()
     {
         System.out.println("LOGGING ALL");
         ObjectMapper json = new ObjectMapper();
         DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
         Date date = new Date();
-        String path = RESULTS_DIR + File.separator + "logExperiment" + dateFormat.format(date) + ".json";
+        String path = getResultsDir() + File.separator + "logExperiment" + dateFormat.format(date) + ".json";
         try{
             json.writeValue(new FileOutputStream(path), participants);
         }
@@ -90,7 +111,7 @@ public class LogsExperiment {
         System.exit(0);
     }
     
-    private void runForNextParticipant()
+    public void runForNextParticipant()
     {
         reset();
                 
@@ -213,11 +234,11 @@ public class LogsExperiment {
         }
     }
      
-    private HashMap<String, String> getProjectLocations()
+    public HashMap<String, String> getProjectLocations()
     {
         HashMap<String, String> projects = new HashMap();
-        File folder = new File(ROOT_DIR);
-        System.out.println(ROOT_DIR);
+        File folder = new File(getRootDir());
+        System.out.println(getRootDir());
         File[] listOfFiles = folder.listFiles();
         for(File file : listOfFiles)
         {
@@ -228,7 +249,7 @@ public class LogsExperiment {
                 File[] listOfStudyFiles = studyFolder.listFiles();
                 for(File studyFile : listOfStudyFiles)
                 {
-                    if(studyFile.getName().contains(PROJECT_NAME))
+                    if(studyFile.getName().contains(getProjectName()))
                     {
                         String projectFile = studyFile.getAbsolutePath();
                         projects.put(pID, projectFile);

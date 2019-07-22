@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.study1analysis;
+package wekimini.studyanalysis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +30,13 @@ public class Participant {
     public int runCount = 0;
     public int newFeatureRunCount = 0;
     public int newDataRunCount = 0;
+    public int autoSelectCount = 0;
+    public int thresholdSelectCount = 0;
+    public int addFeaturesCount = 0;
+    public int addPanelCount = 0;
+    public int removePanelCount = 0;
+    public Boolean didEvalLargeLast = false;
+    public Boolean didEvalRawLast = false;
     
     public Participant()
     {

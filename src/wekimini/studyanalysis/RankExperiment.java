@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package wekimini.study1analysis;
+package wekimini.studyanalysis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
