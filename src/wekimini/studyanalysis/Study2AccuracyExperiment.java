@@ -50,6 +50,7 @@ public class Study2AccuracyExperiment {
     public boolean testSet = true;
     //"P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12","P13","P15","P16","P17",
     public final String[] blackList = new String[] {"P6", "P16", "P18"};
+    public final String[] whiteList = new String[] {};
     public Map.Entry currentFeatures;
     public double evalStartTime = 0; 
     
@@ -126,6 +127,18 @@ public class Study2AccuracyExperiment {
         return false;
     }
     
+    public boolean isWhiteListed(String pID)
+    {
+        for(String whiteListed : whiteList)
+        {
+            if(pID.equals(whiteListed))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public void runForNextParticipant()
     {
         reset();
@@ -133,17 +146,34 @@ public class Study2AccuracyExperiment {
         if(participantIterator.hasNext())
         {
             Map.Entry pair = (Map.Entry)participantIterator.next();
-       
-            while(isBlackListed((String)pair.getKey()))
+            
+            if(whiteList.length > 0)
             {
-                System.out.println("Skipping " + (String)pair.getKey() + "(blacklisted)");
-                if(!participantIterator.hasNext())
+                while(!isWhiteListed((String)pair.getKey()))
                 {
-                    logAll();
-                    return;
-                }
-                pair = (Map.Entry)participantIterator.next();
+                    System.out.println("Skipping " + (String)pair.getKey() + "(not white listed)");
+                    if(!participantIterator.hasNext())
+                    {
+                        logAll();
+                        return;
+                    }
+                    pair = (Map.Entry)participantIterator.next();
+                }                
             }
+            else
+            {
+                while(isBlackListed((String)pair.getKey()))
+                {
+                    System.out.println("Skipping " + (String)pair.getKey() + "(blacklisted)");
+                    if(!participantIterator.hasNext())
+                    {
+                        logAll();
+                        return;
+                    }
+                    pair = (Map.Entry)participantIterator.next();
+                }
+            }
+
 
             System.out.println(pair.getKey() + " = " + pair.getValue());
             String location = (String) pair.getValue();
