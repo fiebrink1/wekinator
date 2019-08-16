@@ -7,7 +7,6 @@ package wekimini.serial;
 import com.fazecast.jSerialComm.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import wekimini.osc.OSCReceiver;
 
 /**
  *

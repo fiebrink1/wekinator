@@ -30,7 +30,14 @@ public class Participant {
     public int runCount = 0;
     public int newFeatureRunCount = 0;
     public int newDataRunCount = 0;
+    public int newFeatureRecCount = 0;
+    public int newDataRecCount = 0;
+    public int newFeatureCVCount = 0;
+    public int newDataCVCount = 0;
+    public int newFeatureFeatureCount = 0;
+    public int newDataFeatureCount = 0;
     public int autoSelectCount = 0;
+    public int manualEditCount = 0;
     public int thresholdSelectCount = 0;
     public int addFeaturesCount = 0;
     public int addPanelCount = 0;

@@ -21,8 +21,8 @@ public class Study2LogsExperiment extends LogsExperiment {
     public final String LOG_NAME = "featurnator_study_2";
     private final String PROJECT_NAME = "Week6";
     private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study_2_logs/projects";
-    private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study2_analysis";
-    private final String[] blackList = new String[] {"P6", "P16", "P20", "P18", "P17"};
+    private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study_2_analysis";
+    private final String[] blackList = new String[] {};
     
     public static void main(String[] args)
     {
@@ -98,6 +98,13 @@ public class Study2LogsExperiment extends LogsExperiment {
             int threshold = 0;
             int newFeatureRunCtr = 0;
             int newDataRunCtr = 0;
+            int newFeatureCVCtr = 0;
+            int newDataCVCtr = 0;
+            int newFeatureRecCtr = 0;
+            int newDataRecCtr = 0;
+            int newFeatureFeatureCtr = 0;
+            int newDataFeatureCtr = 0;
+            int manualEdits = 0;
             boolean running = false;
             boolean recording = false;
             boolean didChangeFeatures = false;
@@ -106,6 +113,7 @@ public class Study2LogsExperiment extends LogsExperiment {
             
             for(String line : lines)
             {
+                boolean featuresAdded = false;
                 String split[] = line.split(",");
                 if(split[2].equals("EVAL_ALL_FEATURES"))
                 {
@@ -120,10 +128,22 @@ public class Study2LogsExperiment extends LogsExperiment {
                 if(split[2].equals("AUTO_SELECT"))
                 {
                     auto++;
+                    
+                    newDataFeatureCtr += didChangeData ? 1 : 0;
+                    didChangeData = false;
+                    
+                    didChangeFeatures = true;
+                    featuresAdded = true;
                 }
                 if(split[2].equals("THRESHOLD_SELECT"))
                 {
                     threshold++;
+                    
+                    newDataFeatureCtr += didChangeData ? 1 : 0;
+                    didChangeData = false;
+                    
+                    didChangeFeatures = true;
+                    featuresAdded = true;
                 }
                 if(split[2].equals("REMOVE_PANEL"))
                 {
@@ -153,6 +173,10 @@ public class Study2LogsExperiment extends LogsExperiment {
                 {
                     prevStart = Long.parseUnsignedLong(split[0]);
                     recording = true;
+                    
+                    newFeatureRecCtr += didChangeFeatures ? 1 : 0;
+                    didChangeFeatures = false;
+                    
                     didChangeData = true;
                 }
                 if(recording && split[2].equals("SUPERVISED_RECORD_STOP"))
@@ -164,33 +188,45 @@ public class Study2LogsExperiment extends LogsExperiment {
                 if(line.contains("CROSS_VALIDATATION"))
                 {
                     cvCtr++;
+                    newFeatureCVCtr += didChangeFeatures ? 1 : 0;
+                    newDataCVCtr += didChangeData ? 1 : 0;
+                    didChangeFeatures = false;
+                    didChangeData = false;
                 }
                 if(split[2].equals("FEATURES_REMOVED") || split[2].equals("FEATURES_ADDED"))
                 {
+                    
+                    newDataFeatureCtr += didChangeData ? 1 : 0;
+                    didChangeData = false;
+                    
                     didChangeFeatures = true;
+                    manualEdits++;
                     if(split[2].equals("FEATURES_ADDED"))
                     {
-                        if(split[3].length() > 3)
-                        {
-                            String featuresAdded = split[3].substring(1, split[3].length()-2);
-                            String[] sepFt = featuresAdded.split(",");
-                            for(String ft : sepFt)
-                            {
-                                if(!exploredFeatures.contains(ft))
-                                {
-                                    exploredFeatures.add(ft);
-                                }
-                            } 
-                        } 
+                        featuresAdded = true;
                     }
                 }
+                if(featuresAdded)
+                {
+                    if(split[3].length() > 3)
+                    {
+                        String added = split[3].substring(1, split[3].length()-2);
+                        String[] sepFt = added.split(",");
+                        for(String ft : sepFt)
+                        {
+                            if(!exploredFeatures.contains(ft))
+                            {
+                                exploredFeatures.add(ft);
+                            }
+                        } 
+                    } 
+                }
             }
-            System.out.println(cumSumRunning);
-            System.out.println(cumSumRecording);
-            System.out.println(cvCtr);
+            
             String[] f = new String[exploredFeatures.size()];
             f = exploredFeatures.toArray(f);
             participant.addPanelCount = add;
+            participant.manualEditCount = manualEdits;
             participant.removePanelCount = remove;
             participant.thresholdSelectCount = threshold;
             participant.features.put("explored", f);
@@ -200,6 +236,12 @@ public class Study2LogsExperiment extends LogsExperiment {
             participant.runCount = runCtr;
             participant.newDataRunCount = newDataRunCtr;
             participant.newFeatureRunCount = newFeatureRunCtr;
+            participant.newDataRecCount  = newDataRecCtr;
+            participant.newFeatureRecCount = newFeatureRecCtr;
+            participant.newDataCVCount  = newDataCVCtr;
+            participant.newFeatureCVCount = newFeatureCVCtr;
+            participant.newDataFeatureCount  = newDataFeatureCtr;
+            participant.newFeatureFeatureCount = newFeatureFeatureCtr;
             participant.autoSelectCount = auto;
             participantIterator.remove(); 
             logParticipant();

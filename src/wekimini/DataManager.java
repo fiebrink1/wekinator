@@ -98,9 +98,9 @@ public class DataManager {
     //Array of instances (one for each output) with the all the possible features calculated from the test set (for use in automatic selection) 
     private List<Instances> allFeaturesTestInstances = null;
     
-    BatchNormaliseFilter batchFilter = new BatchNormaliseFilter();
-    BatchNormaliseFilter batchAllFilter = new BatchNormaliseFilter();
-    StreamNormaliseFilter streamFilter = new StreamNormaliseFilter();
+    private List<BatchNormaliseFilter> batchFilter = new ArrayList();
+    private List<BatchNormaliseFilter> batchAllFilter = new ArrayList();
+    private List<StreamNormaliseFilter> streamFilter = new ArrayList();
     public Boolean doNormalise = true;
     
     public FeatureManager featureManager;
@@ -669,6 +669,14 @@ public class DataManager {
             } else {
                 ff.addElement(new Attribute(outputNames[i]));
             }
+            trainingFeatureInstances.add(featureManager.getAllFeaturesNewInstances(numOutputs));
+            trainingMDSInstances.add(featureManager.getAllFeaturesNewInstances(numOutputs));
+            testingFeatureInstances.add(featureManager.getAllFeaturesNewInstances(numOutputs));
+            allFeaturesInstances.add(featureManager.getAllFeaturesNewInstances(numOutputs));
+            allFeaturesTestInstances.add(featureManager.getAllFeaturesNewInstances(numOutputs));
+            batchFilter.add(new BatchNormaliseFilter());
+            batchAllFilter.add(new BatchNormaliseFilter());
+            streamFilter.add(new StreamNormaliseFilter());
             featureManager.setTestSetDirty(i);
             featureManager.setDirty(i);
             mdsDirty[i] = true;
@@ -1165,13 +1173,13 @@ public class DataManager {
             {
                 if(allFeatures)
                 {
-                    batchAllFilter.setInputFormat(newInstances);
-                    newInstances = Filter.useFilter(newInstances, batchAllFilter);
+                    batchAllFilter.get(index).setInputFormat(newInstances);
+                    newInstances = Filter.useFilter(newInstances, batchAllFilter.get(index));
                 }
                 else
                 {
-                    batchFilter.setInputFormat(newInstances);
-                    newInstances = Filter.useFilter(newInstances, batchFilter);
+                    batchFilter.get(index).setInputFormat(newInstances);
+                    newInstances = Filter.useFilter(newInstances, batchFilter.get(index));
                 }
             }
            
@@ -1462,11 +1470,11 @@ public class DataManager {
         instances.add(featureInstance);
         instances.setClassIndex(data.length - 1);
         try{
-            streamFilter.setInputFormat(instances);
-            streamFilter.batchFilter = batchFilter;
+            streamFilter.get(which).setInputFormat(instances);
+            streamFilter.get(which).batchFilter = batchFilter.get(which);
             if(doNormalise)
             {
-                instances = Filter.useFilter(instances, streamFilter);
+                instances = Filter.useFilter(instances, streamFilter.get(which));
             }
         } 
         catch (Exception e)
