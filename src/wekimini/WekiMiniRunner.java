@@ -162,7 +162,7 @@ public final class WekiMiniRunner {
         wekinatorCurrentMainFrames.put(w, newC);
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         /* Create and display the form */
         //WekiMiniRunner.isKadenze = (args.length != 0);
         WekiMiniRunner.isKadenze = false; //KADENZE SET
@@ -177,16 +177,32 @@ public final class WekiMiniRunner {
         
         aboutBox.setKadenze(isKadenze);
         //args.length == 0
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                if (WekiMiniRunner.isKadenze) {
-                     new KadenzePromptFrame().setVisible(true);
-                } else {
-                    KadenzeLogging.noLogging();
-                    WekiMiniRunner.getInstance().runNewProject();
+        for (int i = 0; i < args.length + 1; i++) {
+            // TODO use an arg name
+            if (args.length > 0 && i == args.length) break;
+            final String projectPath = args.length > 0 ? args[i] : "";
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    if (WekiMiniRunner.isKadenze) {
+                         new KadenzePromptFrame().setVisible(true);
+                    } else {
+                        KadenzeLogging.noLogging();
+                        if (args.length == 0) {
+                            WekiMiniRunner.getInstance().runNewProject();
+                        } else {
+                            try {
+                                // Wekinator w = WekiMiniRunner.getInstance().runFromFile(projectPath, false);
+                                // w.getOSCReceiver().startListening();
+                                // w.getMainGUI().setPerformanceMode(true);
+                                WekiMiniRunner.getInstance().runNewProjectAutomatically(null, projectPath, NewProjectOptions.CLOSECURRENT);
+                            } catch(Exception e) {
+                                logger.log(Level.SEVERE, "Error opening project \"" + projectPath + "\"");
+                            }
+                        }
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     public int numRunningProjects() {
