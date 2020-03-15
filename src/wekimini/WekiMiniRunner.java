@@ -23,6 +23,13 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import wekimini.gui.About;
 import wekimini.gui.InitInputOutputFrame;
 import wekimini.gui.Preferences;
@@ -162,7 +169,31 @@ public final class WekiMiniRunner {
         wekinatorCurrentMainFrames.put(w, newC);
     }
 
+    private static CommandLine parseArgs(final String[] args) {
+        Options options = new Options();
+        Option project = Option.builder("p")
+            .longOpt("project")
+            .hasArg(true)
+            .desc("project file to load in performance mode")
+            .build();
+        options.addOption(project);
+
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd = null;
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp("wekinator", options);
+            System.exit(1);
+        }
+        return cmd;
+    }
+
     public static void main(final String[] args) {
+        final CommandLine cmd = parseArgs(args);
+
         /* Create and display the form */
         //WekiMiniRunner.isKadenze = (args.length != 0);
         WekiMiniRunner.isKadenze = false; //KADENZE SET
@@ -176,33 +207,30 @@ public final class WekiMiniRunner {
         }
         
         aboutBox.setKadenze(isKadenze);
-        //args.length == 0
-        for (int i = 0; i < args.length + 1; i++) {
-            // TODO use an arg name
-            if (args.length > 0 && i == args.length) break;
-            final String projectPath = args.length > 0 ? args[i] : "";
-            java.awt.EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    if (WekiMiniRunner.isKadenze) {
-                         new KadenzePromptFrame().setVisible(true);
-                    } else {
-                        KadenzeLogging.noLogging();
-                        if (args.length == 0) {
-                            WekiMiniRunner.getInstance().runNewProject();
-                        } else {
-                            try {
-                                // Wekinator w = WekiMiniRunner.getInstance().runFromFile(projectPath, false);
-                                // w.getOSCReceiver().startListening();
-                                // w.getMainGUI().setPerformanceMode(true);
-                                WekiMiniRunner.getInstance().runNewProjectAutomatically(null, projectPath, NewProjectOptions.CLOSECURRENT);
-                            } catch(Exception e) {
-                                logger.log(Level.SEVERE, "Error opening project \"" + projectPath + "\"");
-                            }
-                        }
-                    }
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                if (WekiMiniRunner.isKadenze) {
+                     new KadenzePromptFrame().setVisible(true);
+                     return;
                 }
-            });
-        }
+                KadenzeLogging.noLogging();
+                if (!cmd.hasOption("p")) {
+                    WekiMiniRunner.getInstance().runNewProject();
+                    return;
+                }
+                final String projectPath = cmd.getOptionValue("project");
+                logger.log(Level.INFO, "Opening project from " + projectPath);
+                try {
+                    WekiMiniRunner.getInstance()
+                        .runNewProjectAutomatically(/*oldWekinator=*/null,
+                                                    projectPath,
+                                                    NewProjectOptions.CLOSECURRENT);
+                } catch(Exception e) {
+                    System.out.println(e.getMessage());
+                    logger.log(Level.SEVERE, "Error opening project");
+                }
+            }
+        });
     }
 
     public int numRunningProjects() {
