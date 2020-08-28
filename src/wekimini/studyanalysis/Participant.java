@@ -15,6 +15,8 @@ import java.util.HashMap;
 public class Participant {
     public double timeTakenForwards;
     public double timeTakenBackwards;
+    public double timeTakenBest = 0.0;
+    public double timeTakenEarly = 0.0;
     public int numExamples;
     public String participantID;
     public HashMap<String,Double> testSetResults;

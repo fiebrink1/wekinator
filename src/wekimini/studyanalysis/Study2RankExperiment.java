@@ -25,21 +25,24 @@ import wekimini.WekinatorSaver;
  *
  * @author louismccallum
  */
-public class RankExperiment {
+public class Study2RankExperiment {
     
-    private Wekinator w;
-    private final String STUDY_DIR = "featurnator_study_1";
-    private final String PROJECT_NAME = "Study1.wekproj";
-    private final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_logs";
-    private final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study1_analysis";
-    private Participant participant;
-    private Iterator participantIterator;
-    private final String[] blackList = new String[] {"Esben_Pilot", "Francisco_Pilot", "Sam_Pilot", "1"};
+     public Wekinator w;
+    public final String PROJECT_NAME = "Week6";
+    //public final String ROOT_DIR = "../../studyData/Study1_logs";
+    public final String ROOT_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study_2_logs/projects";
+    public final String RESULTS_DIR = "/Users/louismccallum/Documents/Goldsmiths/Study2_analysis";
+    public Participant participant;
+    public Iterator featureIterator;
+    public Iterator participantIterator;
+    public ArrayList<Participant> participants;
+    //public final String[] blackList = new String[] {};
+    public final String[] blackList = new String[] {"P6", "P16", "P18"};
     private HashMap<String, Integer> ranks = new HashMap();
     
     public static void main(String[] args)
     {
-        RankExperiment e = new RankExperiment();
+        Study2RankExperiment e = new Study2RankExperiment();
         e.runTests();
     }
     
@@ -157,27 +160,30 @@ public class RankExperiment {
         }
     }
      
-    private HashMap<String, String> getProjectLocations()
+    public HashMap<String, String> getProjectLocations()
     {
         HashMap<String, String> projects = new HashMap();
         File folder = new File(ROOT_DIR);
-        System.out.println(ROOT_DIR);
         File[] listOfFiles = folder.listFiles();
-        for(File file : listOfFiles)
+        for(File idFile : listOfFiles)
         {
-            if(file.isDirectory())
+            if(idFile.isDirectory())
             {
-                String pID = file.getName();
-                File studyFolder = new File(file.getAbsolutePath() + File.separator + STUDY_DIR);
-                File[] listOfStudyFiles = studyFolder.listFiles();
-                for(File studyFile : listOfStudyFiles)
+                String pID = idFile.getName();
+                for(File projectFile : idFile.listFiles())
                 {
-                    if(studyFile.getName().contains("ProjectFiles"))
+                    if(projectFile.isDirectory() && projectFile.getName().contains(PROJECT_NAME))
                     {
-                        String projectFile = studyFile.getAbsolutePath() + File.separator + PROJECT_NAME;
-                        projects.put(pID, projectFile);
-                        break;
-                    } 
+                        File[] listOfStudyFiles = projectFile.listFiles();
+                        for(File studyFile : listOfStudyFiles)
+                        {
+                            if(studyFile.getName().contains(PROJECT_NAME))
+                            {
+                                projects.put(pID, studyFile.getAbsolutePath());
+                                break;
+                            } 
+                        }
+                    }
                 }
             }
         }

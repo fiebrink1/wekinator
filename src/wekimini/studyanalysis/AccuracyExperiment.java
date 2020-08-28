@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
+import wekimini.featureanalysis.BestInfoSelector;
 import wekimini.learning.SVMModelBuilder;
 
 /**
@@ -158,27 +159,40 @@ public class AccuracyExperiment {
             }
             //w.getSupervisedLearningManager().setModelBuilderForPath(new SVMModelBuilder(), 0);
             participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
-            participant.features.put("user",w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
-            participant.features.put("all",(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames()));
-            
-            int mean = 165;
-            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
-            String[] ranked = w.getDataManager().selectedFeatureNames[0];
-            mean = 5;
-            for(int i = 0; i < 9; i++)
-            {
-                String[] split = new String[mean];
-                System.arraycopy(ranked, 0, split, 0, mean);
-                participant.features.put("info"+i,split);
-                mean +=20;
-            }
-            
-            participant.features.put("raw",new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
+//            participant.features.put("user",w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
+//            participant.features.put("all",(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames()));
+//            
+//            int mean = 165;
+//            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
+//            String[] ranked = w.getDataManager().selectedFeatureNames[0];
+//            mean = 5;
+//            for(int i = 0; i < 9; i++)
+//            {
+//                String[] split = new String[mean];
+//                System.arraycopy(ranked, 0, split, 0, mean);
+//                participant.features.put("info"+i,split);
+//                mean +=20;
+//            }
+//            
+//            participant.features.put("raw",new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
 
-            System.out.println("starting forwards search");
-            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
-            System.out.println("completed forwards search in " + participant.timeTakenForwards);
-            participant.features.put("forwards", w.getDataManager().selectedFeatureNames[0]);
+//            System.out.println("starting forwards search");
+//            participant.timeTakenForwards = w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.WRAPPER_FORWARDS);
+//            System.out.println("completed forwards search in " + participant.timeTakenForwards);
+//            participant.features.put("forwards", w.getDataManager().selectedFeatureNames[0]);
+            double now = System.currentTimeMillis();
+            w.getDataManager().setFeaturesForBestInfo(0, false,  new BestInfoSelector.BestInfoResultsReceiver() {
+                @Override
+                public void finished(int[] features)
+                {
+                   participant.features.put("best", (w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames()));
+                   featureIterator = participant.features.entrySet().iterator();
+                   participant.timeTakenBest = System.currentTimeMillis() - now;
+                   setNextFeatures();
+                   evaluate();
+                   participantIterator.remove();
+                }
+            });
             
             featureIterator = participant.features.entrySet().iterator();
             

@@ -23,7 +23,7 @@ public class Study2SubmissionFrame extends javax.swing.JFrame {
     private Wekinator w;
     private SubmissionDelegate delegate;
     private Feature[] originalFeatures;
-    private static final double MAX_LARGE_SET_SIZE = 300.0;
+    public static final double MAX_LARGE_SET_SIZE = 300.0;
 
     public Study2SubmissionFrame() {
         initComponents();

@@ -210,16 +210,23 @@ public class Study2LogsExperiment extends LogsExperiment {
                 {
                     if(split[3].length() > 3)
                     {
-                        String added = split[3].substring(1, split[3].length()-2);
-                        String[] sepFt = added.split(",");
-                        for(String ft : sepFt)
+                        for(int i = 3; i < split.length; i++)
                         {
+                            String ft = split[i];
+                            if(i == 3)
+                            {
+                                ft = ft.substring(1);
+                            }
+                            if(i == split.length - 1)
+                            {
+                                ft = ft.substring(0, ft.length() - 1);
+                            }
                             if(!exploredFeatures.contains(ft))
                             {
                                 exploredFeatures.add(ft);
                             }
                         } 
-                    } 
+                    }
                 }
             }
             

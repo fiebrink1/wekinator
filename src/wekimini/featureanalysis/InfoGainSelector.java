@@ -11,6 +11,8 @@ import weka.attributeSelection.AttributeSelection;
 import weka.attributeSelection.Ranker;
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.core.Instances;
+import weka.filters.Filter;
+import wekimini.modifiers.AddNoise;
 
 /**
  *
@@ -62,9 +64,32 @@ public class InfoGainSelector extends RankedFeatureSelector {
             return thresholded;
             
         } catch (Exception ex) {
+            System.out.println("adding noise to avoid collision in discretisation");
             Logger.getLogger(InfoGainSelector.class.getName()).log(Level.SEVERE, null, ex);
+            String detail = ex.getMessage();
+            String[] split = detail.split(" ");
+            int ptr = 0;
+            boolean found = false;
+            while(ptr < split.length && !found)
+            {
+                if(split[ptr].contains("feature"))
+                {
+                    found = true;
+                    
+                    try {
+                        int index = Integer.parseInt(split[ptr].substring(8, split[ptr].length() - 1));
+                        AddNoise noise = new AddNoise();
+                        noise.setInputFormat(instances);
+                        noise.index = index;
+                        instances = Filter.useFilter(instances, noise);
+                    } catch (Exception ex1) {
+                        Logger.getLogger(InfoGainSelector.class.getName()).log(Level.SEVERE, null, ex1);
+                    }
+                }
+                ptr++;
+            }
+            return getAttributeIndicesForInstances(instances);
         }
-        return new int[0];
     }
     
 }

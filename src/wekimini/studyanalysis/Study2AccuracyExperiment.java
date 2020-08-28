@@ -28,9 +28,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
+import wekimini.featureanalysis.BestInfoSelector;
+import wekimini.gui.Study2SubmissionFrame;
 import wekimini.learning.SVMModelBuilder;
+import wekimini.modifiers.Feature;
 
 /**
  *
@@ -48,7 +52,6 @@ public class Study2AccuracyExperiment {
     public Iterator participantIterator;
     public ArrayList<Participant> participants;
     public boolean testSet = true;
-    //"P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12","P13","P15","P16","P17",
     public final String[] blackList = new String[] {"P6", "P16", "P18"};
     public Map.Entry currentFeatures;
     public double evalStartTime = 0; 
@@ -156,15 +159,61 @@ public class Study2AccuracyExperiment {
                 Logger.getLogger(AccuracyExperiment.class.getName()).log(Level.SEVERE, null, ex);
             }
             participant.numExamples = w.getDataManager().getTrainingDataForOutput(0).numInstances();
-            participant.features.put("user",w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
-            participant.features.put("all",(w.getDataManager().featureManager.getFeatureGroups().get(0).getNames()));
-            participant.features.put("raw",new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
-            
+            System.out.println("MODEL TYPE:" + w.getSupervisedLearningManager().getPaths().get(0).getModelBuilder().getPrettyName());
+//            participant.features.put("user",w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames());
+//            String largeSet[];
+//            List<Feature> library = w.getDataManager().featureManager.getFeatureGroups().get(0).getLibrary();
+//            if(library.size() > Study2SubmissionFrame.MAX_LARGE_SET_SIZE)
+//            {
+//                largeSet = new String[(int)Study2SubmissionFrame.MAX_LARGE_SET_SIZE];
+//                double threshold = (double)(Study2SubmissionFrame.MAX_LARGE_SET_SIZE / (double)(library.size()));
+//                Feature[] above = w.getDataManager().getInfoGainRankings(0, threshold, true);
+//                int ptr = 0;
+//                for(Feature f:above)
+//                {
+//                    largeSet[ptr] = f.name;
+//                    ptr++;
+//                }
+//            }
+//            else
+//            {
+//                largeSet = new String[library.size()];
+//                int ptr = 0;
+//                for(Feature f:library)
+//                {
+//                    largeSet[ptr] = f.name;
+//                    ptr++;
+//                }
+//            }
+//            participant.features.put("all", largeSet);
+//            int mean = 165;
+//            w.getDataManager().selectFeaturesAutomatically(DataManager.AutoSelect.INFOGAIN, mean);
+//            String[] ranked = w.getDataManager().selectedFeatureNames[0];
+//            mean = 5;
+//            
+//            while(mean < largeSet.length)
+//            {
+//                String[] split = new String[mean];
+//                System.arraycopy(ranked, 0, split, 0, mean);
+//                participant.features.put("info"+mean,split);
+//                mean +=20;
+//            }
+            participant.features.put("raw", new String[]{"AccX", "AccY", "AccZ", "GyroX", "GyroY", "GyroZ"});
             featureIterator = participant.features.entrySet().iterator();
-            
             setNextFeatures();
             evaluate();
-            participantIterator.remove(); 
+            participantIterator.remove();
+//            w.getDataManager().setFeaturesForBestInfo(0, false,  new BestInfoSelector.BestInfoResultsReceiver() {
+//                @Override
+//                public void finished(int[] features)
+//                {
+//                   participant.features.put("best", (w.getDataManager().featureManager.getFeatureGroups().get(0).getCurrentFeatureNames()));
+//                   featureIterator = participant.features.entrySet().iterator();
+//                   setNextFeatures();
+//                   evaluate();
+//                   participantIterator.remove();
+//                }
+//            });
         }
     }
             

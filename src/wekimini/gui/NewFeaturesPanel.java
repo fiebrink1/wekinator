@@ -515,6 +515,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                     }
                     if(filterPanel.getState() != FilterPanelState.EXPLORING)
                     {
+                        System.out.println("FEATURE RANK:" + item.ranking + ",");
                         items.add(item);
                     }
                 }
@@ -554,6 +555,7 @@ public class NewFeaturesPanel extends javax.swing.JPanel {
                             else
                             {
                                 item.state = FeatureSetPlotItem.FeaturePlotItemState.NORMAL;
+                                System.out.println("FEATURE RANK:" + item.ranking);
                             }
                         }
                         try {

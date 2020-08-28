@@ -8,7 +8,6 @@ package wekimini.studyanalysis;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -198,10 +196,17 @@ public class LogsExperiment {
                     {
                         if(split[3].length() > 3)
                         {
-                            String featuresAdded = split[3].substring(1, split[3].length()-2);
-                            String[] sepFt = featuresAdded.split(",");
-                            for(String ft : sepFt)
+                            for(int i = 3; i < split.length; i++)
                             {
+                                String ft = split[i];
+                                if(i == 3)
+                                {
+                                    ft = ft.substring(1);
+                                }
+                                if(i == split.length - 1)
+                                {
+                                    ft = ft.substring(0, ft.length() - 1);
+                                }
                                 if(!exploredFeatures.contains(ft))
                                 {
                                     exploredFeatures.add(ft);
