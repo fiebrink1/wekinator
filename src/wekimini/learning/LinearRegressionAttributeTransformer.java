@@ -54,7 +54,7 @@ public class LinearRegressionAttributeTransformer implements AttributeTransforme
     }
 
     @Override
-    public Instances transformedData(Instances data) throws Exception {
+    public Instances transformedData(Instances data) {
         Instances output;
         output = new Instances(exampleInstances);
 

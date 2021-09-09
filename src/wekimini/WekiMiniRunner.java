@@ -62,7 +62,7 @@ public final class WekiMiniRunner {
      * @param filename Path to the .wekproj file to load, relative or absolute.
      * @param options Option specifying what to do with any currently-running project.
      */
-    public void runNewProjectAutomatically(Wekinator oldWekinator, String filename, NewProjectOptions options) throws Exception {
+    public void runNewProjectAutomatically(Wekinator oldWekinator, String filename, NewProjectOptions options) throws IOException {
         File f = new File(filename);
         int newestID = nextID;
         Wekinator w = WekiMiniRunner.getInstance().runFromFile(f.getAbsolutePath(), /*showOSCWindow=*/false);
@@ -306,7 +306,7 @@ public final class WekiMiniRunner {
     /**
      * @param fileLocation Path to the .wekproj file to load.
      */
-    public Wekinator runFromFile(String fileLocation, boolean showOSCWindow) throws Exception {
+    public Wekinator runFromFile(String fileLocation, boolean showOSCWindow) throws IOException {
         Wekinator w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
         MainGUI mg = w.getMainGUI();
         mg.setVisible(true);

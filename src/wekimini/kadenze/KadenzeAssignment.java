@@ -347,7 +347,7 @@ public class KadenzeAssignment {
         }
     }
 
-    public static KadenzeLogger getLoggerForAssignmentType(KadenzeAssignmentType t) throws Exception {
+    public static KadenzeLogger getLoggerForAssignmentType(KadenzeAssignmentType t) throws IllegalArgumentException {
         if (t == KadenzeAssignmentType.NONE) {
             return new NoLogger();
         } else if (t == KadenzeAssignmentType.ASSIGNMENT1) {
@@ -393,7 +393,7 @@ public class KadenzeAssignment {
         } else if (t == KadenzeAssignmentType.ASSIGNMENT7) {
             return new AssignmentFinalLogger();
         } else {
-            throw new Exception("No logger for this assignment!");
+            throw new IllegalArgumentException("No logger for this assignment!");
         }
     }
 }

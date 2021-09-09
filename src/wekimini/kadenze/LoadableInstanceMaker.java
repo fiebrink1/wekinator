@@ -144,7 +144,7 @@ public class LoadableInstanceMaker {
         }
     }
 
-    public static LoadableInstanceMaker readFromFile(String filename) throws IOException, Exception {
+    public static LoadableInstanceMaker readFromFile(String filename) throws IOException {
         LoadableInstanceMaker m = null;
         /* LoadableInstanceMaker g = (LoadableInstanceMaker) Util.readFromXMLFile("LoadableInstanceMaker", LoadableInstanceMaker.class, filename);
          return g; */
@@ -202,7 +202,7 @@ public class LoadableInstanceMaker {
 
         }
         if (err || m == null || m.dummyInstances == null) {
-            throw new Exception("Could not load LoadableInstanceMaker from file");
+            throw new IOException("Could not load LoadableInstanceMaker from file");
         }
         return m;
     }

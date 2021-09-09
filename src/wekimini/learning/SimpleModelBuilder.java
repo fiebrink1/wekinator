@@ -41,7 +41,7 @@ public class SimpleModelBuilder implements ClassificationModelBuilder {
             }
         };
        // } else {
-       //     throw new Exception("Testing");
+       //     throw new RuntimeException("Testing");
        // }
     }
 

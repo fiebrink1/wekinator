@@ -106,17 +106,17 @@ public class KadenzeUtils {
         zipFile.close();
     }
 
-    public static long getLineTimestamp(String line) throws Exception {
+    public static long getLineTimestamp(String line) throws IOException {
         int index = line.indexOf(",");
         if (index != -1) {
             try {
                 Long l = Long.parseLong(line.substring(0, index));
                 return l;
             } catch (NumberFormatException ex) {
-                throw new Exception("Improperly formatted log file");
+                throw new IOException("Improperly formatted log file", ex);
             }
         } else {
-            throw new Exception("Improperly formatted log file");
+            throw new IOException("Improperly formatted log file");
         }
     }
 
@@ -124,7 +124,7 @@ public class KadenzeUtils {
         //All lines are formatted timestamp,wekID,lineType
         String[] parts = line.split(",", 4);
         /*if (parts.length < 3) {
-         throw new Exception("Improperly formatted log file");
+         throw new IOException("Improperly formatted log file");
          } else {
          return parts[2];
          } */ //Let's be more forgiving, e.g. if log has quit mid-line
@@ -137,20 +137,20 @@ public class KadenzeUtils {
     }
 
     //Counts starting from 1
-    public static String getNthField(int n, String line) throws Exception {
+    public static String getNthField(int n, String line) throws IOException {
         //All lines are formatted timestamp,wekID,lineType
         String[] parts = line.split(",", n + 1);
         if (parts.length < n) {
-            throw new Exception("Improperly formatted log file");
+            throw new IOException("Improperly formatted log file");
         } else {
             return parts[n - 1];
         }
     }
 
-    public static String getLineAfterRegex(String line, String pattern) throws Exception {
+    public static String getLineAfterRegex(String line, String pattern) throws IOException {
         int i = line.indexOf(pattern);
         if (i == -1) {
-            throw new Exception("Improperly formatted log file");
+            throw new IOException("Improperly formatted log file");
         }
         int numChars = pattern.length();
         return line.substring(i + numChars);
@@ -167,7 +167,7 @@ public class KadenzeUtils {
         }
     }
 
-    static String getModelStringFromLine(String line) throws Exception {
+    static String getModelStringFromLine(String line) throws IOException {
         String type = KadenzeUtils.getLineType(line);
         if (type.equals("MODEL_BUILDER_UPDATED")) {
             String s1 = KadenzeUtils.getLineAfterRegex(line, "MODEL_BUILDER_UPDATED,");

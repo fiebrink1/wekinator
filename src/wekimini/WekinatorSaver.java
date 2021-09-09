@@ -48,7 +48,7 @@ public class WekinatorSaver {
     /**
      * @param wekFilename Path to the .wekproj file to load.
      */
-    public static Wekinator loadWekinatorFromFile(String wekFilename) throws Exception {
+    public static Wekinator loadWekinatorFromFile(String wekFilename) throws IOException {
         File wekFile = new File(wekFilename);
         String projectDir = wekFile.getParentFile().getAbsolutePath();
 
