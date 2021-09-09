@@ -30,6 +30,13 @@ public class PathAndDataLoader {
         
     }
     
+    /**
+     * Loads a model xml file. The file is expected to contain these objects, in order:
+     * 1. A Path object.
+     * 2. A String containing the model class name.
+     * 3. A model of that type.
+     * 4. Optionally, the String "instances" followed by ARFF data.
+     */
     public void tryLoadFromFile(String filename) throws Exception {
         //Danger: Will not have any transient fields initialised!
         Path p = null;

@@ -55,11 +55,17 @@ public final class WekiMiniRunner {
     private static boolean isKadenze = false;
     private static int nextID = 1;
 
-    //Load it and start running, handle old project
+    /**
+     * Load it and start running, handle old project
+     *
+     * @param oldWekinator The already-running instance of Wekinator, or null.
+     * @param filename Path to the .wekproj file to load, relative or absolute.
+     * @param options Option specifying what to do with any currently-running project.
+     */
     public void runNewProjectAutomatically(Wekinator oldWekinator, String filename, NewProjectOptions options) throws Exception {
         File f = new File(filename);
         int newestID = nextID;
-        Wekinator w = WekiMiniRunner.getInstance().runFromFile(f.getAbsolutePath(), false);
+        Wekinator w = WekiMiniRunner.getInstance().runFromFile(f.getAbsolutePath(), /*showOSCWindow=*/false);
 
         if (options == NewProjectOptions.STOPCURRENTLISTENING ||
                 options == NewProjectOptions.CLOSECURRENT) {
@@ -297,6 +303,9 @@ public final class WekiMiniRunner {
         System.exit(0); //Too late to go back
     }
 
+    /**
+     * @param fileLocation Path to the .wekproj file to load.
+     */
     public Wekinator runFromFile(String fileLocation, boolean showOSCWindow) throws Exception {
         Wekinator w = WekinatorSaver.loadWekinatorFromFile(fileLocation);
         MainGUI mg = w.getMainGUI();

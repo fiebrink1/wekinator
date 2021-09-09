@@ -44,7 +44,10 @@ public class WekinatorSaver {
     public static String getCppLocationForProjectDirectory(File projectDir) {
         return projectDir + currentAppend + File.separator + "cpp-source" + File.separator;
     }
-    
+
+    /**
+     * @param wekFilename Path to the .wekproj file to load.
+     */
     public static Wekinator loadWekinatorFromFile(String wekFilename) throws Exception {
         File wekFile = new File(wekFilename);
         String projectDir = wekFile.getParentFile().getAbsolutePath();
@@ -225,6 +228,10 @@ public class WekinatorSaver {
         return al.getDataSet();
     }
 
+    /**
+     * Loads model xml files from projectDir. Files are expected to be named "model<index>.xml"
+     * with index from 0 to howMany-1.
+     */
     private static List<Path> loadPaths(String projectDir, int howMany) throws Exception {
         String pathsDirectory = projectDir + modelsAppend + File.separator;
         List<Path> paths = new ArrayList<>(howMany);

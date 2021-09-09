@@ -22,7 +22,9 @@ public interface ModelBuilder {
     public Model build() {
         return new SimpleModel("name1");
     }  */
-    
+
+    // Most implementations call WekaModelBuilderHelper.build which throws
+    // Exception, so this declares that as part of the method interface.
     public Model build(String name) throws Exception;
     
     public boolean isCompatible(OSCOutput o);

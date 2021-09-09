@@ -249,8 +249,8 @@ public class KadenzeUtils {
         return sb.toString();
     }
 
+    /** Returns the last log timestamp present, or ?? if an error occurs. */
     public static String getLastLogTimestamp(String dir, String fileName) {
-
         File f = new File(dir, fileName);
         if (!f.exists()) {
             logger.log(Level.WARNING, "Cannot read log for file {0} in directory + {1}", new Object[]{fileName, dir});
