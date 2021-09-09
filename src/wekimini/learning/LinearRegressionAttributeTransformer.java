@@ -49,7 +49,7 @@ public class LinearRegressionAttributeTransformer implements AttributeTransforme
             
     
     @Override
-    public Instances transformedHeader() throws Exception {
+    public Instances transformedHeader() {
         return exampleInstances;
     }
 
@@ -66,7 +66,7 @@ public class LinearRegressionAttributeTransformer implements AttributeTransforme
     }
 
     @Override
-    public Instance convertInstance(Instance instance) throws Exception {
+    public Instance convertInstance(Instance instance) {
         double[] newVals = new double[numInputs* exponent + 1];
         int next = 0;
         for (int i = 0; i < instance.numAttributes()-1; i++) {

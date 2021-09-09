@@ -120,7 +120,7 @@ public class KadenzeUtils {
         }
     }
 
-    public static String getLineType(String line) throws Exception {
+    public static String getLineType(String line) {
         //All lines are formatted timestamp,wekID,lineType
         String[] parts = line.split(",", 4);
         /*if (parts.length < 3) {

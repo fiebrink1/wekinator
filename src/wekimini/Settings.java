@@ -77,7 +77,7 @@ public class Settings {
         }
     }
 
-    public static Settings readFromFile(String filename) throws Exception {
+    public static Settings readFromFile(String filename) {
         XStream xstream = new XStream();
         xstream.alias("Settings", Settings.class);
         return (Settings) xstream.fromXML(new File(filename));
