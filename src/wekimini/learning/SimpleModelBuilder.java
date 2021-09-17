@@ -10,6 +10,7 @@ import weka.classifiers.Classifier;
 import weka.core.Instances;
 import wekimini.LearningModelBuilder;
 import wekimini.osc.OSCOutput;
+import wekimini.WekaException;
 
 /**
  *
@@ -28,21 +29,24 @@ public class SimpleModelBuilder implements ClassificationModelBuilder {
     }
 
     @Override
-    public SimpleModel build(String name) throws Exception {
+    public SimpleModel build(String name) throws WekaException {
         //For testing
-       // double d = Math.random();
-        Thread.sleep(2000); //Not a great example of how other code will function, since sleep() does throw Interrupted exception.
-       // if (d < 0.5) {
-            return new SimpleModel(name) {
-
+        // double d = Math.random();
+        try {
+            Thread.sleep(2000); //Not a great example of how other code will function, since sleep() does throw Interrupted exception.
+        } catch (InterruptedException e) {
+            // carry on
+        }
+        // if (d < 0.5) {
+        return new SimpleModel(name) {
             @Override
             public Classifier getClassifier() {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
         };
-       // } else {
-       //     throw new RuntimeException("Testing");
-       // }
+        // } else {
+        //     throw new RuntimeException("Testing");
+        // }
     }
 
     @Override

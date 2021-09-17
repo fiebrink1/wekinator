@@ -16,6 +16,7 @@ import weka.classifiers.Classifier;
 import weka.classifiers.functions.LinearRegression;
 import weka.core.Instance;
 import wekimini.osc.OSCOutput;
+import wekimini.WekaException;
 
 /**
  *
@@ -42,15 +43,15 @@ public class LinearRegressionModel implements SupervisedLearningModel {
     }
     
     @Override
-    public double computeOutput(Instance instance) throws Exception {
+    public double computeOutput(Instance instance) throws WekaException {
         Instance i;
         if (transformer != null ) {
             i = transformer.convertInstance(instance);
         } else {
             i = instance;
         }
-        
-        return wmodel.classifyInstance(i);
+
+        return Util.classifyOrThrow(wmodel, i);
     }
     
     @Override

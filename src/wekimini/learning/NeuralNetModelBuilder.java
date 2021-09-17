@@ -14,6 +14,7 @@ import wekimini.LearningModelBuilder;
 import wekimini.WekaModelBuilderHelper;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
+import wekimini.WekaException;
 
 /**
  *
@@ -116,7 +117,7 @@ public class NeuralNetModelBuilder implements RegressionModelBuilder {
     }
 
     @Override
-    public NeuralNetworkModel build(String name) throws Exception {
+    public NeuralNetworkModel build(String name) throws WekaException {
        if (trainingData == null) {
            throw new IllegalStateException("Must set training examples (to not null) before building model");
        }

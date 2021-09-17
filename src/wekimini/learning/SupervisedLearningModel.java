@@ -9,13 +9,14 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import weka.classifiers.Classifier;
 import weka.core.Instance;
+import wekimini.WekaException;
 
 /**
  *
  * @author rebecca
  */
 public interface SupervisedLearningModel extends Model {
-    public double computeOutput(Instance inputs) throws Exception;
+    public double computeOutput(Instance inputs) throws WekaException;
     public double[] computeDistribution(Instance instance);
     public Classifier getClassifier();
     

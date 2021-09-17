@@ -16,6 +16,7 @@ import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Instance;
 import wekimini.osc.OSCOutput;
+import wekimini.WekaException;
 
 /**
  *
@@ -38,9 +39,9 @@ public class NeuralNetworkModel implements SupervisedLearningModel {
     }
     
     @Override
-    public double computeOutput(Instance instance) throws Exception {
+    public double computeOutput(Instance instance) throws WekaException {
         //TODO: Where does instances come from?
-        return wmodel.classifyInstance(instance);
+        return Util.classifyOrThrow(wmodel, instance);
     }
     
     @Override

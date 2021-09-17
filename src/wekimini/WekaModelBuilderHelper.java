@@ -12,9 +12,16 @@ import weka.core.Instances;
  *
  * @author rebecca
  */
-public class WekaModelBuilderHelper  {    
-    public static Classifier build(Classifier c, Instances data) throws Exception {
-        c.buildClassifier(data);
-        return Classifier.makeCopy(c); //TODO: May have to do Classifier.makeCopy
-    }   
+public class WekaModelBuilderHelper  {
+    public static Classifier build(Classifier c, Instances data) throws WekaException {
+        try {
+            // These methods require callers to catch Exception or declare `throws WekaException`,
+            // so convert their errors into a named exception instead. This prevents the throws
+            // declaration from hiding other exceptions that may occur in the same method.
+            c.buildClassifier(data);
+            return Classifier.makeCopy(c);
+        } catch (Exception e) {
+            throw new WekaException(e);
+        }
+    }
 }

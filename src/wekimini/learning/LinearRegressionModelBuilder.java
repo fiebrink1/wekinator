@@ -15,6 +15,7 @@ import wekimini.WekaModelBuilderHelper;
 import weka.core.SelectedTag;
 import wekimini.osc.OSCNumericOutput;
 import wekimini.osc.OSCOutput;
+import wekimini.WekaException;
 
 /**
  *
@@ -94,7 +95,7 @@ public class LinearRegressionModelBuilder implements RegressionModelBuilder {
     }
 
     @Override
-    public LinearRegressionModel build(String name) throws Exception {
+    public LinearRegressionModel build(String name) throws WekaException {
         if (trainingData == null) {
             throw new IllegalStateException("Must set training examples (to not null) before building model");
         }

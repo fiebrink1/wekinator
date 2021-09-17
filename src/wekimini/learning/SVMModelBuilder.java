@@ -16,6 +16,7 @@ import wekimini.LearningModelBuilder;
 import wekimini.WekaModelBuilderHelper;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
+import wekimini.WekaException;
 
 /**
  *
@@ -161,7 +162,7 @@ public class SVMModelBuilder implements ClassificationModelBuilder {
     }
 
     @Override
-    public SVMModel build(String name) throws Exception {
+    public SVMModel build(String name) throws WekaException {
         if (trainingData == null) {
             throw new IllegalStateException("Must set training examples (to not null) before building model");
         }

@@ -7,6 +7,7 @@ package wekimini.learning;
 
 import javax.swing.JPanel;
 import wekimini.osc.OSCOutput;
+import wekimini.WekaException;
 
 /**
  *
@@ -25,7 +26,7 @@ public interface ModelBuilder {
 
     // Most implementations call WekaModelBuilderHelper.build which throws
     // Exception, so this declares that as part of the method interface.
-    public Model build(String name) throws Exception;
+    public Model build(String name) throws WekaException;
     
     public boolean isCompatible(OSCOutput o);
     

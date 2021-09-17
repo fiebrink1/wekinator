@@ -15,6 +15,7 @@ import wekimini.LearningModelBuilder;
 import wekimini.WekaModelBuilderHelper;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
+import wekimini.WekaException;
 
 /**
  *
@@ -82,7 +83,7 @@ public class AdaboostModelBuilder implements ClassificationModelBuilder {
     }
 
     @Override
-    public AdaboostModel build(String name) throws Exception {
+    public AdaboostModel build(String name) throws WekaException {
         if (trainingData == null) {
             throw new IllegalStateException("Must set training examples (to not null) before building model");
         }

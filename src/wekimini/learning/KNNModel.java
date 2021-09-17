@@ -17,6 +17,7 @@ import weka.classifiers.lazy.IBk;
 import weka.core.Instance;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
+import wekimini.WekaException;
 
 /**
  *
@@ -39,9 +40,9 @@ public class KNNModel implements SupervisedLearningModel {
     }
     
     @Override
-    public double computeOutput(Instance instance) throws Exception {
+    public double computeOutput(Instance instance) throws WekaException {
         //TODO: Where does instances come from?
-        return wmodel.classifyInstance(instance);
+        return Util.classifyOrThrow(wmodel, instance);
     }
     
     @Override

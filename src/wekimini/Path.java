@@ -249,7 +249,7 @@ public class Path {
         }
     }
 
-    public void buildModel(String name, Instances i) throws Exception {
+    public void buildModel(String name, Instances i) throws WekaException {
         lastModel = model;
         lastModelState = modelState;
         trainingCompleted = false;
@@ -303,7 +303,7 @@ public class Path {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
-    public double compute(Instance instance) throws Exception {
+    public double compute(Instance instance) throws WekaException {
         //TODO: replace with more principled & efficient solution: model output adapter
         if (!outputNeedsCorrection) {
             return model.computeOutput(instance);

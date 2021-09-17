@@ -21,7 +21,7 @@ public interface LearningModelBuilder extends ModelBuilder {
     public void setTrainingExamples(Instances examples);
     
     @Override
-    public SupervisedLearningModel build(String name) throws Exception;
+    public SupervisedLearningModel build(String name) throws WekaException;
 
     @Override
     public LearningModelBuilder fromTemplate(ModelBuilder template);
