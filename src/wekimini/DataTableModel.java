@@ -204,7 +204,7 @@ public class DataTableModel extends AbstractTableModel {
                 } else {
                     try {
                         d = Double.parseDouble((String) value);
-                    } catch (Exception ex) {
+                    } catch (NumberFormatException ex) {
                         logger.log(Level.WARNING, "Could not convert string value{0} to output", value);
                         return;
                     }
