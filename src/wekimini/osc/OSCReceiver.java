@@ -8,6 +8,7 @@ package wekimini.osc;
 import com.illposed.osc.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.net.SocketException;
 import wekimini.util.Util;
 
 /**
@@ -60,15 +61,14 @@ public class OSCReceiver {
     public void startListening() {
         try {
             receiver = new OSCPortIn(receivePort);
-            receiver.startListening();
-            setConnectionState(ConnectionState.CONNECTED);   
-        } catch (Exception ex) {
-            Util.showPrettyErrorPane(null, 
-                    "Could not bind to port " + receivePort 
+        } catch (SocketException ex) {
+            Util.showPrettyErrorPane(/*caller=*/null,
+                    "Could not bind to port " + receivePort
                             + ". Please ensure that nothing else is trying to listen on this same port.");
-            
         }
-        
+        receiver.startListening();
+        setConnectionState(ConnectionState.CONNECTED);
+
         //TODO:
         /*w.getInputGroups().addInputGroupListeners(receiver); //input features
         w.getOutputGroups().addOutputGroupListeners(receiver); //ouput updates (optional)
