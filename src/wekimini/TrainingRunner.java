@@ -157,11 +157,7 @@ public class TrainingRunner {
                                 cancelMe(p);
                                 return 0;
                             }
-
-                        } catch (InterruptedException ex) {
-                            cancelMe(p);
-                            return 0; //Not sure this will be called...
-                        } catch (Exception ex) {
+                        } catch (WekaException ex) {
                             numErr++;
                             Util.showPrettyErrorPane(null, "Error encountered during training " + p.getCurrentModelName() + ": " + ex.getMessage());
                             logger.log(Level.SEVERE, ex.getMessage());
