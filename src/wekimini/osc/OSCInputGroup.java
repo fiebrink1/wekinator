@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import wekimini.util.Util;
+import wekimini.util.WekStream;
 
 /**
  *
@@ -101,7 +102,7 @@ public class OSCInputGroup {
 
       /* FileOutputStream fos = null;
         try {
-            XStream xstream = new XStream();
+            XStream xstream = new WekStream();
             xstream.alias("OSCInputGroup", OSCInputGroup.class);
             //String xml = xstream.toXML(this);
             //System.out.println(xml);
@@ -127,7 +128,7 @@ public class OSCInputGroup {
       OSCInputGroup g = (OSCInputGroup) Util.readFromXMLFile("OSCInputGroup", OSCInputGroup.class, filename);
       return g;
         
-        /*  XStream xstream = new XStream();
+        /*  XStream xstream = new WekStream();
         xstream.alias("OSCInputGroup", OSCInputGroup.class);
         try {
             return (OSCInputGroup)xstream.fromXML(new File(filename));
@@ -158,7 +159,7 @@ public class OSCInputGroup {
 
     @Override
     public String toString() {
-         XStream xstream = new XStream();
+         XStream xstream = new WekStream();
          xstream.alias("OSCInputGroup", OSCInputGroup.class);
          return xstream.toXML(this);
     }

@@ -120,10 +120,8 @@ public class Util {
     public static void writeToXMLFile(Object o, String id, Class c, String filename) throws FileNotFoundException, IOException {
         FileOutputStream fos = null;
         try {
-            XStream xstream = new XStream();
+            XStream xstream = new WekStream();
             xstream.alias(id, c);
-            //String xml = xstream.toXML(this);
-            //System.out.println(xml);
             fos = new FileOutputStream(filename);
             fos.write("<?xml version=\"1.0\"?>\n".getBytes("UTF-8")); //write XML header, as XStream doesn't do that for us
             if (o != null) {
@@ -152,18 +150,14 @@ public class Util {
         }
     }
 
-    public static Object readFromXMLFile(String id, Class c, String filename) throws IOException {
-        try {
-            XStream xstream = new XStream();
-            xstream.alias(id, c);
-            return xstream.fromXML(new File(filename));
-        } catch (XStreamException ex) {
-            throw new IOException(ex);
-        }
+    public static Object readFromXMLFile(String id, Class c, String filename) {
+        XStream xstream = new WekStream();
+        xstream.alias(id, c);
+        return xstream.fromXML(new File(filename));
     }
 
     public static String toXMLString(Object o, String id, Class c) {
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias(id, c);
         return xstream.toXML(o);
     }

@@ -35,6 +35,7 @@ import wekimini.osc.OSCDtwOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
 import wekimini.util.Util;
+import wekimini.util.WekStream;
 
 /*
  * Working notes:
@@ -294,7 +295,7 @@ public class DtwModel implements Model {
         try {
             outstream = new FileOutputStream(filename);
             objout = new ObjectOutputStream(outstream);
-            XStream xstream = new XStream();
+            XStream xstream = new WekStream();
             xstream.alias("DtwModel", DtwModel.class);
             String xml = xstream.toXML(this);
             objout.writeObject(xml);

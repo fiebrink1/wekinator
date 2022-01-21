@@ -5,6 +5,9 @@
  */
 package wekimini;
 
+import java.io.StringWriter;
+import java.io.PrintWriter;
+
 import wekimini.gui.MainGUI;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -231,8 +234,11 @@ public final class WekiMiniRunner {
                         .runNewProjectAutomatically(/*oldWekinator=*/null,
                                                     projectPath,
                                                     NewProjectOptions.CLOSECURRENT);
-                } catch(Exception e) {
-                    System.out.println(e.getMessage());
+                } catch (Exception e) {
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    System.out.println(e);
+                    System.out.println(sw.toString());
                     logger.log(Level.SEVERE, "Error opening project");
                 }
             }

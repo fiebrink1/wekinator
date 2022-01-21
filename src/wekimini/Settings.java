@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import wekimini.util.WekStream;
 
 /**
  *
@@ -48,7 +49,7 @@ public class Settings {
         IOException ioEx = null;
 
         try {
-            XStream xstream = new XStream();
+            XStream xstream = new WekStream();
             xstream.alias("Settings", Settings.class);
             //String xml = xstream.toXML(this);
             //System.out.println(xml);
@@ -78,7 +79,7 @@ public class Settings {
     }
 
     public static Settings readFromFile(String filename) {
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("Settings", Settings.class);
         return (Settings) xstream.fromXML(new File(filename));
     }

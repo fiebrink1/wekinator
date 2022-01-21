@@ -7,6 +7,7 @@ package wekimini;
 
 import java.io.IOException;
 import wekimini.util.Util;
+import wekimini.util.WekStream;
 
 /**
  *
@@ -56,7 +57,7 @@ public class WekinatorFileData {
         WekinatorFileData w = (WekinatorFileData) Util.readFromXMLFile("WekinatorFileData", WekinatorFileData.class, filename);
         return w;
         /*InputStream in = new FileInputStream(filename);
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("WekinatorFileData", WekinatorFileData.class);
         in.close();
         return (WekinatorFileData) xstream.fromXML(in);  */

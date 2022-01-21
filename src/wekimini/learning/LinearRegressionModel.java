@@ -17,6 +17,7 @@ import weka.classifiers.functions.LinearRegression;
 import weka.core.Instance;
 import wekimini.osc.OSCOutput;
 import wekimini.WekaException;
+import wekimini.util.WekStream;
 
 /**
  *
@@ -83,7 +84,7 @@ public class LinearRegressionModel implements SupervisedLearningModel {
     }
     
     public void writeToOutputStream(ObjectOutputStream os) throws IOException {
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("LinearRegressionModel", LinearRegressionModel.class);
         String xml = xstream.toXML(this);
         os.writeObject(xml);
@@ -93,7 +94,7 @@ public class LinearRegressionModel implements SupervisedLearningModel {
     
     public static LinearRegressionModel readFromInputStream(ObjectInputStream is) throws IOException, ClassNotFoundException {
         String xml = (String)is.readObject();
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("LinearRegressionModel", LinearRegressionModel.class);
         LinearRegressionModel lrm = (LinearRegressionModel) xstream.fromXML(xml);
         LinearRegression lr = (LinearRegression)is.readObject();

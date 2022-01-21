@@ -18,6 +18,7 @@ import weka.core.Instance;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.WekaException;
+import wekimini.util.WekStream;
 
 /**
  *
@@ -62,7 +63,7 @@ public class DecisionStumpModel implements SupervisedLearningModel {
     }
     
     public void writeToOutputStream(ObjectOutputStream os) throws IOException {
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("DecisionStumpModel", DecisionStumpModel.class);
         String xml = xstream.toXML(this);
         os.writeObject(xml);
@@ -72,7 +73,7 @@ public class DecisionStumpModel implements SupervisedLearningModel {
     
     public static DecisionStumpModel readFromInputStream(ObjectInputStream is) throws IOException, ClassNotFoundException {
         String xml = (String)is.readObject();
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("DecisionStumpModel", DecisionStumpModel.class);
         DecisionStumpModel model = (DecisionStumpModel) xstream.fromXML(xml);
         DecisionStump stumpy = (DecisionStump)is.readObject();

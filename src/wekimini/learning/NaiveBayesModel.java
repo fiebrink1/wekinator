@@ -18,6 +18,7 @@ import weka.core.Instance;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.WekaException;
+import wekimini.util.WekStream;
 
 /**
  *
@@ -62,7 +63,7 @@ public class NaiveBayesModel implements SupervisedLearningModel {
     }
     
     public void writeToOutputStream(ObjectOutputStream os) throws IOException {
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("NaiveBayesModel", NaiveBayesModel.class);
         String xml = xstream.toXML(this);
         os.writeObject(xml);
@@ -72,7 +73,7 @@ public class NaiveBayesModel implements SupervisedLearningModel {
     
     public static NaiveBayesModel readFromInputStream(ObjectInputStream is) throws IOException, ClassNotFoundException {
         String xml = (String)is.readObject();
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("NaiveBayesModel", NaiveBayesModel.class);
         NaiveBayesModel model = (NaiveBayesModel) xstream.fromXML(xml);
         NaiveBayes nb = (NaiveBayes)is.readObject();

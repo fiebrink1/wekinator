@@ -18,6 +18,7 @@ import weka.core.Instance;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.WekaException;
+import wekimini.util.WekStream;
 
 /**
  *
@@ -63,7 +64,7 @@ public class KNNModel implements SupervisedLearningModel {
     }
     
     public void writeToOutputStream(ObjectOutputStream os) throws IOException {
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("KNNModel", KNNModel.class);
         String xml = xstream.toXML(this);
         os.writeObject(xml);
@@ -73,7 +74,7 @@ public class KNNModel implements SupervisedLearningModel {
     
     public static KNNModel readFromInputStream(ObjectInputStream is) throws IOException, ClassNotFoundException {
         String xml = (String)is.readObject();
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("KNNModel", KNNModel.class);
         KNNModel model = (KNNModel) xstream.fromXML(xml);
         IBk knn = (IBk)is.readObject();

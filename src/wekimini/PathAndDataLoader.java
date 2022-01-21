@@ -15,6 +15,7 @@ import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 import wekimini.learning.Model;
 import wekimini.learning.SupervisedLearningModel;
+import wekimini.util.WekStream;
 
 /**
  *
@@ -50,7 +51,7 @@ public class PathAndDataLoader {
             objin = new ObjectInputStream(instream);
             // o = objin.readObject();
             String xml = (String) objin.readObject();
-            XStream xstream = new XStream();
+            XStream xstream = new WekStream();
             xstream.alias("Path", Path.class);
             p = (Path) xstream.fromXML(xml);
             //Model builder contains transients and will not be initialised properly by xstream,

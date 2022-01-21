@@ -25,6 +25,7 @@ import wekimini.Path;
 import wekimini.learning.Model;
 import wekimini.learning.SupervisedLearningModel;
 import wekimini.util.Util;
+import wekimini.util.WekStream;
 
 /**
  *
@@ -111,7 +112,7 @@ public class LoadableInstanceMaker {
             outstream = new FileOutputStream(filename);
             objout = new ObjectOutputStream(outstream);
 
-            XStream xstream = new XStream();
+            XStream xstream = new WekStream();
             xstream.alias("LoadableInstanceMaker", LoadableInstanceMaker.class);
             String xml = xstream.toXML(this);
             objout.writeObject(xml);
@@ -159,7 +160,7 @@ public class LoadableInstanceMaker {
             // o = objin.readObject();
 
             String xml = (String) objin.readObject();
-            XStream xstream = new XStream();
+            XStream xstream = new WekStream();
             xstream.alias("LoadableInstanceMaker", LoadableInstanceMaker.class);
             m = (LoadableInstanceMaker) xstream.fromXML(xml);
 

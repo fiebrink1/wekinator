@@ -18,6 +18,7 @@ import weka.core.Instance;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.WekaException;
+import wekimini.util.WekStream;
 
 /**
  *
@@ -61,7 +62,7 @@ public class AdaboostModel implements SupervisedLearningModel {
     }
     
     public void writeToOutputStream(ObjectOutputStream os) throws IOException {
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("AdaboostModel", AdaboostModel.class);
         String xml = xstream.toXML(this);
         os.writeObject(xml);
@@ -71,7 +72,7 @@ public class AdaboostModel implements SupervisedLearningModel {
     
     public static AdaboostModel readFromInputStream(ObjectInputStream is) throws IOException, ClassNotFoundException {
         String xml = (String)is.readObject();
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("AdaboostModel", AdaboostModel.class);
         AdaboostModel model = (AdaboostModel) xstream.fromXML(xml);
         AdaBoostM1 ada = (AdaBoostM1)is.readObject();

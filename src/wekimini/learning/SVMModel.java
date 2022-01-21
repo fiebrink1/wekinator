@@ -19,6 +19,7 @@ import weka.core.Instance;
 import wekimini.osc.OSCClassificationOutput;
 import wekimini.osc.OSCOutput;
 import wekimini.WekaException;
+import wekimini.util.WekStream;
 
 /**
  *
@@ -63,7 +64,7 @@ public class SVMModel implements SupervisedLearningModel {
     }
     
     public void writeToOutputStream(ObjectOutputStream os) throws IOException {
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("SVMModel", SVMModel.class);
         String xml = xstream.toXML(this);
         os.writeObject(xml);
@@ -73,7 +74,7 @@ public class SVMModel implements SupervisedLearningModel {
     
     public static SVMModel readFromInputStream(ObjectInputStream is) throws IOException, ClassNotFoundException {
         String xml = (String)is.readObject();
-        XStream xstream = new XStream();
+        XStream xstream = new WekStream();
         xstream.alias("SVMModel", SVMModel.class);
         SVMModel model = (SVMModel) xstream.fromXML(xml);
         SMO svm = (SMO)is.readObject();

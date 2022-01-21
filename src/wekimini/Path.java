@@ -30,6 +30,7 @@ import wekimini.learning.ModelBuilder;
 import wekimini.learning.SupervisedLearningModel;
 import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCSupervisedLearningOutput;
+import wekimini.util.WekStream;
 
 /**
  * Listens for appropriate changes at InputManager, sends inputs to Model,
@@ -511,7 +512,7 @@ public class Path {
             outstream = new FileOutputStream(filename);
             objout = new ObjectOutputStream(outstream);
 
-            XStream xstream = new XStream();
+            XStream xstream = new WekStream();
             xstream.alias("Path", Path.class);
             String xml = xstream.toXML(this);
             objout.writeObject(xml);
