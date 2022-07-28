@@ -1,32 +1,30 @@
-/* plugins { */
-/*   id("java") */
-/* } */
+plugins {
+  id("java")
+  id("com.github.johnrengelman.shadow") version "6.0.0"
+  application
+}
 
-
-// The below seems to be the way to import the ant build so I can run its tasks
-// from gradle, but I'm not sure it's producing things in a way that can be
-// depended on by other gradle builds.
-ant.importBuild("build.xml") { oldTargetName -> when (oldTargetName) {
-    "init" -> "ant_init"
-    else -> oldTargetName
+dependencies {
+  listOf(
+    "commons-cli-1.4.jar",
+    "FastDTW1.1.0.jar",
+    "javaosc.jar",
+    "JSON.jar",
+    "swing-worker-1.2.jar",
+    "weka.jar",
+    "xmlpull-1.1.3.1.jar",
+    "xpp3_min-1.1.4c.jar",
+    "xstream-1.4.18.jar",
+    "absolutelayout/AbsoluteLayout.jar",
+    "swing-layout/swing-layout-1.0.4.jar",
+  ).forEach {
+    implementation(files("lib/$it"))
   }
 }
 
-// This seems to be necessary to let the project depending on wekinator
-// reference this gradle project.
-configurations {
-  create("wekijar")
-}
+// run ./gradlew shadowJar to generate build/libs/wekinator-all.jar. This is a
+// jar that contains all dependencies, so it can be moved to another system and
+// run with java -jar.
+project.setProperty("mainClassName", "wekimini.WekiMiniRunner") // for shadowJar
 
-// Trying to produce artifacts that can be used by other gradle builds.
-sourceSets {
-  main {
-    output.dir(
-  }
-}
-
-// Trying to register a task that can be referenced by other gradle builds.
-tasks.register("build")
-tasks.named("build") {
-  dependsOn("standalone-jar")
-}
+sourceSets { main { resources { srcDirs("src/main/java") } } }
