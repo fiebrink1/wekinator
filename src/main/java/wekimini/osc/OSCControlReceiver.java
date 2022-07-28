@@ -7,6 +7,7 @@ import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import wekimini.WekiMiniRunner;
@@ -97,7 +98,7 @@ public class OSCControlReceiver {
         OSCListener startDtwRecordListener = new OSCListener() {
             @Override
             public void acceptMessage(Date date, OSCMessage oscm) {
-                List<Object> o = oscm.getArguments();
+                List<Object> o = Arrays.asList(oscm.getArguments());
                 if (o != null && o.size() > 0 && o.get(0) instanceof Integer) {
                     controller.startDtwRecord((Integer) o.get(0));
                 } else {
@@ -158,7 +159,7 @@ public class OSCControlReceiver {
         OSCListener deleteAllExamplesForOutputListener = new OSCListener() {
             @Override
             public void acceptMessage(Date date, OSCMessage oscm) {
-                List<Object> o = oscm.getArguments();
+                List<Object> o = Arrays.asList(oscm.getArguments());
                 if (o != null && o.size() > 0 && o.get(0) instanceof Integer) {
                     controller.deleteExamplesForOutput((Integer) o.get(0));
                 } else {
@@ -195,7 +196,7 @@ public class OSCControlReceiver {
                     return;
                 }
 
-                List<Object> o = oscm.getArguments();
+                List<Object> o = Arrays.asList(oscm.getArguments());
                 if (o.size() == 0) {
                     w.getStatusUpdateCenter().warn(this,
                             "OSC message " + enableModelRecordMessage
@@ -239,7 +240,7 @@ public class OSCControlReceiver {
                     return;
                 }
 
-                List<Object> o = oscm.getArguments();
+                List<Object> o = Arrays.asList(oscm.getArguments());
                 try {
                     if (w.getInputManager().hasValidInputs() && o.size() != w.getInputManager().getNumInputs()) {
                         w.getStatusUpdateCenter().warn(this,
@@ -280,7 +281,7 @@ public class OSCControlReceiver {
                     return;
                 }
 
-                List<Object> o = oscm.getArguments();
+                List<Object> o = Arrays.asList(oscm.getArguments());
                 try {
                     if (w.getOutputManager().hasValidOutputGroup() && o.size() != w.getOutputManager().getOutputGroup().getNumOutputs()) {
                         w.getStatusUpdateCenter().warn(this,
@@ -322,7 +323,7 @@ public class OSCControlReceiver {
                     return;
                 }
 
-                List<Object> o = oscm.getArguments();
+                List<Object> o = Arrays.asList(oscm.getArguments());
                 try {
                     //Check if we can reasonably do something with this:
                     if (!w.getInputManager().hasValidInputs() || !w.getOutputManager().hasValidOutputGroup()) {
@@ -377,7 +378,7 @@ public class OSCControlReceiver {
                     return;
                 }
 
-                List<Object> o = oscm.getArguments();
+                List<Object> o = Arrays.asList(oscm.getArguments());
                 try {
                     //w.getOutputManager().hasValidOutputGroup()) {
 
@@ -458,7 +459,7 @@ public class OSCControlReceiver {
                     return;
                 }
 
-                List<Object> o = oscm.getArguments();
+                List<Object> o = Arrays.asList(oscm.getArguments());
                 try {
                     //w.getOutputManager().hasValidOutputGroup()) {
 
@@ -520,7 +521,7 @@ public class OSCControlReceiver {
                     return;
                 }
 
-                List<Object> o = oscm.getArguments();
+                List<Object> o = Arrays.asList(oscm.getArguments());
                 try {
                     //w.getOutputManager().hasValidOutputGroup()) {
 

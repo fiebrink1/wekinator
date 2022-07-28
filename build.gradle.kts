@@ -27,4 +27,9 @@ dependencies {
 // run with java -jar.
 project.setProperty("mainClassName", "wekimini.WekiMiniRunner") // for shadowJar
 
+// This puts the entire java source tree into the src/main/resources folder of
+// the output jar. This is because resource files like icon images are mixed in
+// with the java source, and this one-line change allows the project to build
+// without moving a bunch of files and changing a bunch of hardcoded filepaths
+// in code. (At least, I think that's what this does.)
 sourceSets { main { resources { srcDirs("src/main/java") } } }

@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EventListener;
@@ -177,7 +178,7 @@ public class InputManager {
         //TODO: CHeck if enabled before doing anything
         //System.out.println("Received " + name);
         if (inputGroup != null && messageName.equals(inputGroup.getOscMessage())) {
-            List<Object> o = m.getArguments();
+            List<Object> o = Arrays.asList(m.getArguments());
             double d[] = new double[o.size()];
             for (int i = 0; i < o.size(); i++) {
                 if (o.get(i) instanceof Float) {
@@ -206,7 +207,7 @@ public class InputManager {
         //System.out.println("Received " + name);
         if (inputGroup != null) { try {
             //&& messageName.equals(makeBundleMessage(inputGroup.getOscMessage()))) {
-            List<Object> o = m.getArguments();
+            List<Object> o = Arrays.asList(m.getArguments());
             if (o == null || o.size() < 1 || !(o.get(0) instanceof String)) {
                 String msg = "Unexpected bundle message; require 1 string containing filename";
                 w.getStatusUpdateCenter().warn(this, msg);

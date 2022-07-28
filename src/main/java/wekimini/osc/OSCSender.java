@@ -201,7 +201,7 @@ public class OSCSender {
             try {
                 List<Object> o = new LinkedList<Object>();
                 o.add(filename);
-                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
+                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o.toArray());
                 bundleSender.send(msg);
                 fireSendEvent();
             } catch (IOException ex) {
@@ -263,7 +263,7 @@ public class OSCSender {
             try {
                 List<Object> o = new LinkedList<Object>();
                 o.add(filename);
-                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
+                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o.toArray());
                 bundleSender.send(msg);
                 fireSendEvent();
             } catch (IOException ex) {

@@ -11,6 +11,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.EventListener;
 import java.util.LinkedList;
@@ -203,7 +204,7 @@ public class OutputManager {
         //TODO: Probably want to make intelligent decision about whether to
         //use these or not (i.e., if in running mode, ignore these)
 
-        List<Object> o = m.getArguments();
+        List<Object> o = Arrays.asList(m.getArguments());
         double d[] = new double[o.size()];
         if (currentValues.length == d.length) {
             for (int i = 0; i < o.size(); i++) {
