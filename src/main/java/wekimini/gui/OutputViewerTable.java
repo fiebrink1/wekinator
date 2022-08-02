@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
+import com.illposed.osc.OSCSerializeException;
 import wekimini.OutputManager;
 import wekimini.OutputTableModel;
 import wekimini.Path;
@@ -209,6 +210,8 @@ public class OutputViewerTable extends javax.swing.JFrame {
         } catch (IOException ex) {
             Util.showPrettyErrorPane(this, "Could not send message " + ex.getMessage());
             Logger.getLogger(OutputViewerTable.class.getName()).log(Level.SEVERE, null,ex);
+        } catch (OSCSerializeException ex) {
+            Logger.getLogger(OutputViewerTable.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }//GEN-LAST:event_buttonSendTestActionPerformed
@@ -269,6 +272,8 @@ public class OutputViewerTable extends javax.swing.JFrame {
         } catch (SocketException ex) {
             Logger.getLogger(OutputViewerTable.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownHostException ex) {
+            Logger.getLogger(OutputViewerTable.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(OutputViewerTable.class.getName()).log(Level.SEVERE, null, ex);
         }
         updateLabel();

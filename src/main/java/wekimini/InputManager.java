@@ -5,7 +5,8 @@
  */
 package wekimini;
 
-import com.illposed.osc.OSCListener;
+import com.illposed.osc.OSCMessageListener;
+import com.illposed.osc.OSCMessageEvent;
 import com.illposed.osc.OSCMessage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -120,6 +121,7 @@ public class InputManager {
     }
 
     public void setOSCInputGroup(OSCInputGroup newG) {
+        //System.out.println("setting input group " + newG + Thread.currentThread().getStackTrace());
         //inputs.add(g);
         OSCInputGroup oldGroup = inputGroup;
         inputGroup = newG;
@@ -130,6 +132,7 @@ public class InputManager {
         }
         if (inputGroup != null) {
             currentValues = new double[inputGroup.getNumInputs()];
+            //System.out.println("currentValues: " + currentValues + " " + inputGroup.getNumInputs());
         }
         propertyChangeSupport.firePropertyChange(PROP_INPUTGROUP, oldGroup, inputGroup);
     }
@@ -155,36 +158,36 @@ public class InputManager {
     }
 
     private void addOSCInputListener(final OSCInputGroup g) {
-        OSCListener l = new OSCListener() {
+        OSCMessageListener l = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
-                messageArrived(g.getOscMessage(), oscm);
+            public void acceptMessage(OSCMessageEvent oscm) {
+                messageArrived(g.getOscMessage(), oscm.getMessage());
             }
         };
 
-        OSCListener groupl = new OSCListener() {
+        OSCMessageListener groupl = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
-                bundleArrived(g.getOscMessage(), oscm);
+            public void acceptMessage(OSCMessageEvent oscm) {
+                bundleArrived(g.getOscMessage(), oscm.getMessage());
             }
 
         };
 
-        w.getOSCReceiver().addOSCListener(g.getOscMessage(), l);
-        w.getOSCReceiver().addOSCListener("/wek/inputs/bundle", groupl);
+        w.getOSCReceiver().addOSCMessageListener(g.getOscMessage(), l);
+        w.getOSCReceiver().addOSCMessageListener("/wek/inputs/bundle", groupl);
     }
 
     private void messageArrived(String messageName, OSCMessage m) {
         //TODO: CHeck if enabled before doing anything
-        //System.out.println("Received " + name);
+        //System.out.println("Received " + messageName + " with value " + m.getArguments());
         if (inputGroup != null && messageName.equals(inputGroup.getOscMessage())) {
-            List<Object> o = Arrays.asList(m.getArguments());
+            List<Object> o = m.getArguments();
             double d[] = new double[o.size()];
             for (int i = 0; i < o.size(); i++) {
                 if (o.get(i) instanceof Float) {
                     d[i] = ((Float) o.get(i));
                 } else {
-                    Logger.getLogger(InputManager.class.getName()).log(Level.WARNING, "Received feature is not a float");
+                    Logger.getLogger(InputManager.class.getName()).log(Level.WARNING, "Received feature is not a float: " + o.get(i).getClass().getSimpleName() + " " + o.get(i));
                 }
             }
             if (d.length == currentValues.length) {

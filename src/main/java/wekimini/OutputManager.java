@@ -5,7 +5,9 @@
  */
 package wekimini;
 
-import com.illposed.osc.OSCListener;
+import com.illposed.osc.OSCMessageListener;
+import com.illposed.osc.OSCMessageEvent;
+import com.illposed.osc.OSCSerializeException;
 import com.illposed.osc.OSCMessage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -189,10 +191,10 @@ public class OutputManager {
     }
 
     private void addOSCOutputValueListener() {
-        OSCListener l = new OSCListener() {
+        OSCMessageListener l = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
-                messageArrived(oscm);
+            public void acceptMessage(OSCMessageEvent oscm) {
+                messageArrived(oscm.getMessage());
             }
         };
         //Groupname as message:
@@ -286,6 +288,9 @@ public class OutputManager {
     public void sendMessage(String msgName) {
         try {
             w.getOSCSender().sendOutputMessage(msgName);
+        } catch (OSCSerializeException ex) {
+            logger.log(Level.SEVERE, "Couldn't send message");
+            logger.log(Level.SEVERE, null, ex);        
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Couldn't send message");
             logger.log(Level.SEVERE, null, ex);        

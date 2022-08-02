@@ -20,6 +20,7 @@ import wekimini.kadenze.KadenzeLogging;
 import wekimini.learning.dtw.DtwData;
 import wekimini.learning.dtw.DtwModel;
 import wekimini.learning.dtw.DtwSettings;
+import com.illposed.osc.OSCSerializeException;
 import wekimini.osc.OSCDtwOutput;
 import wekimini.osc.OSCOutputGroup;
 
@@ -372,6 +373,8 @@ public class DtwLearningManager implements ConnectsInputsToOutputs {
         if (newMatch != -1) {
             try {
                 w.getOSCSender().sendOutputMessage(model.getOSCOutput().getGestureOscMessages(newMatch)); //XXX update to use output manager
+            } catch (OSCSerializeException ex) {
+                Logger.getLogger(DtwLearningManager.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(DtwLearningManager.class.getName()).log(Level.SEVERE, null, ex);
             }

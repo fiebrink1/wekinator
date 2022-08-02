@@ -23,6 +23,7 @@ import wekimini.Wekinator;
 import wekimini.osc.OSCDtwOutput;
 import wekimini.osc.OSCOutputGroup;
 import wekimini.util.Util;
+import com.illposed.osc.OSCSerializeException;
 
 /**
  *
@@ -185,6 +186,9 @@ public class DtwOutputEditor extends javax.swing.JFrame {
         } catch (IOException ex) {
             Util.showPrettyErrorPane(this, "Could not send message " + ex.getMessage());
             Logger.getLogger(DtwOutputEditor.class.getName()).log(Level.SEVERE, null,ex);
+        } catch (OSCSerializeException ex) {
+            Util.showPrettyErrorPane(this, "Could not send message " + ex.getMessage());
+            Logger.getLogger(DtwOutputEditor.class.getName()).log(Level.SEVERE, null,ex);
         }
 
     }//GEN-LAST:event_buttonSendTestActionPerformed
@@ -220,9 +224,7 @@ public class DtwOutputEditor extends javax.swing.JFrame {
             //HOWEVER output group current has these as final fields...
             //So we have to do this at top level too:
             w.getOSCSender().setHostnameAndPort(InetAddress.getByName(host), port);
-        } catch (SocketException ex) {
-            Logger.getLogger(DtwOutputEditor.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnknownHostException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(DtwOutputEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
         updateLabel();

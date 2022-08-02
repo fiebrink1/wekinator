@@ -6,7 +6,8 @@
 package wekimini.osc;
 
 import com.illposed.osc.OSCMessage;
-import com.illposed.osc.OSCPortOut;
+import com.illposed.osc.OSCSerializeException;
+import com.illposed.osc.transport.OSCPortOut;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -47,7 +49,7 @@ public class OSCSender {
         return isValidState;
     }
 
-    public OSCSender() throws UnknownHostException, SocketException {
+    public OSCSender() throws UnknownHostException, SocketException, IOException {
 //        hostname = InetAddress.getByName("localhost");
 //        port = DEFAULT_SEND_PORT;
       //  sendMessage = DEFAULT_SEND_MESSAGE;
@@ -64,7 +66,7 @@ public class OSCSender {
         isValidState = true;
     } */
 
-    public void setDefaultHostAndPort() throws SocketException, UnknownHostException {
+    public void setDefaultHostAndPort() throws SocketException, UnknownHostException, IOException {
         setHostnameAndPort(InetAddress.getByName("localhost"), DEFAULT_SEND_PORT);
     }
 
@@ -82,7 +84,7 @@ public class OSCSender {
         return hostname;
     }
 
-    public void setHostnameAndPort(InetAddress hostname, int port) throws SocketException {
+    public void setHostnameAndPort(InetAddress hostname, int port) throws SocketException, IOException {
         sender = new OSCPortOut(hostname, port);
         this.port = port;
         this.hostname = hostname;
@@ -95,23 +97,31 @@ public class OSCSender {
 
     //Does not establish long-term sender
     //Use for connection testing
-    public static void sendTestMessage(String message, InetAddress hostname, int port, int numFloats) throws SocketException, IOException {
+    public static void sendTestMessage(String message, InetAddress hostname, int port, int numFloats) throws SocketException, IOException, OSCSerializeException {
         OSCPortOut s = new OSCPortOut(hostname, port);
         Object[] o = new Object[numFloats];
         for (int i = 0; i < o.length; i++) {
             o[i] = new Float(i);
         }
-        OSCMessage msg = new OSCMessage(message, o);
-        s.send(msg);
+        OSCMessage msg = new OSCMessage(message, Arrays.asList(o));
+        try {
+            s.send(msg);
+        } catch (OSCSerializeException ex) {
+            Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
+            throw ex;
+        }
     }
 
-    public void sendOutputMessage(String msgName) throws IOException {
+    public void sendOutputMessage(String msgName) throws IOException, OSCSerializeException {
         if (isValidState) {
             try {
                 OSCMessage msg = new OSCMessage(msgName);
                 sender.send(msg);
                 fireSendEvent();
             } catch (IOException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
+            } catch (OSCSerializeException ex) {
                 Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
                 throw ex;
             }
@@ -125,13 +135,15 @@ public class OSCSender {
             Object[] o = new Object[1];
             try {
                 o[0] = (float) data;
-                OSCMessage msg = new OSCMessage(msgName, o);
+                OSCMessage msg = new OSCMessage(msgName, Arrays.asList(o));
                 sender.send(msg);
                 fireSendEvent();
             } catch (IOException ex) {
                 Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
                 throw ex;
-            }
+            } catch (OSCSerializeException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
+             }
         } else {
             logger.log(Level.WARNING, "Could not send OSC message: Invalid state");
         }
@@ -145,12 +157,14 @@ public class OSCSender {
                 for (int i = 0; i < data.length; i++) {
                     o[i] = (float) data[i];
                 }
-                OSCMessage msg = new OSCMessage(msgName, o);
+                OSCMessage msg = new OSCMessage(msgName, Arrays.asList(o));
                 sender.send(msg);
                 fireSendEvent();
             } catch (IOException ex) {
                 Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
                 throw ex;
+            } catch (OSCSerializeException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             logger.log(Level.WARNING, "Could not send OSC message: Invalid state");
@@ -201,12 +215,14 @@ public class OSCSender {
             try {
                 List<Object> o = new LinkedList<Object>();
                 o.add(filename);
-                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o.toArray());
+                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
                 bundleSender.send(msg);
                 fireSendEvent();
             } catch (IOException ex) {
                 Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
                 throw ex;
+            } catch (OSCSerializeException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             logger.log(Level.WARNING, "Could not send OSC message: Invalid state");
@@ -263,12 +279,14 @@ public class OSCSender {
             try {
                 List<Object> o = new LinkedList<Object>();
                 o.add(filename);
-                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o.toArray());
+                OSCMessage msg = new OSCMessage(oscMessage + "/bundle", o);
                 bundleSender.send(msg);
                 fireSendEvent();
             } catch (IOException ex) {
                 Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
                 throw ex;
+            } catch (OSCSerializeException ex) {
+                Logger.getLogger(OSCSender.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             logger.log(Level.WARNING, "Could not send OSC message: Invalid state");

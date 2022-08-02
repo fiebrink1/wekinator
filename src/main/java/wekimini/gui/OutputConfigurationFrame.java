@@ -25,6 +25,7 @@ import wekimini.osc.OSCOutput;
 import wekimini.osc.OSCOutputGroup;
 import wekimini.osc.OSCSender;
 import wekimini.util.Util;
+import com.illposed.osc.OSCSerializeException;
 
 /**
  *
@@ -557,6 +558,8 @@ public class OutputConfigurationFrame extends javax.swing.JFrame implements UpDo
             //try {
             OSCSender.sendTestMessage(message, address, port, numOutputs);
         } catch (IOException ex) {
+            Util.showPrettyErrorPane(this, "Could not send message: " + ex.getMessage());
+        } catch (OSCSerializeException ex) {
             Util.showPrettyErrorPane(this, "Could not send message: " + ex.getMessage());
         }
 

@@ -6,9 +6,12 @@
 package wekimini.osc;
 
 import com.illposed.osc.*;
+import com.illposed.osc.messageselector.*;
+import com.illposed.osc.transport.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.SocketException;
+import java.io.IOException;
 import wekimini.util.Util;
 
 /**
@@ -61,7 +64,7 @@ public class OSCReceiver {
     public void startListening() {
         try {
             receiver = new OSCPortIn(receivePort);
-        } catch (SocketException ex) {
+        } catch (IOException ex) {
             Util.showPrettyErrorPane(/*caller=*/null,
                     "Could not bind to port " + receivePort
                             + ". Please ensure that nothing else is trying to listen on this same port.");
@@ -84,32 +87,38 @@ public class OSCReceiver {
         //need to notify listeners that receiver has changed?
         if (receiver != null) {
             receiver.stopListening();
-            receiver.close(); //this line causes errors!! No way to get rid of them, nothing to worry about.
+            try {
+                receiver.close(); //this line causes errors!! No way to get rid of them, nothing to worry about.
+            } catch (IOException ex) {
+                System.out.println("Failed to close the receiving :(");
+            }
         }
         setConnectionState(ConnectionState.NOT_CONNECTED);
     }
 
-    public void addOSCListener(String message, OSCListener listener) {
+    public void addOSCMessageListener(String message, OSCMessageListener listener) {
         if (receiver != null) {
-            receiver.addListener(message, listener);
+            MessageSelector selector = new OSCPatternAddressMessageSelector(message);
+            receiver.getDispatcher().addListener(selector, listener);
         }
     }
     
-    public void addOSCOutputValueListener(OSCListener listener) {
+    public void addOSCOutputValueListener(OSCMessageListener listener) {
         if (receiver != null) {
-            receiver.addListener(oscOutputReceiveString, listener);
+            MessageSelector selector = new OSCPatternAddressMessageSelector(oscOutputReceiveString);
+            receiver.getDispatcher().addListener(selector, listener);
         }
     }
     
     public static void main(String[] args) {
        /* try {
             OSCPortIn receiver = new OSCPortIn(6448);
-            OSCListener listener = new OSCListener() {
+            OSCMessageListener listener = new OSCMessageListener() {
                 public void acceptMessage(java.util.Date time, OSCMessage message) {
                     System.out.println("Message 1 received!");
                 }
             };
-            OSCListener listener2 = new OSCListener() {
+            OSCMessageListener listener2 = new OSCMessageListener() {
                 public void acceptMessage(java.util.Date time, OSCMessage message) {
                     System.out.println("Message 2 received!");
                 }

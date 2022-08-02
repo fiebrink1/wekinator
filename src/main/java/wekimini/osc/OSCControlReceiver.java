@@ -3,8 +3,8 @@
  */
 package wekimini.osc;
 
-import com.illposed.osc.OSCListener;
-import com.illposed.osc.OSCMessage;
+import com.illposed.osc.OSCMessageListener;
+import com.illposed.osc.OSCMessageEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
@@ -79,26 +79,26 @@ public class OSCControlReceiver {
     }
 
     private void addOSCControlListeners() {
-        OSCListener startRecordListener = new OSCListener() {
+        OSCMessageListener startRecordListener = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 controller.startRecord();
             }
         };
-        w.getOSCReceiver().addOSCListener(startRecordMessage, startRecordListener);
+        w.getOSCReceiver().addOSCMessageListener(startRecordMessage, startRecordListener);
 
-        OSCListener stopRecordListener = new OSCListener() {
+        OSCMessageListener stopRecordListener = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 controller.stopRecord();
             }
         };
-        w.getOSCReceiver().addOSCListener(stopRecordMessage, stopRecordListener);
+        w.getOSCReceiver().addOSCMessageListener(stopRecordMessage, stopRecordListener);
 
-        OSCListener startDtwRecordListener = new OSCListener() {
+        OSCMessageListener startDtwRecordListener = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
-                List<Object> o = Arrays.asList(oscm.getArguments());
+            public void acceptMessage(OSCMessageEvent oscm) {
+                List<Object> o = oscm.getMessage().getArguments();
                 if (o != null && o.size() > 0 && o.get(0) instanceof Integer) {
                     controller.startDtwRecord((Integer) o.get(0));
                 } else {
@@ -107,59 +107,59 @@ public class OSCControlReceiver {
                 }
             }
         };
-        w.getOSCReceiver().addOSCListener(startDtwRecordMessage, startDtwRecordListener);
+        w.getOSCReceiver().addOSCMessageListener(startDtwRecordMessage, startDtwRecordListener);
 
-        OSCListener stopDtwRecordListener = new OSCListener() {
+        OSCMessageListener stopDtwRecordListener = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 controller.stopDtwRecord();
             }
         };
-        w.getOSCReceiver().addOSCListener(stopDtwRecordMessage, stopDtwRecordListener);
+        w.getOSCReceiver().addOSCMessageListener(stopDtwRecordMessage, stopDtwRecordListener);
 
-        OSCListener startRunListener = new OSCListener() {
+        OSCMessageListener startRunListener = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 controller.startRun();
             }
         };
-        w.getOSCReceiver().addOSCListener(startRunningMessage, startRunListener);
+        w.getOSCReceiver().addOSCMessageListener(startRunningMessage, startRunListener);
 
-        OSCListener stopRunListener = new OSCListener() {
+        OSCMessageListener stopRunListener = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 controller.stopRun();
             }
         };
-        w.getOSCReceiver().addOSCListener(stopRunningMessage, stopRunListener);
+        w.getOSCReceiver().addOSCMessageListener(stopRunningMessage, stopRunListener);
 
-        OSCListener trainListener = new OSCListener() {
+        OSCMessageListener trainListener = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 controller.train();
             }
         };
-        w.getOSCReceiver().addOSCListener(trainMessage, trainListener);
+        w.getOSCReceiver().addOSCMessageListener(trainMessage, trainListener);
 
-        OSCListener cancelTrainListener = new OSCListener() {
+        OSCMessageListener cancelTrainListener = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 controller.cancelTrain();
             }
         };
-        w.getOSCReceiver().addOSCListener(cancelTrainingMessage, cancelTrainListener);
+        w.getOSCReceiver().addOSCMessageListener(cancelTrainingMessage, cancelTrainListener);
 
-        OSCListener deleteAllExamplesListener = new OSCListener() {
+        OSCMessageListener deleteAllExamplesListener = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 controller.deleteAllExamples();
             }
         };
 
-        OSCListener deleteAllExamplesForOutputListener = new OSCListener() {
+        OSCMessageListener deleteAllExamplesForOutputListener = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
-                List<Object> o = Arrays.asList(oscm.getArguments());
+            public void acceptMessage(OSCMessageEvent oscm) {
+                List<Object> o = oscm.getMessage().getArguments();
                 if (o != null && o.size() > 0 && o.get(0) instanceof Integer) {
                     controller.deleteExamplesForOutput((Integer) o.get(0));
                 } else {
@@ -169,34 +169,34 @@ public class OSCControlReceiver {
             }
         };
 
-        w.getOSCReceiver().addOSCListener(deleteAllExamplesMessage, deleteAllExamplesListener);
-        w.getOSCReceiver().addOSCListener(deleteExamplesForOutputMessage, deleteAllExamplesForOutputListener);
+        w.getOSCReceiver().addOSCMessageListener(deleteAllExamplesMessage, deleteAllExamplesListener);
+        w.getOSCReceiver().addOSCMessageListener(deleteExamplesForOutputMessage, deleteAllExamplesForOutputListener);
 
-        w.getOSCReceiver().addOSCListener(enableModelRecordMessage, createModelChangeListener(true, true));
-        w.getOSCReceiver().addOSCListener(disableModelRecordMessage, createModelChangeListener(true, false));
-        w.getOSCReceiver().addOSCListener(enableModelRunMessage, createModelChangeListener(false, true));
-        w.getOSCReceiver().addOSCListener(disableModelRunMessage, createModelChangeListener(false, false));
+        w.getOSCReceiver().addOSCMessageListener(enableModelRecordMessage, createModelChangeListener(true, true));
+        w.getOSCReceiver().addOSCMessageListener(disableModelRecordMessage, createModelChangeListener(true, false));
+        w.getOSCReceiver().addOSCMessageListener(enableModelRunMessage, createModelChangeListener(false, true));
+        w.getOSCReceiver().addOSCMessageListener(disableModelRunMessage, createModelChangeListener(false, false));
 
-        w.getOSCReceiver().addOSCListener(setInputNamesMessage, createInputNamesListener());
-        w.getOSCReceiver().addOSCListener(setOutputNamesMessage, createOutputNamesListener());
-        w.getOSCReceiver().addOSCListener(setInputSelectionForOutputMessage, createInputSelectionListener());
-        w.getOSCReceiver().addOSCListener(loadModelFromFileMessage, createModelLoadListener());
-        w.getOSCReceiver().addOSCListener(saveModelToFileMessage, createModelSaveListener());
-        w.getOSCReceiver().addOSCListener(runNewProjectMessage, runNewProjectListener());
-        w.getOSCReceiver().addOSCListener(enablePerformanceModeMessage, enablePerformanceModeListener());
-        w.getOSCReceiver().addOSCListener(disablePerformanceModeMessage, disablePerformanceModeListener());
+        w.getOSCReceiver().addOSCMessageListener(setInputNamesMessage, createInputNamesListener());
+        w.getOSCReceiver().addOSCMessageListener(setOutputNamesMessage, createOutputNamesListener());
+        w.getOSCReceiver().addOSCMessageListener(setInputSelectionForOutputMessage, createInputSelectionListener());
+        w.getOSCReceiver().addOSCMessageListener(loadModelFromFileMessage, createModelLoadListener());
+        w.getOSCReceiver().addOSCMessageListener(saveModelToFileMessage, createModelSaveListener());
+        w.getOSCReceiver().addOSCMessageListener(runNewProjectMessage, runNewProjectListener());
+        w.getOSCReceiver().addOSCMessageListener(enablePerformanceModeMessage, enablePerformanceModeListener());
+        w.getOSCReceiver().addOSCMessageListener(disablePerformanceModeMessage, disablePerformanceModeListener());
 
     }
 
-    private OSCListener createModelChangeListener(final boolean isRecord, final boolean isEnable) {
-        OSCListener l = new OSCListener() {
+    private OSCMessageListener createModelChangeListener(final boolean isRecord, final boolean isEnable) {
+        OSCMessageListener l = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 if (!controller.checkEnabled()) {
                     return;
                 }
 
-                List<Object> o = Arrays.asList(oscm.getArguments());
+                List<Object> o = oscm.getMessage().getArguments();
                 if (o.size() == 0) {
                     w.getStatusUpdateCenter().warn(this,
                             "OSC message " + enableModelRecordMessage
@@ -232,15 +232,15 @@ public class OSCControlReceiver {
         return l;
     }
 
-    private OSCListener createInputNamesListener() {
-        OSCListener l = new OSCListener() {
+    private OSCMessageListener createInputNamesListener() {
+        OSCMessageListener l = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 if (!controller.checkEnabled()) {
                     return;
                 }
 
-                List<Object> o = Arrays.asList(oscm.getArguments());
+                List<Object> o = oscm.getMessage().getArguments();
                 try {
                     if (w.getInputManager().hasValidInputs() && o.size() != w.getInputManager().getNumInputs()) {
                         w.getStatusUpdateCenter().warn(this,
@@ -253,7 +253,7 @@ public class OSCControlReceiver {
                     for (int i = 0; i < o.size(); i++) {
                         if (!(o.get(i) instanceof String)) {
                             w.getStatusUpdateCenter().warn(this,
-                                    "Received non-string argument(s) for OSC message " + oscm);
+                                    "Received non-string argument(s) for OSC message " + oscm.getMessage());
                             return;
                         }
                         names[i] = (String) o.get(i);
@@ -273,15 +273,15 @@ public class OSCControlReceiver {
         return l;
     }
 
-    private OSCListener createOutputNamesListener() {
-        OSCListener l = new OSCListener() {
+    private OSCMessageListener createOutputNamesListener() {
+        OSCMessageListener l = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 if (!controller.checkEnabled()) {
                     return;
                 }
 
-                List<Object> o = Arrays.asList(oscm.getArguments());
+                List<Object> o = oscm.getMessage().getArguments();
                 try {
                     if (w.getOutputManager().hasValidOutputGroup() && o.size() != w.getOutputManager().getOutputGroup().getNumOutputs()) {
                         w.getStatusUpdateCenter().warn(this,
@@ -294,7 +294,7 @@ public class OSCControlReceiver {
                     for (int i = 0; i < o.size(); i++) {
                         if (!(o.get(i) instanceof String)) {
                             w.getStatusUpdateCenter().warn(this,
-                                    "Received non-string argument(s) for OSC message " + oscm);
+                                    "Received non-string argument(s) for OSC message " + oscm.getMessage());
                             return;
                         }
                         names[i] = (String) o.get(i);
@@ -315,15 +315,15 @@ public class OSCControlReceiver {
     }
 
     //TODO Make use of this if it comes in early in project setup!
-    private OSCListener createInputSelectionListener() {
-        OSCListener l = new OSCListener() {
+    private OSCMessageListener createInputSelectionListener() {
+        OSCMessageListener l = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 if (!controller.checkEnabled()) {
                     return;
                 }
 
-                List<Object> o = Arrays.asList(oscm.getArguments());
+                List<Object> o = oscm.getMessage().getArguments();
                 try {
                     //Check if we can reasonably do something with this:
                     if (!w.getInputManager().hasValidInputs() || !w.getOutputManager().hasValidOutputGroup()) {
@@ -370,15 +370,15 @@ public class OSCControlReceiver {
         return l;
     }
 
-    private OSCListener createModelLoadListener() {
-        OSCListener l = new OSCListener() {
+    private OSCMessageListener createModelLoadListener() {
+        OSCMessageListener l = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 if (!controller.checkEnabled()) {
                     return;
                 }
 
-                List<Object> o = Arrays.asList(oscm.getArguments());
+                List<Object> o = oscm.getMessage().getArguments();
                 try {
                     //w.getOutputManager().hasValidOutputGroup()) {
 
@@ -451,15 +451,15 @@ public class OSCControlReceiver {
         return l;
     }
 
-    private OSCListener createModelSaveListener() {
-        OSCListener l = new OSCListener() {
+    private OSCMessageListener createModelSaveListener() {
+        OSCMessageListener l = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 if (!controller.checkEnabled()) {
                     return;
                 }
 
-                List<Object> o = Arrays.asList(oscm.getArguments());
+                List<Object> o = oscm.getMessage().getArguments();
                 try {
                     //w.getOutputManager().hasValidOutputGroup()) {
 
@@ -512,16 +512,16 @@ public class OSCControlReceiver {
         return l;
     }
 
-    private OSCListener runNewProjectListener() {
-        OSCListener l;
-        l = new OSCListener() {
+    private OSCMessageListener runNewProjectListener() {
+        OSCMessageListener l;
+        l = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 if (!controller.checkEnabled()) {
                     return;
                 }
 
-                List<Object> o = Arrays.asList(oscm.getArguments());
+                List<Object> o = oscm.getMessage().getArguments();
                 try {
                     //w.getOutputManager().hasValidOutputGroup()) {
 
@@ -577,11 +577,11 @@ public class OSCControlReceiver {
         return l;
     }
 
-    private OSCListener enablePerformanceModeListener() {
-        OSCListener l;
-        l = new OSCListener() {
+    private OSCMessageListener enablePerformanceModeListener() {
+        OSCMessageListener l;
+        l = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 if (!controller.checkEnabled()) {
                     return;
                 }
@@ -591,11 +591,11 @@ public class OSCControlReceiver {
         return l;
     }
 
-    private OSCListener disablePerformanceModeListener() {
-        OSCListener l;
-        l = new OSCListener() {
+    private OSCMessageListener disablePerformanceModeListener() {
+        OSCMessageListener l;
+        l = new OSCMessageListener() {
             @Override
-            public void acceptMessage(Date date, OSCMessage oscm) {
+            public void acceptMessage(OSCMessageEvent oscm) {
                 if (!controller.checkEnabled()) {
                     return;
                 }

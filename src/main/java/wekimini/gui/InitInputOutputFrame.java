@@ -900,7 +900,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
     }//GEN-LAST:event_fieldNumInputsKeyTyped
 
     private void fieldInputOSCMessageFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldInputOSCMessageFocusLost
-        updateOSCListener();
+        updateOSCMessageListener();
     }//GEN-LAST:event_fieldInputOSCMessageFocusLost
 
     private void fieldInputOSCMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldInputOSCMessageActionPerformed
@@ -919,7 +919,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
          }
          */
         /* if (keyIsEnter) {
-         updateOSCListener();
+         updateOSCMessageListener();
          }*/
     }//GEN-LAST:event_fieldInputOSCMessageKeyTyped
 
@@ -1254,7 +1254,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         return Integer.parseInt(fieldSendPort.getText());
     }
 
-    private void configureOSCSenderFromForm() throws UnknownHostException, SocketException {
+    private void configureOSCSenderFromForm() throws UnknownHostException, SocketException, IOException {
         String hostName = getHostnameFromForm();
         int port = getSendPortFromForm();
         w.getOSCSender().setHostnameAndPort(InetAddress.getByName(hostName), port);
@@ -1313,7 +1313,7 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
 
             } catch (UnknownHostException ex) {
                 Util.showPrettyErrorPane(this, "Host name " + fieldHostName.getText() + " is invalid; please try a different host.");
-            } catch (SocketException ex) {
+            } catch (IOException ex) {
                 Util.showPrettyErrorPane(this, "Error setting up OSC sender: " + ex.getMessage());
             }
 
@@ -1700,8 +1700,8 @@ public class InitInputOutputFrame extends javax.swing.JFrame implements Closeabl
         this.isCloseable = isCloseable;
     }
 
-    private void updateOSCListener() {
-        logger.log(Level.WARNING, "updateOSCListener is not implemented");
+    private void updateOSCMessageListener() {
+        logger.log(Level.WARNING, "updateOSCMessageListener is not implemented");
     }
 
     private void updateOutputCard() {
