@@ -4,6 +4,9 @@ plugins {
     application
 }
 
+version = 0.2
+group = "com.wekimini"
+
 repositories {
     mavenCentral()
 }
