@@ -549,7 +549,7 @@ public class DtwData {
             TimeSeries tt = new TimeSeries(currentTimeSeries.numOfDimensions());
             for (int i = 0; i < currentTimeSeries.size() - startPos; i++) {
                 double[] next = currentTimeSeries.getMeasurementVector(startPos + i);
-                tt.addLast(new Double(i), new TimeSeriesPoint(next));
+                tt.addLast(Double.valueOf(i), new TimeSeriesPoint(next));
             }
             l.add(tt);
         }

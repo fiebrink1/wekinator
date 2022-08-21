@@ -155,9 +155,9 @@ implements <a href="../../weka/core/RevisionHandler.html" title="interface in we
  <pre>
  String expr = "pow(BASE,EXPONENT)*MULT";
  HashMap symbols = new HashMap();
- symbols.put("BASE", new Double(2));
- symbols.put("EXPONENT", new Double(9));
- symbols.put("MULT", new Double(0.1));
+ symbols.put("BASE", Double.valueOf(2));
+ symbols.put("EXPONENT", Double.valueOf(9));
+ symbols.put("MULT", Double.valueOf(0.1));
  double result = MathematicalExpression.evaluate(expr, symbols);
  System.out.println(expr + " and " + symbols + " = " + result);
  </pre>
@@ -167,9 +167,9 @@ implements <a href="../../weka/core/RevisionHandler.html" title="interface in we
  String expr = "ifelse(I<0,pow(BASE,I*0.5),pow(BASE,I))";
  MathematicalExpression.TreeNode tree = MathematicalExpression.parse(expr);
  HashMap symbols = new HashMap();
- symbols.put("BASE", new Double(2));
+ symbols.put("BASE", Double.valueOf(2));
  for (int i = -10; i <= 10; i++) {
-   symbols.put("I", new Double(i));
+   symbols.put("I", Double.valueOf(i));
    double result = MathematicalExpression.evaluate(expr, symbols);
    System.out.println(expr + " and " + symbols + " = " + result);
  }

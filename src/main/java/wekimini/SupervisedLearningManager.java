@@ -124,7 +124,7 @@ public class SupervisedLearningManager implements ConnectsInputsToOutputs {
                         //myComputedOutputs[i] = paths.get(i).compute(instance);
                         theseValues.add(paths.get(i).compute(instance));
                     } catch (Exception ex) {
-                        theseValues.add(new Double(0));
+                        theseValues.add(Double.valueOf(0));
                         logger.log(Level.SEVERE, "Error encountered in computing: {0}", ex.getMessage());
                     }
                 } else {

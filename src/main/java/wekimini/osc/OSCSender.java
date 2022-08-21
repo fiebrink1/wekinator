@@ -101,7 +101,7 @@ public class OSCSender {
         OSCPortOut s = new OSCPortOut(hostname, port);
         Object[] o = new Object[numFloats];
         for (int i = 0; i < o.length; i++) {
-            o[i] = new Float(i);
+            o[i] = Float.valueOf(i);
         }
         OSCMessage msg = new OSCMessage(message, Arrays.asList(o));
         try {
@@ -195,7 +195,7 @@ public class OSCSender {
     public void sendOutputBundleValuesMessage(String oscMessage, List<List<Double>> allOutputs) throws IOException {
         if (isValidState) {
             /*List<Object> o = new LinkedList<Object>();
-            o.add(new Integer(allOutputs.size()));
+            o.add(Integer.valueOf(allOutputs.size()));
             for (List<Double> thisList : allOutputs) {
                 for (Double d : thisList) {
                     o.add((float)d.doubleValue());
@@ -259,7 +259,7 @@ public class OSCSender {
     public void sendOutputBundleValuesMessage(String oscMessage, double[][] allDistributions) throws IOException {
         if (isValidState) {
             /*List<Object> o = new LinkedList<Object>();
-            o.add(new Integer(allDistributions.length));
+            o.add(Integer.valueOf(allDistributions.length));
             for (int i = 0; i < allDistributions.length; i++) {
                 for (int j = 0; j < allDistributions[i].length; j++) {
                     o.add((float)allDistributions[i][j]);

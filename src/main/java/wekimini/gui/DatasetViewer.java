@@ -217,7 +217,7 @@ public class DatasetViewer extends javax.swing.JFrame {
          int row = table.getSelectedRow();
          double d[] = model.getSelectedParams(row);
          for (int i = 0; i < d.length; i++) {
-         Double dd = new Double(d[i]);
+         Double dd = Double.valueOf(d[i]);
          if (dd.isNaN()) {
          d[i] = WekinatorLearningManager.getInstance().getParams(i);
          }

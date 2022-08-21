@@ -551,10 +551,10 @@ public class DataManager {
             if (isDiscrete[i]) {
                 //Create fastVector w/ possible
                 FastVector classes = new FastVector(numOutputs);
-                classes.addElement(new Integer(0).toString()); //Allow for 0 "no class" in ARFF specification
+                classes.addElement(Integer.valueOf(0).toString()); //Allow for 0 "no class" in ARFF specification
                 for (int val = 0; val < numClasses[i]; val++) {
-                    //System.out.println("Adding legal value " + (new Integer(val + 1)).toString());
-                    classes.addElement((new Integer(val + 1)).toString()); //Values 1 to numClasses
+                    //System.out.println("Adding legal value " + (Integer.valueOf(val + 1)).toString());
+                    classes.addElement((Integer.valueOf(val + 1)).toString()); //Values 1 to numClasses
                 }
                 ff.addElement(new Attribute(outputNames[i], classes));
 
@@ -574,10 +574,10 @@ public class DataManager {
         if (isDiscrete[which]) {
             //Create fastVector w/ possible
             FastVector classes = new FastVector(numOutputs);
-            classes.addElement(new Integer(0).toString()); //Allow for 0 "no class" in ARFF specification
+            classes.addElement(Integer.valueOf(0).toString()); //Allow for 0 "no class" in ARFF specification
             for (int val = 0; val < numClasses[which]; val++) {
-                    //System.out.println("Adding legal value " + (new Integer(val + 1)).toString());
-                classes.addElement((new Integer(val + 1)).toString()); //Values 1 to numClasses
+                    //System.out.println("Adding legal value " + (Integer.valueOf(val + 1)).toString());
+                classes.addElement((Integer.valueOf(val + 1)).toString()); //Values 1 to numClasses
             }
             a = new Attribute(outputNames[which], classes);
 
